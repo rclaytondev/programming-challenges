@@ -194,7 +194,7 @@ var testing = {
 		}
 	},
 
-	testAll: function() {
+	testAll: function(showResults = true) {
 		this.tests.forEach(test => {
 			try {
 				test.run();
@@ -206,11 +206,32 @@ var testing = {
 			}
 		});
 
-		if(this.testsFailed().length !== 0) {
-			this.resultFormatter.showResults();
+		if(showResults) {
+			if(this.testsFailed().length !== 0) {
+				this.resultFormatter.showResults();
+			}
+			else {
+				console.log("%cAll tests passed!", "color: rgb(0, 192, 64)");
+			}
 		}
 		else {
-			console.log("%cAll tests passed!", "color: rgb(0, 192, 64)");
+			if(this.testsFailed().length !== 0) {
+				if(this.testsFailed().length === 1) {
+					// e.g. "1 test failed (#123)"
+					console.log(`%c1 test failed%c (#${this.testsFailed()[0].index})`, "color: red", "color: white");
+				}
+				else if(this.testsFailed().length <= 3) {
+					// e.g. "3 tests failed (#123, #456, #789)"
+					console.log(`%c${this.testsFailed().length} tests failed%c (${this.testsFailed().map(t => `#${t.index}`).join(", ")})`, "color: red", "color: white");
+				}
+				else {
+					// e.g. "5 tests failed (#123, #456, #789, and 2 others)"
+					console.log(`%c${this.testsFailed().length} tests failed%c (${this.testsFailed().slice(0, 3).map(t => `#${t.index}`).join(", ")}, and ${this.testsFailed().length - 3} ${this.testsFailed().length === 4 ? "other" : "others"})`, "color: red", "color: white");
+				}
+			}
+			else {
+				console.log("%cAll tests passed!", "color: rgb(0, 192, 64)");
+			}
 		}
 	},
 	runTestByID: function(id) {
@@ -219,6 +240,37 @@ var testing = {
 
 		var text = "%cTest passed: %c" + test.unitTested + " - " + test.name;
 		console.log(text, "color: rgb(0, 192, 64)", "color: white;");
+	},
+	testUnit: function(unitName) {
+		const tests = this.tests.filter(t => t.unitTested === unitName);
+		tests.forEach(test => {
+			try {
+				test.run();
+
+				test.result = "passed";
+			}
+			catch(e) {
+				test.result = "failed";
+			}
+		});
+		const testsFailed = tests.filter(t => t.result === "failed");
+		if(testsFailed.length !== 0) {
+			if(testsFailed.length === 1) {
+				// e.g. "1 test failed (#123)"
+				console.log(`%c1 test failed%c (#${testsFailed[0].index}) in unit ${unitName}`, "color: red", "color: white");
+			}
+			else if(testsFailed.length <= 3) {
+				// e.g. "3 tests failed (#123, #456, #789)"
+				console.log(`%c${testsFailed.length} tests failed%c (${testsFailed.map(t => `#${t.index}`).join(", ")}) in unit ${unitName}`, "color: red", "color: white");
+			}
+			else {
+				// e.g. "5 tests failed (#123, #456, #789, and 2 others)"
+				console.log(`%c${testsFailed.length} tests failed%c (${testsFailed.slice(0, 3).map(t => `#${t.index}`).join(", ")}, and ${this.testsFailed().length - 3} ${this.testsFailed().length === 4 ? "other" : "others"}) in unit ${unitName}`, "color: red", "color: white");
+			}
+		}
+		else {
+			console.log(`%cAll tests passed %cin unit ${unitName}`, "color: rgb(0, 192, 64)", "color: white");
+		}
 	},
 
 	testsFailed: function() {
