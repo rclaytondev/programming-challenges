@@ -139,6 +139,18 @@ Vector.method("isHorizontal", function isHorizontal() {
 Vector.method("isVertical", function isVertical() {
 	return this.x === 0;
 });
+Vector.method("isAdjacentTo", function isAdjacentTo(x, y) {
+	if(arguments[0].hasOwnProperty("x") && arguments[0].hasOwnProperty("y")) {
+		const [vector] = arguments;
+		return this.isAdjacentTo(vector.x, vector.y);
+	}
+	else {
+		return (
+			(x === this.x && Math.dist(this.y, y) === 1) ||
+			(y === this.y && Math.dist(this.x, x) === 1)
+		);
+	}
+});
 
 
 const DIRECTION_VECTORS = {

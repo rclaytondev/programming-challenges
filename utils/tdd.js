@@ -77,6 +77,9 @@ Object.method("set", function set(key, value) {
 	return this;
 });
 Object.method("equals", function equals(obj) {
+	if(typeof this !== "object") {
+		return this === obj;
+	}
 	if(Object.keys(this).length !== Object.keys(obj).length) {
 		return false;
 	}
@@ -121,9 +124,14 @@ Object.typeof = function(value) {
 };
 
 var testing = {
-	assert: function(value) {
+	assert: function(value, errorMsg) {
 		if(!value) {
-			throw new Error("Assertion failed. Expected '" + value + "' to be truthy, but it was not.");
+			throw new Error(errorMsg || "Assertion failed. Expected '" + value + "' to be truthy, but it was not.");
+		}
+	},
+	refute: function(value) {
+		if(value) {
+			throw new Error("Assertion failed. Expected '" + value + "' to be falsy, but it was not.");
 		}
 	},
 	assertEqual: function(value1, value2) {
@@ -148,16 +156,32 @@ var testing = {
 			testing.assert(value1 === value2);
 		}
 	},
-	assertThrows: function(callback) {
-		var threwError = false;
+	assertThrows: function(callback, expectedMsg) {
+		let error;
 		try {
 			callback();
 		}
 		catch(e) {
-			threwError = true;
+			error = e;
 		}
-		if(!threwError) {
-			this.error("Assertion failed. Expected " + callback + " to throw an error, but it did not");
+		if(!error) {
+			throw new Error(`Assertion failed. Expected ${callback.name} to throw an error, but it did not`);
+		}
+		if(typeof expectedMsg === "string") {
+			if(typeof error.message !== "string") {
+				throw new Error(`Expected ${callback.name} to throw an error with a message of '${expectedMsg}', but the resulting error had no message.`);
+			}
+			else if(expectedMsg !== error.message) {
+				throw new Error(`Expected ${callback.name} to throw an error with a message of '${expectedMsg}', but the error message was ${error.message} instead.`);
+			}
+		}
+		else if(expectedMsg instanceof RegExp) {
+			if(typeof error.message !== "string") {
+				throw new Error(`Expected ${callback.name} to throw an error with a message matching '${expectedMsg}', but the resulting error had no message.`);
+			}
+			else if(!expectedMsg.test(error.message)) {
+				throw new Error(`Expected ${callback.name} to throw an error with a message matching '${expectedMsg}', but the error message was ${error.message} instead.`);
+			}
 		}
 	},
 
@@ -241,8 +265,26 @@ var testing = {
 		var text = "%cTest passed: %c" + test.unitTested + " - " + test.name;
 		console.log(text, "color: rgb(0, 192, 64)", "color: white;");
 	},
+	runTestByName: function(name) {
+		let test = this.tests.find(t => t.name === name);
+		if(test) {
+			this.runTestByID(test.index);
+		}
+		else {
+			test = this.tests.find(t => `${t.unitTested} - ${t.name}` === name);
+			if(test) {
+				this.runTestByID(test.index);
+			}
+			else {
+				throw new Error(`No test found matching name '${name}'.`);
+			}
+		}
+	},
 	testUnit: function(unitName) {
 		const tests = this.tests.filter(t => t.unitTested === unitName);
+		if(tests.length === 0) {
+			throw new Error(`No tests with a unit name of ${unitName} were found.`);
+		}
 		tests.forEach(test => {
 			try {
 				test.run();
@@ -377,3 +419,730 @@ var testing = {
 		}
 	}
 };
+
+
+
+
+
+const expect = function() {
+	const expectArgs = [...arguments];
+	const [value] = arguments;
+	if(!arguments.length) {
+		throw new Error("expect() cannot be called without arguments.");
+	}
+	const equals = (v1, v2) => (
+		// used for expect(...).toEqual(...) and expect(...).toNotEqual(...)
+		v1 === v2 ||
+		(Number.isNaN(v1) && Number.isNaN(v2)) ||
+		(typeof v1 === "object" && v1 !== null && typeof v2 === "object" && v1.equals(v2)) ||
+
+		(typeof v1 === "number" && typeof v2 === "bigint" && Number(v2) === v1) ||
+		(typeof v2 === "number" && typeof v1 === "bigint" && Number(v1) === v2)
+	);
+	const strictlyEquals = (v1, v2) => ((v1 === v2) || (Number.isNaN(v1) && Number.isNaN(v2)));
+	const isNumeric = (value) => (typeof value === "number" || typeof value === "bigint") && !Number.isNaN(value);
+	return {
+		/*
+		Note to self: if the functions below contain multiple assertions, they should be in this order:
+		- Assertions about the number of arguments (which should always be present if the function takes >=1 argument)
+		- Assertions about the type of the value passed to `expect`
+		- Assertions about the type of the value passed to the `to...` method
+		- Assertions about the content
+		(The order doesn't really matter, of course, but it's nice to be consistent.)
+		*/
+
+		toEqual: function(valueToEqual) {
+			if(!arguments.length) {
+				throw new Error("expect(value).toEqual(value) should be called with one argument; instead recieved no arguments.");
+			}
+			testing.assert(
+				equals(value, valueToEqual),
+				`Expected value of '${valueToEqual}' did not equal actual value of '${value}'`
+			);
+		},
+		toStrictlyEqual: function(valueToEqual) {
+			if(!arguments.length) {
+				throw new Error("expect(value).toStrictlyEqual(value) should be called with one argument; instead recieved no arguments.");
+			}
+			testing.assert(
+				strictlyEquals(value, valueToEqual),
+				`Expected value of '${valueToEqual}' did not strictly equal actual value of '${value}'.`
+			);
+		},
+		toNotEqual: function(valueToNotEqual) {
+			if(!arguments.length) {
+				throw new Error("expect(value).toNotEqual(value) should be called with one argument; instead recieved no arguments.");
+			}
+			testing.assert(
+				!equals(value, valueToNotEqual),
+				`Expected value of '${valueToNotEqual}' did not equal actual value of '${value}'`
+			);
+		},
+		toNotStrictlyEqual: function(valueToNotEqual) {
+			if(!arguments.length) {
+				throw new Error("expect(value).toStrictlyEqual(value) should be called with one argument; instead recieved no arguments.");
+			}
+			testing.assert(
+				!strictlyEquals(value, valueToEqual),
+				`Expected value of '${valueToEqual}' did not strictly equal actual value of '${value}'.`
+			);
+		},
+
+		toBeTrue: function() {
+			testing.assert(
+				value === true,
+				`Expected the value to be true, but the actual value was '${value}'.`
+			);
+		},
+		toBeFalse: function() {
+			testing.assert(
+				value === false,
+				`Expected the value to be false, but the actual value was '${value}'.`
+			);
+		},
+		toBeTruthy: function() {
+			testing.assert(
+				value,
+				`Expected the value to be truthy, but the actual value was '${value}'.`
+			);
+		},
+		toBeFalsy: function() {
+			testing.assert(
+				!value,
+				`Expected the value to be falsy, but the actual value was '${value}'.`
+			);
+		},
+
+		toThrow: function() {
+			const func = value;
+			const args = expectArgs.slice(1);
+			if(typeof func !== "function") {
+				throw new Error(`Usage: 'expect(func).toThrow();'. The provided value (${value}) was not a function.`);
+			}
+
+			let threwError = false;
+			try {
+				func(...args);
+			}
+			catch(e) {
+				threwError = true;
+			}
+			testing.assert(threwError, `Expected function '${func.name}' to throw an error.`)
+		},
+
+		toBeNumeric: function() {
+			testing.assert(
+				isNumeric(value),
+				`Expected ${value} to be numeric.`
+			);
+		},
+		toBeAnObject: function() {
+			testing.assert(
+				typeof value === "object" && value !== null,
+				`Expected ${value} to be an object.`
+			);
+		},
+		toBeAnArray: function() {
+			testing.assert(
+				Array.isArray(value),
+				`Expected ${value} to be an array.`
+			);
+		},
+
+		toBePositive: function() {
+			testing.assert(
+				isNumeric(value),
+				`Expected ${value} to be a positive number, but it was non-numeric.`
+			);
+			testing.assert(
+				value > 0,
+				`Expected ${value} to be a positive number.`
+			);
+		},
+		toBeNegative: function() {
+			testing.assert(
+				isNumeric(value),
+				`Expected ${value} to be a negative number, but it was non-numeric.`
+			);
+			testing.assert(
+				value < 0,
+				`Expected ${value} to be a negative number.`
+			);
+		},
+		toBeAnInteger: function() {
+			testing.assert(
+				isNumeric(value),
+				`Expected ${value} to be an integer, but it was non-numeric.`
+			);
+			testing.assert(
+				typeof value === "bigint" || Math.round(value) === value,
+				`Expected ${value} to be an integer.`
+			);
+		},
+		toBeBetween: function(min, max) {
+			testing.assert(
+				arguments.length === 2,
+				`expect(value).toBeBetween(min, max) should be called with exactly two arguments.`
+			);
+			testing.assert(
+				isNumeric(value),
+				`Expected ${value} to be a number.`
+			);
+			testing.assert(
+				isNumeric(min) && isNumeric(max),
+				`expect(value).toBeBetween(min, max) should be called with two numeric arguments.`
+			);
+			testing.assert(
+				max > min,
+				`expect(value).toBeBetween(min, max) should be called with two arguments such that max > min.`
+			);
+			testing.assert(
+				min <= value && value <= max,
+				`Expected ${value} to be between ${min} and ${max}.`
+			);
+		},
+		toBeStrictlyBetween: function(min, max) {
+			testing.assert(
+				arguments.length === 2,
+				`expect(value).toBeStrictlyBetween(min, max) should be called with exactly two arguments.`
+			);
+			testing.assert(
+				isNumeric(value),
+				`Expected ${value} to be a number.`
+			);
+			testing.assert(
+				isNumeric(min) && isNumeric(max),
+				`expect(value).toBeStrictlyBetween(min, max) should be called with two numeric arguments.`
+			);
+			testing.assert(
+				max > min,
+				`expect(value).toBeStrictlyBetween(min, max) should be called with two arguments such that max > min.`
+			);
+			testing.assert(
+				min < value && value < max,
+				`Expected ${value} to be strictly between ${min} and ${max}.`
+			);
+		},
+		toApproximatelyEqual: function(num) {
+			testing.assert(
+				arguments.length === 1,
+				`expect(value).toApproximatelyEqual(value) should be called with exactly one argument.`
+			);
+			testing.assert(
+				isNumeric(value),
+				`Expected ${value} to approximately equal ${num}, but the value was non-numeric.`
+			);
+			testing.assert(
+				isNumeric(num),
+				`expect(value).toApproximatelyEqual(value) should be called with a numeric argument.`
+			);
+			testing.assert(
+				Math.abs(value - num) < 1e-15,
+				`Expected ${value} to be extremely close to ${num}.`
+			);
+		},
+		toBeGreaterThan: function(num) {
+			testing.assert(
+				arguments.length === 1,
+				`expect(value).toBeGreaterThan(value) should be called with exactly one argument.`
+			);
+			testing.assert(
+				isNumeric(num),
+				`expect(value).toBeGreaterThan(value) should be called with a numeric argument.`
+			);
+			testing.assert(
+				isNumeric(value),
+				`Expected ${value} to be a number greater than ${num}, but the value was non-numeric.`
+			);
+			testing.assert(
+				value > num,
+				`Expected ${value} to be greater than ${num}.`
+			);
+		},
+		toBeLessThan: function(num) {
+			testing.assert(
+				arguments.length === 1,
+				`expect(value).toBeLessThan(value) should be called with exactly one argument.`
+			);
+			testing.assert(
+				isNumeric(num),
+				`expect(value).toBeLessThan(value) should be called with a numeric argument.`
+			);
+			testing.assert(
+				isNumeric(value),
+				`Expected ${value} to be a number less than ${num}, but the value was non-numeric.`
+			);
+			testing.assert(
+				value < num,
+				`Expected ${value} to be greater than ${num}.`
+			);
+		},
+
+		toHaveProperties: function(...properties) {
+			testing.assert(
+				properties.every(prop => typeof prop === "string"),
+				`expect(value).toHaveProperties() should be called with string arguments.`
+			);
+
+			properties.forEach(prop => {
+				testing.assert(
+					value.hasOwnProperty(prop),
+					`Expected ${value} to have the property '${prop}'.`
+				);
+			});
+		},
+		toOnlyHaveProperties: function(...properties) {
+			testing.assert(
+				properties.every(prop => typeof prop === "string"),
+				`expect(value).toHaveProperties() should be called with string arguments.`
+			);
+
+			properties.forEach(prop => {
+				testing.assert(
+					value.hasOwnProperty(prop),
+					`Expected ${value} to have the property '${prop}'.`
+				);
+			});
+			Object.keys(value).forEach(prop => {
+				testing.assert(
+					properties.includes(prop),
+					`${value} had the extra property ${prop} (with value of ${value[prop]}).`
+				);
+			});
+		},
+		toInstantiate: function(constructor) {
+			testing.assert(
+				value instanceof constructor,
+				`Expected ${value} to be an instance of ${constructor}.`
+			);
+		},
+		toDirectlyInstantiate: function(constructor) {
+			testing.assert(
+				value.constructor === constructor,
+				`Expected ${value} to be an instance of ${constructor}.`
+			);
+		}
+	};
+};
+
+testing.addUnit("expect()", {
+	"toEqual() works for primitives": () => {
+		expect(123).toEqual(123);
+		expect(123n).toEqual(123n);
+		expect(123n).toEqual(123);
+		expect(123).toEqual(123n);
+		expect("abc").toEqual("abc");
+		expect(true).toEqual(true);
+		expect(false).toEqual(false);
+		expect(null).toEqual(null);
+		expect(undefined).toEqual(undefined);
+		expect(NaN).toEqual(NaN);
+		testing.assertThrows(() => {
+			expect(1).toEqual(2);
+		});
+		testing.assertThrows(() => {
+			expect(1).toEqual("abc");
+		});
+		testing.assertThrows(() => {
+			expect(undefined).toEqual();
+		});
+	},
+	"toEqual() works for objects": () => {
+		expect({}).toEqual({});
+		expect([]).toEqual([]);
+		class Foo {
+			constructor(prop) {
+				this.prop = prop;
+			}
+		}
+		expect(new Foo(123)).toEqual(new Foo(123));
+
+		testing.assertThrows(() => {
+			expect(new Foo(123).toEqual(new Foo(124)));
+		});
+		testing.assertThrows(() => {
+			expect(new Foo(123).toEqual({ prop: 123 }));
+		});
+		testing.assertThrows(() => {
+			expect([1]).toEqual([2]);
+		});
+		testing.assertThrows(() => {
+			expect([1, 2, 3]).toEqual(4);
+		});
+		testing.assertThrows(() => {
+			expect(4).toEqual([1, 2, 3]);
+		});
+	},
+	"toStrictlyEqual() works for primitives": () => {
+		expect(1).toStrictlyEqual(1);
+		expect("abc").toStrictlyEqual("abc");
+		expect(true).toStrictlyEqual(true);
+		expect(false).toStrictlyEqual(false);
+		expect(null).toStrictlyEqual(null);
+		expect(undefined).toStrictlyEqual(undefined);
+		expect(NaN).toStrictlyEqual(NaN);
+		testing.assertThrows(() => {
+			expect(1).toStrictlyEqual(2);
+		});
+		testing.assertThrows(() => {
+			expect(1).toStrictlyEqual("abc");
+		});
+		testing.assertThrows(() => {
+			expect(undefined).toStrictlyEqual();
+		});
+	},
+	"toStrictlyEqual() works for objects": () => {
+		const obj = {};
+		expect(obj).toStrictlyEqual(obj);
+		const arr = [];
+		expect(arr).toStrictlyEqual(arr);
+		class MyClass {
+			constructor(prop) {
+				this.prop = prop;
+			}
+		};
+		const myInstance = new MyClass("foo");
+		expect(myInstance).toStrictlyEqual(myInstance)
+
+
+		testing.assertThrows(() => {
+			expect({}).toStrictlyEqual({});
+		});
+		testing.assertThrows(() => {
+			expect({ prop: 1 }).toStrictlyEqual({ prop: 1 });
+		});
+		testing.assertThrows(() => {
+			expect([]).toStrictlyEqual([]);
+		});
+		testing.assertThrows(() => {
+			expect([1, 2, 3]).toStrictlyEqual([1, 2, 3]);
+		});
+		testing.assertThrows(() => {
+			expect(new MyClass("foo")).toStrictlyEqual(new MyClass("foo"));
+		});
+	},
+	"toNotEqual() works for primitives": () => {
+		testing.assertThrows(() => {
+			expect(123).toNotEqual(123);
+		});
+		testing.assertThrows(() => {
+			expect(123n).toNotEqual(123n);
+		});
+		testing.assertThrows(() => {
+			expect(123n).toNotEqual(123);
+		});
+		testing.assertThrows(() => {
+			expect(123).toNotEqual(123n);
+		});
+		testing.assertThrows(() => {
+			expect("abc").toNotEqual("abc");
+		});
+		testing.assertThrows(() => {
+			expect(true).toNotEqual(true);
+		});
+		testing.assertThrows(() => {
+			expect(false).toNotEqual(false);
+		});
+		testing.assertThrows(() => {
+			expect(null).toNotEqual(null);
+		});
+		testing.assertThrows(() => {
+			expect(undefined).toNotEqual(undefined);
+		});
+		testing.assertThrows(() => {
+			expect(NaN).toNotEqual(NaN);
+		});
+		expect(1).toNotEqual(2);
+		expect(1).toNotEqual("abc");
+		testing.assertThrows(() => {
+			expect(undefined).toNotEqual();
+		});
+	},
+	"toBeTrue() works": () => {
+		expect(true).toBeTrue();
+
+
+		testing.assertThrows(() => {
+			expect(false).toBeTrue();
+		});
+		testing.assertThrows(() => {
+			expect(123).toBeTrue();
+		});
+		testing.assertThrows(() => {
+			expect({ prop: 123 }).toBeTrue();
+		});
+	},
+	"toBeFalse() works": () => {
+		expect(false).toBeFalse();
+
+
+		testing.assertThrows(() => {
+			expect(true).toBeFalse();
+		});
+		testing.assertThrows(() => {
+			expect(0).toBeFalse();
+		});
+		testing.assertThrows(() => {
+			expect({ prop: 123 }).toBeFalse();
+		});
+	},
+	"toBeTruthy() works": () => {
+		expect(true).toBeTruthy();
+		expect(123).toBeTruthy();
+		expect("abc").toBeTruthy();
+
+		testing.assertThrows(() => {
+			expect(false).toBeTruthy();
+		});
+		testing.assertThrows(() => {
+			expect(0).toBeTruthy();
+		});
+		testing.assertThrows(() => {
+			expect("").toBeTruthy();
+		});
+	},
+	"toBeFalsy() works": () => {
+		expect(false).toBeFalsy();
+		expect(0).toBeFalsy();
+		expect("").toBeFalsy();
+
+		testing.assertThrows(() => {
+			expect(true).toBeFalsy();
+		});
+		testing.assertThrows(() => {
+			expect(123).toBeFalsy();
+		});
+		testing.assertThrows(() => {
+			expect("abc").toBeFalsy();
+		});
+	},
+	"toThrow() works": () => {
+		const foo = (arg) => {
+			if(arg !== 123) {
+				throw new Error("Uh-oh, something went wrong!");
+			}
+		}
+
+		// foo throws an error when the argument is not 123, as seen above
+		expect(foo).toThrow();
+		expect(foo, 456).toThrow();
+		expect(foo.bind(null, 456)).toThrow();
+
+		testing.assertThrows(() => {
+			// here, foo should be called with 123 as a parameter, so no error should be thrown.
+			expect(foo, 123).toThrow();
+		});
+		testing.assertThrows(() => {
+			// here also, foo should be called with 123 as a parameter, so no error should be thrown.
+			expect(foo.bind(null, 123)).toThrow();
+		});
+	},
+	"toBeNumeric() works": () => {
+		expect(1).toBeNumeric();
+		expect(-1.23).toBeNumeric();
+		expect(123n).toBeNumeric();
+
+		testing.assertThrows(() => {
+			expect("abc").toBeNumeric();
+		});
+		testing.assertThrows(() => {
+			expect(NaN).toBeNumeric();
+		});
+	},
+	"toBeAnObject() works": () => {
+		expect({}).toBeAnObject();
+		expect({ x: 1 }).toBeAnObject();
+		expect([]).toBeAnObject();
+		class Foo { constructor() {} }
+		expect(new Foo()).toBeAnObject();
+
+
+		testing.assertThrows(() => {
+			expect(123).toBeAnObject();
+		});
+		testing.assertThrows(() => {
+			expect("abc").toBeAnObject();
+		});
+		testing.assertThrows(() => {
+			expect(null).toBeAnObject();
+		});
+	},
+	"toBeAnArray() works": () => {
+		expect([]).toBeAnArray();
+		expect([1, 2, 3]).toBeAnArray();
+
+		testing.assertThrows(() => {
+			expect(123).toBeAnArray();
+		});
+		testing.assertThrows(() => {
+			expect({}).toBeAnArray();
+		});
+	},
+	"toBePositive() works": () => {
+		expect(123).toBePositive();
+
+		testing.assertThrows(() => {
+			expect(-1).toBePositive();
+		});
+		testing.assertThrows(() => {
+			expect(0).toBePositive();
+		});
+		testing.assertThrows(() => {
+			expect("abc").toBePositive();
+		});
+	},
+	"toBeNegative() works": () => {
+		expect(-123).toBeNegative();
+
+		testing.assertThrows(() => {
+			expect(1).toBeNegative();
+		});
+		testing.assertThrows(() => {
+			expect(0).toBeNegative();
+		});
+		testing.assertThrows(() => {
+			expect("abc").toBeNegative();
+		});
+	},
+	"toBeAnInteger() works": () => {
+		expect(123).toBeAnInteger();
+		expect(123n).toBeAnInteger();
+
+		testing.assertThrows(() => {
+			expect(1.23).toBeAnInteger();
+		});
+		testing.assertThrows(() => {
+			expect("abc").toBeAnInteger();
+		});
+	},
+	"toBeBetween() works": () => {
+		expect(123).toBeBetween(100, 200);
+		expect(123n).toBeBetween(100, 200);
+		expect(123).toBeBetween(100n, 200n);
+		expect(123n).toBeBetween(100n, 200n);
+
+		expect(123).toBeBetween(123, 456);
+		expect(123).toBeBetween(0, 123);
+
+		testing.assertThrows(() => {
+			expect(123).toBeBetween(50, 60);
+		});
+		testing.assertThrows(() => {
+			expect(123n).toBeBetween(50, 60);
+		});
+	},
+	"toBeStrictlyBetween() works": () => {
+		expect(123).toBeStrictlyBetween(100, 200);
+		expect(123n).toBeStrictlyBetween(100, 200);
+		expect(123).toBeStrictlyBetween(100n, 200n);
+		expect(123n).toBeStrictlyBetween(100n, 200n);
+
+		testing.assertThrows(() => {
+			expect(123).toBeStrictlyBetween(123, 456);
+		});
+		testing.assertThrows(() => {
+			expect(123).toBeStrictlyBetween(0, 123);
+		});
+
+		testing.assertThrows(() => {
+			expect(123).toBeStrictlyBetween(50, 60);
+		});
+		testing.assertThrows(() => {
+			expect(123n).toBeStrictlyBetween(50, 60);
+		});
+	},
+	"toBeGreaterThan() works": () => {
+		expect(1).toBeGreaterThan(0);
+
+		testing.assertThrows(() => {
+			expect(1).toBeGreaterThan(2);
+		});
+		testing.assertThrows(() => {
+			expect("abc").toBeGreaterThan(2);
+		});
+		testing.assertThrows(() => {
+			expect(1).toBeGreaterThan("abc");
+		});
+	},
+	"toApproximatelyEqual() works": () => {
+		expect(0.1 + 0.2).toApproximatelyEqual(0.3);
+		expect(0.3 - 0.1).toApproximatelyEqual(0.2);
+
+		testing.assertThrows(() => {
+			expect(2).toApproximatelyEqual(3);
+		});
+		testing.assertThrows(() => {
+			expect(0.1 + 0.2 + 4e-14).toApproximatelyEqual(0.3);
+		});
+	},
+	"toHaveProperties() works": () => {
+		expect({ x: 1 }).toHaveProperties("x");
+		expect({ x: 1, y: 1 }).toHaveProperties("x", "y");
+		expect({ x: 1, y: 1, z: 1 }).toHaveProperties("x", "y");
+
+		testing.assertThrows(() => {
+			expect({ x: 1 }).toHaveProperties("y");
+		});
+		testing.assertThrows(() => {
+			expect({ x: 1, y: 1 }).toHaveProperties("x", "y", "z");
+		});
+		testing.assertThrows(() => {
+			expect({ x: 1, y: 1 }).toHaveProperties("x", "y", "z");
+		});
+	},
+	"toOnlyHaveProperties() works": () => {
+		expect({ x: 1 }).toOnlyHaveProperties("x");
+		expect({ x: 1, y: 1 }).toOnlyHaveProperties("x", "y");
+
+		testing.assertThrows(() => {
+			expect({ x: 1, y: 1, z: 1 }).toOnlyHaveProperties("x", "y");
+		});
+		testing.assertThrows(() => {
+			expect({ x: 1 }).toOnlyHaveProperties("y");
+		});
+		testing.assertThrows(() => {
+			expect({ x: 1, y: 1 }).toOnlyHaveProperties("x", "y", "z");
+		});
+		testing.assertThrows(() => {
+			expect({ x: 1, y: 1 }).toOnlyHaveProperties("x", "y", "z");
+		});
+	},
+	"toInstantiate() works": () => {
+		expect({}).toInstantiate(Object);
+		expect([]).toInstantiate(Array);
+		expect([]).toInstantiate(Object);
+		class Foo { constructor() {} };
+		expect(new Foo()).toInstantiate(Foo);
+		expect(new Foo()).toInstantiate(Object);
+
+		testing.assertThrows(() => {
+			expect([]).toInstantiate(Foo);
+		});
+		testing.assertThrows(() => {
+			expect({}).toInstantiate(Array);
+		});
+	},
+	"toDirectlyInstantiate": () => {
+		expect({}).toDirectlyInstantiate(Object);
+		expect([]).toDirectlyInstantiate(Array);
+		class Foo { constructor() {} };
+		expect(new Foo()).toDirectlyInstantiate(Foo);
+
+		testing.assertThrows(() => {
+			expect(new Foo()).toDirectlyInstantiate(Object);
+		});
+		testing.assertThrows(() => {
+			expect([]).toDirectlyInstantiate(Object);
+		});
+
+		testing.assertThrows(() => {
+			expect([]).toDirectlyInstantiate(Foo);
+		});
+		testing.assertThrows(() => {
+			expect({}).toDirectlyInstantiate(Array);
+		});
+	}
+});
+
+// testing.testUnit("expect()");
+// testing.runTestByID(18);

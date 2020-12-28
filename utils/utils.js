@@ -19,6 +19,9 @@ Array.method("min", function(func, thisArg, resultType = "object") {
 		else if(resultType === "value") {
 			return lowestValue;
 		}
+		else if(resultType === "all") {
+			return [this[lowestIndex], lowestIndex, lowestValue];
+		}
 	}
 	else {
 		return this.min(num => num, thisArg, resultType);
@@ -45,6 +48,9 @@ Array.method("max", function(func, thisArg, resultType = "object") {
 		else if(resultType === "value") {
 			return highestValue;
 		}
+		else if(resultType === "all") {
+			return [this[highestIndex], highestIndex, highestValue];
+		}
 	}
 	else {
 		return this.max(num => num, thisArg, resultType);
@@ -59,6 +65,22 @@ Array.method("count", function(func, thisArg) {
 		return this.filter(v => v === searchTarget).length;
 	}
 });
+Array.method("lastItem", function() {
+    return this[this.length - 1];
+});
+Array.method("allItemsEqual", function() {
+	return this.every(item => item === this[0]);
+});
+Array.method("isConsecutive", function() {
+	if(this.some(item => typeof item !== "number")) { return false; }
+
+	for(let i = 0; i < this.length - 1; i ++) {
+		const item = this[i], nextItem = this[i + 1];
+		if(item + 1 !== nextItem) { return false; }
+	}
+	return true;
+});
+
 
 Math.toRadians = function(deg) {
 	return deg / 180 * Math.PI;
@@ -79,6 +101,16 @@ Math.map = function(value, min1, max1, min2, max2) {
 	Maps 'value' from range ['min1' - 'max1'] to ['min2' - 'max2']
 	*/
 	return (value - min1) / (max1 - min1) * (max2 - min2) + min2;
+};
+Math.modulateIntoRange = function(value, min, max) {
+	const range = max - min;
+	while(value < min) {
+		value += range;
+	}
+	while(value > max) {
+		value -= range;
+	}
+	return value;
 };
 
 CanvasRenderingContext2D.prototype.line = function() {
@@ -179,6 +211,26 @@ CanvasRenderingContext2D.prototype.strokeRoundRect = function(x, y, w, h, radius
 	this.roundRect(x, y, w, h, radius);
 	this.stroke();
 };
+
+Object.method("clone", function() {
+    if(Array.isArray(this)) {
+        var clone = [];
+    }
+    else {
+        var clone = Object.create(this.__proto__);
+    }
+    for(var i in this) {
+        if(this.hasOwnProperty(i)) {
+            if(typeof this[i] === "object" && this[i] !== null) {
+                clone[i] = this[i].clone();
+            }
+            else {
+                clone[i] = this[i];
+            }
+        }
+    }
+    return clone;
+});
 
 
 var utils = {

@@ -93,3 +93,6 @@ Rectangle.method("fitsIn", function(rect) {
 	/* returns whether this rectangle can fit inside the given rectangle without moving. (Takes into account both position and size) */
 	return this.left >= rect.left && this.right <= rect.right && this.top >= rect.top && this.bottom <= rect.bottom;
 });
+Rectangle.method("center", function center() {
+	return new Vector(this.x + (this.width / 2), this.y + (this.height / 2));
+});
