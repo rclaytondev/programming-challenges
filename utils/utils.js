@@ -96,6 +96,9 @@ Array.method("isConsecutive", function() {
 	return true;
 });
 
+String.method("reverse", function() {
+	return [...this].reverse().join("");
+});
 
 Math.toRadians = function(deg) {
 	return deg / 180 * Math.PI;
