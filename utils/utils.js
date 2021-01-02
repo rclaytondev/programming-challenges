@@ -56,6 +56,21 @@ Array.method("max", function(func, thisArg, resultType = "object") {
 		return this.max(num => num, thisArg, resultType);
 	}
 });
+Array.method("sum", function(func, thisArg) {
+	if(typeof func === "function") {
+		var sum = 0;
+		this.forEach((item, index, array) => {
+			var result = func.call(thisArg, item, index, array);
+			if(typeof result === "number" && !isNaN(result)) {
+				sum += result;
+			}
+		});
+		return sum;
+	}
+	else {
+		return this.reduce((sum, item) => sum + item);
+	}
+});
 Array.method("count", function(func, thisArg) {
 	if(typeof func === "function") {
 		return this.filter(func, thisArg).length;
@@ -211,6 +226,27 @@ CanvasRenderingContext2D.prototype.strokeRoundRect = function(x, y, w, h, radius
 	this.roundRect(x, y, w, h, radius);
 	this.stroke();
 };
+
+Set.method("intersection", function(set) {
+	/* returns the set of items that are in both sets. */
+	const result = new Set();
+	this.forEach(value => {
+		if(set.has(value)) {
+			result.add(value);
+		}
+	});
+	return result;
+});
+Set.method("difference", function(set) {
+	/* returns the set of items that are in this set but not in the other set. */
+	const result = new Set();
+	this.forEach(value => {
+		if(!set.has(value)) {
+			result.add(value);
+		}
+	});
+	return result;
+});
 
 Object.method("clone", function() {
     if(Array.isArray(this)) {
