@@ -71,6 +71,9 @@ Array.method("sum", function(func, thisArg) {
 		return this.reduce((sum, item) => sum + item);
 	}
 });
+Array.method("mean", function(func, thisArg) {
+	return this.sum(func, thisArg) / this.length;
+});
 Array.method("count", function(func, thisArg) {
 	if(typeof func === "function") {
 		return this.filter(func, thisArg).length;
