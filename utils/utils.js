@@ -103,6 +103,21 @@ String.method("reverse", function() {
 	return [...this].reverse().join("");
 });
 
+Function.method("memoize", function() {
+	const map = new Map();
+	const func = this;
+	return function() {
+		for(let [key, value] of map.entries()) {
+			if([...key].every((val, i) => val === arguments[i])) {
+				return value;
+			}
+		}
+		const result = func.apply(this, arguments);
+		map.set(arguments, result);
+		return result;
+	};
+});
+
 Math.toRadians = function(deg) {
 	return deg / 180 * Math.PI;
 };
