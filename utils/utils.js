@@ -103,19 +103,37 @@ String.method("reverse", function() {
 	return [...this].reverse().join("");
 });
 
-Function.method("memoize", function() {
+Function.method("memoize", function(stringifyKeys = false) {
+	/*
+	`stringifyKeys` lets you specify an additional optimization. If set to true, the arguments will be stringified before being set into the map, allowing for constant lookup times.
+	However, not all arguments can be stringified without information loss (think of all the "[object Object]"s! Oh no!). If your arguments are like this, then do not use this feature.
+	*/
 	const map = new Map();
 	const func = this;
-	return function() {
-		for(let [key, value] of map.entries()) {
-			if([...key].every((val, i) => val === arguments[i])) {
-				return value;
+	if(stringifyKeys) {
+		return function() {
+			const stringified = [...arguments].toString();
+			if(map.has(stringified)) {
+				return map.get(stringified);
 			}
-		}
-		const result = func.apply(this, arguments);
-		map.set(arguments, result);
-		return result;
-	};
+
+			const result = func.apply(this, arguments);
+			map.set(stringified, result);
+			return result;
+		};
+	}
+	else {
+		return function() {
+			for(let [key, value] of map.entries()) {
+				if([...key].every((val, i) => val === arguments[i])) {
+					return value;
+				}
+			}
+			const result = func.apply(this, arguments);
+			map.set(arguments, result);
+			return result;
+		};
+	}
 });
 
 Math.toRadians = function(deg) {
