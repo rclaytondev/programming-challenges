@@ -67,7 +67,7 @@ Vector.method("invert", function invert() {
 Vector.method("rotateTo", function rotateTo(angle) {
 	/*
 	Returns this vector rotated so that it's angle matches the parameter `angle`.
-	`angle` is in degrees, clockwise from the positive x-axis.
+	`angle` is in degrees, counterclockwise from the positive x-axis.
 	*/
 	const magnitude = this.magnitude();
 	return Math.rotate(magnitude, 0, angle);

@@ -77,7 +77,7 @@ Object.method("set", function set(key, value) {
 	return this;
 });
 Object.method("equals", function equals(obj) {
-	if(typeof this !== "object") {
+	if(typeof this !== "object" || (typeof obj !== "object" || obj === null)) {
 		return this === obj;
 	}
 	if(Object.keys(this).length !== Object.keys(obj).length) {

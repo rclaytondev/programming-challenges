@@ -166,6 +166,31 @@ Math.modulateIntoRange = function(value, min, max) {
 	}
 	return value;
 };
+Math.rotate = function(x, y, deg, centerX, centerY) {
+    /*
+    Returns new coords of ('x', 'y') after being rotated 'deg' degrees counterclockwise about ('centerX', 'centerY').
+    */
+    centerX = centerX || 0;
+    centerY = centerY || 0;
+    x -= centerX;
+    y -= centerY;
+    deg = Math.toRadians(deg);
+    var rotated = {
+        x: x * Math.cos(deg) - y * Math.sin(deg),
+        y: x * Math.sin(deg) + y * Math.cos(deg)
+    };
+    return {
+        x: rotated.x + centerX,
+        y: rotated.y + centerY
+    };
+};
+
+Number.method("isBetween", function isBetween(num1, num2) {
+	return (
+		(this >= num1 && this <= num2) ||
+		(this >= num2 && this <= num1)
+	);
+});
 
 CanvasRenderingContext2D.prototype.line = function() {
 	/*
