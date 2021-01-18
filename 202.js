@@ -1,67 +1,86 @@
-const drawLaserSimulation = (mousePos, numReflections) => {
-	const triangleCenter = new Vector(canvas.width / 2, canvas.height / 2);
-	const EDGE_CENTER_DISTANCE = canvas.height / 2; // distance from the center of each edge to the center; controls triangle size.
-	/* v1 = bottom-left vertex, v2 = top-left vertex, v3 = right vertex. */
-	const [v1, v2, v3] = [120, 240, 360].map(angle => triangleCenter.translate(
-		EDGE_CENTER_DISTANCE * Math.cos(Math.toRadians(angle)),
-		EDGE_CENTER_DISTANCE * Math.sin(Math.toRadians(angle)),
-	));
-	c.strokeStyle = "rgb(150, 150, 150)";
+const triangle = {
+	EDGE_CENTER_DISTANCE: canvas.height / 2, // distance from the center of each edge to the center; controls triangle size.
+	center: new Vector(canvas.width / 2, canvas.height / 2)
+};
+triangle.vertices = [120, 240, 360].map(angle => triangle.center.translate(
+	triangle.EDGE_CENTER_DISTANCE * Math.cos(Math.toRadians(angle)),
+	triangle.EDGE_CENTER_DISTANCE * Math.sin(Math.toRadians(angle)),
+));
+triangle.edges = [];
+triangle.vertices.forEach((vertex, i) => {
+	const nextVertex = triangle.vertices[(i + 1) % triangle.vertices.length];
+	triangle.edges.push(new Line(vertex, nextVertex));
+	c.strokeStyle = "black";
 	c.lineWidth = 3;
-	c.strokeLine(v1, v2);
-	c.strokeLine(v2, v3);
-	c.strokeLine(v3, v1);
-	const [edge1, edge2, edge3] = [
-		new Line(v1, v2), // left edge
-		new Line(v2, v3), // top-right edge
-		new Line(v3, v1) // bottom-right edge
-	];
+	c.strokeLine(vertex, nextVertex);
+});
 
-	const laserSegments = [{
-		line: new Line(mousePos, v3),
-		nextEdges: [edge1]
-	}];
-	let leftTriangle = false;
-	while(laserSegments.length < numReflections) {
-		const segment = laserSegments.lastItem();
-		if(!segment.nextEdges) {
-			segment.nextEdges = [edge1, edge2, edge3].filter(e => !segment.previousEdges.includes(e));
-		}
-		const nextEdge = segment.nextEdges.find(e => segment.line.intersectsSegment(e));
-		if(!nextEdge) {
-			break;
-		}
-		const intersection = segment.line.intersection(nextEdge);
-		const VERTEX_HOLE_SIZE = 3;
-		if(intersection.distanceFrom(v3) < VERTEX_HOLE_SIZE) {
-			leftTriangle = true;
-			break;
-		}
-
-		c.fillStyle = "red";
-		c.fillCircle(intersection.x, intersection.y, 5);
-		const laserAngle = (segment.line.angle() + 180) % 360;
-		const mirrorAngle = nextEdge.angle() - 180;
-		const newAngle = -reflectLasers(laserAngle, mirrorAngle);
-		laserSegments.push({
-			line: new Line(
-				intersection,
-				intersection.add(new Vector(1, 0).rotateTo(newAngle))
-			),
-			previousEdges: [nextEdge]
-		});
+const nextLaserSegment = (laserSegment) => {
+	const nextEdge = laserSegment.nextEdge ?? triangle.edges.filter(e => !laserSegment.previousEdges.includes(e)).find(e => laserSegment.line.intersectsSegment(e));
+	if(!nextEdge) { return null; }
+	const intersection = laserSegment.line.intersection(nextEdge);
+	if(triangle.vertices.some(v => v.distanceFrom(intersection) < CORNER_HOLE_SIZE)) {
+		return;
 	}
-	c.strokeStyle = "red";
+	const edgeAngle = nextEdge.angle() - 180;
+	const laserAngle = (laserSegment.line.angle() + 180) % 360;
+	const newAngle = -reflectLasers(laserAngle, edgeAngle);
+	return {
+		line: new Line(
+			intersection,
+			intersection.add(new Vector(1, 0).rotateTo(newAngle))
+		),
+		previousEdges: [nextEdge]
+	};
+};
+
+const CORNER_HOLE_SIZE = 1;
+let previousSegments = [];
+let previousMousePos = null;
+let numBounces = 0;
+setInterval(() => {
+	const MAX_SEGMENTS = 10;
+	const mouseMoved = !io.mouse.equals(previousMousePos);
+	previousMousePos = io.mouse.clone();
+	if(mouseMoved) {
+		c.fillCanvas("white");
+		c.strokeStyle = "black";
+		c.strokePoly(triangle.vertices);
+		previousSegments = [{
+			line: new Line(new Vector(io.mouse), triangle.vertices[2]),
+			nextEdge: triangle.edges[0]
+		}];
+		numBounces = 0;
+	}
+	else {
+		const nextSegment = nextLaserSegment(previousSegments.lastItem());
+		if(nextSegment) {
+			numBounces ++;
+			previousSegments.push(nextLaserSegment(previousSegments.lastItem()));
+			if(previousSegments.length > MAX_SEGMENTS) {
+				previousSegments.splice(0, 1);
+			}
+		}
+	}
+
 	c.save(); {
 		c.beginPath();
-		c.polygon(v1, v2, v3);
+		c.polygon(triangle.vertices);
 		c.clip();
 
-		laserSegments.forEach((segment, i) => {
+		previousSegments.forEach((segment, i) => {
+			c.strokeStyle = utils.color.lerp("rgb(255, 0, 0)", "rgb(200, 200, 200)", 1 - ((i + 1) / previousSegments.length));
 			segment.line.display(c);
 		});
 	} c.restore();
-};
+
+
+	c.fillStyle = "white";
+	c.fillRect(0, 0, 100, 100);
+	c.fillStyle = "black";
+	c.font = "20px monospace";
+	c.fillText(numBounces, 20, 20);
+}, 100);
 
 const reflectLasers = (laserAngle, mirrorAngle) => {
 	const angleOfIncidence = laserAngle - mirrorAngle;
@@ -89,9 +108,3 @@ testing.addUnit("reflectLasers()", {
 		expect(result).toEqual(180);
 	},
 });
-
-setInterval(() => {
-	c.fillCanvas("white");
-	drawLaserSimulation(io.mouse, 30);
-}, 1000 / 30);
-// testing.testUnit("reflectLasers()");

@@ -185,10 +185,10 @@ Math.rotate = function(x, y, deg, centerX, centerY) {
     };
 };
 
-Number.method("isBetween", function isBetween(num1, num2) {
+Number.method("isBetween", function isBetween(num1, num2, tolerance = 0) {
 	return (
-		(this >= num1 && this <= num2) ||
-		(this >= num2 && this <= num1)
+		(this + tolerance >= num1 && this - tolerance <= num2) ||
+		(this + tolerance >= num2 && this - tolerance <= num1)
 	);
 });
 
@@ -253,6 +253,14 @@ CanvasRenderingContext2D.prototype.fillPoly = function() {
 	this.beginPath();
 	this.polygon.apply(this, arguments);
 	this.fill();
+};
+CanvasRenderingContext2D.prototype.strokePoly = function() {
+	/*
+	Arguments can be objects with 'x' and 'y' properties or numbers with each argument being either the x or the y, starting with x.
+	*/
+	this.beginPath();
+	this.polygon.apply(this, arguments);
+	this.stroke();
 };
 CanvasRenderingContext2D.prototype.fillCanvas = function(color) {
 	/*
@@ -398,5 +406,27 @@ var utils = {
 		rectangle.x = (rect2.x + (rect2.w / 2)) - (rectangle.w / 2);
 		rectangle.y = (rect2.y + (rect2.h / 2)) - (rectangle.h / 2);
 		return rectangle;
+	},
+
+	color: {
+		lerp: function(color1, color2, ratio) {
+			/* linearly interpolates between the colors. (ratio = 0 --> returns color1, ratio = 1 --> returns color2) */
+			let [[r1], [g1], [b1]] = color1.matchAll(/\d+/g);
+			let [[r2], [g2], [b2]] = color2.matchAll(/\d+/g);
+			[r1, g1, b1, r2, b2, g2] = [r1, g1, b1, r2, b2, g2].map(str => Number.parseInt(str));
+			const red = Math.map(ratio, 0, 1, r1, r2);
+			const green = Math.map(ratio, 0, 1, g1, g2);
+			const blue = Math.map(ratio, 0, 1, b1, b2);
+			return `rgb(${red}, ${green}, ${blue})`;
+		},
+		lerpColors: function(colors, ratio, numbers) {
+			numbers = numbers ?? colors.map((c, index) => index / (colors.length - 1));
+			for(let i = 0; i < colors.length - 1; i ++) {
+				const number = numbers[i], nextNumber = numbers[i + 1];
+				if(ratio >= number && ratio <= nextNumber) {
+					return utils.color.lerp(colors[i], colors[i + 1], Math.map(ratio, number, nextNumber, 0, 1));
+				}
+			}
+		}
 	}
 };

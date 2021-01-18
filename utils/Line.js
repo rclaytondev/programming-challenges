@@ -71,8 +71,8 @@ class Line {
 		const intersection = this.intersection(segment);
 		if(intersection == null) { return null; }
 		if(
-			intersection.x.isBetween(segment.point1.x, segment.point2.x) &&
-			intersection.y.isBetween(segment.point1.y, segment.point2.y)
+			intersection.x.isBetween(segment.point1.x, segment.point2.x, 1e-6) &&
+			intersection.y.isBetween(segment.point1.y, segment.point2.y, 1e-6)
 		) {
 			return intersection;
 		}
