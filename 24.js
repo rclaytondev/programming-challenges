@@ -3,16 +3,16 @@ const factorial = (number) => {
 	return factorial(number - 1) * number;
 };
 
-const nthPermutation = (n, digits) => {
-	if(digits.length === 1) { return [digits[0]]; }
+const nthPermutation = (n, objects) => {
+	if(objects.length === 1) { return [objects[0]]; }
 
-	const firstDigit = digits[Math.floor(digits.length * (n / factorial(digits.length)))];
+	const firstDigit = objects[Math.floor(objects.length * (n / factorial(objects.length)))];
 	return [
 		firstDigit,
 		...nthPermutation(
-			n - (digits.indexOf(firstDigit) / digits.length * factorial(digits.length)),
-			digits.filter(d => d !== firstDigit)
+			n - (objects.indexOf(firstDigit) / objects.length * factorial(objects.length)),
+			objects.filter(d => d !== firstDigit)
 		)
 	];
 };
-console.log(nthPermutation(999999, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]).join(""));
+// console.log(nthPermutation(999999, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]).join(""));
