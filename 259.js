@@ -1,9 +1,3 @@
-let operatorOrders = [];
-for(let i = 0; i < factorial(8); i ++) {
-	operatorOrders.push(nthPermutation(i, [0, 1, 2, 3, 4, 5, 6, 7]));
-}
-
-
 const operatorCombinations = (operators = [], numOperators) => {
 	if(operators.length >= numOperators) {
 		return [operators];
@@ -85,122 +79,206 @@ const makeConsecutive = (numbers) => {
 	});
 };
 
-const stringifyExpression = (operators, order, numbers) => {
-	/*
-	returns an expression in a string for JS to evalulate.
-	`operators` is an array of operators (+, -, *, /, or "c" for concatenation) as one-character strings.
-	`order` is an array of integers from 0 to `operators.length` representing the order in which they should be evaluated.
-	`numbers` are the numbers on which the operators are applied. There should be exactly 1 more number than there are operators.
-	*/
-	if(!numbers) {
-		numbers = [...operators, null].map((v, index) => index + 1);
+const possibleValues = (operators, numbers) => {
+	/* returns every possible value that this expression could evaluate to depending on how parentheses are added. */
+	if(operators.length === 0 && numbers.length === 1) {
+		return [numbers[0]];
 	}
-	if(numbers.length <= 1) {
-		return `${numbers[0]}`;
-	}
-	if(numbers.length <= 2) {
-		const operator = operators[0];
-		if(operator === "c") {
-			return `${numbers[0]}${numbers[1]}`;
-		}
-		else {
-			return `${numbers[0]} ${operator} ${numbers[1]}`;
-		}
-	}
-	else {
-		const lastOperator = operators[order.lastItem()];
-		let expressionBefore = stringifyExpression(
-			operators.slice(0, order.lastItem()),
-			(() => {
-				const newOrder = makeConsecutive(order.filter(n => n < order.lastItem()));
-				return newOrder.map(n => n - newOrder.min());
-			}) (),
-			numbers.filter((n, index) => index <= order.lastItem())
+	else if(operators.length === 1 && numbers.length === 2) {
+		const [operator] = operators;
+		const [num1, num2] = numbers;
+		return (
+			operator === "+" ? [num1 + num2] :
+			operator === "*" ? [num1 * num2] :
+			operator === "-" ? [num1 - num2] :
+			operator === "/" ? (num2 === 0 ? [] : [num1 / num2]) :
+			operator === "c" ? [Number.parseInt(`${num1}${num2}`)] :
+			(() => { throw new Error("Unexpected input. Operator must be +, -, *, /, or 'c' for concatenation.") }) ()
 		);
-		const ALL_NUMBERS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
-		expressionBefore = ([...expressionBefore].every(char => ALL_NUMBERS.includes(char))) ? expressionBefore : `(${expressionBefore})`;
-		let expressionAfter = stringifyExpression(
-			operators.slice(order.lastItem() + 1),
-			(() => {
-				const newOrder = makeConsecutive(order.filter(n => n > order.lastItem()));
-				return newOrder.map(n => n - newOrder.min());
-			}) (),
-			numbers.filter((n, index) => index > order.lastItem())
-		);
-		expressionAfter = ([...expressionAfter].every(char => ALL_NUMBERS.includes(char))) ? expressionAfter : `(${expressionAfter})`;
-		if(lastOperator === "c") {
-			testing.assert([...expressionBefore].every(char => ALL_NUMBERS.inclues(char)));
-			testing.assert([...expressionAfter].every(char => ALL_NUMBERS.inclues(char)));
-			return `${expressionBefore}${expressionAfter}`;
-		}
-		else {
-			return `${expressionBefore} ${lastOperator} ${expressionAfter}`
-		}
 	}
+
+	if(operators.every(op => op === "+")) {
+		return [numbers.sum()];
+	}
+	else if(operators.every(op => op === "*")) {
+		return [numbers.reduce((a, c) => a * c)];
+	}
+	else if(operators.every(op => op === "c")) {
+		return [Number.parseInt(numbers.reduce((a, c) => `${a}${c}`))];
+	}
+
+	const result = new Set();
+	operators.forEach((operator, operatorIndex) => {
+		const possibleValuesBefore = possibleValues(
+			operators.slice(0, operatorIndex),
+			numbers.slice(0, operatorIndex + 1)
+		);
+		const possibleValuesAfter = possibleValues(
+			operators.slice(operatorIndex + 1),
+			numbers.slice(operatorIndex + 1)
+		);
+		possibleValuesBefore.forEach(v1 => {
+			possibleValuesAfter.forEach(v2 => {
+				if(operator === "+") {
+					result.add(v1 + v2);
+				}
+				else if(operator === "-") {
+					result.add(v1 - v2);
+				}
+				else if(operator === "*") {
+					result.add(v1 * v2);
+				}
+				else if(operator === "/" && v2 !== 0) {
+					result.add(v1 / v2);
+				}
+			});
+		});
+	});
+	return [...result];
 };
-testing.addUnit("stringifyExpression()", {
+testing.addUnit("possibleValues()", {
 	"test case 1": () => {
-		const result = stringifyExpression(
-			["+", "+", "+", "+", "+", "+", "+", "+"],
-			[0, 1, 2, 3, 4, 5, 6, 7]
+		const result = possibleValues(
+			["+", "+", "+", "+"],
+			[1, 2, 3, 4, 5]
 		);
-		expect(result).toEqual("(((((((1 + 2) + 3) + 4) + 5) + 6) + 7) + 8) + 9");
+		expect(result).toEqual([15]);
 	},
 	"test case 2": () => {
-		const result = stringifyExpression(
-			["/", "/", "/", "/"],
-			[0, 1, 2, 3]
+		const result = possibleValues(
+			["+", "+", "+", "-"],
+			[1, 2, 3, 4, 5]
 		);
-		expect(result).toEqual("(((1 / 2) / 3) / 4) / 5");
+		expect(result).toEqual([5]);
 	},
 	"test case 3": () => {
-		const result = stringifyExpression(
-			["/", "/", "/", "/"],
-			[3, 2, 1, 0]
+		const result = possibleValues(
+			["+", "+", "+", "/"],
+			[1, 2, 3, 4, 5]
 		);
-		expect(result).toEqual("1 / (2 / (3 / (4 / 5)))");
+		expect(result).toEqual([
+			1 + 2 + 3 + (4/5),
+			1 + 2 + ((3 + 4) / 5),
+			1 + ((2 + 3 + 4) / 5),
+			(1 + 2 + 3 + 4) / 5
+		]);
 	},
 	"test case 4": () => {
-		const result = stringifyExpression(
-			["c", "*", "+", "c"],
-			[0, 3, 1, 2]
+		const result = possibleValues(
+			["c", "c", "/"],
+			[1, 2, 3, 4]
 		);
-		expect(result).toEqual("(12 * 3) + 45")
+		expect(result).toEqual([123 / 4]);
 	},
 	"test case 5": () => {
-		const result = stringifyExpression(
-			["/", "/", "/", "+", "/", "/", "/"],
-			[0, 1, 2, 6, 5, 4, 3]
+		const result = possibleValues(
+			["/", "c", "c"],
+			[1, 2, 3, 4]
 		);
-		expect(result).toEqual("(((1 / 2) / 3) / 4) + (5 / (6 / (7 / 8)))");
-	},
-	"test case 6": () => {
-		const result = stringifyExpression(
-			["/", "/", "/"],
-			[0, 1, 2]
-		);
-		expect(result).toEqual("((1 / 2) / 3) / 4");
+		expect(result).toEqual([1 / 234]);
 	}
 });
-testing.testUnit("stringifyExpression()");
-// testing.runTestByName("stringifyExpression() - test case 1");
+testing.runTestByName("possibleValues() - test case 5");
 
-console.time("calculating sum of reachable numbers");
-const reachableNumbers = {};
-let sumOfReachables = 0;
-OPERATOR_ORDERS.forEach((operatorCombination, i) => {
-	if(i > 0) return;
-	operatorOrders.forEach(order => {
-		if(isValid(operatorCombination, order)) {
-			const expression = stringifyExpression(operatorCombination, order);
-			const number = eval(expression);
-			console.log(`${expression} = ${number}`);
-			if(!reachableNumbers[number]) {
-				reachableNumbers[number] = true;
-				sumOfReachables += number;
+const formatExpression = (operators, numbers) => {
+	let result = `${numbers[0]}`;
+	operators.forEach((operator, operatorIndex) => {
+		if(operator !== "c") {
+			result += ` ${operator} `;
+		}
+		result += numbers[operatorIndex + 1];
+	});
+	return result;
+};
+
+const sumOfReachables = (numDigits) => {
+	const combinations = operatorCombinations([], numDigits - 1);
+
+	let sum = 0n;
+	let reachables = {};
+	const allDigits = new Array(numDigits).fill().map((v, index) => index + 1);
+	combinations.forEach((operators, i) => {
+		const newReachables = possibleValues(operators, allDigits).filter(v => v === Math.round(v) && v > 0);
+		newReachables.forEach(number => {
+			if(!reachables[number]) {
+				reachables[number] = true;
+				sum += BigInt(number);
 			}
+		});
+
+
+		if(i % 100 === 0) {
+			console.log(`calculated ${i} combinations out of ${combinations.length}`);
 		}
 	});
+	return sum;
+};
+
+testing.addUnit("sumOfReachables()", {
+	"test case 1": () => {
+		const result = sumOfReachables(2);
+		const expected = [
+			1 + 2,
+			1 * 2,
+			1 / 2,
+			1 - 2,
+			12
+		].filter(n => n === Math.round(n) && n > 0).uniquify().sum();
+		expect(result).toEqual(expected);
+	},
+	"test case 2": () => {
+		const result = sumOfReachables(3);
+		const expected = [
+			1 + (2 + 3),
+			(1 + 2) + 3,
+			1 - (2 + 3),
+			(1 - 2) + 3,
+			1 * (2 + 3),
+			(1 * 2) + 3,
+			1 / (2 + 3),
+			(1 / 2) + 3,
+			(12) + 3,
+			1 + (2 - 3),
+			(1 + 2) - 3,
+			1 - (2 - 3),
+			(1 - 2) - 3,
+			1 * (2 - 3),
+			(1 * 2) - 3,
+			1 / (2 - 3),
+			(1 / 2) - 3,
+			(12) - 3,
+			1 + (2 * 3),
+			(1 + 2) * 3,
+			1 - (2 * 3),
+			(1 - 2) * 3,
+			1 * (2 * 3),
+			(1 * 2) * 3,
+			1 / (2 * 3),
+			(1 / 2) * 3,
+			(12) * 3,
+			1 + (2 / 3),
+			(1 + 2) / 3,
+			1 - (2 / 3),
+			(1 - 2) / 3,
+			1 * (2 / 3),
+			(1 * 2) / 3,
+			1 / (2 / 3),
+			(1 / 2) / 3,
+			(12) / 3,
+			1 + (23),
+			1 - (23),
+			1 * (23),
+			1 / (23),
+			123,
+		].filter(n => n === Math.round(n) && n > 0).uniquify().sum();
+		expect(result).toEqual(expected);
+	}
 });
-console.log(sumOfReachables);
-console.timeEnd("calculating sum of reachable numbers");
+testing.testUnit("sumOfReachables()");
+
+
+const findAnswer = () => {
+	console.time("finding sum of reachables");
+	console.log(sumOfReachables(9));
+	console.timeEnd("finding sum of reachables");
+};

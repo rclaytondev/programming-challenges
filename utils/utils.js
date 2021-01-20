@@ -68,7 +68,7 @@ Array.method("sum", function(func, thisArg) {
 		return sum;
 	}
 	else {
-		return this.reduce((sum, item) => sum + item);
+		return this.reduce((sum, item) => sum + item, 0);
 	}
 });
 Array.method("mean", function(func, thisArg) {
@@ -97,6 +97,9 @@ Array.method("isConsecutive", function() {
 		if(item + 1 !== nextItem) { return false; }
 	}
 	return true;
+});
+Array.method("uniquify", function() {
+	return [...new Set(this)];
 });
 
 String.method("reverse", function() {
