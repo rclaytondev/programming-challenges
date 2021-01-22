@@ -151,6 +151,16 @@ Vector.method("isAdjacentTo", function isAdjacentTo(x, y) {
 		);
 	}
 });
+Vector.method("equals", function equals() {
+	if(arguments[0] instanceof Vector) {
+		const [vector] = arguments;
+		return this.x === vector.x && this.y === vector.y;
+	}
+	else {
+		const [x, y] = arguments;
+		return this.x === x && this.y === y;
+	}
+});
 
 
 const DIRECTION_VECTORS = {
