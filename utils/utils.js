@@ -101,6 +101,16 @@ Array.method("isConsecutive", function() {
 Array.method("uniquify", function() {
 	return [...new Set(this)];
 });
+Array.method("containsDuplicates", function() {
+	return this.uniquify().length !== this.length;
+});
+Array.fromRange = function(min, max, step = 1) {
+	const arr = [];
+	for(let i = min; i <= max; i += step) {
+		arr.push(i);
+	}
+	return arr;
+};
 
 String.method("reverse", function() {
 	return [...this].reverse().join("");
@@ -193,6 +203,12 @@ Number.method("isBetween", function isBetween(num1, num2, tolerance = 0) {
 		(this + tolerance >= num1 && this - tolerance <= num2) ||
 		(this + tolerance >= num2 && this - tolerance <= num1)
 	);
+});
+Number.method("digits", function digits() {
+	return [...`${this}`].map(char => Number.parseInt(char));
+});
+Number.method("uniqueDigits", function uniqueDigits() {
+	return this.digits().uniquify();
 });
 
 CanvasRenderingContext2D.prototype.line = function() {
