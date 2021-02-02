@@ -167,7 +167,7 @@ var testing = {
 		if(!error) {
 			throw new Error(`Assertion failed. Expected ${callback.name} to throw an error, but it did not`);
 		}
-		if(typeof expectedMsg === "string") {
+		if(typeof expectedMsg === "string" && expectedMsg.length !== 0) {
 			if(typeof error.message !== "string") {
 				throw new Error(`Expected ${callback.name} to throw an error with a message of '${expectedMsg}', but the resulting error had no message.`);
 			}
@@ -195,26 +195,80 @@ var testing = {
 			this.tests.push(new Test(test));
 		}
 	},
-	addUnit: function(unitName, tests) {
-		/*
-		Example usage:
-		testing.addUnit("ObjectFoo", {
-			"verifies that foo() method works correctly": function() {
-				// your code here
-			}
-			"verifies that bar() method works correctly": function() {
-				// your code here
-			}
-		});
-		*/
-		for(var testName in tests) {
-			if(tests.hasOwnProperty(testName)) {
-				this.addTest({
-					run: tests[testName],
-					unit: unitName,
+	addUnit: function() {
+		/* See the markdown file for documentation. */
+		if(typeof arguments[0] !== "string") {
+			throw new Error("First argument (name of unit being tested) must be of type string.");
+		}
+		if(arguments[1].constructor === Object) {
+			/* use properties as test name, values as the tests themselves */
+			const [unitName, testFunctions] = arguments;
+			Object.entries(testFunctions).forEach(([testName, test]) => {
+				testing.addTest({
+					run: test,
+					unitTested: unitName,
 					name: testName
 				});
+			});
+		}
+		else if(Array.isArray(arguments[1]) && arguments[1].every(v => typeof v === "function")) {
+			/* use the functions in the array as the tests */
+			const [unitName, testFunctions] = arguments;
+			testFunctions.forEach((func, index) => {
+				testing.addTest({
+					run: func,
+					unitTested: unitName,
+					name: `test case ${index + 1}`
+				});
+			});
+		}
+		else if(Array.isArray(arguments[1]) && typeof arguments[1][0] === "function" && arguments[1].slice(1).every(Array.isArray)) {
+			const [unitName, [functionToTest, ...testCases]] = arguments;
+			testing.addUnit(unitName, functionToTest, testCases);
+		}
+		else if(typeof arguments[1] === "function" && Array.isArray(arguments[2]) && arguments[2].every(Array.isArray)) {
+			const [unitName, functionToTest, testCases] = arguments;
+			testCases.forEach((testCase, index) => {
+				const expectedResult = testCase.lastItem();
+				const args = testCase.slice(0, testCase.length - 1);
+				let testFunc;
+				if(expectedResult === Error || expectedResult instanceof Error) {
+					testFunc = () => {
+						testing.assertThrows(functionToTest.bind(this, args), expectedResult.message);
+					}
+				}
+				else {
+					testFunc = () => {
+						const result = functionToTest.apply(this, args);
+						expect(result).toEqual(expectedResult);
+					};
+				}
+				testing.addTest({
+					run: testFunc,
+					unitTested: unitName,
+					name: `test case ${index + 1}`
+				});
+			});
+		}
+		else if(Array.isArray(arguments[1]) && arguments[1].every(Array.isArray)) {
+			const [unitName, testCases] = arguments;
+			const lookup = (string) => string.split(".").reduce((a, c) => a == null ? null : a[c], window);
+			let functionToTest;
+			if(unitName.endsWith("()")) {
+				functionToTest = lookup(unitName.substring(0, unitName.length - 2));
 			}
+			else {
+				functionToTest = lookup(unitName);
+			}
+			if(typeof functionToTest === "function") {
+				testing.addUnit(unitName, functionToTest, testCases);
+			}
+			else {
+				throw new Error(`Could not lookup function from unit name '${unitName}'`);
+			}
+		}
+		else {
+			throw new Error("Invalid format.");
 		}
 	},
 

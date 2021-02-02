@@ -104,6 +104,15 @@ Array.method("uniquify", function() {
 Array.method("containsDuplicates", function() {
 	return this.uniquify().length !== this.length;
 });
+Array.method("nthHighest", function(n) {
+	/* returns the nth highest element of the array. (n=1 --> returns highest) */
+	let arr = this;
+	for(let i = 1; i < n; i ++) {
+		const highest = arr.max();
+		arr = arr.filter(v => v !== highest);
+	}
+	return arr.max();
+});
 Array.fromRange = function(min, max, step = 1) {
 	const arr = [];
 	for(let i = min; i <= max; i += step) {
