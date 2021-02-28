@@ -1,3 +1,40 @@
+Function.prototype.method = function method(name, func) {
+	this.prototype[name] = func;
+	return this;
+};
+Function.method("memoize", function(stringifyKeys = false) {
+	/*
+	`stringifyKeys` lets you specify an additional optimization. If set to true, the arguments will be stringified before being set into the map, allowing for constant lookup times.
+	However, not all arguments can be stringified without information loss (think of all the "[object Object]"s! Oh no!). If your arguments are like this, then do not use this feature.
+	*/
+	const map = new Map();
+	const func = this;
+	if(stringifyKeys) {
+		return function() {
+			const stringified = [...arguments].toString();
+			if(map.has(stringified)) {
+				return map.get(stringified);
+			}
+
+			const result = func.apply(this, arguments);
+			map.set(stringified, result);
+			return result;
+		};
+	}
+	else {
+		return function() {
+			for(let [key, value] of map.entries()) {
+				if([...key].every((val, i) => val === arguments[i])) {
+					return value;
+				}
+			}
+			const result = func.apply(this, arguments);
+			map.set(arguments, result);
+			return result;
+		};
+	}
+});
+
 Array.method("min", function(func, thisArg, resultType = "object") {
 	if(typeof func === "function") {
 		let lowestIndex = 0;
@@ -123,39 +160,6 @@ Array.fromRange = function(min, max, step = 1) {
 
 String.method("reverse", function() {
 	return [...this].reverse().join("");
-});
-
-Function.method("memoize", function(stringifyKeys = false) {
-	/*
-	`stringifyKeys` lets you specify an additional optimization. If set to true, the arguments will be stringified before being set into the map, allowing for constant lookup times.
-	However, not all arguments can be stringified without information loss (think of all the "[object Object]"s! Oh no!). If your arguments are like this, then do not use this feature.
-	*/
-	const map = new Map();
-	const func = this;
-	if(stringifyKeys) {
-		return function() {
-			const stringified = [...arguments].toString();
-			if(map.has(stringified)) {
-				return map.get(stringified);
-			}
-
-			const result = func.apply(this, arguments);
-			map.set(stringified, result);
-			return result;
-		};
-	}
-	else {
-		return function() {
-			for(let [key, value] of map.entries()) {
-				if([...key].every((val, i) => val === arguments[i])) {
-					return value;
-				}
-			}
-			const result = func.apply(this, arguments);
-			map.set(arguments, result);
-			return result;
-		};
-	}
 });
 
 Math.toRadians = function(deg) {
@@ -367,7 +371,56 @@ Object.method("clone", function() {
     }
     return clone;
 });
-
+Object.method("equals", function equals(obj) {
+	if(typeof this !== "object" || (typeof obj !== "object" || obj === null)) {
+		return this === obj;
+	}
+	if(Object.keys(this).length !== Object.keys(obj).length) {
+		return false;
+	}
+    for(var i in this) {
+        var prop1 = this[i];
+        var prop2 = obj[i];
+        var type1 = Object.typeof(prop1);
+        var type2 = Object.typeof(prop2);
+        if(type1 !== type2) {
+            return false;
+        }
+        else if(type1 === "object" || type1 === "array" || type1 === "instance") {
+            if(!prop1.equals(prop2)) {
+                return false;
+            }
+        }
+        else if(prop1 !== prop2) {
+            return false;
+        }
+    }
+    return true;
+});
+Object.method("set", function set(key, value) {
+	this[key] = value;
+	return this;
+});
+Object.typeof = function(value) {
+	/*
+	This function serves to determine the type of a variable better than the default "typeof" operator, which returns strange values for some inputs (see special cases below).
+	*/
+	if(value !== value) {
+		return "NaN"; // fix for (typeof NaN === "number")
+	}
+	else if(value === null) {
+		return "null"; // fix for (typeof null === "object")
+	}
+	else if(Array.isArray(value)) {
+		return "array"; // fix for (typeof [] === "object")
+	}
+	else if(typeof value === "object" && Object.getPrototypeOf(value) !== Object.prototype) {
+		return "instance"; // return "instance" for instances of a custom class
+	}
+	else {
+		return typeof value;
+	}
+};
 
 var utils = {
 	dom: {
