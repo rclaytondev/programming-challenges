@@ -30,13 +30,12 @@ const circularPrimesBelow = (upperBound) => {
 	for(let i = 11; i < upperBound; i += 2) { // += 2 because only odd numbers can be prime
 		const digits = getDigits(i);
 		if(digits.some(d => ILLEGAL_DIGITS.includes(d))) {
-			// continue;
 			/*
 			if the number contains an illegal digit, skip to the next number not containing the digit.
 			e.g. if you reach 136000, you can skip all the way to 137000 because all the numbers you skipped will contain a 6 and therefore not be a circular prime.
 			*/
 			const illegalDigitIndex = digits.findIndex(d => ILLEGAL_DIGITS.includes(d));
-			const numberBefore = illegalDigitIndex === 0 ? 0 : Number.parseInt(digits.slice(0, illegalDigitIndex).join("")) * (10 ** (digits.length - illegalDigitIndex));
+			const numberBefore = Math.floor(i / (10 ** (digits.length - illegalDigitIndex))) * (10 ** (digits.length - illegalDigitIndex));
 			const skipToIndex = numberBefore + (digits[illegalDigitIndex] + 1) * (10 ** (digits.length - illegalDigitIndex - 1)) - 1;
 			i = skipToIndex;
 			continue;
