@@ -331,6 +331,17 @@ CanvasRenderingContext2D.prototype.strokeRoundRect = function(x, y, w, h, radius
 	this.stroke();
 };
 
+Set.method("equals", function(set) {
+	if(this.size !== set.size) {
+		return false;
+	}
+	for(const item of this.values()) {
+		if(![...set].some(value => value === item || value.equals(item))) {
+			return false;
+		}
+	}
+	return true;
+});
 Set.method("intersection", function(set) {
 	/* returns the set of items that are in both sets. */
 	const result = new Set();
@@ -350,6 +361,15 @@ Set.method("difference", function(set) {
 		}
 	});
 	return result;
+});
+Set.method("map", function map(callback) {
+	return new Set([...this].map(callback));
+});
+Set.method("every", function every(callback) {
+	return [...this].every(callback);
+});
+Set.method("some", function some(callback) {
+	return [...this].some(callback);
 });
 
 Object.method("clone", function() {
