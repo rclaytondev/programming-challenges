@@ -336,7 +336,7 @@ Set.method("equals", function(set) {
 		return false;
 	}
 	for(const item of this.values()) {
-		if(![...set].some(value => value === item || value.equals(item))) {
+		if(![...set].some(value => value === item || (typeof value === "object" && value.equals(item)))) {
 			return false;
 		}
 	}
