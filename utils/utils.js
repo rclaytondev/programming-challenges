@@ -2,7 +2,7 @@ Function.prototype.method = function method(name, func) {
 	this.prototype[name] = func;
 	return this;
 };
-Function.method("memoize", function(stringifyKeys = false) {
+Function.method("memoize", function memoize(stringifyKeys = false, cloneOutput = false) {
 	/*
 	`stringifyKeys` lets you specify an additional optimization. If set to true, the arguments will be stringified before being set into the map, allowing for constant lookup times.
 	However, not all arguments can be stringified without information loss (think of all the "[object Object]"s! Oh no!). If your arguments are like this, then do not use this feature.
@@ -13,8 +13,11 @@ Function.method("memoize", function(stringifyKeys = false) {
 		return function() {
 			const stringified = [...arguments].toString();
 			if(map.has(stringified)) {
-				return map.get(stringified);
+				const result = map.get(stringified);
+				console.log(`already calculated the answer for ${stringified}`);
+				return cloneOutput ? ((typeof result === "object" && result != null) ? result.clone() : result) : result;
 			}
+			console.log(`calculating the answer for ${stringified} for the first time`);
 
 			const result = func.apply(this, arguments);
 			map.set(stringified, result);
@@ -25,7 +28,7 @@ Function.method("memoize", function(stringifyKeys = false) {
 		return function() {
 			for(let [key, value] of map.entries()) {
 				if([...key].every((val, i) => val === arguments[i])) {
-					return value;
+					return cloneOutput ? ((typeof value === "object" && value != null) ? value.clone() : value) : value;;
 				}
 			}
 			const result = func.apply(this, arguments);
