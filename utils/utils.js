@@ -374,6 +374,23 @@ Set.method("every", function every(callback) {
 Set.method("some", function some(callback) {
 	return [...this].some(callback);
 });
+Set.method("subsets", function subsets() {
+	/* returns the set of every subset of this set (including the empty set and this set). */
+	const subsets = new Set();
+	const numSubsets = 2 ** this.size;
+	const itemsArray = [...this];
+	for(let i = 0; i < numSubsets; i ++) {
+		const binaryString = i.toString(2).padStart(this.size, "0");
+		const subset = new Set();
+		[...binaryString].forEach((bit, index) => {
+			if(bit === "1") {
+				subset.add(itemsArray[index]);
+			}
+		});
+		subsets.add(subset);
+	}
+	return subsets;
+});
 
 Object.method("clone", function() {
     if(Array.isArray(this)) {

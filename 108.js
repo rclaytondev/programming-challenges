@@ -1,7 +1,7 @@
 const numSolutions = (n) => {
 	/* returns the number of integer solutions to the equation 1/x + 1/y = 1/n. */
-	let solutions = 0;
-	for(let x = n; x <= 2 * n; x ++) {
+	let solutions = 1;
+	for(let x = n + 1; x < 2 * n; x ++) {
 		const y = (x * n) / (x - n);
 		if(y % 1 === 0) {
 			solutions ++;
@@ -10,103 +10,68 @@ const numSolutions = (n) => {
 	return solutions;
 };
 
-// values of n have been checked up to n=92,300
-// const MILLISECONDS_IN_MINUTE = 60 * 1000;
-// let startTime = Date.now();
-// for(let n = 1000; n < Infinity; n ++) {
-// 	const solutions = numSolutions(n);
-// 	if(solutions > 1000) {
-// 		console.log(`1/x + 1/y = 1/${n} has >1000 solutions!`);
-// 		break;
-// 	}
-// 	else {
-// 		// console.log(`1/x + 1/y = 1/${n} only had ${solutions} solutions.`);
-// 	}
-//
-//
-// 	if(n % 100 === 0 && Date.now() - startTime > MILLISECONDS_IN_MINUTE) {
-// 		console.log(`timed out after checking up to n=${n}`);
-// 		break;
-// 	}
-// }
+testing.addUnit("numSolutions()", numSolutions, [
+	[4, 3] // (5, 20), (6, 12), (8, 8)
 
-const isPrime = (n) => {
-	for(let i = 2; i <= n/2; i++){
-		if(n % i === 0){
-			return false;
-		}
-	};
+]);
+testing.testAll();
+
+
+const isPrime = (number) => {
+	const upperBound = Math.sqrt(number);
+	if(number % 2 === 0) { return false; }
+	for(let i = 3; i <= upperBound; i += 2) {
+		if(number % i === 0) { return false; }
+	}
 	return true;
 };
-// const numFactors = num => {
-// 	const res = num % 2 === 0 ? [2] : [];
-// 	let start = 3;
-// 	while(start <= num){
-// 		if(num % start === 0){
-// 			if(isPrime(start)){
-// 				res.push(start);
-// 			};
-// 		};
-// 		start++;
-// 	};
-// 	return res;
-// };
-// const numFactors = num => {
-// 	for(let i = 2; i <= num; i ++) {
-// 		if(isPrime(i) && num % i === 0) {
-// 			return numFactors(num / i) + 1;
-// 		}
-// 	}
-// 	return 0;
-// };
-const numFactors = num => {
-	let factors = 0;
-	for(let i = 2; i <= num; i ++) {
-		if(num % i === 0) {
-			factors ++;
+const getNextPrime = (searchStart) => {
+	for(let i = searchStart + 1; i < Infinity; i ++) {
+		if(isPrime(i)) {
+			return i;
 		}
 	}
-	return factors;
 };
 
-// const LOWER_LIMIT = 160000;
-// const LIMIT = 500000;
-const LOWER_LIMIT = 0;
-const LIMIT = 1000;
-let maximum = 0;
-let minimum = Infinity;
-let maxFactors = 0;
-for(let n = LOWER_LIMIT; n < LIMIT; n += 1) {
-	const solutions = numSolutions(n);
-	maximum = Math.max(solutions, maximum);
-	minimum = Math.min(solutions, minimum);
-	maxFactors = Math.max(maxFactors, numFactors(n));
-}
 
+const UPPER_SEARCH_BOUND = 1000000;
+let primes = new Set([2, 3, 5, 7]);
+let nextPrime = getNextPrime([...primes].max());
+let numbersToSkip = new Set([]);
+let foundEnoughSolutions = false;
 
-let highest = 0;
-let highestFactors = 0;
-for(let n = LOWER_LIMIT; n < LIMIT; n += 1) {
-	const solutions = numSolutions(n);
-	const x = Math.map(n, 0, LIMIT, 0, canvas.width);
-	const y = Math.map(solutions, minimum, maximum, canvas.height, 0);
-	const color = (n % 2 === 0) ? "red" : "black";
-	if(solutions > highest) {
-		c.fillStyle = color;
-		c.fillCircle(x, y, 5);
-		highest = solutions;
-		c.fillText(`(${n}, ${solutions})`, x + 10, y + 10);
+console.time("solving the problem");
+for(let n = 0; n < UPPER_SEARCH_BOUND; n ++) {
+	if(numbersToSkip.has(n)) {
+		console.log(`skipped calculations for n=${n}`);
+		numbersToSkip.delete(n);
+		continue;
 	}
-	else {
-		c.strokeStyle = color;
-		c.strokeCircle(x, y, 5);
+	if(n >= nextPrime && !foundEnoughSolutions) {
+		const primesProduct = [...primes].reduce((a, c) => a * c, 1) * nextPrime;
+		const solutions = numSolutions(primesProduct);
+		console.log(`calculated for n=${n}`);
+		if(solutions < 1000) {
+			/* since this doesn't have enough solutions, we can skip the calculations for all of its divisors */
+			const divisors = primes.subsets().map(set => [...set].reduce((a, c) => a * c, 1) * nextPrime);
+			divisors.forEach(divisor => { numbersToSkip.add(divisor); });
+			primes.add(nextPrime);
+			nextPrime = getNextPrime([...primes].max());
+			continue;
+		}
+		else {
+			foundEnoughSolutions = true;
+			console.log(`UPPER BOUND ESTABLISHED: 1/x + 1/y = 1/${primesProduct} has over 1000 solutions, but might not be the first`);
+		}
 	}
 
-	const factors = numFactors(n);
-	console.log(n, factors);
-	const factorY = Math.map(factors, 0, maxFactors, canvas.height, 0);
-	c.strokeStyle = (factors >= highestFactors) ? "black" : "rgb(200, 200, 200)";
-	c.lineWidth = 1;
-	c.strokeLine(x, canvas.height, x, factorY);
-	highestFactors = Math.max(highestFactors, factors);
+	const solutions = numSolutions(n);
+	if(solutions > 1000) {
+		console.log(`1/x + 1/y = 1/${n} has over 1000 solutions!`);
+		break;
+	}
 }
+console.timeEnd("solving the problem");
+
+
+console.log("finished");
