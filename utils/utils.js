@@ -14,10 +14,8 @@ Function.method("memoize", function memoize(stringifyKeys = false, cloneOutput =
 			const stringified = [...arguments].toString();
 			if(map.has(stringified)) {
 				const result = map.get(stringified);
-				console.log(`already calculated the answer for ${stringified}`);
 				return cloneOutput ? ((typeof result === "object" && result != null) ? result.clone() : result) : result;
 			}
-			console.log(`calculating the answer for ${stringified} for the first time`);
 
 			const result = func.apply(this, arguments);
 			map.set(stringified, result);

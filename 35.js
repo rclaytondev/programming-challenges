@@ -7,7 +7,7 @@ const allRotations = (number => {
 		rotations.push(rotateArray(rotations.lastItem()));
 	}
 	return new Set(rotations.map(r => Number.parseInt(r.join(""))));
-}).memoize(true);
+});
 testing.addUnit("allRotations", allRotations, [
 	[12, new Set([12, 21])],
 	[123, new Set([123, 231, 312])]
@@ -16,7 +16,9 @@ testing.testAll();
 
 const isPrime = (n => {
 	if(n <= 1) { return false; }
-	for(let i = 2; i <= n/2; i++) {
+	if(n % 2 === 0) { return false; }
+	const upperBound = Math.sqrt(n);
+	for(let i = 3; i <= upperBound; i += 2) {
 		if(n % i === 0){
 			return false;
 		}
@@ -42,7 +44,7 @@ const circularPrimesBelow = (upperBound) => {
 		}
 
 		const rotations = allRotations(i);
-		if(rotations.every(isPrime)) {
+		if(rotations.every(r => isPrime(r))) {
 			numCircularPrimes ++;
 		}
 	}
