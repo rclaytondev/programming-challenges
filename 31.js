@@ -1,32 +1,26 @@
 const COIN_VALUES = [1, 2, 5, 10, 20, 50, 100, 200];
 
-class CoinSet {
-	constructor(coins) {
-		this.coins = coins;
-		COIN_VALUES.forEach(coinValue => {
-			this.coins[coinValue] ??= 0;
-		});
-	}
-	addCoin(coinValue) {
-		return new CoinSet({ ...this.coins, [coinValue]: this.coins[coinValue] + 1 });
-	}
-	totalValue() {
-		return COIN_VALUES.sum(coinValue => coinValue * this.coins[coinValue]);
-	}
-	toString() {
-		return (
-			COIN_VALUES
-			.filter(coinValue => this.coins[coinValue] !== 0)
-			.map(coinValue => `${coinValue}: ${this.coins[coinValue]}`)
-			.join(", ")
-		);
-	}
-}
-
 const numWaysToMake = (total) => {
-	let ways = new Set();
-	addWays(new CoinSet({}));
-	return ways.size;
+	let ways = 0;
+	for(let a = 0; a <= total; a ++) {
+		for(let b = 0; a + b <= total; b += 2) {
+			for(let c = 0; a + b + c <= total; c += 5) {
+				for(let d = 0; a + b + c + d <= total; d += 10) {
+					for(let e = 0; a + b + c + d + e <= total; e += 20) {
+						for(let f = 0; a + b + c + d + e + f <= total; f += 50) {
+							for(let g = 0; a + b + c + d + e + f + g <= total; g += 100) {
+								for(let h = 0; a + b + c + d + e + f + g + h <= total; h += 200) {
+									const sum = a + b + c + d + e + f + g + h;
+									if(sum === total) { ways ++; }
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return ways;
 };
 
 testing.addUnit("numWaysToMake()", [
