@@ -353,6 +353,16 @@ Set.method("intersection", function(set) {
 	});
 	return result;
 });
+Set.method("union", function(set) {
+	const result = new Set();
+	this.forEach(value => {
+		result.add(value);
+	});
+	set.forEach(value => {
+		result.add(value);
+	});
+	return result;
+});
 Set.method("difference", function(set) {
 	/* returns the set of items that are in this set but not in the other set. */
 	const result = new Set();
