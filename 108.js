@@ -1,9 +1,9 @@
 const numSolutions = (n) => {
 	/* returns the number of integer solutions to the equation 1/x + 1/y = 1/n. */
-	let solutions = 1;
-	for(let x = n + 1; x < 2 * n; x ++) {
-		const y = (x * n) / (x - n);
-		if(y % 1 === 0) {
+	let solutions = 2; // 2N and N + 1, which are always solutions, are already counted
+	for(let x = n + 2; x < 2 * n; x ++) {
+		if((x * n) % (x - n) === 0) {
+			console.log(`1/${x} + 1/${(x * n) / (x - n)} = 1/${n}`);
 			solutions ++;
 		}
 	}
