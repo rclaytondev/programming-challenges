@@ -382,6 +382,9 @@ Set.method("every", function every(callback) {
 Set.method("some", function some(callback) {
 	return [...this].some(callback);
 });
+Set.method("filter", function filter(callback) {
+	return new Set([...this].filter(callback));
+});
 Set.method("subsets", function subsets() {
 	/* returns the set of every subset of this set (including the empty set and this set). */
 	const subsets = new Set();
