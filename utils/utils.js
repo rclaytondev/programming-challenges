@@ -151,6 +151,29 @@ Array.method("nthHighest", function(n) {
 	}
 	return arr.max();
 });
+Array.method("repeat", function(numTimes) {
+	let result = this;
+	for(let i = 0; i < numTimes - 1; i ++) {
+		result = result.concat(this);
+	}
+	return result;
+});
+Array.method("partitionGenerator", function*() {
+	if(this.length === 1) {
+		yield [[this[0]]];
+		return;
+	}
+	for(const partition of this.slice(1).partitionGenerator()) {
+		yield [
+			[this[0]],
+			...partition
+		];
+		yield [
+			[this[0], ...partition[0]],
+			...partition.slice(1)
+		];
+	}
+});
 Array.fromRange = function(min, max, step = 1) {
 	const arr = [];
 	for(let i = min; i <= max; i += step) {
@@ -402,6 +425,23 @@ Set.method("subsets", function subsets() {
 	}
 	return subsets;
 });
+Set.cartesianProductGenerator = function*(...sets) {
+	if(sets.length === 1) {
+		for(const element of sets[0]) {
+			yield [element];
+		}
+		return;
+	}
+	else {
+		const firstSet = sets[0];
+		const otherSets = sets.slice(1);
+		for(const element of firstSet) {
+			for(const product of Set.cartesianProductGenerator(...otherSets)) {
+				yield [element, ...product];
+			}
+		}
+	}
+};
 
 Object.method("clone", function() {
     if(Array.isArray(this)) {
