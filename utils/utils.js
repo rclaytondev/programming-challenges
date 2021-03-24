@@ -426,6 +426,7 @@ Set.method("subsets", function subsets() {
 	return subsets;
 });
 Set.cartesianProductGenerator = function*(...sets) {
+	sets = sets.map(arg => new Set(arg));
 	if(sets.length === 1) {
 		for(const element of sets[0]) {
 			yield [element];
