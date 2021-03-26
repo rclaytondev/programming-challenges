@@ -113,14 +113,9 @@ const problem47 = {
 		}
 	},
 	solve2: () => {
-		/*
-		Numbers with four distinct prime factors (in order, I think):
-		210 = 2 * 3 * 5 * 7
-
-		*/
-		let currentNumber = 27588;
-		let numbersFound = [27588];
-		while(true) {
+		let currentNumber = 2 * 3 * 5 * 7;
+		let numbersFound = [2 * 3 * 5 * 7];
+		while(currentNumber < 1000) {
 			currentNumber = problem47.nextNumberWithFourFactors(currentNumber);
 			numbersFound.push(currentNumber);
 			if(numbersFound.isConsecutive()) {
@@ -134,11 +129,9 @@ const problem47 = {
 
 	nextNumberWithFourFactors: (number) => {
 		const primeFactors = problem47.primeFactors(number);
+		const lowestPrimeFactor = primeFactors.min();
 		const highestPrimeFactor = primeFactors.max();
-		const primes = [
-			...problem47.primesBelow(highestPrimeFactor + 1),
-			problem47.getNextPrime(highestPrimeFactor)
-		];
+		const primes = problem47.primesBelow(Math.ceil(number * lowestPrimeFactor / (2 * 3 * 5)));
 		const primeExponents = primes.map(p => primeFactors.count(p));
 		const newPrimeExponents = primeExponents.map((exponent, index) => {
 			const threeSmallestPrimes = primes.filter((p, i) => i !== index).slice(0, 3);
@@ -150,22 +143,23 @@ const problem47 = {
 			}
 			return newExponent;
 		})
-		.map(maxExponent => new Array(maxExponent + 1).fill().map((v, i) => i))
+		.map(maxExponent => new Array(maxExponent).fill().map((v, i) => i + 1))
 		.map(array => new Set(array));
-		console.log(newPrimeExponents.reduce((a, c) => a * c.size, 1));
-		return;
-		debugger;
 		let result = null;
-		const evalulate = (exponents) => primes.map((p, i) => p ** exponents[i]).reduce((a, c) => a * c);
-		for(const combination of Set.cartesianProductGenerator(...newPrimeExponents))  {
-			console.log(combination);
-			const primeProduct = evalulate(combination);
-			if(
-				combination.count(v => v !== 0) === 4 &&
-				primeProduct > number &&
-				(result == null || primeProduct < result)
-			) {
-				result = primeProduct;
+		for(const indexSubset of new Set(primes.map((v, i) => i)).subsets()) {
+			if(indexSubset.size === 4) {
+				const primeSubset = indexSubset.map(index => primes[index]);
+				const primeSubsetArray = [...primeSubset];
+				const possibleExponents = indexSubset.map(index => newPrimeExponents[index]);
+				for(const exponentCombination of Set.cartesianProductGenerator(...possibleExponents)) {
+					const product = (exponentCombination
+						.map((exponent, index) => primeSubsetArray[index] ** exponent)
+						.reduce((a, c) => a * c)
+					);
+					if(product > number && (product < result || result == null)) {
+						result = product;
+					}
+				}
 			}
 		}
 		return result;
@@ -247,10 +241,32 @@ testing.addUnit("problem47.nextNumberWithFourFactors()", [
 	[210, 330],
 	[330, 390],
 	[390, 420],
-	[420, 462]
+	[420, 462],
+	[462, 510],
+	[510, 546],
+	[546, 570],
+	[570, 630],
+	[630, 660],
+	[660, 690],
+	[690, 714],
+	[714, 770],
+	[770, 780],
+	[780, 798],
+	[798, 840],
+	[840, 858],
+	[858, 870],
+	[870, 910],
+	[910, 924],
+	[924, 930],
+	[930, 966],
+	[966, 990]
 ]);
 
 
-console.time("solving the problem");
-console.log(problem47.solve2());
-console.timeEnd("solving the problem");
+const solve = () => {
+	console.time("solving the problem");
+	console.log(problem47.solve2());
+	console.timeEnd("solving the problem");
+};
+
+solve();

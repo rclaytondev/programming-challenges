@@ -410,20 +410,25 @@ Set.method("filter", function filter(callback) {
 });
 Set.method("subsets", function subsets() {
 	/* returns the set of every subset of this set (including the empty set and this set). */
-	const subsets = new Set();
-	const numSubsets = 2 ** this.size;
-	const itemsArray = [...this];
-	for(let i = 0; i < numSubsets; i ++) {
-		const binaryString = i.toString(2).padStart(this.size, "0");
-		const subset = new Set();
-		[...binaryString].forEach((bit, index) => {
-			if(bit === "1") {
-				subset.add(itemsArray[index]);
-			}
-		});
-		subsets.add(subset);
+	if(this.size === 0) {
+		return new Set([
+			new Set([])
+		]);
 	}
-	return subsets;
+	if(this.size === 1) {
+		return new Set([
+			new Set([]),
+			new Set(this)
+		]);
+	}
+	const elementsArray = [...this];
+	const arbitraryElement = [...this][0];
+	const otherElements = elementsArray.slice(1);
+	const subsetsOfOthers = new Set(otherElements).subsets();
+	return new Set([
+		...subsetsOfOthers,
+		...subsetsOfOthers.map(subset => new Set([arbitraryElement, ...subset]))
+	]);
 });
 Set.cartesianProductGenerator = function*(...sets) {
 	sets = sets.map(arg => new Set(arg));
