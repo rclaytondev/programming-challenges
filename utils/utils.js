@@ -430,6 +430,24 @@ Set.method("subsets", function subsets() {
 		...subsetsOfOthers.map(subset => new Set([arbitraryElement, ...subset]))
 	]);
 });
+Set.method("cartesianPower", function cartesianPower(power) {
+	return Set.cartesianProduct(...[this].repeat(power));
+});
+Set.cartesianProduct = function(...sets) {
+	const firstSet = sets[0];
+	if(sets.length === 1) {
+		return new Set(firstSet.map(value => [value]));
+	}
+	const laterSets = sets.slice(1);
+	const productOfOthers = Set.cartesianProduct(...laterSets);
+	let result = new Set();
+	firstSet.forEach(item => {
+		productOfOthers.forEach(subproduct => {
+			result.add([item, ...subproduct]);
+		});
+	});
+	return result;
+};
 Set.cartesianProductGenerator = function*(...sets) {
 	sets = sets.map(arg => new Set(arg));
 	if(sets.length === 1) {
