@@ -23,6 +23,12 @@ const problem103 = {
 			};
 		}
 	},
+	isValidArray: (array, maximum, numbersToSkip) => {
+		return (
+			array.max() < maximum &&
+			!array.some(v => numbersToSkip.includes(v))
+		);
+	},
 	specialSet: (size, specialSumArray = [], upperBound = Infinity, numbersToSkip = []) => {
 		/*
 		Returns a special set (in array form, in ascending order) with the given size, starting with the contents of specialSumArray.
@@ -31,12 +37,10 @@ const problem103 = {
 		*/
 		debugger;
 		if(specialSumArray.length === size) {
-			if(specialSumArray.max() < upperBound && !specialSumArray.some(v => numbersToSkip.includes(v))) {
+			if(problem103.isValidArray(specialSumArray, upperBound, numbersToSkip)) {
 				return specialSumArray;
 			}
-			else {
-				return null;
-			}
+			return null;
 		}
 		let lowestSetArray = null;
 		let lowestSum = Infinity;
