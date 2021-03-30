@@ -26,7 +26,7 @@ const problem103 = {
 	isValidArray: (array, maximum, numbersToSkip) => {
 		return (
 			array.max() < maximum &&
-			!array.some(v => numbersToSkip.includes(v))
+			new Set(array).intersection(new Set(numbersToSkip)).size === 0
 		);
 	},
 	specialSet: (size, specialSumArray = [], upperBound = Infinity, numbersToSkip = []) => {
