@@ -1,13 +1,38 @@
 const problem103 = {
-	specialSet: (size, setArray = [], upperBound = Infinity, numbersToSkip = new Set([])) => {
+	invalidNumbers: (specialSumArray) => {
+		if(specialSumArray.length !== 0) {
+			let upperBound = Infinity;
+			let numbersToSkip = [];
+			for(const multipliers of new Set([-1, 0, 1]).cartesianPower(specialSumArray.length)) {
+				const numToSkip = specialSumArray.map((v, i) => v * multipliers[i]).sum();
+				if(numToSkip > specialSumArray.max() ?? 0) {
+					if(multipliers.count(-1) < multipliers.count(1) + 1) {
+						upperBound = numToSkip;
+					}
+					else {
+						numbersToSkip.push(numToSkip);
+					}
+				}
+			}
+			return { numbersToSkip, upperBound };
+		}
+		else {
+			return {
+				numbersToSkip: [],
+				upperBound: Infinity
+			};
+		}
+	},
+	specialSet: (size, specialSumArray = [], upperBound = Infinity, numbersToSkip = []) => {
 		/*
-		Returns a special set (in array form, in ascending order) with the given size, starting with the contents of setArray.
+		Returns a special set (in array form, in ascending order) with the given size, starting with the contents of specialSumArray.
 		All numbers will be lower than `upperBound`, and will not include anything in `numbersToSkip`.
-		`setArray`, `upperBound`, and `numbersToSkip` are mostly just used internally.
+		`specialSumArray`, `upperBound`, and `numbersToSkip` are mostly just used internally.
 		*/
-		if(setArray.length === size) {
-			if(setArray.max() < upperBound && !setArray.some(v => numbersToSkip.has(v))) {
-				return setArray;
+		debugger;
+		if(specialSumArray.length === size) {
+			if(specialSumArray.max() < upperBound && !specialSumArray.some(v => numbersToSkip.includes(v))) {
+				return specialSumArray;
 			}
 			else {
 				return null;
@@ -16,30 +41,19 @@ const problem103 = {
 		let lowestSetArray = null;
 		let lowestSum = Infinity;
 		for(
-			let nextNumber = (setArray.max() ?? 0) + 1;
+			let nextNumber = (specialSumArray.max() ?? 0) + 1;
 			nextNumber < upperBound && nextNumber < lowestSum;
 			nextNumber ++
 		) {
-			const newNumbersToSkip = new Set(numbersToSkip);
-			let newUpperBound = upperBound;
-			const newSetArray = [...setArray, nextNumber];
-			if(newSetArray.length !== 0) {
-				for(const multipliers of new Set([-1, 0, 1]).cartesianPower(newSetArray.length)) {
-					const numToSkip = newSetArray.map((v, i) => v * multipliers[i]).sum();
-					if(numToSkip > newSetArray.max() ?? 0) {
-						if(multipliers.count(-1) < multipliers.count(1) + 1) {
-							newUpperBound = numToSkip;
-						}
-						else {
-							newNumbersToSkip.push(numToSkip);
-						}
-					}
-				}
-			}
+			const newSpecialSumArray = [...specialSumArray, nextNumber];
+			const {
+				numbersToSkip: newNumbersToSkip,
+				upperBound: newUpperBound
+			} = problem103.invalidNumbers(newSpecialSumArray);
 
 			const result = problem103.specialSet(
 				size,
-				[...setArray, nextNumber],
+				newSpecialSumArray,
 				newUpperBound,
 				newNumbersToSkip
 			);
