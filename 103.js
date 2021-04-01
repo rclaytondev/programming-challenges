@@ -2,18 +2,19 @@ const problem103 = {
 	invalidNumbers: (specialSumArray) => {
 		if(specialSumArray.length !== 0) {
 			let upperBound = Infinity;
-			let numbersToSkip = [];
+			let numbersToSkip = new Set([]);
 			for(const multipliers of new Set([-1, 0, 1]).cartesianPower(specialSumArray.length)) {
 				const numToSkip = specialSumArray.map((v, i) => v * multipliers[i]).sum();
-				if(numToSkip > specialSumArray.max() ?? 0) {
-					if(multipliers.count(-1) < multipliers.count(1) + 1) {
-						upperBound = numToSkip;
+				if(numToSkip > 0) {
+					if(multipliers.count(-1) + 1 < multipliers.count(1)) {
+						upperBound = Math.min(upperBound, numToSkip);
 					}
 					else {
-						numbersToSkip.push(numToSkip);
+						numbersToSkip.add(numToSkip);
 					}
 				}
 			}
+			numbersToSkip = [...numbersToSkip];
 			return { numbersToSkip, upperBound };
 		}
 		else {
@@ -35,7 +36,6 @@ const problem103 = {
 		All numbers will be lower than `upperBound`, and will not include anything in `numbersToSkip`.
 		`specialSumArray`, `upperBound`, and `numbersToSkip` are mostly just used internally.
 		*/
-		debugger;
 		if(specialSumArray.length === size) {
 			if(problem103.isValidArray(specialSumArray, upperBound, numbersToSkip)) {
 				return specialSumArray;
@@ -45,15 +45,22 @@ const problem103 = {
 		let lowestSetArray = null;
 		let lowestSum = Infinity;
 		for(
-			let nextNumber = (specialSumArray.max() ?? 0) + 1;
+			let nextNumber = specialSumArray.length ? specialSumArray.max() + 1 : Math.max(size - 1, 1);
 			nextNumber < upperBound && nextNumber < lowestSum;
 			nextNumber ++
 		) {
+			if(numbersToSkip.includes(nextNumber)) {
+				continue;
+			}
+
 			const newSpecialSumArray = [...specialSumArray, nextNumber];
 			const {
 				numbersToSkip: newNumbersToSkip,
 				upperBound: newUpperBound
 			} = problem103.invalidNumbers(newSpecialSumArray);
+			if(size - newSpecialSumArray.length > newUpperBound - newSpecialSumArray.max() - 1) {
+				continue;
+			}
 
 			const result = problem103.specialSet(
 				size,
@@ -76,10 +83,10 @@ const problem103 = {
 testing.addUnit("problem103.specialSet()", problem103.specialSet, [
 	[1, [1]],
 	[2, [1, 2]],
-	// [3, [2, 3, 4]],
-	// [4, [3, 5, 6, 7]],
+	[3, [2, 3, 4]],
+	[4, [3, 5, 6, 7]],
 	// [5, [6, 9, 11, 12, 13]],
 	// [6, [11, 18, 19, 20, 22, 25]]
 ]);
-testing.testUnit("problem103.specialSet()");
-// testing.runTestByName("problem103.specialSet() - test case 3");
+// testing.testUnit("problem103.specialSet()");
+testing.runTestByName("problem103.specialSet() - test case 4");
