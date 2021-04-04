@@ -516,6 +516,13 @@ Object.method("set", function set(key, value) {
 	this[key] = value;
 	return this;
 });
+Object.method("mapKeys", function mapKeys(callback) {
+	const result = Object.create(this.__proto__);
+	Object.keys(this).forEach(key => {
+		result[key] = callback(key, this[key]);
+	});
+	return result;
+});
 Object.typeof = function(value) {
 	/*
 	This function serves to determine the type of a variable better than the default "typeof" operator, which returns strange values for some inputs (see special cases below).
