@@ -109,6 +109,15 @@ Array.method("sum", function(func, thisArg) {
 		return this.reduce((sum, item) => sum + item, 0);
 	}
 });
+Array.method("product", function(func, thisArg) {
+	const multiply = (a, b) => a * b;
+	if(typeof func === "function") {
+		return this.map(func, thisArg).reduce(multiply, 1);
+	}
+	else {
+		return this.reduce(multiply, 1);
+	}
+});
 Array.method("mean", function(func, thisArg) {
 	return this.sum(func, thisArg) / this.length;
 });
@@ -233,6 +242,9 @@ Math.rotate = function(x, y, deg, centerX, centerY) {
         x: rotated.x + centerX,
         y: rotated.y + centerY
     };
+};
+Math.logBase = function(base, number) {
+	return Math.log(number) / Math.log(base);
 };
 
 Number.method("isBetween", function isBetween(num1, num2, tolerance = 0) {
