@@ -56,7 +56,7 @@ const stringifyFactorization = (bases, exponents) => {
 		bases
 		.map((p, i) => `${p}^${exponents[i]}`)
 		.filter(s => !s.endsWith("^0"))
-		.map(s => s.replaceAll("^1", ""))
+		.map(s => s.replaceAll(/\^1$/g, ""))
 		.join(" * ")
 	);
 };
@@ -78,8 +78,8 @@ const getUpperBound = (desiredSquareDivisors) => {
 	const deFactorize = (primes, exponents) => {
 		return exponents.map((exp, index) => primes[index] ** exp).product();
 	};
-	debugger;
-	while(numDivisors(primeExponents) < desiredSquareDivisors) {
+	let divisorsOfSquare = 3;
+	while(divisorsOfSquare < desiredSquareDivisors / 3) {
 		const nextSteps = primeExponents.map((exponent, index) => {
 			const exponentsBefore = primeExponents.slice(0, index);
 			const exponentsAfter = primeExponents.slice(index + 1);
@@ -102,8 +102,20 @@ const getUpperBound = (desiredSquareDivisors) => {
 		});
 		const nextStep = nextSteps.min(step => step.product);
 		primeExponents = nextStep.exponents;
+		divisorsOfSquare = numDivisors(primeExponents);
 	}
-	return deFactorize(primes, primeExponents);
+
+	const possibleAnswers = primeExponents.map((exponent, index) => {
+		const clonedExponents = primeExponents.clone();
+		for(let i = exponent; numDivisors(clonedExponents) < desiredSquareDivisors; i ++) {
+			clonedExponents[index] = i;
+		}
+		const product = deFactorize(primes, clonedExponents);
+		console.log(`possible upper bound: ${product} (=${stringifyFactorization(primes, clonedExponents)})`);
+		return product;
+	});
+
+	return possibleAnswers.min();
 };
 const leastWithNSquareDivisors = (desiredSquareDivisors) => {
 	/* returns the lowest positive integer whose square has at least the
