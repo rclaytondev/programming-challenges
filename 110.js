@@ -125,7 +125,6 @@ const leastWithNSquareDivisors = (desiredSquareDivisors) => {
 	const upperBound = getUpperBound(desiredSquareDivisors);
 	const maxPrimeExponents = primes.map(prime => intLog(prime, upperBound));
 	let result = BigInt(upperBound);
-	console.log(`initial upper bound is ${result}`);
 	const checkCombination = (exponents, product) => {
 		if(exponents.length === primes.length) {
 			const divisorsOfSquare = (exponents
@@ -141,8 +140,14 @@ const leastWithNSquareDivisors = (desiredSquareDivisors) => {
 
 		const nextPrime = primes[exponents.length];
 		const maxExponent = intLog(nextPrime, result / product);
-		for(let exponent = 0; exponent <= intLog(nextPrime, result / product); exponent ++) {
-		// for(let exponent of middleOutIteration(0, maxExponent)) {
+		for(
+			let exponent = 0;
+			exponent <= Math.min(
+				exponents.lastItem() ?? Infinity,
+				Number(intLog(nextPrime, result / product))
+			);
+			exponent ++
+		) {
 			checkCombination(
 				[...exponents, exponent],
 				product * BigInt(nextPrime ** exponent)
@@ -154,7 +159,7 @@ const leastWithNSquareDivisors = (desiredSquareDivisors) => {
 	return result;
 };
 
-const DESIRED_SOLUTIONS = 400000;
+const DESIRED_SOLUTIONS = 4000000;
 const solve = ((desiredSolutions = DESIRED_SOLUTIONS) => {
 	const desiredSquareDivisors = 2 * desiredSolutions;
 	return leastWithNSquareDivisors(desiredSquareDivisors);
