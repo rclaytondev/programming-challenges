@@ -65,18 +65,54 @@ const divideBigInts = (bigint1, bigint2) => {
 	const BIG_NUMBER = 1e10;
 	return Number(bigint1 * BigInt(BIG_NUMBER) / bigint2) / BIG_NUMBER;
 };
-const leastWithNSquareDivisors = (desiredSquareDivisors) => {
+const getUpperBound = (desiredSquareDivisors) => {
+	let primes = [2];
+	let primeExponents = [1]; // start off with prime factorization = 2^1
+	const numDivisors = (primeExponents) => {
+		return (
+			primeExponents
+			.map(exponent => 2 * exponent + 1)
+			.product()
+		);
+	};
+	const deFactorize = (primes, exponents) => {
+		return exponents.map((exp, index) => primes[index] ** exp).product();
+	};
 	debugger;
+	while(numDivisors(primeExponents) < desiredSquareDivisors) {
+		const nextSteps = primeExponents.map((exponent, index) => {
+			const exponentsBefore = primeExponents.slice(0, index);
+			const exponentsAfter = primeExponents.slice(index + 1);
+			const newExponents = [
+				...exponentsBefore,
+				3 * exponent + 1,
+				...exponentsAfter
+			];
+			return {
+				exponents: newExponents,
+				product: deFactorize(primes, newExponents)
+			};
+		});
+		if(primes.length < primeExponents.length + 1) {
+			primes.push(getNextPrime(primes.lastItem()));
+		}
+		nextSteps.push({
+			exponents: [...primeExponents, 1],
+			product: deFactorize(primes, [...primeExponents, 1])
+		});
+		const nextStep = nextSteps.min(step => step.product);
+		primeExponents = nextStep.exponents;
+	}
+	return deFactorize(primes, primeExponents);
+};
+const leastWithNSquareDivisors = (desiredSquareDivisors) => {
 	/* returns the lowest positive integer whose square has at least the
 	required number of divisors. */
 	const logOfInput = Math.ceil(Math.logBase(3, desiredSquareDivisors));
 	const primes = firstNPrimes(logOfInput);
-	let upperBound = 1n;
-	for(const prime of primes) {
-		upperBound *= BigInt(prime);
-	}
+	const upperBound = getUpperBound(desiredSquareDivisors);
 	const maxPrimeExponents = primes.map(prime => intLog(prime, upperBound));
-	let result = upperBound;
+	let result = BigInt(upperBound);
 	console.log(`initial upper bound is ${result}`);
 	const checkCombination = (exponents, product) => {
 		if(exponents.length === primes.length) {
@@ -106,7 +142,7 @@ const leastWithNSquareDivisors = (desiredSquareDivisors) => {
 	return result;
 };
 
-const DESIRED_SOLUTIONS = 1000;
+const DESIRED_SOLUTIONS = 400000;
 const solve = ((desiredSolutions = DESIRED_SOLUTIONS) => {
 	const desiredSquareDivisors = 2 * desiredSolutions;
 	return leastWithNSquareDivisors(desiredSquareDivisors);
