@@ -30,30 +30,32 @@ const efficientSqubes = new Sequence(
 			}
 		}).memoize(true);
 		const getSqube = (factor1, factor2) => (factor1 ** 2) * (factor2 ** 3);
+		const smallestKey = (map) => {
+			let smallest = Infinity;
+			for(const [key, value] of map) {
+				if(key < smallest) { smallest = key; }
+			}
+			return smallest;
+		};
 
-		let squbeCandidates = [
-			{ factors: [3, 2], value: 72 },
-			{ factors: [2, 3], value: 108 }
-		];
+		const squbeCandidates = new Map([
+			[72, [3, 2]],
+			[108, [2, 3]]
+		]);
+		const addSqubeCandidate = (factor1, factor2) => {
+			if(factor1 !== factor2) {
+				const value = getSqube(factor1, factor2);
+				squbeCandidates.set(value, [factor1, factor2]);
+			}
+		};
 		while(true) {
-			const sqube = squbeCandidates.min(s => s.value);
-			squbeCandidates = squbeCandidates.filter(s => !s.equals(sqube));
-			yield sqube.value;
+			const sqube = smallestKey(squbeCandidates);
+			const factors = squbeCandidates.get(sqube);
+			squbeCandidates.delete(sqube);
+			yield sqube;
 
-			const nextCandidate1 = {
-				factors: [nextPrime(sqube.factors[0]), sqube.factors[1]]
-			};
-			nextCandidate1.value = getSqube(...nextCandidate1.factors);
-			if(nextCandidate1.factors[0] !== nextCandidate1.factors[1]) {
-				squbeCandidates.push(nextCandidate1);
-			}
-			const nextCandidate2 = {
-				factors: [sqube.factors[0], nextPrime(sqube.factors[1])]
-			};
-			nextCandidate2.value = getSqube(...nextCandidate2.factors);
-			if(nextCandidate2.factors[0] !== nextCandidate2.factors[1]) {
-				squbeCandidates.push(nextCandidate2);
-			}
+			addSqubeCandidate(nextPrime(factors[0]), factors[1]);
+			addSqubeCandidate(factors[0], nextPrime(factors[1]));
 		}
 	}
 );
@@ -176,4 +178,6 @@ const solve = (DESIRED_NUMBERS = 200) => {
 	}
 };
 
-solve(10);
+console.time("solving");
+solve(200);
+console.timeEnd("solving");
