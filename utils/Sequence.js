@@ -15,6 +15,13 @@ class Sequence {
 			};
 		}
 		this[Symbol.iterator] = this.generator;
+		this.entries = function*() {
+			let index = 0;
+			for(const term of this) {
+				yield [term, index];
+				index ++;
+			}
+		};
 
 		this.isMonotonic = properties.isMonotonic ?? null;
 	}
