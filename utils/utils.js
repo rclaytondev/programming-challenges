@@ -270,6 +270,14 @@ Math.factorize = function(number, mode = "factors-list") {
 	}
 	return result;
 };
+Math.isPrime = function(number) {
+	if(number === 1) { return false; }
+	if(number % 2 === 0 && number !== 2) { return false; }
+	for(let i = 3; i * i <= number; i += 2) {
+		if(number % i === 0) { return false; }
+	}
+	return true;
+};
 
 Number.method("isBetween", function isBetween(num1, num2, tolerance = 0) {
 	return (
