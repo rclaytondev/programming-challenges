@@ -45,7 +45,7 @@ Vector.method("angle", function angle() {
 	/*
 	Returns the angle of the vector from the origin, clockwise from the positive x-axis. (negative y = up.)
 	*/
-	let angle = Math.deg(Math.atan2(this.y, this.x));
+	let angle = Math.toDegrees(Math.atan2(this.y, this.x));
 	angle = Math.modulateIntoRange(angle, 0, 360);
 	return angle;
 });
@@ -78,10 +78,10 @@ Vector.method("angleTo", function angleTo(vector) {
 	Result will be in degrees, clockwise from the positive x-axis.
 	*/
 	if(arguments[0] instanceof Vector) {
-		return Math.deg(Math.atan2(vector.y - this.y, vector.x - this.x));
+		return Math.toDegrees(Math.atan2(vector.y - this.y, vector.x - this.x));
 	}
 	else if(typeof arguments[0] === "number") {
-		return Math.deg(Math.atan2(arguments[1] - this.y, arguments[0] - this.x));
+		return Math.toDegrees(Math.atan2(arguments[1] - this.y, arguments[0] - this.x));
 	}
 });
 Vector.method("map", function map(vec1, vec2, vec3, vec4) {
