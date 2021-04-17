@@ -183,6 +183,17 @@ Array.method("partitionGenerator", function*() {
 		];
 	}
 });
+Array.method("subArrays", function subArrays() {
+	const result = new Set([
+		[]
+	]);
+	for(let start = 0; start < this.length; start ++) {
+		for(let end = start + 1; end <= this.length; end ++) {
+			result.add(this.slice(start, end));
+		}
+	}
+	return result;
+});
 Array.fromRange = function(min, max, step = 1) {
 	const arr = [];
 	for(let i = min; i <= max; i += step) {
