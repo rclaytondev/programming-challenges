@@ -137,21 +137,21 @@ const possibleValues = (operators, numbers) => {
 	return [...result];
 };
 testing.addUnit("possibleValues()", {
-	"test case 1": () => {
+	"works when all the operators are addition": () => {
 		const result = possibleValues(
 			["+", "+", "+", "+"],
 			[1, 2, 3, 4, 5]
 		);
 		expect(result).toEqual([15]);
 	},
-	"test case 2": () => {
+	"works with a combination of addition and subtraction": () => {
 		const result = possibleValues(
 			["+", "+", "+", "-"],
 			[1, 2, 3, 4, 5]
 		);
 		expect(result).toEqual([5]);
 	},
-	"test case 3": () => {
+	"works with a combination of addition and division": () => {
 		const result = possibleValues(
 			["+", "+", "+", "/"],
 			[1, 2, 3, 4, 5]
@@ -163,22 +163,28 @@ testing.addUnit("possibleValues()", {
 			(1 + 2 + 3 + 4) / 5
 		]);
 	},
-	"test case 4": () => {
+	"works for 'cc/'": () => {
 		const result = possibleValues(
 			["c", "c", "/"],
 			[1, 2, 3, 4]
 		);
 		expect(result).toEqual([123 / 4]);
 	},
-	"test case 5": () => {
+	"works for '/cc'": () => {
 		const result = possibleValues(
 			["/", "c", "c"],
 			[1, 2, 3, 4]
 		);
 		expect(result).toEqual([1 / 234]);
+	},
+	"works when all the operators are multiplication": () => {
+		const result = possibleValues(
+			["*", "*", "*", "*"],
+			[1, 2, 3, 4, 5]
+		);
+		expect(result).toEqual([1 * 2 * 3 * 4 * 5]);
 	}
 });
-testing.runTestByName("possibleValues() - test case 5");
 
 const formatExpression = (operators, numbers) => {
 	let result = `${numbers[0]}`;
@@ -190,6 +196,22 @@ const formatExpression = (operators, numbers) => {
 	});
 	return result;
 };
+testing.addUnit("formatExpression()", {
+	"works with the four basic operations": () => {
+		const result = formatExpression(
+			["+", "-", "*", "/"],
+			[1, 2, 3, 4, 5]
+		);
+		expect(result).toEqual("1 + 2 - 3 * 4 / 5");
+	},
+	"works with concatenation": () => {
+		const result = formatExpression(
+			["c", "+", "c", "c"],
+			[1, 2, 3, 4, 5]
+		);
+		expect(result).toEqual("12 + 345");
+	}
+});
 
 const sumOfReachables = (numDigits) => {
 	const combinations = operatorCombinations([], numDigits - 1);
@@ -215,7 +237,7 @@ const sumOfReachables = (numDigits) => {
 };
 
 testing.addUnit("sumOfReachables()", {
-	"test case 1": () => {
+	"gives correct answer for 2 digits": () => {
 		const result = sumOfReachables(2);
 		const expected = [
 			1 + 2,
@@ -226,7 +248,7 @@ testing.addUnit("sumOfReachables()", {
 		].filter(n => n === Math.round(n) && n > 0).uniquify().sum();
 		expect(result).toEqual(expected);
 	},
-	"test case 2": () => {
+	"gives the correct answer for 3 digits": () => {
 		const result = sumOfReachables(3);
 		const expected = [
 			1 + (2 + 3),
