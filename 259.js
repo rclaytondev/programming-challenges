@@ -136,6 +136,10 @@ const possibleValues = (operators, numbers) => {
 	});
 	return [...result];
 };
+const possibleValidValues = (operators, numbers) => {
+	const values = possibleValues(operators, numbers);
+	return values.filter(v => v === Math.round(v) && v > 0);
+};
 testing.addUnit("possibleValues()", {
 	"works when all the operators are addition": () => {
 		const result = possibleValues(
@@ -213,16 +217,34 @@ testing.addUnit("formatExpression()", {
 	}
 });
 
+const numbersBelow = (numDigits) => (
+	new Array(numDigits)
+	.fill()
+	.map((v, index) => index + 1)
+);
+testing.addUnit("numbersBelow()", {
+	"works for the input 3": () => {
+		const result = numbersBelow(3);
+		expect(result).toEqual([1, 2, 3]);
+	},
+	"works for the input 9": () => {
+		const result = numbersBelow(9);
+		expect(result).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+	}
+});
+
 const sumOfReachables = (numDigits) => {
+	console.log(`calculating sum of reachables for ${numDigits} digits`);
 	const combinations = operatorCombinations([], numDigits - 1);
 
 	let sum = 0n;
 	let reachables = {};
-	const allDigits = new Array(numDigits).fill().map((v, index) => index + 1);
+	const allDigits = numbersBelow(numDigits);
 	combinations.forEach((operators, i) => {
 		const newReachables = possibleValues(operators, allDigits).filter(v => v === Math.round(v) && v > 0);
 		newReachables.forEach(number => {
 			if(!reachables[number]) {
+				console.log(number);
 				reachables[number] = true;
 				sum += BigInt(number);
 			}
@@ -237,6 +259,10 @@ const sumOfReachables = (numDigits) => {
 };
 
 testing.addUnit("sumOfReachables()", {
+	"gives correct answer for 1 digit": () => {
+		const result = sumOfReachables(1);
+		expect(result).toEqual(1);
+	},
 	"gives correct answer for 2 digits": () => {
 		const result = sumOfReachables(2);
 		const expected = [
