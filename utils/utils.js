@@ -409,6 +409,13 @@ CanvasRenderingContext2D.prototype.strokeRoundRect = function(x, y, w, h, radius
 	this.roundRect(x, y, w, h, radius);
 	this.stroke();
 };
+CanvasRenderingContext2D.prototype.loadStyle = function(style = {}) {
+	for(let propName in style) {
+		if(style.hasOwnProperty(propName)) {
+			this[propName] = style[propName];
+		}
+	}
+};
 
 Set.method("equals", function(set) {
 	if(this.size !== set.size) {
