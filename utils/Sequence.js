@@ -88,6 +88,53 @@ class Sequence {
 		);
 	}
 
+	isIncreasing() {
+		if(this.isMonotonic == null) { return null; }
+		if(!this.isMonotonic) { return false; }
+		let firstTerm = null;
+		for(const term of this) {
+			firstTerm ??= term;
+			if(term !== firstTerm) {
+				return term > firstTerm;
+			}
+		}
+	}
+	isDecreasing() {
+		if(this.isMonotonic == null) { return null; }
+		return !this.isIncreasing();
+	}
+
+	static union(...sequences) {
+		for(const s of sequences) {
+			if(!s.isMonotonic) {
+				throw new Error("Cannot calculuate a union of non-monotonic sequences.");
+			}
+		}
+		let increasing = sequences[0].isIncreasing();
+		for(const s of sequences) {
+			if(s.isIncreasing() !== increasing) {
+				throw new Error("Sequences must be either all increasing or all decreasing.");
+			}
+		}
+
+		return new Sequence(
+			function*() {
+				let generators = sequences.map(s => s.generator());
+				let values = generators.map(s => s.next().value);
+				while(true) {
+					const nextVal = increasing ? values.min() : values.max();
+					yield nextVal;
+					values.forEach((val, i) => {
+						while(values[i] === nextVal) {
+							values[i] = generators[i].next().value;
+						}
+					});
+				}
+			},
+			{ isMonotonic: true }
+		);
+	}
+
 	slice(minIndex, maxIndex = Infinity) {
 		/*
 		Returns an array if `minIndex` and `maxIndex` are provided, and a Sequence if `maxIndex` is not provided.
@@ -157,22 +204,22 @@ class Sequence {
 	);
 	static PRIMES = new Sequence(
 		function*() {
-			const nextPrimeDivisors = []; // the `i`th sub-array contains the distinct prime factors of `i`.
-			for(let i = 2; i < Infinity; i ++) {
-				const distinctFactors = nextPrimeDivisors[i] ?? [];
-				if(distinctFactors.length === 0) {
-					/* i is prime */
-					yield i;
-					nextPrimeDivisors[i * 2] ??= [];
-					nextPrimeDivisors[i * 2].push(i);
+			yield 2;
+			yield 3;
+			const primes = [2, 3];
+			const isPrime = (num) => {
+				for(let i = 0; i < primes.length && primes[i] ** 2 <= num; i ++) {
+					if(num % primes[i] === 0) { return false; }
 				}
-				else {
-					for(const factor of distinctFactors) {
-						nextPrimeDivisors[i + factor] ??= [];
-						nextPrimeDivisors[i + factor].push(factor);
+				return true;
+			};
+			for(let i = 6; i < Infinity; i += 6) {
+				for(const value of [i - 1, i + 1]) {
+					if(isPrime(value)) {
+						primes.push(value);
+						yield value;
 					}
 				}
-				delete nextPrimeDivisors[i];
 			}
 		},
 		{ isMonotonic: true }
