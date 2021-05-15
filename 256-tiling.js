@@ -164,6 +164,14 @@ class Tiling {
 
 		debugger;
 	}
+
+	static isTileable(width, height) {
+		if(Tiling.canBeTiled(width, height)) { return true; }
+		for(const tiling of Tiling.validTilings(width, height)) {
+			return true;
+		}
+		return false;
+	}
 }
 
 testing.addUnit("Tiling.isValid()", {
@@ -358,3 +366,27 @@ const testShortcuts = () => {
 	console.log(`${percentKnown.toFixed(4)}% of rectangles skipped.`);
 }
 // testShortcuts();
+
+const DESIRED_UNTILEABLES = 200;
+const solve = () => {
+	for(const area of numbersWithAtLeastNDivisors(DESIRED_UNTILEABLES * 2)) {
+		const rectangles = divisorPairs(area);
+		let maxUntileables = rectangles.length;
+		let untileables = 0;
+		for(const [width, height] of rectangles) {
+			if(!Tiling.isTileable(width, height)) {
+				untileables ++;
+			}
+			else {
+				maxUntileables --;
+				if(maxUntileables < DESIRED_UNTILEABLES) {
+					break;
+				}
+			}
+		}
+		if(untileables === DESIRED_UNTILEABLES) {
+			console.log(`the answer is ${area}`);
+			return area;
+		}
+	}
+};
