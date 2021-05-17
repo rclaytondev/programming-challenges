@@ -41,24 +41,30 @@ class Tiling {
 	}
 
 	canAddTile(x, y, orientation) {
-		if(orientation === "horizontal") {
+		if(orientation === "horizontal" || orientation === "right") {
 			return (
 				this.grid.get(x, y) === null &&
 				x + 1 < this.grid.width() &&
 				this.grid.get(x + 1, y) === null
 			);
 		}
-		else if(orientation === "vertical") {
+		else if(orientation === "vertical" || orientation === "down") {
 			return (
 				this.grid.get(x, y) === null &&
 				y + 1 < this.grid.height() &&
 				this.grid.get(x, y + 1) === null
 			);
 		}
+		else if(orientation === "left") {
+			return this.canAddTile(x - 1, y, "horizontal");
+		}
+		else if(orientation === "up") {
+			return this.canAddTile(x, y - 1, "vertical");
+		}
 	}
 	addTile(x, y, orientation) {
 		const result = this.clone();
-		if(orientation === "horizontal") {
+		if(orientation === "horizontal" || orientation === "right") {
 			const value1 = this.grid.get(x, y);
 			const value2 = this.grid.get(x + 1, y);
 			if(value1 === null && value2 === null) {
@@ -67,7 +73,7 @@ class Tiling {
 			}
 			return result;
 		}
-		else if(orientation === "vertical") {
+		else if(orientation === "vertical" || orientation === "down") {
 			const value1 = this.grid.get(x, y);
 			const value2 = this.grid.get(x, y + 1);
 			if(value1 === null && value2 === null) {
@@ -75,6 +81,12 @@ class Tiling {
 				result.grid.set(x, y + 1, "U");
 			}
 			return result;
+		}
+		else if(orientation === "left") {
+			return this.addTile(x - 1, y, "horizontal");
+		}
+		else if(orientation === "up") {
+			return this.addTile(x, y - 1, "vertical");
 		}
 	}
 
@@ -127,8 +139,7 @@ class Tiling {
 	}
 
 	static canBeTiled(width, height) {
-		/* Returns whether the rectangle can be legally tiled.
-		May also return null if it is unknown whether it can be tiled or not. */
+		/* Returns whether the rectangle can be legally tiled. */
 
 		const area = width * height;
 		if(area % 2 !== 0) { return false; }
@@ -141,7 +152,11 @@ class Tiling {
 			width % height <= Math.floor(width / height) + 1 && height % 2 === 0
 		) { return true; }
 
-		return null; // unknown -- use a brute force algorithm to find out
+		console.log(`checking if the jigsaw is solvable`);
+		return Tiling.JIGSAW_PUZZLE.isSolvable(
+			Math.min(width, height) - 1,
+			Math.max(width, height) - 1
+		);
 	}
 	static canAlwaysBeTiled(height) {
 		/* Returns the circumstances under which a rectangle with the given
@@ -165,13 +180,121 @@ class Tiling {
 		debugger;
 	}
 
-	static isTileable(width, height) {
-		if(Tiling.canBeTiled(width, height)) { return true; }
-		for(const tiling of Tiling.validTilings(width, height)) {
-			return true;
-		}
-		return false;
+	rectangles() {
+		const rectangles = [];
+		this.grid.forEach((value, x, y) => {
+			if(value === "R") {
+				const rect = new Rectangle({ x, y, w: 2, h: 1 });
+				rect.orientation = "horizontal";
+				rectangles.push(rect);
+			}
+			else if(value === "D") {
+				const rect = new Rectangle({ x, y, w: 1, h: 2 });
+				rect.orientation = "vertical";
+				rectangles.push(rect);
+			}
+		});
+		return rectangles;
 	}
+
+	rotate(angle = 90) {
+		while(angle < 0) { angle += 90; }
+		while(angle >= 360) { angle -= 90; }
+		const MAPPINGS = {
+			"0": { U: "U", D: "D", L: "L", R: "R" },
+			"90": { U: "R", D: "L", L: "U", R: "D" },
+			"180": { U: "D", D: "U", L: "R", R: "L" },
+			"270": { U: "L", D: "R", L: "D", R: "U" }
+		};
+		return new Tiling(
+			this.grid
+			.rotate(angle)
+			.map(v => MAPPINGS[angle][v] ?? null)
+		);
+	}
+	translate(translation) {
+		return new Tiling(this.grid.map((v, x, y) => {
+			if(
+				x - translation.x <= 0 ||
+				x - translation.x >= this.grid.width() ||
+				y - translation.y <= 0 ||
+				y - translation.y >= this.grid.width()
+			) { return null; }
+			return this.grid.get(x - translation.x, y - translation.y) ?? null;
+		}));
+	}
+
+	pad(size) {
+		const tiling = new Tiling(this.grid.width() + size * 2, this.grid.height() + size * 2);
+		this.grid.forEach((value, x, y) => {
+			tiling.grid.set(x + size, y + size, value);
+		});
+		return tiling;
+	}
+
+	static PUZZLE_PIECES = (() => {
+		const tilings = [
+			new Tiling(new Grid([
+			    ["R", "L"],
+			    ["R", "L"]
+			])).pad(2),
+			new Tiling(new Grid([
+			    ["D", "D"],
+			    ["U", "U"]
+			])).pad(2),
+		];
+		for(const rotation of [0, 90, 180, 270]) {
+			const initialTiling = new Tiling(6, 6).addTile(2, 2, "right");
+			for(const orientation1 of ["left", "down"]) {
+				for(const orientation2 of ["right", "down"]) {
+					tilings.push(initialTiling
+						.addTile(2, 3, orientation1)
+						.addTile(3, 3, orientation2)
+						.rotate(rotation)
+					);
+				}
+			}
+		}
+		const pieces = tilings.map((tiling, index) => ({
+			id: index,
+			connections: { left: [], right: [], up: [], down: [] },
+			tiling: tiling
+		}));
+		const canBeJoined = (tiling1, tiling2, direction) => {
+			const vector = DIRECTION_VECTORS[direction];
+			const translated = tiling2.translate(vector);
+			return tiling1.grid.every((v, x, y) => (
+				v === null ||
+				translated.grid.get(x, y) === null ||
+				v === translated.grid.get(x, y)
+			));
+		};
+		for(const direction of ["left", "right", "up", "down"]) {
+			for(const piece1 of pieces) {
+				for(const piece2 of pieces) {
+					if(canBeJoined(piece1.tiling, piece2.tiling, direction)) {
+						piece1.connections[direction].push(piece2.id);
+					}
+				}
+			}
+		}
+		for(const piece of pieces) {
+			if(piece.tiling.grid.rows[1].every(v => v === null)) {
+				piece.connections.up.push("edge");
+			}
+			if(piece.tiling.grid.rows[4].every(v => v === null)) {
+				piece.connections.down.push("edge");
+			}
+			if(piece.tiling.grid.every((v, x) => v === null || x !== 1)) {
+				piece.connections.left.push("edge");
+			}
+			if(piece.tiling.grid.every((v, x) => v === null || x !== 4)) {
+				piece.connections.right.push("edge");
+			}
+		}
+		return pieces;
+	}) ();
+	static JIGSAW_PUZZLE = new JigsawPuzzle(Tiling.PUZZLE_PIECES);
 }
 
 testing.addUnit("Tiling.isValid()", {
@@ -320,31 +443,19 @@ testing.addUnit("canBeTiled()", [
 	[100, 1010, true],
 
 
-	// these are all untileable, but the algorithm isn't going to find that out
-	[7, 10, null],
-	[10, 7, null],
-	[20, 66, null],
-	[66, 20, null],
-	[22, 60, null],
-	[60, 22, null],
-	[24, 55, null],
-	[55, 24, null],
-	[30, 44, null],
-	[44, 30, null],
-	[33, 40, null],
-	[40, 33, null],
+	// [7, 10, false],
+	// [10, 7, false],
+	// [20, 66, false],
+	// [66, 20, false],
+	// [22, 60, false],
+	// [60, 22, false],
+	// [24, 55, false],
+	// [55, 24, false],
+	// [30, 44, false],
+	// [44, 30, false],
+	// [33, 40, false],
+	// [40, 33, false],
 ]);
-// testing.addUnit("canAlwaysBeTiled()", [
-// 	width => Tiling.canAlwaysBeTiled(width),
-//
-// 	[1, true],
-// 	[2, true],
-// 	[3, true],
-// 	[4, true],
-//
-// 	[7, false],
-// 	[20, false]
-// ]);
 
 const divisorPairs = (number) => {
 	const pairs = [];
@@ -374,7 +485,7 @@ const solve = () => {
 		let maxUntileables = rectangles.length;
 		let untileables = 0;
 		for(const [width, height] of rectangles) {
-			if(!Tiling.isTileable(width, height)) {
+			if(!Tiling.canBeTiled(width, height)) {
 				untileables ++;
 			}
 			else {
