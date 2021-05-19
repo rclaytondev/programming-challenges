@@ -29,8 +29,14 @@ testing.addUnit("fractalSequence", {
 });
 
 const fractalSequenceSum = (numTerms) => {
-	const terms = fractalSequence.slice(0, numTerms);
-	return terms.sum();
+	if(numTerms <= 2) { return numTerms; }
+
+	const sequentialTerms = sequentialTermsBelow(numTerms);
+	const fractalTerms = numTerms - sequentialTerms;
+
+	const sumOfSequentials = (sequentialTerms) * (sequentialTerms + 1) / 2;
+	const sumOfFractals = fractalSequenceSum(fractalTerms);
+	return sumOfSequentials + sumOfFractals;
 };
 
 testing.addUnit("fractalSequenceSum()", {
