@@ -712,5 +712,26 @@ var utils = {
 				}
 			}
 		}
+	},
+
+	timeFunction: (func, numTrials = 1) => {
+		const start = Date.now();
+		for(let i = 0; i < numTrials; i ++) {
+			func();
+		}
+		const end = Date.now();
+		return (end - start) / numTrials;
+	},
+	compareTime: (func1, func2, numTrials = 1) => {
+		const time1 = timeFunction(func1, numTrials);
+		const time2 = timeFunction(func2, numTrials);
+		if(time1 > time2) {
+			const timeFaster = (time1 / time2);
+			console.log(`Function 2 is ${timeFaster} times faster.`);
+		}
+		else {
+			const timeFaster = (time2 / time1);
+			console.log(`Function 1 is ${timeFaster} times faster.`);
+		}
 	}
 };

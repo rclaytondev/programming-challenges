@@ -1,10 +1,9 @@
 const fractalSequence = new Sequence(function*() {
 	const terms = [];
 	let highest = 0;
-	let numFractalTerms = 0;
 	while(true) {
-		const nextFractalTerm = terms[numFractalTerms] ?? 1;
-		const numSequentialTerms = Math.floor(Math.sqrt(nextFractalTerm));
+		const nextFractalTerm = terms[0] ?? 1;
+		const numSequentialTerms = flooredSqrt(nextFractalTerm);
 		for(let i = 0; i < numSequentialTerms; i ++) {
 			yield highest + 1;
 			terms.push(highest + 1);
@@ -12,9 +11,15 @@ const fractalSequence = new Sequence(function*() {
 		}
 		yield nextFractalTerm;
 		terms.push(nextFractalTerm);
-		numFractalTerms ++;
+		terms.splice(0, 1);
 	}
 });
+
+const flooredSqrt = (number) => {
+	let i;
+	for(i = 1; i * i <= number; i ++) { }
+	return i - 1;
+};
 
 testing.addUnit("fractalSequence", {
 	"correctly generates the terms of the sequence": () => {
