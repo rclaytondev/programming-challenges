@@ -91,3 +91,71 @@ testing.addUnit("sequentialTermsBelow()", sequentialTermsBelow, [
 	[19n, 11n],
 	[20n, 11n]
 ]);
+
+const termsFrom = (termLimit) => {
+	termLimit = BigInt(termLimit);
+	if(termLimit <= 6) {
+		return {
+			sequential: termLimit,
+			fractal: termLimit,
+			total: 2n * termLimit
+		};
+	}
+
+	const sequentialTerms = sequentialTermsBelow(termLimit);
+	const sequentialsFromSequentials = sumOfSqrts(sequentialTerms);
+	const {
+		sequential: sequentialsFromFractals,
+		total: totalFromFractals
+	} = termsFrom(termLimit - sequentialTerms);
+
+	const totalFromSequentials = sequentialsFromSequentials + sequentialTerms;
+	const total = totalFromFractals + totalFromSequentials;
+
+	const sequential = sequentialsFromSequentials + sequentialsFromFractals;
+	const fractal = total - sequential;
+	return { sequential, fractal, total };
+};
+testing.addUnit("termsFrom()", termsFrom, [
+	[0, { sequential: 0n, fractal: 0n, total: 0n }],
+	[1, { sequential: 1n, fractal: 1n, total: 2n }],
+	[2, { sequential: 2n, fractal: 2n, total: 4n }],
+	[3, { sequential: 3n, fractal: 3n, total: 6n }],
+	[4, { sequential: 4n, fractal: 4n, total: 8n }],
+	[5, { sequential: 5n, fractal: 5n, total: 10n }],
+	[6, { sequential: 6n, fractal: 6n, total: 12n }],
+	[7, { sequential: 8n, fractal: 7n, total: 15n }],
+	[8, { sequential: 9n, fractal: 8n, total: 17n }],
+	[9, { sequential: 11n, fractal: 9n, total: 20n }],
+]);
+
+const inefficientSumOfSqrts = (limit) => {
+	let sum = 0;
+	for(let i = 1; i <= limit; i ++) {
+		sum += Math.floor(Math.sqrt(i))
+	}
+	return sum;
+};
+const sumOfSqrts = (limit) => {
+	limit = BigInt(limit);
+	let sum = 0n;
+	let i;
+	for(i = 0n; (i + 1n) ** 2n <= limit; i ++) {
+		sum += i * (2n * i + 1n);
+	}
+	sum += i * (limit - i ** 2n + 1n);
+	return sum;
+};
+testing.addUnit("sumOfSqrts()", sumOfSqrts, [
+	[0, 0n],
+	[1, 1n],
+	[2, 2n],
+	[3, 3n],
+	[4, 5n],
+	[5, 7n],
+	[6, 9n],
+	[7, 11n],
+	[8, 13n],
+	[9, 16n],
+	[10, 19n]
+]);

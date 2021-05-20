@@ -723,9 +723,12 @@ var utils = {
 		return (end - start) / numTrials;
 	},
 	compareTime: (func1, func2, numTrials = 1) => {
-		const time1 = timeFunction(func1, numTrials);
-		const time2 = timeFunction(func2, numTrials);
-		if(time1 > time2) {
+		const time1 = utils.timeFunction(func1, numTrials);
+		const time2 = utils.timeFunction(func2, numTrials);
+		if(time1 === time2) {
+			console.log(`Both functions took the same amount of time.`);
+		}
+		else if(time1 > time2) {
 			const timeFaster = (time1 / time2);
 			console.log(`Function 2 is ${timeFaster} times faster.`);
 		}
