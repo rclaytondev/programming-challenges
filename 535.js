@@ -55,20 +55,40 @@ testing.addUnit("fractalSequenceSum()", {
 	}
 });
 
-const sequentialTermsBelow = (numTerms) => {
+const divideCeil = (a, b) => (a / b) + ((a % b === 0n) ? 0n : 1n);
+const divideRound = (a, b) => (a % b >= divideCeil(b, 2n)) ? divideCeil(a, b) : a / b;
+const sequentialTermsBelow = ((numTerms) => {
 	/* Returns the number of sequential terms whose one-based
 	indices are less than or equal to the given number of terms. */
-	let totalTerms = 0n;
-	let sequentialTerms = 0n;
-	for(const term of fractalSequence) {
-		const sqrt = BigInt(flooredSqrt(term));
-		if(totalTerms + sqrt >= numTerms) {
-			return sequentialTerms + (numTerms - totalTerms);
+	numTerms = BigInt(numTerms);
+
+	let minGeneratingTerms = 0n; // inclusive
+	let maxGeneratingTerms = divideCeil(numTerms, 2n); // inclusive
+	while(minGeneratingTerms !== maxGeneratingTerms) {
+		const mid = divideRound(minGeneratingTerms + maxGeneratingTerms, 2n);
+		const terms = termsFrom(mid);
+		if(terms.total > numTerms) {
+			if(maxGeneratingTerms === minGeneratingTerms + 1n) {
+				minGeneratingTerms = maxGeneratingTerms = termsFrom(minGeneratingTerms).total >= numTerms ? minGeneratingTerms : maxGeneratingTerms;
+				break;
+			}
+			else { maxGeneratingTerms = mid; }
 		}
-		totalTerms += sqrt + 1n;
-		sequentialTerms += sqrt;
+		else if(terms.total < numTerms) { minGeneratingTerms = mid + 1n; }
+		else {
+			minGeneratingTerms = maxGeneratingTerms = mid;
+		}
 	}
-};
+	const generatingTerms = minGeneratingTerms; // minGeneratingTerms === maxGeneratingTerms
+	const terms = termsFrom(generatingTerms);
+	if(terms.total === numTerms) {
+		return terms.sequential;
+	}
+	else if(terms.total > numTerms) {
+		const extraTerms = terms.total - numTerms;
+		return terms.sequential - extraTerms + 1n;
+	}
+}).memoize();
 testing.addUnit("sequentialTermsBelow()", sequentialTermsBelow, [
 	[1n, 1n],
 	[2n, 1n],
@@ -92,7 +112,7 @@ testing.addUnit("sequentialTermsBelow()", sequentialTermsBelow, [
 	[20n, 11n]
 ]);
 
-const termsFrom = (termLimit) => {
+const termsFrom = ((termLimit) => {
 	termLimit = BigInt(termLimit);
 	if(termLimit <= 6) {
 		return {
@@ -115,7 +135,7 @@ const termsFrom = (termLimit) => {
 	const sequential = sequentialsFromSequentials + sequentialsFromFractals;
 	const fractal = total - sequential;
 	return { sequential, fractal, total };
-};
+}).memoize();
 testing.addUnit("termsFrom()", termsFrom, [
 	[0, { sequential: 0n, fractal: 0n, total: 0n }],
 	[1, { sequential: 1n, fractal: 1n, total: 2n }],
