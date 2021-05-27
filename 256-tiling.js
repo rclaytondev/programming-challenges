@@ -151,6 +151,7 @@ class Tiling {
 		if(
 			width % height <= Math.floor(width / height) + 1 && height % 2 === 0
 		) { return true; }
+		if(width % (height - 1) === 0 && height % 2 === 1) { return true; }
 
 		console.log(`checking if the jigsaw is solvable`);
 		return Tiling.JIGSAW_PUZZLE.isSolvable(
