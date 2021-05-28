@@ -46,7 +46,6 @@ class JigsawPuzzle {
 			this.pieces.filter(p => p.connections.right.includes("edge")).map(p => p.id),
 			width - 1
 		);
-		console.log(`generated ${rows.size} row combinations`);
 		const rowsGraph = new DirectedGraph(rows);
 		rowsGraph.setConnections((row1, row2) => {
 			for(const [i, pieceID1] of row1.entries()) {
@@ -57,7 +56,6 @@ class JigsawPuzzle {
 			}
 			return true;
 		});
-		console.log(`set the connections for the rows`);
 		return rowsGraph.pathExists(
 			rows.filter(r => r.every(p => pieces.get(p).connections.up.includes("edge"))),
 			rows.filter(r => r.every(p => pieces.get(p).connections.down.includes("edge"))),

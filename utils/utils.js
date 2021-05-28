@@ -130,6 +130,14 @@ Array.method("count", function(func, thisArg) {
 		return this.filter(v => v === searchTarget).length;
 	}
 });
+Array.method("findLastIndex", function(func, thisArg) {
+	for(let i = this.length - 1; i >= 0; i --) {
+		if(thisArg ? func.call(thisArg, this[i], i, this) : func(this[i], i, this)) {
+			return i;
+		}
+	}
+	return -1;
+});
 Array.method("lastItem", function() {
     return this[this.length - 1];
 });

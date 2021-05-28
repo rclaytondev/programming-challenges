@@ -151,9 +151,12 @@ class Tiling {
 		if(
 			width % height <= Math.floor(width / height) + 1 && height % 2 === 0
 		) { return true; }
-		if(width % (height - 1) === 0 && height % 2 === 1) { return true; }
+		if(linearLatticePointExists(height - 1, height, width)) { return true; }
+		if(linearLatticePointExists(height - 1, height, width - 1)) { return true; }
+		const latticePoints = linearLatticePoints(height - 1, height, width + 1);
+		if(latticePoints.some(point => point.y % 2 === 0)) { return true; }
 
-		console.log(`checking if the jigsaw is solvable`);
+
 		return Tiling.JIGSAW_PUZZLE.isSolvable(
 			Math.min(width, height) - 1,
 			Math.max(width, height) - 1
@@ -502,3 +505,89 @@ const solve = () => {
 		}
 	}
 };
+
+
+
+
+const linearLatticePoints = (coefficient1, coefficient2, weightedSum) => {
+	const yValuesMod1 = [];
+	const latticePoints = [];
+	const xIntercept = weightedSum / coefficient1;
+
+	for(let x = 0; x < xIntercept; x ++) {
+		const y = (weightedSum - coefficient1 * x) / coefficient2;
+		if(y === Math.round(y)) {
+			latticePoints.push(new Vector(x, y))
+		}
+		const matches = (v) => Math.dist(v, y % 1) < 1e-12;
+		const isLatticePoint = (v) => Math.abs(v % 1) < 1e-12;
+		if(yValuesMod1.some(matches)) {
+			yValuesMod1.push(y % 1);
+			if(!yValuesMod1.some(isLatticePoint)) { return []; }
+			const lastLatticePoint = yValuesMod1.findLastIndex(isLatticePoint);
+			const period = yValuesMod1.length - yValuesMod1.findIndex(matches) - 1;
+			for(let x2 = lastLatticePoint + period; x2 <= xIntercept; x2 += period) {
+				latticePoints.push(new Vector(x2, (weightedSum - coefficient1 * x2) / coefficient2));
+			}
+			return latticePoints;
+		}
+		else { yValuesMod1.push(y % 1); }
+	}
+	return latticePoints;
+};
+const linearLatticePointExists = (coefficient1, coefficient2, weightedSum) => {
+	const yValuesMod1 = [];
+	const xIntercept = weightedSum / coefficient1;
+	for(let x = 0; x <= xIntercept; x ++) {
+		const y = (weightedSum - coefficient1 * x) / coefficient2;
+		if(y === Math.round(y)) {
+			return true;
+		}
+		if(yValuesMod1.some(v => Math.dist(v, y % 1) < 1e-12)) {
+			return false;
+		}
+		yValuesMod1.push(y % 1);
+	}
+	return false;
+};
+testing.addUnit("linearLatticePoints()", {
+	"returns the lattice points for the line x + y = 3": () => {
+		const latticePoints = linearLatticePoints(1, 1, 3);
+		expect(latticePoints).toEqual([
+			new Vector(0, 3),
+			new Vector(1, 2),
+			new Vector(2, 1),
+			new Vector(3, 0)
+		]);
+	},
+	"returns the lattice points for the line 2x + 3y = 9": () => {
+		const latticePoints = linearLatticePoints(2, 3, 9);
+		expect(latticePoints).toEqual([
+			new Vector(0, 3),
+			new Vector(3, 1)
+		]);
+	},
+	"returns the lattice points for the line 5x + 3y = 14": () => {
+		const latticePoints = linearLatticePoints(5, 3, 14);
+		expect(latticePoints).toEqual([ new Vector(1, 3) ]);
+	},
+	"returns the lattice points for x + 6y = 10": () => {
+		const latticePoints = linearLatticePoints(1, 6, 10);
+		expect(latticePoints).toEqual([
+			new Vector(4, 1),
+			new Vector(10, 0)
+		]);
+	},
+	"returns the lattice points for the line 5x + 7y = 9": () => {
+		const latticePoints = linearLatticePoints(5, 7, 9);
+		expect(latticePoints).toEqual([]);
+	}
+});
+testing.addUnit("linearLatticePointExists()", {
+	"returns true when the lattice points exist": () => {
+		expect(linearLatticePointExists(5, 3, 14)).toEqual(true);
+	},
+	"returns false when the lattice points do not exist": () => {
+		expect(linearLatticePointExists(5, 7, 9)).toEqual(false);
+	}
+});
