@@ -253,20 +253,12 @@ class Tiling {
 	}
 
 	static PUZZLE_PIECES = (() => {
-		const tilings = [
-			new Tiling(new Grid([
-			    ["R", "L"],
-			    ["R", "L"]
-			])).pad(2),
-			new Tiling(new Grid([
-			    ["D", "D"],
-			    ["U", "U"]
-			])).pad(2),
-		];
+		const tilings = [];
 		for(const rotation of [0, 90, 180, 270]) {
 			const initialTiling = new Tiling(6, 6).addTile(2, 2, "right");
 			for(const orientation1 of ["left", "down"]) {
 				for(const orientation2 of ["right", "down"]) {
+					if(orientation1 === orientation2) { continue; }
 					tilings.push(initialTiling
 						.addTile(2, 3, orientation1)
 						.addTile(3, 3, orientation2)
