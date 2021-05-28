@@ -138,25 +138,41 @@ class Tiling {
 		return [...new Tiling(width, height).validTilingsGenerator()];
 	}
 
+	static tileabilityCriteria1(shortSide, longSide) {
+		return shortSide <= 4 || (shortSide <= 5 && longSide % 4 === 0);
+	}
+	static tileabilityCriteria2(shortSide, longSide) {
+		return shortSide % 2 === 0 && longSide % shortSide <= Math.floor(longSide / shortSide) + 1;
+	}
+	static tileabilityCriteria3(shortSide, longSide) {
+		return shortSide % 2 === 0 && linearLatticePointExists(shortSide - 1, shortSide, longSide);
+	}
+	static tileabilityCriteria4(shortSide, longSide) {
+		return shortSide % 2 === 0 && linearLatticePointExists(shortSide - 1, shortSide, longSide - 1);
+	}
+	static tileabilityCriteria5(shortSide, longSide) {
+		return shortSide % 2 === 0 && linearLatticePointExists(shortSide - 1, shortSide * 2, longSide + 1);
+	}
+	static tileabilityCriteria6(shortSide, longSide) {
+		return shortSide % 2 === 1 && longSide % (shortSide - 1) === 0;
+	}
+
+
 	static canBeTiled(width, height) {
 		/* Returns whether the rectangle can be legally tiled. */
-
 		const area = width * height;
 		if(area % 2 !== 0) { return false; }
-		if(width < height) { [width, height] = [height, width]; }
-		/* width >= height -- wide, short rectangles. */
-		if(height <= 4) { return true; }
-		if(height <= 5 && width % 4 === 0) { return true; }
 
+		const shortSide = Math.min(width, height);
+		const longSide = Math.max(width, height);
 		if(
-			width % height <= Math.floor(width / height) + 1 && height % 2 === 0
+			Tiling.tileabilityCriteria1(shortSide, longSide) ||
+			Tiling.tileabilityCriteria2(shortSide, longSide) ||
+			Tiling.tileabilityCriteria3(shortSide, longSide) ||
+			Tiling.tileabilityCriteria4(shortSide, longSide) ||
+			Tiling.tileabilityCriteria5(shortSide, longSide) ||
+			Tiling.tileabilityCriteria6(shortSide, longSide)
 		) { return true; }
-		if(linearLatticePointExists(height - 1, height, width)) { return true; }
-		if(linearLatticePointExists(height - 1, height, width - 1)) { return true; }
-		const latticePoints = linearLatticePoints(height - 1, height, width + 1);
-		if(latticePoints.some(point => point.y % 2 === 0)) { return true; }
-
-
 		return Tiling.JIGSAW_PUZZLE.isSolvable(
 			Math.min(width, height) - 1,
 			Math.max(width, height) - 1
@@ -460,6 +476,78 @@ testing.addUnit("canBeTiled()", [
 	// [33, 40, false],
 	// [40, 33, false],
 ]);
+testing.addUnit("Tiling.tileabilityCriteria1()", {
+	"returns true for rectangles with a side length less than 4": () => {
+		expect(Tiling.tileabilityCriteria1(4, 6)).toEqual(true);
+	},
+	"returns true for rectangles with one side length 5 and other side divisible by 4": () => {
+		expect(Tiling.tileabilityCriteria1(5, 400)).toEqual(true);
+	},
+	"returns false for rectangles with one side length 5 and other side not divisible by 4": () => {
+		expect(Tiling.tileabilityCriteria1(5, 401)).toEqual(false);
+	},
+	"returns false for rectangles with side lengths greater than 5": () => {
+		expect(Tiling.tileabilityCriteria1(178, 286)).toEqual(false);
+	}
+});
+testing.addUnit("Tiling.tileabilityCriteria2()", {
+	"returns true when one side is divisible by the other": () => {
+		expect(Tiling.tileabilityCriteria2(100, 1000)).toEqual(true);
+	},
+	"returns true when one side is slightly longer than a multiple of the other": () => {
+		expect(Tiling.tileabilityCriteria2(100, 1011)).toEqual(true);
+	},
+	"returns false when the tiling pattern is not applicable": () => {
+		expect(Tiling.tileabilityCriteria2(100, 1012)).toEqual(false);
+	}
+});
+testing.addUnit("Tiling.tileabilityCriteria3()", {
+	"returns true for rectangles that can be tiled according to the pattern": () => {
+		expect(Tiling.tileabilityCriteria3(4, 7)).toEqual(true);
+	},
+	"returns false for rectangles that cannot be tiled according to the pattern": () => {
+		expect(Tiling.tileabilityCriteria3(6, 9)).toEqual(false);
+	},
+	"returns false for rectangles where the shorter side length is odd": () => {
+		expect(Tiling.tileabilityCriteria3(3, 10)).toEqual(false);
+	}
+});
+testing.addUnit("Tiling.tileabilityCriteria4()", {
+	"returns true for rectangles that can be tiled according to the pattern": () => {
+		expect(Tiling.tileabilityCriteria4(4, 18)).toEqual(true);
+	},
+	"returns false for rectangles that cannot be tiled according to the pattern": () => {
+		expect(Tiling.tileabilityCriteria4(6, 10)).toEqual(false);
+	},
+	"returns false for rectangles where the shorter side length is odd": () => {
+		expect(Tiling.tileabilityCriteria4(7, 13)).toEqual(false);
+	}
+});
+testing.addUnit("Tiling.tileabilityCriteria5()", {
+	"returns true for rectangles that can be tiled according to the pattern": () => {
+		expect(Tiling.tileabilityCriteria5(4, 399)).toEqual(true);
+	},
+	"returns false for rectangles that cannot be tiled according to the pattern - test case 1": () => {
+		expect(Tiling.tileabilityCriteria5(7, 10)).toEqual(false);
+	},
+	"returns false for rectangles that cannot be tiled according to the pattern - test case 2": () => {
+		expect(Tiling.tileabilityCriteria5(5, 12)).toEqual(false);
+	},
+	"returns false for rectangles where the shorter side length is odd": () => {
+		expect(Tiling.tileabilityCriteria5(3, 10)).toEqual(false);
+	}
+});
+testing.addUnit("Tiling.tileabilityCriteria6()", {
+	"returns true for rectangles that can be tiled according to the pattern": () => {
+		expect(Tiling.tileabilityCriteria6(9, 800)).toEqual(true);
+	},
+	"returns false for rectangles that cannot be tiled according to the pattern": () => {
+		expect(Tiling.tileabilityCriteria6(9, 801)).toEqual(false);
+	},
+	"returns false for rectangles where the shorter side length is even": () => {
+		expect(Tiling.tileabilityCriteria6(8, 700)).toEqual(false);
+	}
+});
 
 const divisorPairs = (number) => {
 	const pairs = [];
