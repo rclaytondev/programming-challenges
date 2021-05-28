@@ -47,20 +47,30 @@ class JigsawPuzzle {
 			width - 1
 		);
 		const rowsGraph = new DirectedGraph(rows);
-		rowsGraph.setConnections((row1, row2) => {
-			for(const [i, pieceID1] of row1.entries()) {
-				const pieceID2 = row2[i];
-				if(!this.pieces.find(p => p.id === pieceID1).connections.down.includes(pieceID2)) {
-					return false;
+		const rowsConnected = new Set();
+		const connectRows = (row) => {
+			rowLoop: for(const row2 of rows) {
+				for(let x = 0; x < row.length; x ++) {
+					if(!pieces.get(row[x]).connections.down.includes(row2[x])) {
+						continue rowLoop;
+					}
 				}
+				rowsGraph.connect(row, row2);
+				if(!rowsConnected.has(row2)) {
+					rowsConnected.add(row2);
+					connectRows(row2);
+				}
+				else { rowsConnected.add(row2); }
 			}
-			return true;
-		});
-		return rowsGraph.pathExists(
-			rows.filter(r => r.every(p => pieces.get(p).connections.up.includes("edge"))),
-			rows.filter(r => r.every(p => pieces.get(p).connections.down.includes("edge"))),
-			height - 1
-		);
+		};
+		const startRows = rows.filter(r => r.every(p => pieces.get(p).connections.up.includes("edge")));
+		const endRows = rows.filter(r => r.every(p => pieces.get(p).connections.down.includes("edge")));
+		for(const row of startRows) {
+			if(!rowsConnected.has(row)) {
+				connectRows(row);
+			}
+		}
+		return rowsGraph.pathExists(startRows, endRows, height - 1);
 	}
 }
 
