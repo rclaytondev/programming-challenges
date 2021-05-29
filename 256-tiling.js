@@ -165,17 +165,13 @@ class Tiling {
 
 		const shortSide = Math.min(width, height);
 		const longSide = Math.max(width, height);
-		if(
+		return (
 			Tiling.tileabilityCriteria1(shortSide, longSide) ||
 			Tiling.tileabilityCriteria2(shortSide, longSide) ||
 			Tiling.tileabilityCriteria3(shortSide, longSide) ||
 			Tiling.tileabilityCriteria4(shortSide, longSide) ||
 			Tiling.tileabilityCriteria5(shortSide, longSide) ||
 			Tiling.tileabilityCriteria6(shortSide, longSide)
-		) { return true; }
-		return Tiling.JIGSAW_PUZZLE.isSolvable(
-			Math.min(width, height) - 1,
-			Math.max(width, height) - 1
 		);
 	}
 	static canAlwaysBeTiled(height) {

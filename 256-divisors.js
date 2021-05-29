@@ -51,7 +51,7 @@ const numbersWithFactorization = (exponents) => new Sequence(
 		}
 	},
 	{ isMonotonic: true }
-);
+).set("isIncreasing", () => true);
 testing.addUnit("numbersWithFactorization()", [
 	() => {
 		const numbers = numbersWithFactorization([4]).slice(0, 10);
@@ -190,7 +190,7 @@ const numbersWithAtLeastNDivisors = (minDivisors, step = 10) => new Sequence(
 		}
 	},
 	{ isMonotonic: true }
-);
+).set("isIncreasing", () => true);
 testing.addUnit("numbersWithAtLeastNDivisors", [
 	n => numbersWithAtLeastNDivisors(n).slice(0, 10),
 	[2, [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]],
