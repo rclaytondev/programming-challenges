@@ -154,7 +154,7 @@ class Tiling {
 		return shortSide % 2 === 0 && linearLatticePointExists(shortSide - 1, shortSide * 2, longSide + 1);
 	}
 	static tileabilityCriteria6(shortSide, longSide) {
-		return shortSide % 2 === 1 && longSide % (shortSide - 1) === 0;
+		return shortSide % 2 === 1 && linearLatticePointExists(shortSide - 1, shortSide + 1, longSide);
 	}
 
 
@@ -449,6 +449,7 @@ testing.addUnit("canBeTiled()", [
 	[100, 1004, true],
 	[100, 1007, true],
 	[100, 1010, true],
+	[5, 6, true],
 
 
 	// [7, 10, false],
@@ -526,11 +527,17 @@ testing.addUnit("Tiling.tileabilityCriteria5()", {
 	}
 });
 testing.addUnit("Tiling.tileabilityCriteria6()", {
-	"returns true for rectangles that can be tiled according to the pattern": () => {
+	"returns true for rectangles that can be tiled according to the pattern - test case 1": () => {
 		expect(Tiling.tileabilityCriteria6(9, 800)).toEqual(true);
 	},
+	"returns true for rectangles that can be tiled according to the pattern - test case 2": () => {
+		expect(Tiling.tileabilityCriteria6(5, 6)).toEqual(true);
+	},
+	"returns true for rectangles that can be tiled according to the pattern - test case 3": () => {
+		expect(Tiling.tileabilityCriteria6(5, 10)).toEqual(true);
+	},
 	"returns false for rectangles that cannot be tiled according to the pattern": () => {
-		expect(Tiling.tileabilityCriteria6(9, 801)).toEqual(false);
+		expect(Tiling.tileabilityCriteria6(9, 12)).toEqual(false);
 	},
 	"returns false for rectangles where the shorter side length is even": () => {
 		expect(Tiling.tileabilityCriteria6(8, 700)).toEqual(false);
@@ -561,6 +568,7 @@ const testShortcuts = () => {
 const DESIRED_UNTILEABLES = 200;
 const solve = () => {
 	for(const area of numbersWithAtLeastNDivisors(DESIRED_UNTILEABLES * 2)) {
+		if(area % 2 !== 0) { continue; }
 		const rectangles = divisorPairs(area);
 		let maxUntileables = rectangles.length;
 		let untileables = 0;
