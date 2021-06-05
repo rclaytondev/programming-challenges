@@ -16,38 +16,12 @@ const numbersWithFactorization = (exponents) => new Sequence(
 	The Sequence will contain the numbers in ascending order.
 	*/
 	function* numbersWithFactorization() {
-		const primeGenerator = Sequence.PRIMES.generator();
-		let primes = [primeGenerator.next().value]; // [2]
-		const getNextPrime = (prime) => {
-			while(!primes.includes(prime) || primes.indexOf(prime) === primes.length - 1) {
-				primes.push(primeGenerator.next().value);
-			}
-			return primes[primes.indexOf(prime) + 1];
-		};
-		exponents = exponents.sort((a, b) => b - a);
-		const nextNumbers = new Map([[
-			exponents.map(e => 2 ** e).product(),
-			new Array(exponents.length).fill(2)
-		]]);
+		exponents = exponents.sort((a, b) => a - b);
+		let primes = Sequence.PRIMES.slice(0, exponents.length).reverse();
+		let number = primes.map((p, i) => p ** exponents[i]).product();
 		while(true) {
-			const nextNumber = [...nextNumbers.keys()].min();
-			const factorization = nextNumbers.get(nextNumber);
-			if(!factorization.containsDuplicates()) {
-				yield nextNumber;
-			}
-			nextNumbers.delete(nextNumber);
-			factorization.forEach((factor, index) => {
-				const nextPrime = getNextPrime(factor);
-				const newFactorization = [
-					...factorization.slice(0, index),
-					nextPrime,
-					...factorization.slice(index + 1)
-				];
-				nextNumbers.set(
-					newFactorization.map((prime, i) => prime ** exponents[i]).product(),
-					newFactorization
-				);
-			});
+			yield number;
+			[number, primes] = nextNumberWithFactorization(exponents, primes, number);
 		}
 	},
 	{ isMonotonic: true }
@@ -66,6 +40,53 @@ testing.addUnit("numbersWithFactorization()", [
 			// numbers that are of the form a^2 * b^3 for distinct primes a and b
 			[72, 108, 200, 392, 500, 675, 968, 1125, 1323, 1352]
 		);
+	}
+]);
+
+const nextNumberWithFactorization = (exponents, primes, number) => {
+	let smallestUsablePrime = Infinity;
+	for(const prime of primes) {
+		const nextPrime = Sequence.PRIMES.nextTerm(prime);
+		if(!primes.includes(nextPrime) && prime < smallestUsablePrime) {
+			smallestUsablePrime = prime;
+		}
+	}
+	const upperBoundPrimes = primes.map(p => p === smallestUsablePrime ? Sequence.PRIMES.nextTerm(p) : p);
+	// const upperBound = upperBoundPrimes.map((p, i) => p ** exponents[i]).product();
+	let smallestAnswer = upperBound;
+	let smallestAnswerPrimes = upperBoundPrimes;
+	const nextPrimes = (incompletePrimes) => {
+		if(incompletePrimes.length >= exponents.length) { return []; }
+		const partialProduct = incompletePrimes.map((p, i) => p ** exponents[i]).product();
+		let nextPossiblePrimes = [];
+		for(const prime of Sequence.PRIMES) {
+			const newPartialProduct = partialProduct * (prime ** exponents[incompletePrimes.length]);
+			if(incompletePrimes.includes(prime)) { continue; }
+			if(newPartialProduct > smallestAnswer) { break; }
+			nextPossiblePrimes.push(prime);
+		}
+		return nextPossiblePrimes.map(p => [...incompletePrimes, p]);
+	};
+	for(const primeCombination of Tree.iterate([], nextPrimes, true)) {
+		if(primeCombination.length === exponents.length) {
+			const possibleAnswer = primeCombination.map((p, i) => p ** exponents[i]).product();
+			if(possibleAnswer > number && possibleAnswer < smallestAnswer) {
+				smallestAnswer = possibleAnswer;
+				smallestAnswerPrimes = primeCombination;
+			}
+		}
+	}
+	return [smallestAnswer, smallestAnswerPrimes];
+};
+
+testing.addUnit("nextNumberWithFactorization()", [
+	() => {
+		const result = nextNumberWithFactorization(
+			[1, 2, 3],
+			[11, 3, 2],
+			792
+		);
+		expect(result).toEqual([936, [13, 3, 2]]);
 	}
 ]);
 
@@ -200,3 +221,5 @@ testing.addUnit("numbersWithAtLeastNDivisors", [
 	[20, [240, 336, 360, 420, 432, 480, 504, 528, 540, 560]],
 	[100, [45360, 50400, 55440, 60480, 65520, 69300, 70560, 71280, 73920, 75600]]
 ]);
+
+testing.testUnit("numbersWithFactorization()");

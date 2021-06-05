@@ -3,36 +3,61 @@ class Sequence {
 	constructor(func, properties = {}) {
 		const GeneratorFunction = Object.getPrototypeOf(function*() {}).constructor;
 		const isGeneratorFunc = (func instanceof GeneratorFunction);
+		const self = this;
 		if(isGeneratorFunc) {
-			this.generator = func;
+			this.generatorFunction = func;
 		}
 		else {
-			this.nthTerm = func;
-			this.generator = function*() {
+			this.nthTerm = (termIndex) => {
+				const term = func(termIndex);
+				this.cachedTerms[termIndex] = term;
+				return term;
+			};
+			this.generatorFunction = function*() {
 				for(let index = 0; index < Infinity; index ++) {
-					yield func(index);
+					const term = func(index);
+					self.cachedTerms[index] = term;
+					yield term;
 				}
 			};
 		}
-		this[Symbol.iterator] = this.generator;
-		this.entries = function*() {
-			let index = 0;
-			for(const term of this) {
-				yield [term, index];
-				index ++;
+		this.generator = this.generatorFunction();
+		this[Symbol.iterator] = function*() {
+			for(let index = 0; index < Infinity; index ++) {
+				if(index < this.numCachedTerms) {
+					yield this.cachedTerms[index];
+				}
+				else {
+					const term = this.generator.next().value;
+					this.cachedTerms[index] = term;
+					this.numCachedTerms ++;
+					yield term;
+				}
 			}
 		};
+		this.cachedTerms = [];
+		this.numCachedTerms = 0;
 
 		this.isMonotonic = properties.isMonotonic ?? null;
 	}
 
 	nthTerm(termIndex) {
 		/* returns the term at the given zero-based index. */
+		if(typeof this.cachedTerms[termIndex] === "number") {
+			return this.cachedTerms[termIndex];
+		}
+		if(this.hasOwnProperty("nthTerm")) {
+			return this.nthTerm(termIndex);
+		}
+
 		let iterations = 0;
 		for(const term of this) {
 			if(iterations === termIndex) { return term; }
 			iterations ++;
 		}
+	}
+	nextTerm(term) {
+		return this.nthTerm(this.indexOf(term) + 1);
 	}
 	indexOf(searchTarget) {
 		/*
@@ -88,22 +113,6 @@ class Sequence {
 		);
 	}
 
-	isIncreasing() {
-		if(this.isMonotonic == null) { return null; }
-		if(!this.isMonotonic) { return false; }
-		let firstTerm = null;
-		for(const term of this) {
-			firstTerm ??= term;
-			if(term !== firstTerm) {
-				return term > firstTerm;
-			}
-		}
-	}
-	isDecreasing() {
-		if(this.isMonotonic == null) { return null; }
-		return !this.isIncreasing();
-	}
-
 	static union(...sequences) {
 		for(const s of sequences) {
 			if(!s.isMonotonic) {
@@ -119,7 +128,7 @@ class Sequence {
 
 		return new Sequence(
 			function*() {
-				let generators = sequences.map(s => s.generator());
+				let generators = sequences.map(s => s[Symbol.iterator]());
 				let values = generators.map(s => s.next().value);
 				while(true) {
 					const nextVal = increasing ? values.min() : values.max();
@@ -133,6 +142,22 @@ class Sequence {
 			},
 			{ isMonotonic: true }
 		);
+	}
+
+	isIncreasing() {
+		if(this.isMonotonic == null) { return null; }
+		if(!this.isMonotonic) { return false; }
+		let firstTerm = null;
+		for(const term of this) {
+			firstTerm ??= term;
+			if(term !== firstTerm) {
+				return term > firstTerm;
+			}
+		}
+	}
+	isDecreasing() {
+		if(this.isMonotonic == null) { return null; }
+		return !this.isIncreasing();
 	}
 
 	slice(minIndex, maxIndex = Infinity) {
@@ -165,7 +190,12 @@ class Sequence {
 			if(this.hasOwnProperty("nthTerm")) {
 				const terms = [];
 				for(let i = minIndex; i < maxIndex; i ++) {
-					terms.push(this.nthTerm(i));
+					if(typeof this.cachedTerms[i] === "number") {
+						terms.push(this.cachedTerms[i]);
+					}
+					else {
+						terms.push(this.nthTerm(i));
+					}
 				}
 				return terms;
 			}
@@ -173,14 +203,21 @@ class Sequence {
 				const terms = [];
 				let iterations = 0;
 				for(const term of this) {
-					if(iterations >= maxIndex) { break; }
 					if(iterations >= minIndex) {
 						terms.push(term);
 					}
 					iterations ++;
+					if(iterations >= maxIndex) { break; }
 				}
 				return terms;
 			}
+		}
+	}
+	*entries() {
+		let index = 0;
+		for(const term of this) {
+			yield [term, index];
+			index ++;
 		}
 	}
 
@@ -204,21 +241,22 @@ class Sequence {
 	);
 	static PRIMES = new Sequence(
 		function*() {
-			yield 2;
-			yield 3;
-			const primes = [2, 3];
-			const isPrime = (num) => {
-				for(let i = 0; i < primes.length && primes[i] ** 2 <= num; i ++) {
-					if(num % primes[i] === 0) { return false; }
+			const factorsMap = new Map();
+			for(let possiblePrime = 2; possiblePrime < Infinity; possiblePrime ++) {
+				const factors = factorsMap.get(possiblePrime) ?? [];
+				if(factors.length === 0) {
+					yield possiblePrime;
+					factorsMap.set(possiblePrime ** 2, [possiblePrime]);
 				}
-				return true;
-			};
-			for(let i = 6; i < Infinity; i += 6) {
-				for(const value of [i - 1, i + 1]) {
-					if(isPrime(value)) {
-						primes.push(value);
-						yield value;
+				else {
+					for(const factor of factors) {
+						const nextNumber = possiblePrime + factor;
+						if(!factorsMap.has(nextNumber)) {
+							factorsMap.set(nextNumber, []);
+						}
+						factorsMap.get(nextNumber).push(factor);
 					}
+					factorsMap.delete(possiblePrime);
 				}
 			}
 		},

@@ -565,7 +565,7 @@ const testShortcuts = () => {
 }
 // testShortcuts();
 
-const DESIRED_UNTILEABLES = 200;
+const DESIRED_UNTILEABLES = 5;
 const solve = () => {
 	for(const area of numbersWithAtLeastNDivisors(DESIRED_UNTILEABLES * 2)) {
 		if(area % 2 !== 0) { continue; }
@@ -675,3 +675,8 @@ testing.addUnit("linearLatticePointExists()", {
 		expect(linearLatticePointExists(5, 7, 9)).toEqual(false);
 	}
 });
+
+
+
+debugger;
+console.log(numbersWithFactorization([4, 4, 1, 1, 1, 1]).slice(0, 1));
