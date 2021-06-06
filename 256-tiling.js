@@ -678,5 +678,6 @@ testing.addUnit("linearLatticePointExists()", {
 
 
 
-debugger;
-console.log(numbersWithFactorization([4, 4, 1, 1, 1, 1]).slice(0, 1));
+// debugger;
+// console.log(numbersWithFactorization([4, 4, 1, 1, 1, 1]).slice(0, 2));
+testing.testUnit("numbersWithFactorization()");

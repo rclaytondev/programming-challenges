@@ -52,16 +52,18 @@ const nextNumberWithFactorization = (exponents, primes, number) => {
 		}
 	}
 	const upperBoundPrimes = primes.map(p => p === smallestUsablePrime ? Sequence.PRIMES.nextTerm(p) : p);
-	// const upperBound = upperBoundPrimes.map((p, i) => p ** exponents[i]).product();
+	const upperBound = upperBoundPrimes.map((p, i) => p ** exponents[i]).product();
 	let smallestAnswer = upperBound;
 	let smallestAnswerPrimes = upperBoundPrimes;
 	const nextPrimes = (incompletePrimes) => {
 		if(incompletePrimes.length >= exponents.length) { return []; }
 		const partialProduct = incompletePrimes.map((p, i) => p ** exponents[i]).product();
 		let nextPossiblePrimes = [];
+		const exponentsLeft = exponents.slice(incompletePrimes.length + 1);
 		for(const prime of Sequence.PRIMES) {
 			const newPartialProduct = partialProduct * (prime ** exponents[incompletePrimes.length]);
 			if(incompletePrimes.includes(prime)) { continue; }
+			if(prime > smallestAnswer / (2 ** exponentsLeft.sum())) { break; }
 			if(newPartialProduct > smallestAnswer) { break; }
 			nextPossiblePrimes.push(prime);
 		}
