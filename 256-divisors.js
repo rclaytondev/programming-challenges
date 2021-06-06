@@ -55,19 +55,17 @@ const nextNumberWithFactorization = (exponents, primes, number) => {
 	const upperBound = upperBoundPrimes.map((p, i) => p ** exponents[i]).product();
 	let smallestAnswer = upperBound;
 	let smallestAnswerPrimes = upperBoundPrimes;
-	const nextPrimes = (incompletePrimes) => {
-		if(incompletePrimes.length >= exponents.length) { return []; }
+	const nextPrimes = function*(incompletePrimes) {
+		if(incompletePrimes.length >= exponents.length) { return; }
 		const partialProduct = incompletePrimes.map((p, i) => p ** exponents[i]).product();
-		let nextPossiblePrimes = [];
-		const exponentsLeft = exponents.slice(incompletePrimes.length + 1);
+		const exponentsLeft = exponents.slice(incompletePrimes.length);
 		for(const prime of Sequence.PRIMES) {
 			const newPartialProduct = partialProduct * (prime ** exponents[incompletePrimes.length]);
 			if(incompletePrimes.includes(prime)) { continue; }
 			if(prime > smallestAnswer / (2 ** exponentsLeft.sum())) { break; }
 			if(newPartialProduct > smallestAnswer) { break; }
-			nextPossiblePrimes.push(prime);
+			yield [...incompletePrimes, prime];
 		}
-		return nextPossiblePrimes.map(p => [...incompletePrimes, p]);
 	};
 	for(const primeCombination of Tree.iterate([], nextPrimes, true)) {
 		if(primeCombination.length === exponents.length) {
