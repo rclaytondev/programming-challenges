@@ -86,6 +86,13 @@ class Sequence {
 			}
 		}
 	}
+	find(callback) {
+		for(const [term, index] of this.entries()) {
+			if(callback(term, index, this)) {
+				return term;
+			}
+		}
+	}
 	filter(callback) {
 		const originalSequence = this;
 		return new Sequence(
@@ -151,6 +158,7 @@ class Sequence {
 		for(const term of this) {
 			firstTerm ??= term;
 			if(term !== firstTerm) {
+				this.isIncreasing = () => term > firstTerm;
 				return term > firstTerm;
 			}
 		}
@@ -211,6 +219,18 @@ class Sequence {
 				}
 				return terms;
 			}
+		}
+	}
+	termsBelow(maximum, inclusive) {
+		if(!this.isIncreasing()) {
+			throw new Error("Cannot calculate the terms below a maximum for a non-increasing sequence.");
+		}
+		let terms = [];
+		for(const term of this) {
+			if(term > maximum || (term >= maximum && !inclusive)) {
+				return terms;
+			}
+			terms.push(term);
 		}
 	}
 	*entries() {
