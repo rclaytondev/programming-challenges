@@ -71,6 +71,9 @@ const nextNumberWithFactorization = (exponents, primes, number) => {
 			if(incompletePrimes.includes(prime)) { continue; }
 			if(prime > smallestAnswer / (smallestNotInPrimes ** exponentsLeft.sum())) { break; }
 			if(newPartialProduct > smallestAnswer) { break; }
+			if(exponents[incompletePrimes.length] === exponents[incompletePrimes.length - 1] && prime > incompletePrimes.lastItem()) {
+				break;
+			}
 			yield [...incompletePrimes, prime];
 		}
 	};
