@@ -40,6 +40,12 @@ testing.addUnit("numbersWithFactorization()", [
 			// numbers that are of the form a^2 * b^3 for distinct primes a and b
 			[72, 108, 200, 392, 500, 675, 968, 1125, 1323, 1352]
 		);
+	},
+	() => {
+		const numbers = numbersWithFactorization([1, 1, 1, 4, 4]).slice(0, 10);
+		expect(numbers).toEqual(
+			[498960, 589680, 771120, 861840, 926640, 1043280, 1211760, 1297296, 1315440, 1354320]
+		);
 	}
 ]);
 
