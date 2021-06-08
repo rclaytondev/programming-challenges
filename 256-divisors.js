@@ -97,6 +97,14 @@ testing.addUnit("nextNumberWithFactorization()", [
 			792
 		);
 		expect(result).toEqual([936, [13, 3, 2]]);
+	},
+	() => {
+		const result = nextNumberWithFactorization(
+			[1, 1, 1, 4, 4],
+			[11, 7, 5, 2, 3],
+			498960
+		);
+		expect(result).toEqual([589680, [13, 7, 5, 2, 3]]);
 	}
 ]);
 
@@ -231,5 +239,3 @@ testing.addUnit("numbersWithAtLeastNDivisors", [
 	[20, [240, 336, 360, 420, 432, 480, 504, 528, 540, 560]],
 	[100, [45360, 50400, 55440, 60480, 65520, 69300, 70560, 71280, 73920, 75600]]
 ]);
-
-testing.testUnit("numbersWithFactorization()");
