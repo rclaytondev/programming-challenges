@@ -207,7 +207,7 @@ const numbersWithAtLeastNDivisors = (minDivisors, step = 10) => new Sequence(
 		const generators = [];
 		const terms = [];
 		for(let i = 0; i < step; i ++) {
-			generators.push(numbersWithNDivisors(minDivisors + i).generator());
+			generators.push(numbersWithNDivisors(minDivisors + i)[Symbol.iterator]());
 			terms.push(generators.lastItem().next().value);
 		}
 		let firstNotInSequences = leastWithAtLeastNDivisors(minDivisors + step);
@@ -216,7 +216,7 @@ const numbersWithAtLeastNDivisors = (minDivisors, step = 10) => new Sequence(
 			if(nextTerm > firstNotInSequences) {
 				for(let i = 0; i <= step; i ++) {
 					generators.push(
-						numbersWithNDivisors(minDivisors + generators.length).generator()
+						numbersWithNDivisors(minDivisors + generators.length)[Symbol.iterator]()
 					);
 					terms[generators.length - 1] = generators.lastItem().next().value;
 				}
