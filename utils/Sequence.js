@@ -208,6 +208,7 @@ class Sequence {
 				return terms;
 			}
 			else {
+				if(minIndex === maxIndex) { return []; }
 				const terms = [];
 				let iterations = 0;
 				for(const term of this) {

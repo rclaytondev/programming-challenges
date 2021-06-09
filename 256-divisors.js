@@ -16,8 +16,8 @@ const numbersWithFactorization = (exponents) => new Sequence(
 	The Sequence will contain the numbers in ascending order.
 	*/
 	function* numbersWithFactorization() {
-		exponents = exponents.sort((a, b) => a - b);
-		let primes = Sequence.PRIMES.slice(0, exponents.length).reverse();
+		exponents = exponents.sort((a, b) => b - a);
+		let primes = Sequence.PRIMES.slice(0, exponents.length);
 		let number = primes.map((p, i) => p ** exponents[i]).product();
 		while(true) {
 			yield number;
@@ -50,6 +50,9 @@ testing.addUnit("numbersWithFactorization()", [
 ]);
 
 const nextNumberWithFactorization = (exponents, primes, number) => {
+	if(!exponents.every((e, i) => e <= exponents[i - 1] || i === 0)) {
+		throw new Error("Exponents must be in descending order.");
+	}
 	let smallestUsablePrime = Infinity;
 	for(const prime of primes) {
 		const nextPrime = Sequence.PRIMES.nextTerm(prime);
@@ -63,14 +66,15 @@ const nextNumberWithFactorization = (exponents, primes, number) => {
 	let smallestAnswerPrimes = upperBoundPrimes;
 	const nextPrimes = function*(incompletePrimes) {
 		if(incompletePrimes.length >= exponents.length) { return; }
-		const partialProduct = incompletePrimes.map((p, i) => p ** exponents[i]).product();
-		const exponentsLeft = exponents.slice(incompletePrimes.length);
-		const smallestNotInPrimes = Sequence.PRIMES.find(p => !incompletePrimes.includes(p));
 		for(const prime of Sequence.PRIMES) {
-			const newPartialProduct = partialProduct * (prime ** exponents[incompletePrimes.length]);
 			if(incompletePrimes.includes(prime)) { continue; }
-			if(prime > smallestAnswer / (smallestNotInPrimes ** exponentsLeft.sum())) { break; }
-			if(newPartialProduct > smallestAnswer) { break; }
+			const partialProduct = [...incompletePrimes, prime].map((p, i) => p ** exponents[i]).product();
+			if(partialProduct * Sequence.PRIMES
+				.filter(v => ![...incompletePrimes, prime].includes(v))
+				.slice(0, exponents.length - incompletePrimes.length - 1)
+				.map((p, i) => p ** exponents[i + incompletePrimes.length + 1])
+				.product() > smallestAnswer
+			) { break; }
 			if(exponents[incompletePrimes.length] === exponents[incompletePrimes.length - 1] && prime > incompletePrimes.lastItem()) {
 				break;
 			}
@@ -91,20 +95,33 @@ const nextNumberWithFactorization = (exponents, primes, number) => {
 
 testing.addUnit("nextNumberWithFactorization()", [
 	() => {
-		const result = nextNumberWithFactorization(
-			[1, 2, 3],
-			[11, 3, 2],
+		const [nextNumber, nextPrimes] = nextNumberWithFactorization(
+			[3, 2, 1],
+			[2, 3, 11],
 			792
 		);
-		expect(result).toEqual([936, [13, 3, 2]]);
+		expect(nextNumber).toEqual(936);
+		expect(nextPrimes).toEqual([2, 3, 13]);
 	},
 	() => {
-		const result = nextNumberWithFactorization(
-			[1, 1, 1, 4, 4],
-			[11, 7, 5, 2, 3],
+		const [nextNumber, nextPrimes] = nextNumberWithFactorization(
+			[4, 4, 1, 1, 1],
+			[2, 3, 5, 7, 11],
 			498960
 		);
-		expect(result).toEqual([589680, [13, 7, 5, 2, 3]]);
+		expect(nextNumber).toEqual(589680);
+		expect(nextPrimes.slice(0, 2).sort()).toEqual([2, 3]);
+		expect(nextPrimes.slice(2, 5).sort()).toEqual([13, 5, 7]);
+	},
+	() => {
+		const [nextNumber, nextPrimes] = nextNumberWithFactorization(
+			[4, 4, 1, 1, 1],
+			[2, 3, 13, 7, 5],
+			589680
+		);
+		expect(nextNumber).toEqual(771120);
+		expect(nextPrimes.slice(0, 2).sort()).toEqual([2, 3]);
+		expect(nextPrimes.slice(2, 5).sort()).toEqual([17, 5, 7]);
 	}
 ]);
 
