@@ -34,44 +34,35 @@ testing.addUnit("leastWith2ToTheNDivisors()", {
 	},
 });
 
-const waysToExpressAsSum = (sum => {
-	if(sum === 0) {
-		return new Set([[]]);
-	}
-	if(sum === 1) {
-		return new Set([[1]]);
-	}
-	const ways = new Set();
-	for(let i = 1; i <= sum; i ++) {
-		const recursedWays = (
-			waysToExpressAsSum(sum - i)
-			.filter(way => way[0] >= i || !way.length)
-		);
-		for(const way of recursedWays) {
-			ways.add([i, ...way]);
+const waysToExpressAsSum = function*(sum) {
+	for(const list of Tree.iterate([], function*(incompleteList) {
+		const partialSum = incompleteList.sum();
+		for(let i = incompleteList.lastItem() ?? 1; i + partialSum <= sum; i ++) {
+			yield [...incompleteList, i];
 		}
+	}, true)) {
+		if(list.sum() === sum) { yield list; }
 	}
-	return ways;
-}).memoize(true);
+}
 testing.addUnit("waysToExpressAsSum", {
 	"returns the correct result for 1": () => {
-		expect(waysToExpressAsSum(1)).toEqual(new Set([[1]]));
+		expect(new Set(waysToExpressAsSum(1))).toEqual(new Set([[1]]));
 	},
 	"returns the correct result for 2": () => {
-		expect(waysToExpressAsSum(2)).toEqual(new Set([
+		expect(new Set(waysToExpressAsSum(2))).toEqual(new Set([
 			[1, 1],
 			[2]
 		]));
 	},
 	"returns the correct result for 3": () => {
-		expect(waysToExpressAsSum(3)).toEqual(new Set([
+		expect(new Set(waysToExpressAsSum(3))).toEqual(new Set([
 			[1, 1, 1],
 			[1, 2],
 			[3]
 		]));
 	},
 	"returns the correct result for 4": () => {
-		expect(waysToExpressAsSum(4)).toEqual(new Set([
+		expect(new Set(waysToExpressAsSum(4))).toEqual(new Set([
 			[1, 1, 1, 1],
 			[1, 1, 2],
 			[1, 3],
@@ -80,7 +71,7 @@ testing.addUnit("waysToExpressAsSum", {
 		]));
 	},
 	"returns the correct result for 5": () => {
-		expect(waysToExpressAsSum(5)).toEqual(new Set([
+		expect(new Set(waysToExpressAsSum(5))).toEqual(new Set([
 			[1, 1, 1, 1, 1],
 			[1, 1, 1, 2],
 			[1, 1, 3],
