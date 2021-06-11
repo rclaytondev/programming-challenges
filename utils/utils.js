@@ -1,5 +1,12 @@
-Function.prototype.method = function method(name, func) {
-	this.prototype[name] = func;
+Function.prototype.method = function() {
+	if(typeof arguments[0] === "string" && typeof arguments[1] === "function") {
+		const [name, func] = arguments;
+		this.prototype[name] = func;
+	}
+	else if(typeof arguments[1] === "function") {
+		const [func] = arguments;
+		this.prototype[func.name] = func;
+	}
 	return this;
 };
 Function.method("memoize", function memoize(stringifyKeys = false, cloneOutput = false) {
@@ -283,6 +290,21 @@ Math.rotate = function(x, y, deg, centerX, centerY) {
 };
 Math.logBase = function(base, number) {
 	return Math.log(number) / Math.log(base);
+};
+Math.divisors = function(number) {
+	/*
+	Returns the divisors of the number, in an array in ascending order.
+	Runs in O(sqrt(n)) time.
+	*/
+	const divisorsBelowSqrt = [];
+	const divisorsAboveSqrt = [];
+	for(let i = 1; i * i <= number; i ++) {
+		if(number % i === 0) {
+			divisorsBelowSqrt.push(i);
+			if(i * i !== number) { divisorsAboveSqrt.push(number / i); }
+		}
+	}
+	return [...divisorsBelowSqrt, ...divisorsAboveSqrt.reverse()];
 };
 Math.factorize = function(number, mode = "factors-list") {
 	let result;
@@ -611,6 +633,24 @@ Object.method("mapKeys", function mapKeys(callback) {
 		result[key] = callback(key, this[key]);
 	});
 	return result;
+});
+Object.method("watch", function watch(key, callback) {
+	const getter = this.__lookupGetter__(key);
+	const setter = this.__lookupSetter__(key);
+	let value = this[key];
+	Object.defineProperty(this, key, {
+		get: () => {
+			if(typeof getter === "function") { getter(); }
+			return value;
+		},
+		set: (newValue) => {
+			callback(this, key, newValue);
+			if(typeof setter === "function") {
+				setter();
+			}
+			else { value = newValue; }
+		}
+	});
 });
 Object.typeof = function(value) {
 	/*
