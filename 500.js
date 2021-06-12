@@ -7,16 +7,17 @@ const naiveSolution = (log2OfDivisors) => {
 	}
 };
 const leastWith2ToTheNDivisors = (log2OfDivisors) => {
+	log2OfDivisors = BigInt(log2OfDivisors);
 	let exponents = [];
 	for(let i = 0; i < log2OfDivisors; i ++) {
 		let nextExponents = [];
 		let nextNumber = Infinity;
 		for(let i = 0; i < exponents.length + 1; i ++) {
-			const exponent = exponents[i] ?? 0;
-			const newExponent = 2 * exponent + 1;
+			const exponent = exponents[i] ?? 0n;
+			const newExponent = 2n * exponent + 1n;
 			const newExponents = [...exponents];
 			newExponents[i] = newExponent;
-			const newNumber = newExponents.map((e, i) => Sequence.PRIMES.nthTerm(i) ** e).product();
+			const newNumber = newExponents.map((e, i) => BigInt(Sequence.PRIMES.nthTerm(i)) ** e).product();
 			if(newNumber < nextNumber) {
 				nextNumber = newNumber;
 				nextExponents = newExponents;
@@ -24,26 +25,26 @@ const leastWith2ToTheNDivisors = (log2OfDivisors) => {
 		}
 		exponents = nextExponents;
 	}
-	return exponents.map((e, i) => Sequence.PRIMES.nthTerm(i) ** e).product();
+	return exponents.map((e, i) => BigInt(Sequence.PRIMES.nthTerm(i)) ** e).product();
 };
 testing.addUnit("leastWith2ToTheNDivisors()", {
 	"returns the correct result for 2": () => {
-		expect(leastWith2ToTheNDivisors(2)).toEqual(6);
+		expect(leastWith2ToTheNDivisors(2)).toEqual(6n);
 	},
 	"returns the correct result for 3": () => {
-		expect(leastWith2ToTheNDivisors(3)).toEqual(24);
+		expect(leastWith2ToTheNDivisors(3)).toEqual(24n);
 	},
 	"returns the correct result for 4": () => {
-		expect(leastWith2ToTheNDivisors(4)).toEqual(120);
+		expect(leastWith2ToTheNDivisors(4)).toEqual(120n);
 	},
 	"returns the correct result for 5": () => {
-		expect(leastWith2ToTheNDivisors(5)).toEqual(840);
+		expect(leastWith2ToTheNDivisors(5)).toEqual(840n);
 	},
 	"returns the correct result for 6": () => {
-		expect(leastWith2ToTheNDivisors(6)).toEqual(7560);
+		expect(leastWith2ToTheNDivisors(6)).toEqual(7560n);
 	},
 	"returns the correct result for 7": () => {
-		expect(leastWith2ToTheNDivisors(7)).toEqual(83160);
+		expect(leastWith2ToTheNDivisors(7)).toEqual(83160n);
 	},
 });
 
