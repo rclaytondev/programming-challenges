@@ -7,11 +7,24 @@ const naiveSolution = (log2OfDivisors) => {
 	}
 };
 const leastWith2ToTheNDivisors = (log2OfDivisors) => {
-	let result = Infinity;
-	for(const sum of waysToExpressAsSum(log2OfDivisors)) {
-		result = Math.min(result, leastWithFactorization(sum.map(n => 2 ** n - 1)));
+	let exponents = [];
+	for(let i = 0; i < log2OfDivisors; i ++) {
+		let nextExponents = [];
+		let nextNumber = Infinity;
+		for(let i = 0; i < exponents.length + 1; i ++) {
+			const exponent = exponents[i] ?? 0;
+			const newExponent = 2 * exponent + 1;
+			const newExponents = [...exponents];
+			newExponents[i] = newExponent;
+			const newNumber = newExponents.map((e, i) => Sequence.PRIMES.nthTerm(i) ** e).product();
+			if(newNumber < nextNumber) {
+				nextNumber = newNumber;
+				nextExponents = newExponents;
+			}
+		}
+		exponents = nextExponents;
 	}
-	return result;
+	return exponents.map((e, i) => Sequence.PRIMES.nthTerm(i) ** e).product();
 };
 testing.addUnit("leastWith2ToTheNDivisors()", {
 	"returns the correct result for 2": () => {
