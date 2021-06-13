@@ -8,34 +8,33 @@ const naiveSolution = (log2OfDivisors) => {
 };
 const leastWith2ToTheNDivisors = (log2OfDivisors, modulo = Infinity) => {
 	log2OfDivisors = BigInt(log2OfDivisors);
-	let exponents = [];
-	let indices = new Set([0]);
+	const exponents = [];
+	const indices = [0];
+	const multipliers = [2n];
 	for(let i = 0; i < log2OfDivisors; i ++) {
-		if(i % 500 === 0 && i !== 0) {
-			console.log(`completed ${i}/${log2OfDivisors} iterations (${(100 * Number(i) / Number(log2OfDivisors)).toFixed(2)}%)`);
-		}
-		let nextExponents = [];
-		let upgradedIndex = 0;
-		let smallestMultiplier = Infinity;
-		for(const index of indices) {
-			const exponent = exponents[index] ?? 0n;
-			const newExponent = 2n * exponent + 1n;
-			const multiplier = BigInt(Sequence.PRIMES.nthTerm(index)) ** (newExponent - exponent);
-			if(multiplier < smallestMultiplier) {
-				const newExponents = [...exponents];
-				newExponents[index] = newExponent;
-				nextExponents = newExponents;
-				upgradedIndex = index;
-				smallestMultiplier = multiplier;
+		const index = indices[0];
+		const exponent = exponents[index] ?? 0;
+		exponents[index] = 2 * exponent + 1;
+		multipliers.shift(), indices.shift();
+		for(const possibleIndex of [index, index + 1]) {
+			if(!possibleIndex || exponents[possibleIndex] < exponents[possibleIndex - 1] || possibleIndex === exponents.length) {
+				const multiplier = BigInt(Sequence.PRIMES.nthTerm(possibleIndex)) ** BigInt((exponents[possibleIndex] ?? 0) + 1);
+				for(let j = 0; j <= multipliers.length; j ++) {
+					if((multipliers[j] ?? Infinity) > multiplier) {
+						multipliers.splice(j, 0, multiplier);
+						indices.splice(j, 0, possibleIndex);
+						break;
+					}
+				}
 			}
 		}
-		exponents = nextExponents;
-		if(exponents[upgradedIndex] >= exponents[upgradedIndex - 1]) {
-			indices.delete(upgradedIndex);
-		}
-		indices.add(upgradedIndex + 1);
 	}
-	return exponents.map((e, i) => BigInt(Sequence.PRIMES.nthTerm(i)) ** e).product();
+	let result = 1;
+	exponents.forEach((exponent, index) => {
+		result *= Sequence.PRIMES.nthTerm(index) ** exponent;
+		result %= modulo;
+	});
+	return result;
 };
 testing.addUnit("leastWith2ToTheNDivisors()", {
 	"returns the correct result for 2": () => {
@@ -57,6 +56,8 @@ testing.addUnit("leastWith2ToTheNDivisors()", {
 		expect(leastWith2ToTheNDivisors(7)).toEqual(83160n);
 	},
 });
+
+const defactorize = (exponents) => exponents.map((e, i) => BigInt(Sequence.PRIMES.nthTerm(i)) ** BigInt(e)).product();
 
 const waysToExpressAsSum = function*(sum) {
 	for(const list of Tree.iterate([], function*(incompleteList) {
@@ -121,6 +122,18 @@ testing.addUnit("leastWithFactorization()", {
 	},
 });
 
-// testing.testAll();
 
-console.log(leastWith2ToTheNDivisors(1000));
+testing.testAll();
+// const MODULO = 500500507;
+// const time = utils.timeFunction(() => {
+// 	console.log(`the answer is ${leastWith2ToTheNDivisors(500500, MODULO)}`);
+// });
+
+
+const num1 = Math.round(Math.random() * 100);
+const num2 = Math.round(Math.random() * 100);
+const num3 = Math.round(Math.random() * 100);
+const modulo = Math.round(Math.random() * 100);
+let product = 1;
+const actualAnswer = (num1 * num2 * num3) % modulo;
+const myAnswer = ((((num1 % modulo) * num2) % modulo) * num3) % modulo;
