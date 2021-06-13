@@ -50,11 +50,11 @@ class Sequence {
 			return this.nthTerm(termIndex);
 		}
 
-		let iterations = 0;
-		for(const term of this) {
-			if(iterations === termIndex) { return term; }
-			iterations ++;
+		for(let i = this.numCachedTerms; i <= termIndex; i ++) {
+			this.cachedTerms[i] = this.generator.next().value;
 		}
+		this.numCachedTerms = termIndex + 1;
+		return this.cachedTerms[termIndex];
 	}
 	nextTerm(term) {
 		return this.nthTerm(this.indexOf(term) + 1);

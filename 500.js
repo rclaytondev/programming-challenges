@@ -6,24 +6,34 @@ const naiveSolution = (log2OfDivisors) => {
 		}
 	}
 };
-const leastWith2ToTheNDivisors = (log2OfDivisors) => {
+const leastWith2ToTheNDivisors = (log2OfDivisors, modulo = Infinity) => {
 	log2OfDivisors = BigInt(log2OfDivisors);
 	let exponents = [];
+	let indices = new Set([0]);
 	for(let i = 0; i < log2OfDivisors; i ++) {
+		if(i % 500 === 0 && i !== 0) {
+			console.log(`completed ${i}/${log2OfDivisors} iterations (${(100 * Number(i) / Number(log2OfDivisors)).toFixed(2)}%)`);
+		}
 		let nextExponents = [];
-		let nextNumber = Infinity;
-		for(let i = 0; i < exponents.length + 1; i ++) {
-			const exponent = exponents[i] ?? 0n;
+		let upgradedIndex = 0;
+		let smallestMultiplier = Infinity;
+		for(const index of indices) {
+			const exponent = exponents[index] ?? 0n;
 			const newExponent = 2n * exponent + 1n;
-			const newExponents = [...exponents];
-			newExponents[i] = newExponent;
-			const newNumber = newExponents.map((e, i) => BigInt(Sequence.PRIMES.nthTerm(i)) ** e).product();
-			if(newNumber < nextNumber) {
-				nextNumber = newNumber;
+			const multiplier = BigInt(Sequence.PRIMES.nthTerm(index)) ** (newExponent - exponent);
+			if(multiplier < smallestMultiplier) {
+				const newExponents = [...exponents];
+				newExponents[index] = newExponent;
 				nextExponents = newExponents;
+				upgradedIndex = index;
+				smallestMultiplier = multiplier;
 			}
 		}
 		exponents = nextExponents;
+		if(exponents[upgradedIndex] >= exponents[upgradedIndex - 1]) {
+			indices.delete(upgradedIndex);
+		}
+		indices.add(upgradedIndex + 1);
 	}
 	return exponents.map((e, i) => BigInt(Sequence.PRIMES.nthTerm(i)) ** e).product();
 };
@@ -111,4 +121,6 @@ testing.addUnit("leastWithFactorization()", {
 	},
 });
 
-testing.testAll();
+// testing.testAll();
+
+console.log(leastWith2ToTheNDivisors(1000));
