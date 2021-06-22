@@ -57,77 +57,10 @@ testing.addUnit("leastWith2ToTheNDivisors()", {
 	},
 });
 
-const defactorize = (exponents) => exponents.map((e, i) => BigInt(Sequence.PRIMES.nthTerm(i)) ** BigInt(e)).product();
 
-const waysToExpressAsSum = function*(sum) {
-	for(const list of Tree.iterate([], function*(incompleteList) {
-		const partialSum = incompleteList.sum();
-		for(let i = incompleteList.lastItem() ?? 1; i + partialSum <= sum; i ++) {
-			yield [...incompleteList, i];
-		}
-	}, true)) {
-		if(list.sum() === sum) { yield list; }
-	}
-}
-testing.addUnit("waysToExpressAsSum", {
-	"returns the correct result for 1": () => {
-		expect(new Set(waysToExpressAsSum(1))).toEqual(new Set([[1]]));
-	},
-	"returns the correct result for 2": () => {
-		expect(new Set(waysToExpressAsSum(2))).toEqual(new Set([
-			[1, 1],
-			[2]
-		]));
-	},
-	"returns the correct result for 3": () => {
-		expect(new Set(waysToExpressAsSum(3))).toEqual(new Set([
-			[1, 1, 1],
-			[1, 2],
-			[3]
-		]));
-	},
-	"returns the correct result for 4": () => {
-		expect(new Set(waysToExpressAsSum(4))).toEqual(new Set([
-			[1, 1, 1, 1],
-			[1, 1, 2],
-			[1, 3],
-			[2, 2],
-			[4]
-		]));
-	},
-	"returns the correct result for 5": () => {
-		expect(new Set(waysToExpressAsSum(5))).toEqual(new Set([
-			[1, 1, 1, 1, 1],
-			[1, 1, 1, 2],
-			[1, 1, 3],
-			[1, 2, 2],
-			[1, 4],
-			[2, 3],
-			[5]
-		]));
-	},
-});
-
-const leastWithFactorization = (exponents) => {
-	exponents = [...exponents].sort((a, b) => b - a); // descending order
-	const primes = Sequence.PRIMES.slice(0, exponents.length);
-	return primes.map((p, i) => p ** exponents[i]).product();
-};
-testing.addUnit("leastWithFactorization()", {
-	"returns the correct answer for a single exponent": () => {
-		expect(leastWithFactorization([5])).toEqual(32);
-	},
-	"returns the correct answer for multiple exponents": () => {
-		expect(leastWithFactorization([2, 3])).toEqual(72);
-	},
-});
-
-
-testing.testAll();
-// const MODULO = 500500507;
-// const time = utils.timeFunction(() => {
-// 	console.log(`the answer is ${leastWith2ToTheNDivisors(500500, MODULO)}`);
-// });
+// testing.testAll();
+const MODULO = 500500507;
+console.log(`the answer is ${leastWith2ToTheNDivisors(500500, MODULO)}`);
 
 
 const num1 = Math.round(Math.random() * 100);
