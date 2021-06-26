@@ -16,7 +16,7 @@ const digitsBelow = ((number, digit) => {
 		}
 	}
 	return result;
-}).memoize();
+}).memoize(true);
 testing.addUnit("digitsBelow()", {
 	"correctly returns the number of 1 digits below 1": () => {
 		expect(digitsBelow(1, 1)).toEqual(1);
