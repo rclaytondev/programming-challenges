@@ -49,35 +49,22 @@ testing.addUnit("digitsBelow()", {
 
 const isSolution = (num, digit) => digitsBelow(num, digit) === num;
 const findSolutions = (digit, min, max) => {
-	/* returns solutions in the range (inclusive). */
-	if(min > max) { return []; }
-	if(min === max) { return isSolution(min, digit) ? [min] : []; }
-	const initialDigits = digitsBelow(min, digit);
-	if(initialDigits < min) {
-		const newMin = binarySearch(
-			min, max,
-			(num) => digitsBelow(num, digit) - min
-		);
-		if(min === newMin) {
-			/* do a linear search to find the next solution (multiple if they are consecutive), then resume the faster binary-search algorithm */
-			let solutions = new Set();
-			let i;
-			for(i = min; i <= max; i ++) {
-				if(isSolution(i)) { solutions.add(i); }
-				else { break; }
-			}
-			return new Set([...solutions, ...findSolutions(digit, i + 1, max)]);
+	let solutions = new Set();
+	while(min <= max) {
+		const initialDigits = digitsBelow(min, digit);
+		if(initialDigits < min) {
+			const newMin = binarySearch(min, max, n => digitsBelow(n, digit) - min);
+			if(newMin === min) { min ++; }
+			else { min = newMin; }
 		}
+		else if(initialDigits > min) { min = initialDigits; }
 		else {
-			return findSolutions(digit, newMin, max);
+			/* min is a solution */
+			solutions.add(min);
+			min ++;
 		}
 	}
-	else if(initialDigits > min) {
-		return findSolutions(digit, initialDigits, max);
-	}
-	else {
-		return new Set([min, ...findSolutions(digit, min + 1, max)]);
-	}
+	return solutions;
 };
 testing.addUnit("findSolutions()", {
 	"correctly finds solutions for 1 in the range 190,000-200,000": () => {
