@@ -48,19 +48,8 @@ testing.addUnit("digitsBelow()", {
 });
 
 const isSolution = (num, digit) => digitsBelow(num, digit) === num;
-const naiveFindSolutions = (digit, min, max) => {
-	const solutions = new Set();
-	for(let i = min; i <= max; i ++) {
-		if(isSolution(i, digit)) { solutions.add(i); }
-	}
-	return solutions;
-};
 const findSolutions = (digit, min, max) => {
 	/* returns solutions in the range (inclusive). */
-	if(max === Infinity) {
-		let solutions = findSolutions(digit, 1, 1e10);
-		// for(let i = 1e10; i < Infinity; i += )
-	}
 	if(min > max) { return []; }
 	if(min === max) { return isSolution(min, digit) ? [min] : []; }
 	const initialDigits = digitsBelow(min, digit);
@@ -80,7 +69,6 @@ const findSolutions = (digit, min, max) => {
 			return new Set([...solutions, ...findSolutions(digit, i + 1, max)]);
 		}
 		else {
-			// console.log(`eliminated ${newMin - min} numbers`);
 			return findSolutions(digit, newMin, max);
 		}
 	}
@@ -172,16 +160,6 @@ testing.addUnit("binarySearch()", {
 	},
 });
 testing.testAll();
-
-const testNaiveMethod = () => {
-	const timeBefore = Date.now();
-	const result = naiveFindSolutions(1, 190000, 200000);
-	const timeAfter = Date.now();
-	const time = timeAfter - timeBefore;
-	const seconds = time / 1000;
-	console.log(`the function took ${seconds} seconds.`);
-};
-
 
 const solve = () => {
 	const UPPER_BOUND = 1e11;
