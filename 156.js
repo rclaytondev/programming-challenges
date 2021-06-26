@@ -1,5 +1,5 @@
 const digitsBelow = ((number, digit) => {
-	const numDigits = Math.max(1, Math.ceil(Math.log10(number)));
+	const numDigits = `${number}`.length;
 	let result = 0;
 	for(let digitIndex = 0; digitIndex < numDigits; digitIndex ++) {
 		const digitsToLeft = Math.floor(number / (10 ** (digitIndex + 1)));
@@ -26,6 +26,9 @@ testing.addUnit("digitsBelow()", {
 	},
 	"correctly returns the number of 1 digits below 199981": () => {
 		expect(digitsBelow(199981, 1)).toEqual(199981);
+	},
+	"correctly returns the number of 1 digits below 1000": () => {
+		expect(digitsBelow(1000, 1)).toEqual(301);
 	},
 	"correctly returns the number of 4 digits below 204": () => {
 		expect(digitsBelow(204, 4)).toEqual(41);
