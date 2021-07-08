@@ -1,47 +1,12 @@
-const isDSNumber = (number) => {
-	const digits = number.digits();
-	return digits.some((digit, index) => {
-		const sumOfOthers = digits.filter((v, i) => i !== index).sum();
-		return digit === sumOfOthers;
-	});
+const MOD_EXP = 16;
+const MODULO = 10 ** MOD_EXP;
+const combinations = (n, r) => {
+	/* Returns (n!) / (r! * (n-r)!). */
+	let result = 1;
+	for(let i = n - r + 1; i <= n; i ++) { result *= i; }
+	for(let i = 1; i <= r; i ++) { result /= i; }
+	return result;
 };
-const dsNumbers = (maxDigits) => {
-	let numbers = new Set();
-	for(let i = 1; `${i}`.length <= maxDigits; i ++) {
-		if(isDSNumber(i)) { numbers.add(i); }
-	}
-	return numbers;
-};
-
-const type1Numbers = function*(maxDigits) {
-	for(let digitIndex = 0; digitIndex < maxDigits; digitIndex ++) {
-		for(const digit of DIGITS) {
-			/* find numbers with this digit at this index being the sum of the others */
-			for(const partition of partitions(digit).filter(p => p.length < maxDigits)) {
-				const initialDigits = new Array(maxDigits).fill(0);
-				initialDigits[digitIndex] = digit;
-				for(const digits of Tree.iterate(initialDigits, function*(partialDigits) {
-					const digitsPlaced = partialDigits.filter(v => v !== 0).length - 1;
-					const nextDigit = partition[digitsPlaced];
-					const startIndex = partialDigits.lastIndexOf(nextDigit) + 1;
-					for(let i = startIndex; i < partialDigits.length; i ++) {
-						if(partialDigits[i] === 0) {
-							const newPartialDigits = [...partialDigits];
-							newPartialDigits[i] = nextDigit;
-							yield newPartialDigits;
-						}
-					}
-				})) {
-					if(digits.sum() === 2 * digit) {
-						yield digits.map((n, i) => n * 10 ** (digits.length - i - 1)).sum();
-					}
-				}
-			}
-		}
-	}
-};
-
-const DIGITS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 const partitions = (number => {
 	if(number <= 1) { return []; }
 	const ways = [];
@@ -55,65 +20,68 @@ const partitions = (number => {
 	}
 	return ways;
 }).memoize(true);
-const type1Sum = (maxDigits, modulo = Infinity) => {
-	let result = 0;
-	for(const number of type1Numbers(maxDigits)) {
-		result += number;
+const DIGITS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+const PARTITIONS_1_TO_9 = [1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => partitions(n)).flat(1);
+const removeFirst = (array, value) => {
+	let result = [];
+	let removed = false;
+	for(const v of array) {
+		if(v !== value || removed) { result.push(v); }
+		else { removed = true; }
 	}
 	return result;
 };
-const type2Sum = (maxDigits, modulo = Infinity) => {
+
+const type1Sum = (maxDigits) => {
+	let result = 0;
+	for(let digitIndex = 0; digitIndex < Math.min(maxDigits, MOD_EXP + 1); digitIndex ++) {
+		for(let digit = 1; digit <= 9; digit ++) {
+			const digitValue = digit * (10 ** digitIndex);
+			for(const partition of partitions(digit).filter(p => p.length < maxDigits)) {
+				const numOccurences = combinations(maxDigits - 1, partition.length) * partition.permutations().size; // number of types this digit appears in this position as the highest digit in the number
+				result += digitValue * numOccurences;
+				result %= MODULO;
+			}
+			for(const partition of PARTITIONS_1_TO_9.filter(p => p.includes(digit) && p.length < maxDigits)) {
+				const otherNumbers = [...removeFirst(partition, digit), partition.sum()];
+				const numOccurences = combinations(maxDigits - 1, otherNumbers.length) * otherNumbers.permutations().size;
+				result += digitValue * numOccurences;
+				result %= MODULO;
+			}
+		}
+	}
+	return result;
+};
+const type2Sum = (maxDigits) => {
 	let sum = 0;
-	for(let digitIndex = 0; digitIndex < maxDigits; digitIndex ++) {
+	for(let digitIndex = 0; digitIndex < Math.min(maxDigits, MOD_EXP + 1); digitIndex ++) {
 		for(const digit of DIGITS) {
 			sum += (maxDigits - 1) * (digit) * (10 ** digitIndex);
+			sum %= MODULO;
 		}
 	}
 	return sum;
 };
-const dsNumSum = (maxDigits, modulo = Infinity) => {
-	return (type1Sum(maxDigits, modulo) + type2Sum(maxDigits, modulo)) % modulo;
+const dsNumSum = (maxDigits) => {
+	return (type1Sum(maxDigits) + type2Sum(maxDigits)) % MODULO;
 };
-testing.addUnit("type1Sum()", {
-	"returns the correct sum of type-1 numbers with 3 digits or less": () => {
-		const result = type1Sum(3);
-		expect(result).toEqual(53280);
+
+testing.addUnit("combinations()", {
+	"returns the correct result for the input [10, 5]": () => {
+		expect(combinations(10, 5)).toEqual(252);
 	},
-	"returns the correct sum of type-1 numbers with 4 digits or less": () => {
-		const result = type1Sum(4);
-		expect(result).toEqual(2999700);
+	"returns the correct result for the input [22, 7]": () => {
+		expect(combinations(22, 7)).toEqual(170544);
 	},
-	"returns the correct sum of type-1 numbers with 7 digits or less": () => {
-		const result = type1Sum(7);
-		expect(result).toEqual(85199991480);
-	},
-});
-testing.addUnit("type2Sum()", {
-	"returns the correct sum of type-2 numbers with 2 digits or less": () => {
-		const expected = 11 + 22 + 33 + 44 + 55 + 66 + 77 + 88 + 99; // 495
-		expect(type2Sum(2)).toEqual(expected);
-	},
-	"returns the correct sum of type-2 numbers with 3 digits or less": () => {
-		const expected = (
-			11 + 22 + 33 + 44 + 55 + 66 + 77 + 88 + 99 +
-			101 + 202 + 303 + 404 + 505 + 606 + 707 + 808 + 909 +
-			110 + 220 + 330 + 440 + 550 + 660 + 770 + 880 + 990
-		); // 9990
-		expect(type2Sum(3)).toEqual(expected);
-	},
-	"returns the correct sum of type-2 numbers with 4 digits or less": () => {
-		const expected = (
-			11 + 22 + 33 + 44 + 55 + 66 + 77 + 88 + 99 +
-			101 + 202 + 303 + 404 + 505 + 606 + 707 + 808 + 909 +
-			110 + 220 + 330 + 440 + 550 + 660 + 770 + 880 + 990 +
-			1100 + 2200 + 3300 + 4400 + 5500 + 6600 + 7700 + 8800 + 9900 +
-			1010 + 2020 + 3030 + 4040 + 5050 + 6060 + 7070 + 8080 + 9090 +
-			1001 + 2002 + 3003 + 4004 + 5005 + 6006 + 7007 + 8008 + 9009
-		);
-		expect(type2Sum(4)).toEqual(expected);
+	"doesn't return Infinity for inputs that require large intermediate values": () => {
+		// regression test
+		expect(combinations(200, 2)).toEqual(19900);
 	}
 });
 testing.addUnit("dsNumSum()", {
+	"returns the correct sum of DS-numbers with 2 digits or less": () => {
+		expect(dsNumSum(2)).toEqual(495);
+	},
 	"returns the correct sum of DS-numbers with 3 digits or less": () => {
 		expect(dsNumSum(3)).toEqual(63270);
 	},
@@ -124,10 +92,4 @@ testing.addUnit("dsNumSum()", {
 		expect(dsNumSum(7)).toEqual(85499991450);
 	}
 });
-
-const solve = () => {
-	const answer = dsNumSum(2020, 1e16);
-	console.log(`the answer is ${answer}`);
-	return answer;
-};
 testing.testAll();
