@@ -66,7 +66,7 @@ const sequentialTermsBelow = ((numTerms) => {
 	indices are less than or equal to the given number of terms. */
 	numTerms = BigInt(numTerms);
 
-	const generatingTerms = utils.binarySearch(0n, divideCeil(numTerms, 2n), n => n - termsFrom(n).total, "last");
+	const generatingTerms = utils.binarySearch(0n, divideCeil(numTerms, 2n), n => termsFrom(n).total - numTerms, "last");
 	const terms = termsFrom(generatingTerms);
 	if(terms.total === numTerms) {
 		return terms.sequential;
@@ -174,3 +174,5 @@ const result = fractalSequenceSum(TERMS);
 console.log(`sum of first ${TERMS} terms: ${result}`);
 const functionCalls = timesCalled1 + timesCalled2;
 console.log(`${functionCalls} function calls (${functionCalls / TERMS} for each term, or ${TERMS / functionCalls} terms for each function call)`);
+
+testing.testAll();
