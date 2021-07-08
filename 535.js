@@ -55,9 +55,13 @@ testing.addUnit("fractalSequenceSum()", {
 	}
 });
 
+let timesCalled1 = 0;
+let timesCalled2 = 0;
+
 const divideCeil = (a, b) => (a / b) + ((a % b === 0n) ? 0n : 1n);
 const divideRound = (a, b) => (a % b >= divideCeil(b, 2n)) ? divideCeil(a, b) : a / b;
 const sequentialTermsBelow = ((numTerms) => {
+	timesCalled1 ++;
 	/* Returns the number of sequential terms whose one-based
 	indices are less than or equal to the given number of terms. */
 	numTerms = BigInt(numTerms);
@@ -113,6 +117,7 @@ testing.addUnit("sequentialTermsBelow()", sequentialTermsBelow, [
 ]);
 
 const termsFrom = ((termLimit) => {
+	timesCalled2 ++;
 	termLimit = BigInt(termLimit);
 	if(termLimit <= 6) {
 		return {
@@ -179,3 +184,10 @@ testing.addUnit("sumOfSqrts()", sumOfSqrts, [
 	[9, 16n],
 	[10, 19n]
 ]);
+
+
+const TERMS = 1e7;
+const result = fractalSequenceSum(TERMS);
+console.log(`sum of first ${TERMS} terms: ${result}`);
+const functionCalls = timesCalled1 + timesCalled2;
+console.log(`${functionCalls} function calls (${functionCalls / TERMS} for each term, or ${TERMS / functionCalls} terms for each function call)`);
