@@ -66,24 +66,7 @@ const sequentialTermsBelow = ((numTerms) => {
 	indices are less than or equal to the given number of terms. */
 	numTerms = BigInt(numTerms);
 
-	let minGeneratingTerms = 0n; // inclusive
-	let maxGeneratingTerms = divideCeil(numTerms, 2n); // inclusive
-	while(minGeneratingTerms !== maxGeneratingTerms) {
-		const mid = divideRound(minGeneratingTerms + maxGeneratingTerms, 2n);
-		const terms = termsFrom(mid);
-		if(terms.total > numTerms) {
-			if(maxGeneratingTerms === minGeneratingTerms + 1n) {
-				minGeneratingTerms = maxGeneratingTerms = termsFrom(minGeneratingTerms).total >= numTerms ? minGeneratingTerms : maxGeneratingTerms;
-				break;
-			}
-			else { maxGeneratingTerms = mid; }
-		}
-		else if(terms.total < numTerms) { minGeneratingTerms = mid + 1n; }
-		else {
-			minGeneratingTerms = maxGeneratingTerms = mid;
-		}
-	}
-	const generatingTerms = minGeneratingTerms; // minGeneratingTerms === maxGeneratingTerms
+	const generatingTerms = utils.binarySearch(0n, divideCeil(numTerms, 2n), n => n - termsFrom(n).total, "last");
 	const terms = termsFrom(generatingTerms);
 	if(terms.total === numTerms) {
 		return terms.sequential;
