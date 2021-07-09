@@ -66,7 +66,12 @@ const sequentialTermsBelow = ((numTerms) => {
 	indices are less than or equal to the given number of terms. */
 	numTerms = BigInt(numTerms);
 
-	const generatingTerms = utils.binarySearch(0n, divideCeil(numTerms, 2n), n => termsFrom(n).total - numTerms, "last");
+	const generatingTerms = utils.binarySearch(
+		invSumOfSqrts(numTerms),
+		divideCeil(numTerms, 2n),
+		n => termsFrom(n).total - numTerms,
+		"last"
+	);
 	const terms = termsFrom(generatingTerms);
 	if(terms.total === numTerms) {
 		return terms.sequential;
@@ -144,7 +149,7 @@ const inefficientSumOfSqrts = (limit) => {
 	}
 	return sum;
 };
-const sumOfSqrts = (limit) => {
+const sumOfSqrts = (limit => {
 	limit = BigInt(limit);
 	let sum = 0n;
 	let i;
@@ -153,7 +158,7 @@ const sumOfSqrts = (limit) => {
 	}
 	sum += i * (limit - i ** 2n + 1n);
 	return sum;
-};
+}).memoize();
 testing.addUnit("sumOfSqrts()", sumOfSqrts, [
 	[0, 0n],
 	[1, 1n],
@@ -167,6 +172,15 @@ testing.addUnit("sumOfSqrts()", sumOfSqrts, [
 	[9, 16n],
 	[10, 19n]
 ]);
+const invSumOfSqrts = (sum) => {
+	sum = BigInt(sum);
+	return utils.binarySearch(
+		0n,
+		sum,
+		n => (sumOfSqrts(n) + n) - sum,
+		"last"
+	);
+};
 
 
 const TERMS = 1e7;
