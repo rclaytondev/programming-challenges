@@ -202,9 +202,17 @@ testing.addUnit("numCastles()", {
 		expect(result).toEqual(3);
 	},
 	"returns the correct result for a 4x3 castle": () => {
-		// const result = numCastles(4, 3);
-		// expect(result).toEqual();
-	}
+		const result = numCastles(4, 3);
+		expect(result).toEqual(21);
+	},
+	"returns the correct result for a 5x3 castle": () => {
+		const result = numCastles(5, 3);
+		expect(result).toEqual(89);
+	},
+	"returns the correct result for a 4x4 castle": () => {
+		const result = numCastles(4, 4);
+		expect(result).toEqual(117);
+	},
 });
 
 
