@@ -15,13 +15,20 @@ class Castle {
 		}
 		return blocks;
 	}
-
 	isValid() {
 		return (
 			this.heights.every(h => h >= 1) &&
 			this.heights.some(h => h === this.height) &&
 			this.numBlocks() % 2 === 0
 		);
+	}
+	isCentralized() {
+		if(this.width % 2 === 0) {
+			return this.heights[this.width / 2] >= 2 && this.heights[this.width / 2 - 1] >= 2;
+		}
+		else {
+			return this.heights[(this.width - 1) / 2] >= 2;
+		}
 	}
 
 	static *allCastles(width, height) {
@@ -37,6 +44,24 @@ class Castle {
 		let castles = 0;
 		for(const castle of Castle.allCastles(width, height)) {
 			if(castle.isValid()) {
+				castles ++;
+			}
+		}
+		return castles;
+	}
+	static centralizedCastles(width, height) {
+		let castles = 0;
+		for(const castle of Castle.allCastles(width, height)) {
+			if(castle.isValid() && castle.isCentralized()) {
+				castles ++;
+			}
+		}
+		return castles;
+	}
+	static decentralizedCastles(width, height) {
+		let castles = 0;
+		for(const castle of Castle.allCastles(width, height)) {
+			if(castle.isValid() && !castle.isCentralized()) {
 				castles ++;
 			}
 		}
