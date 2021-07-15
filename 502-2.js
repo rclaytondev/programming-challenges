@@ -155,6 +155,10 @@ testing.addUnit("centralizedCastles()", {
 	"returns the correct result for a 2x2 odd-parity non-full-height rectangle": () => {
 		const result = centralizedCastles(2n, 2n, Infinity, "odd", false);
 		expect(result).toEqual(0n);
+	},
+	"returns the correct result for a 4x3 rectangle": () => {
+		const result = centralizedCastles(4n, 3n);
+		expect(result).toEqual(7);
 	}
 });
 testing.addUnit("decentralizedCastles()", {
@@ -169,6 +173,10 @@ testing.addUnit("decentralizedCastles()", {
 	"returns the correct result for a 3x2 rectangle": () => {
 		const result = decentralizedCastles(3n, 2n);
 		expect(result).toEqual(2n);
+	},
+	"returns the correct result for a 4x3 rectangle": () => {
+		const result = decentralizedCastles(4n, 3n);
+		expect(result).toEqual(14n);
 	}
 });
 testing.addUnit("numCastles()", {
@@ -201,15 +209,15 @@ testing.addUnit("numCastles()", {
 		const result = numCastles(3, 3);
 		expect(result).toEqual(3);
 	},
-	"returns the correct result for a 4x3 castle": () => {
+	"returns the correct result for a 4x3 rectangle": () => {
 		const result = numCastles(4, 3);
 		expect(result).toEqual(21);
 	},
-	"returns the correct result for a 5x3 castle": () => {
+	"returns the correct result for a 5x3 rectangle": () => {
 		const result = numCastles(5, 3);
 		expect(result).toEqual(89);
 	},
-	"returns the correct result for a 4x4 castle": () => {
+	"returns the correct result for a 4x4 rectangle": () => {
 		const result = numCastles(4, 4);
 		expect(result).toEqual(117);
 	},
@@ -242,4 +250,4 @@ testing.addUnit("oddCastlesWidth2()", oddCastlesWidth2, [
 ]);
 
 // testing.testAll();
-testing.runTestByName("numCastles() - returns the correct result for a 3x3 rectangle");
+testing.runTestByName("decentralizedCastles() - returns the correct result for a 4x3 rectangle");
