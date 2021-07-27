@@ -95,58 +95,66 @@ const centralizedCastles = ((width, height, modulo = Infinity, parity = "even", 
 	}
 	return result;
 });
+const oddWidthDecentralizedCastles = (width, height, modulo = Infinity, parity = "even", usesFullHeight = true) => {
+	let result = 0n;
+	for(const parities of parity === "even" ? EVEN_PARITY_COMBINATIONS_2 : ODD_PARITY_COMBINATIONS_2) {
+		for(const booleanArray of usesFullHeight ? REACH_TOPS_2 : [ [false, false] ]) {
+			result += numCastles(
+				width / 2n, height, modulo, parities[0], booleanArray[0]
+			) * numCastles(
+				width / 2n, height, modulo, parities[1], booleanArray[1]
+			);
+		}
+	}
+	return result;
+}
+const evenWidthDecentralizedCastles = (width, height, modulo = Infinity, parity = "even", usesFullHeight = true) => {
+	let result = 0n;
+	for(const parities of parity === "even" ? EVEN_PARITY_COMBINATIONS_2 : ODD_PARITY_COMBINATIONS_2) {
+		for(const booleanArray of usesFullHeight ? REACH_TOPS_2 : [ [false, false] ]) {
+			for(const usesWidths of USES_WIDTHS) {
+				const [usesFullLeftSide, usesFullRightSide] = usesWidths;
+				let leftCastles;
+				if(usesFullLeftSide) {
+					leftCastles = numCastles(width / 2n, height, modulo, parities[0], booleanArray[0]);
+					leftCastles -= numCastles(width / 2n - 1n, height, modulo, parities[0], booleanArray[0]);
+				}
+				else {
+					leftCastles = numCastles(width / 2n - 1n, height, modulo, parities[0], booleanArray[0]);
+				}
+				let rightCastles;
+				if(usesFullRightSide) {
+					rightCastles = numCastles(width / 2n, height, modulo, parities[1], booleanArray[1]);
+					rightCastles -= numCastles(width / 2n - 1n, height, modulo, parities[1], booleanArray[1]);
+				}
+				else {
+					rightCastles = numCastles(width / 2n - 1n, height, modulo, parities[1], booleanArray[1]);
+				}
+				console.log(`adding ${leftCastles * rightCastles}`);
+				result += leftCastles * rightCastles;
+			}
+		}
+	}
+	return result;
+};
 const decentralizedCastles = ((width, height, modulo = Infinity, parity = "even", usesFullHeight = true) => {
 	if(width === 2n) {
 		if(usesFullHeight) {
 			return (height % 2n === 0n) === (parity === "even") ? 2n : 0n;
 		}
 		else {
-			if(parity === "even") { divideCeil(height, 2n) * 2n - 2n; }
+			if(parity === "even") { return divideCeil(height, 2n) * 2n - 2n; }
 			else { return height === 1n ? 0n : (height / 2n) * 2n - 1n; }
 		}
 	}
-
-	if(width % 2n === 0n) {
-		let result = 0n;
-		for(const parities of parity === "even" ? EVEN_PARITY_COMBINATIONS_2 : ODD_PARITY_COMBINATIONS_2) {
-			for(const booleanArray of usesFullHeight ? REACH_TOPS_2 : [ [false, false] ]) {
-				for(const usesWidths of USES_WIDTHS) {
-					const [usesFullLeftSide, usesFullRightSide] = usesWidths;
-					let leftCastles;
-					if(usesFullLeftSide) {
-						leftCastles = numCastles(width / 2n, height, modulo, parities[0], booleanArray[0]);
-						leftCastles -= numCastles(width / 2n - 1n, height, modulo, parities[0], booleanArray[0]);
-					}
-					else {
-						leftCastles = numCastles(width / 2n - 1n, height, modulo, parities[0], booleanArray[0]);
-					}
-					let rightCastles;
-					if(usesFullRightSide) {
-						rightCastles = numCastles(width / 2n, height, modulo, parities[1], booleanArray[1]);
-						rightCastles -= numCastles(width / 2n - 1n, height, modulo, parities[1], booleanArray[1]);
-					}
-					else {
-						rightCastles = numCastles(width / 2n - 1n, height, modulo, parities[1], booleanArray[1]);
-					}
-					console.log(`adding ${leftCastles * rightCastles}`);
-					result += leftCastles * rightCastles;
-				}
-			}
-		}
-		return result;
-	}
 	else {
-		let result = 0n;
-		for(const parities of parity === "even" ? EVEN_PARITY_COMBINATIONS_2 : ODD_PARITY_COMBINATIONS_2) {
-			for(const booleanArray of usesFullHeight ? REACH_TOPS_2 : [ [false, false] ]) {
-				result += numCastles(
-					width / 2n, height, modulo, parities[0], booleanArray[0]
-				) * numCastles(
-					width / 2n, height, modulo, parities[1], booleanArray[1]
-				);
-			}
+		const args = [width, height, modulo, parity, usesFullHeight];
+		if(width % 2n === 0n) {
+			return evenWidthDecentralizedCastles(...args);
 		}
-		return result;
+		else {
+			return oddWidthDecentralizedCastles(...args);
+		}
 	}
 });
 const numCastles = ((width, height, modulo = Infinity, parity = "even", usesFullHeight = true) => {
@@ -167,6 +175,33 @@ const numCastles = ((width, height, modulo = Infinity, parity = "even", usesFull
 	return centralizedCastles(...arguments) + decentralizedCastles(...arguments);
 }).memoize(true);
 
+testing.addUnit("evenWidthDecentralizedCastles()", {
+	"returns the correct result for a 4x2 rectangle": () => {
+		const result = evenWidthDecentralizedCastles(4n, 2n);
+		expect(result).toEqual(4n);
+	},
+	"returns the correct result for a 2x2 odd-parity non-full-height rectangle": () => {
+		const result = evenWidthDecentralizedCastles(2n, 2n, Infinity, "odd", false);
+		expect(result).toEqual(0n);
+	},
+	"returns the correct result for a 4x3 rectangle": () => {
+		const result = evenWidthDecentralizedCastles(4n, 3n);
+		expect(result).toEqual(7);
+	}
+});
+testing.addUnit("oddWidthDecentralizedCastles()", {
+	"returns the correct result for a 3x3 rectangle": () => {
+		const result = oddDecentralizedCastles(3n, 3n);
+		expect(result).toEqual(2);
+	},
+	"returns the correct result for a 5x4 rectangle": () => {
+		const result = oddDecentralizedCastles(5n, 4n);
+		expect(result).toEqual(84);
+	},
+	"throws an error when an even width is passed in": () => {
+		expect(() => oddWidthDecentralizedCastles(4n, 2n)).toThrow();
+	}
+});
 testing.addUnit("centralizedCastles()", {
 	"returns the correct result for a 4x2 rectangle": () => {
 		const result = centralizedCastles(4n, 2n);
