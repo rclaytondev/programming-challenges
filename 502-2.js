@@ -59,6 +59,11 @@ const ODD_PARITY_COMBINATIONS_3 = [
 	["odd", "odd", "even"]
 ];
 const REACH_TOPS_3 = new Set([true, false]).cartesianPower(3).filter(arr => arr.includes(true));
+const USES_WIDTHS = [
+	[false, false],
+	[true, false],
+	[false, true]
+];
 
 const centralizedCastles = ((width, height, modulo = Infinity, parity = "even", usesFullHeight = true) => {
 	let result = 0n;
@@ -105,38 +110,27 @@ const decentralizedCastles = ((width, height, modulo = Infinity, parity = "even"
 		let result = 0n;
 		for(const parities of parity === "even" ? EVEN_PARITY_COMBINATIONS_2 : ODD_PARITY_COMBINATIONS_2) {
 			for(const booleanArray of usesFullHeight ? REACH_TOPS_2 : [ [false, false] ]) {
-				const castles1 = (numCastles(
-					width / 2n, height, modulo, parities[0], booleanArray[0]
-				) - numCastles(
-					width / 2n - 1n, height, modulo, parities[0], booleanArray[0]
-				)) * (width === 2n ? 1n : numCastles(
-					width / 2n - 1n, height, modulo, parities[1], booleanArray[1]
-				));
-				logCalculations(width, height, modulo, parities, booleanArray, castles1, "left");
-				result += castles1;
-
-				const castles2 = numCastles(
-					width / 2n - 1n, height, modulo, parities[0], booleanArray[0]
-				) * (numCastles(
-					width / 2n, height, modulo, parities[1], booleanArray[1]
-				) - numCastles(
-					width / 2n - 1n, height, modulo, parities[1], booleanArray[1]
-				));
-				if(LOGGING_ENABLED && width == LOG_WIDTH && height == LOG_HEIGHT) {
-					// console.log(`(${width}x${height}) parities of [${parities}] and booleans [${booleanArray}]: ${castles2} castles with left=no and right=yes`);
+				for(const usesWidths of USES_WIDTHS) {
+					const [usesFullLeftSide, usesFullRightSide] = usesWidths;
+					let leftCastles;
+					if(usesFullLeftSide) {
+						leftCastles = numCastles(width / 2n, height, modulo, parities[0], booleanArray[0]);
+						leftCastles -= numCastles(width / 2n - 1n, height, modulo, parities[0], booleanArray[0]);
+					}
+					else {
+						leftCastles = numCastles(width / 2n - 1n, height, modulo, parities[0], booleanArray[0]);
+					}
+					let rightCastles;
+					if(usesFullRightSide) {
+						rightCastles = numCastles(width / 2n, height, modulo, parities[1], booleanArray[1]);
+						rightCastles -= numCastles(width / 2n - 1n, height, modulo, parities[1], booleanArray[1]);
+					}
+					else {
+						rightCastles = numCastles(width / 2n - 1n, height, modulo, parities[1], booleanArray[1]);
+					}
+					console.log(`adding ${leftCastles * rightCastles}`);
+					result += leftCastles * rightCastles;
 				}
-				result += castles2;
-				logCalculations(width, height, modulo, parities, booleanArray, castles2, "right");
-
-				const castles3 = numCastles(
-					width / 2n - 1n, height, modulo, parities[0], booleanArray[0]
-				) * numCastles(
-					width / 2n - 1n, height, modulo, parities[1], booleanArray[1]
-				);
-				if(LOGGING_ENABLED && width == LOG_WIDTH && height == LOG_HEIGHT) {
-					// console.log(`(${width}x${height}) parities of [${parities}] and booleans [${booleanArray}]: ${castles3} castles with left=no and right=no`);
-				}
-				result += castles3;
 			}
 		}
 		return result;
