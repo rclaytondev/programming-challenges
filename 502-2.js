@@ -5,33 +5,6 @@ I define a 'centralized' castle to be a castle that contains a block on the row 
 I define a 'decentralized' castle to be one that is not centralized.
 */
 
-const LOGGING_ENABLED = true;
-const LOG_PARITIES_AND_BOOLEANS = false;
-const LOG_WIDTH = 4n; // log info for rectangles of this width + height
-const LOG_HEIGHT = 3n;
-const logCalculations = (width, height, modulo, parities, booleanArray, castles, whichSide) => {
-	if(!LOGGING_ENABLED || width != LOG_WIDTH || height != LOG_HEIGHT) { return; }
-
-	let logStr = ``;
-	logStr += `(${width}x${height})`
-	if(LOG_PARITIES_AND_BOOLEANS) {
-		logStr += `parities of [${parities}] and booleans [${booleanArray}]`;
-	}
-	if(whichSide === "left") {
-		logStr += `: (c(${width / 2n}, ${height}, ${parities[0]}, ${booleanArray[0]}) `
-		logStr += `- c(${width / 2n - 1n}, ${height}, ${parities[0]}, ${booleanArray[0]})) `
-		logStr += `* c(${width / 2n - 1n}, ${height}, ${parities[1]}, ${booleanArray[1]})`
-
-		logStr += ` = ${castles} castles`;
-	}
-	else if(whichSide === "right") {
-		logStr += `: (c(${width / 2n - 1n}, ${height}, ${parities[0]}, ${booleanArray[0]}) `
-		logStr += `* (c(${width / 2n}, ${height}, ${parities[1]}, ${booleanArray[1]}) `
-		logStr += `- c(${width / 2n - 1n}, ${height}, ${parities[1]}, ${booleanArray[1]}))`
-	}
-	console.log(logStr);
-};
-
 const divideCeil = (a, b) => (a / b) + ((a % b === 0n) ? 0n : 1n);
 const EVEN_PARITY_COMBINATIONS_2 = [
 	["odd", "even"],
@@ -87,7 +60,6 @@ const centralizedCastles = ((width, height, modulo = Infinity, parity = "even", 
 						leftBlock + rightBlock + (width % 2n), height - 1n,
 						modulo, parities[1], booleanArray[1]
 					);
-					// console.log(`(${width}x${height} rectangle) ${leftBlock} left and ${rightBlock} right with parities [${parities}] and booleans [${booleanArray}]: ${(leftCastles * rightCastles * centerCastles)} castle combinations.`);
 					result += (leftCastles * rightCastles * centerCastles);
 				}
 			}
@@ -130,7 +102,6 @@ const evenWidthDecentralizedCastles = (width, height, modulo = Infinity, parity 
 				else {
 					rightCastles = numCastles(width / 2n - 1n, height, modulo, parities[1], booleanArray[1]);
 				}
-				console.log(`adding ${leftCastles * rightCastles}`);
 				result += leftCastles * rightCastles;
 			}
 		}
