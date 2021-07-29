@@ -68,6 +68,9 @@ const centralizedCastles = ((width, height, modulo = Infinity, parity = "even", 
 	return result;
 });
 const oddWidthDecentralizedCastles = (width, height, modulo = Infinity, parity = "even", usesFullHeight = true) => {
+	if(width % 2n === 0n) {
+		throw new Error(`The provided width must be odd.`);
+	}
 	let result = 0n;
 	for(const parities of parity === "even" ? EVEN_PARITY_COMBINATIONS_2 : ODD_PARITY_COMBINATIONS_2) {
 		for(const booleanArray of usesFullHeight ? REACH_TOPS_2 : [ [false, false] ]) {
@@ -81,6 +84,9 @@ const oddWidthDecentralizedCastles = (width, height, modulo = Infinity, parity =
 	return result;
 }
 const evenWidthDecentralizedCastles = (width, height, modulo = Infinity, parity = "even", usesFullHeight = true) => {
+	if(width % 2n !== 0n) {
+		throw new Error(`The provided width must be even.`);
+	}
 	let result = 0n;
 	for(const parities of parity === "even" ? EVEN_PARITY_COMBINATIONS_2 : ODD_PARITY_COMBINATIONS_2) {
 		for(const booleanArray of usesFullHeight ? REACH_TOPS_2 : [ [false, false] ]) {
