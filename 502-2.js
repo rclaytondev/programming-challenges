@@ -162,11 +162,11 @@ testing.addUnit("evenWidthDecentralizedCastles()", {
 });
 testing.addUnit("oddWidthDecentralizedCastles()", {
 	"returns the correct result for a 3x3 rectangle": () => {
-		const result = oddDecentralizedCastles(3n, 3n);
+		const result = oddWidthDecentralizedCastles(3n, 3n);
 		expect(result).toEqual(2);
 	},
 	"returns the correct result for a 5x4 rectangle": () => {
-		const result = oddDecentralizedCastles(5n, 4n);
+		const result = oddWidthDecentralizedCastles(5n, 4n);
 		expect(result).toEqual(84);
 	},
 	"throws an error when an even width is passed in": () => {
