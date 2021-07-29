@@ -155,7 +155,7 @@ const numCastles = ((width, height, modulo = Infinity, parity = "even", usesFull
 testing.addUnit("evenWidthDecentralizedCastles()", {
 	"returns the correct result for a 4x2 rectangle": () => {
 		const result = evenWidthDecentralizedCastles(4n, 2n);
-		expect(result).toEqual(4n);
+		expect(result).toEqual(6n);
 	},
 	"returns the correct result for a 2x2 odd-parity non-full-height rectangle": () => {
 		const result = evenWidthDecentralizedCastles(2n, 2n, Infinity, "odd", false);
@@ -163,7 +163,7 @@ testing.addUnit("evenWidthDecentralizedCastles()", {
 	},
 	"returns the correct result for a 4x3 rectangle": () => {
 		const result = evenWidthDecentralizedCastles(4n, 3n);
-		expect(result).toEqual(7);
+		expect(result).toEqual(14);
 	}
 });
 testing.addUnit("oddWidthDecentralizedCastles()", {
@@ -227,7 +227,7 @@ testing.addUnit("numCastles()", {
 	},
 	/* other test cases */
 	"returns the correct result for a 10x2 non-full-height rectangle": () => {
-		expect(numCastles(100, 2, Infinity, "even", false)).toEqual(0n);
+		expect(numCastles(10, 2, Infinity, "even", false)).toEqual(0n);
 	},
 	"returns the correct result for a 2x2 non-full-height odd-parity rectangle": () => {
 		const result = numCastles(2n, 2n, Infinity, "odd", false);
