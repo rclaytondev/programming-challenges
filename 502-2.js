@@ -45,7 +45,7 @@ const centralizedCastles = ((width, height, modulo = Infinity, parity = "even", 
 			const parityCombinations = (parity === "even" ? EVEN_PARITY_COMBINATIONS_3 : ODD_PARITY_COMBINATIONS_3);
 			for(const parities of parityCombinations) {
 				const booleanArrays = usesFullHeight ? REACH_TOPS_3 : [ [false, false] ];
-				for(const booleanArray of REACH_TOPS_3) {
+				for(const booleanArray of booleanArrays) {
 					let leftCastles = numCastles(
 						width / 2n - leftBlock - 1n, height,
 						modulo, parities[0], booleanArray[0]
