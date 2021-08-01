@@ -15,12 +15,14 @@ class Castle {
 		}
 		return blocks;
 	}
+	parity() {
+		return this.numBlocks() % 2 === 0 ? "even" : "odd";
+	}
+	usesFullHeight() {
+		return this.heights.some(h => h === this.height);
+	}
 	isValid() {
-		return (
-			this.heights.every(h => h >= 1) &&
-			this.heights.some(h => h === this.height) &&
-			this.numBlocks() % 2 === 0
-		);
+		return this.heights.every(h => h >= 1) && this.parity() === "even" && this.usesFullHeight();
 	}
 	isCentralized() {
 		if(this.width % 2 === 0) {
@@ -40,32 +42,32 @@ class Castle {
 		}
 	}
 
-	static numCastles(width, height) {
+	static numCastles(width, height, modulo = Infinity, parity = "even", usesFullHeight = true) {
 		let castles = 0;
 		for(const castle of Castle.allCastles(width, height)) {
-			if(castle.isValid()) {
+			if(castle.parity() === parity && castle.usesFullHeight() === usesFullHeight) {
 				castles ++;
 			}
 		}
-		return castles;
+		return castles % modulo;
 	}
-	static centralizedCastles(width, height) {
+	static centralizedCastles(width, height, modulo = Infinity, parity = "even", usesFullHeight = true) {
 		let castles = 0;
 		for(const castle of Castle.allCastles(width, height)) {
-			if(castle.isValid() && castle.isCentralized()) {
+			if(castle.isCentralized() && castle.parity() === parity && castle.usesFullHeight() === usesFullHeight) {
 				castles ++;
 			}
 		}
-		return castles;
+		return castles % modulo;
 	}
-	static decentralizedCastles(width, height) {
+	static decentralizedCastles(width, height, modulo = Infinity, parity = "even", usesFullHeight = true) {
 		let castles = 0;
 		for(const castle of Castle.allCastles(width, height)) {
-			if(castle.isValid() && !castle.isCentralized()) {
+			if(castle.isCentralized() && castle.parity() === parity && castle.usesFullHeight() === usesFullHeight) {
 				castles ++;
 			}
 		}
-		return castles;
+		return castles % modulo;
 	}
 }
 
