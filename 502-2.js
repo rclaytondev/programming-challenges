@@ -50,15 +50,36 @@ const centralizedCastles = ((width, height, modulo = Infinity, parity = "even", 
 						width / 2n - leftBlock - 1n, height,
 						modulo, parities[0], booleanArray[0]
 					);
+					testing.assertEqual(
+						leftCastles,
+						BigInt(Castle.numCastles(
+							Number(width / 2n - leftBlock - 1n), Number(height),
+							modulo, parities[0], booleanArray[0]
+						))
+					);
 					let rightCastles = numCastles(
 						width / 2n - rightBlock - 1n, height,
 						modulo, parities[2], booleanArray[2]
+					);
+					testing.assertEqual(
+						rightCastles,
+						BigInt(Castle.numCastles(
+							Number(width / 2n - rightBlock - 1n), Number(height),
+							modulo, parities[2], booleanArray[2]
+						))
 					);
 					if(leftCastles === 0n && parities[0] === "odd" && !booleanArray[0]) { leftCastles ++; }
 					if(rightCastles === 0n && parities[2] === "odd" && !booleanArray[2]) { rightCastles ++; }
 					const centerCastles = numCastles(
 						leftBlock + rightBlock + (width % 2n), height - 1n,
 						modulo, parities[1], booleanArray[1]
+					);
+					testing.assertEqual(
+						centerCastles,
+						BigInt(Castle.numCastles(
+							Number(leftBlock + rightBlock + (width % 2n)), Number(height - 1n),
+							modulo, parities[1], booleanArray[1]
+						))
 					);
 					result += (leftCastles * rightCastles * centerCastles);
 				}
