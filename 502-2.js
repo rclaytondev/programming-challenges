@@ -272,11 +272,11 @@ testing.addUnit("numCastles()", {
 	},
 	"returns the correct result for a 2x3 odd-parity non-full-height rectangle": () => {
 		const result = numCastles(2n, 3n, Infinity, "odd", false);
-		expect(result).toEqual(0n);
+		expect(result).toEqual(1n);
 	},
 	"returns the correct result for a 2x2 rectangle": () => {
 		const result = numCastles(2n, 2n);
-		expect(result).toEqual(2n);
+		expect(result).toEqual(3n);
 	},
 	"returns the correct result for a 2x2 non-full-height rectangle": () => {
 		const result = numCastles(2n, 2n, Infinity, "even", false);
