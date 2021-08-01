@@ -175,6 +175,10 @@ testing.addUnit("oddWidthDecentralizedCastles()", {
 		const result = oddWidthDecentralizedCastles(5n, 4n);
 		expect(result).toEqual(84);
 	},
+	"returns the correct result for a 7x4 rectangle": () => {
+		const result = oddWidthDecentralizedCastles(7n, 4n);
+		expect(result).toEqual(1596n);
+	},
 	"throws an error when an even width is passed in": () => {
 		expect(() => oddWidthDecentralizedCastles(4n, 2n)).toThrow();
 	}
@@ -195,6 +199,10 @@ testing.addUnit("centralizedCastles()", {
 	"returns the correct result for a 2x3 non-full-height rectangle": () => {
 		const result = centralizedCastles(2n, 3n, Infinity, "even", false);
 		expect(result).toEqual(1n);
+	},
+	"returns the correct result for a 7x4 rectangle": () => {
+		const result = centralizedCastles(7n, 4n);
+		expect(result).toEqual(5467n);
 	}
 });
 testing.addUnit("decentralizedCastles()", {
@@ -286,6 +294,15 @@ testing.addUnit("numCastles()", {
 		const result = numCastles(2n, 2n, Infinity, "odd", true);
 		expect(result).toEqual(0n);
 	},
+
+	"returns the correct result for a 2x4 rectangle": () => {
+		const result = numCastles(2n, 4n);
+		expect(result).toEqual(7n);
+	},
+	"returns the correct result for a 7x4 rectangle": () => {
+		const result = numCastles(7n, 4n);
+		expect(result).toEqual(7063n);
+	},
 });
 
 
@@ -315,4 +332,4 @@ testing.addUnit("oddCastlesWidth2()", oddCastlesWidth2, [
 ]);
 
 // testing.testAll();
-testing.runTestByName("decentralizedCastles() - returns the correct result for a 4x3 rectangle");
+testing.runTestByName("centralizedCastles() - returns the correct result for a 7x4 rectangle");
