@@ -66,7 +66,7 @@ class Castle {
 		if(width <= 0 || height <= 0) { return 0; }
 		let castles = 0;
 		for(const castle of Castle.allCastles(width, height)) {
-			if(castle.isCentralized() && castle.parity() === parity && castle.usesFullHeight() === usesFullHeight) {
+			if(!castle.isCentralized() && castle.parity() === parity && castle.usesFullHeight() === usesFullHeight) {
 				castles ++;
 			}
 		}
