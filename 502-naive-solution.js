@@ -32,6 +32,18 @@ class Castle {
 			return this.heights[(this.width - 1) / 2] >= 2;
 		}
 	}
+	blockWidth(x, y) {
+		if(this.heights[x] < y) { return 0; }
+		let distanceRight = 0;
+		let distanceLeft = 0;
+		for(let x2 = x - 1; this.heights[x2] > y; x2 --) {
+			distanceLeft ++;
+		}
+		for(let x2 = x + 1; this.heights[x2] > y; x2 ++) {
+			distanceRight ++;
+		}
+		return distanceLeft + distanceRight + 1;
+	}
 
 	static *allCastles(width, height) {
 		const possibleHeights = new Set();
@@ -72,12 +84,69 @@ class Castle {
 		}
 		return castles % modulo;
 	}
+
+	visualize(gridSize, color = "blue") {
+		const width = this.width * gridSize;
+		const height = this.height * gridSize;
+		const canvas = document.createElement("canvas");
+		canvas.width = width, canvas.height = height;
+		canvas.style.width = `${width}px`, canvas.style.height = `${height}px`;
+		const ctx = canvas.getContext("2d");
+		ctx.strokeStyle = "rgb(200, 200, 200)";
+		ctx.lineWidth = 1;
+		ctx.strokeRect(0, 0, width, height);
+		ctx.lineWidth = 3;
+		if(color === "blue") {
+			ctx.strokeStyle = "rgb(0, 0, 255)";
+			ctx.fillStyle = "rgb(200, 200, 255)";
+		}
+		else if(color === "red") {
+			ctx.strokeStyle = "rgb(255, 0, 0)";
+			ctx.fillStyle = "rgb(255, 200, 200)"
+		}
+		for(let blockX = 0; blockX < this.width; blockX ++) {
+			const heightAtPos = this.heights[blockX];
+			if(heightAtPos > (this.heights[blockX - 1] ?? 0)) {
+				for(let blockY = (this.heights[blockX - 1] ?? 0) + 1; blockY <= heightAtPos; blockY ++) {
+					let blockWidth = this.heights.slice(blockX).findIndex(h => h < blockY);
+					if(blockWidth === -1) { blockWidth = this.width - blockX; }
+					const rectPos = [
+						(blockX * gridSize),
+						height - (blockY) * gridSize,
+						blockWidth * gridSize,
+						gridSize
+					];
+					ctx.fillRect(...rectPos);
+					ctx.strokeRect(...rectPos);
+				}
+			}
+		}
+		return canvas;
+	}
+	static visualize(width, height, centralized = null, parity = "even", usesFullHeight = true) {
+		const GRID_SIZE = 20;
+		let castles = [];
+		for(const castle of Castle.allCastles(width, height)) {
+			if(
+				(centralized == null || castle.isCentralized() === centralized) &&
+				(parity == null || castle.parity() === parity) &&
+				(usesFullHeight == null || castle.usesFullHeight() === usesFullHeight)
+			) {
+				castles.push(castle);
+			}
+		}
+		const centralX = Math.floor(width / 2);
+		castles = castles.sort((a, b) => a.blockWidth(centralX, 1) - b.blockWidth(centralX, 1));
+		for(const castle of castles) {
+			document.body.appendChild(castle.visualize(GRID_SIZE));
+		}
+	}
 }
 
 testing.addUnit("Castle.numBlocks()", {
 	"returns the correct number for the castle in the Project Euler problem": () => {
 		const castle = new Castle(
-			5, 8,
+			8, 5,
 			[2, 3, 5, 2, 3, 1, 5, 4]
 		);
 		expect(castle.numBlocks()).toEqual(10);
@@ -107,3 +176,5 @@ testing.addUnit("Castle.numCastles()", {
 	// }
 });
 testing.runTestByName("Castle.numCastles() - returns the correct result for a 3x3 rectangle");
+
+Castle.visualize(5, 3, true);
