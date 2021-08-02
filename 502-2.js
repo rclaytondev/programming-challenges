@@ -40,7 +40,7 @@ const USES_WIDTHS = [
 
 const LOG_WIDTH = 5n;
 const LOG_HEIGHT = 3n;
-const LOGGING_ENABLED = true;
+const LOGGING_ENABLED = false;
 
 const centralizedCastles = ((width, height, modulo = Infinity, parity = "even", usesFullHeight = true) => {
 	if(width === LOG_WIDTH && height === LOG_HEIGHT && LOGGING_ENABLED) {
@@ -67,23 +67,9 @@ const centralizedCastles = ((width, height, modulo = Infinity, parity = "even", 
 						width / 2n - leftBlock - 1n, height,
 						modulo, parities[0], booleanArray[0]
 					);
-					testing.assertEqual(
-						leftCastles,
-						BigInt(Castle.numCastles(
-							Number(width / 2n - leftBlock - 1n), Number(height),
-							modulo, parities[0], booleanArray[0]
-						))
-					);
 					let rightCastles = numCastles(
 						width / 2n - rightBlock - 1n, height,
 						modulo, parities[2], booleanArray[2]
-					);
-					testing.assertEqual(
-						rightCastles,
-						BigInt(Castle.numCastles(
-							Number(width / 2n - rightBlock - 1n), Number(height),
-							modulo, parities[2], booleanArray[2]
-						))
 					);
 					if(leftCastles === 0n && parities[0] === "odd" && !booleanArray[0]) {
 						leftCastles ++;
@@ -101,13 +87,6 @@ const centralizedCastles = ((width, height, modulo = Infinity, parity = "even", 
 						leftBlock + rightBlock + (width % 2n), height - 1n,
 						modulo, parities[1], booleanArray[1]
 					);
-					testing.assertEqual(
-						centerCastles,
-						BigInt(Castle.numCastles(
-							Number(leftBlock + rightBlock + (width % 2n)), Number(height - 1n),
-							modulo, parities[1], booleanArray[1]
-						))
-					);
 					if(width === LOG_WIDTH && height === LOG_HEIGHT && LOGGING_ENABLED) {
 						console.log(`${leftCastles} * ${centerCastles} * ${rightCastles} = ${leftCastles * rightCastles * centerCastles}`);
 					}
@@ -122,8 +101,8 @@ const centralizedCastles = ((width, height, modulo = Infinity, parity = "even", 
 		}
 	}
 	return result;
-});
-const oddWidthDecentralizedCastles = (width, height, modulo = Infinity, parity = "even", usesFullHeight = true) => {
+}).memoize(true);
+const oddWidthDecentralizedCastles = ((width, height, modulo = Infinity, parity = "even", usesFullHeight = true) => {
 	if(width % 2n === 0n) {
 		throw new Error(`The provided width must be odd.`);
 	}
@@ -138,8 +117,8 @@ const oddWidthDecentralizedCastles = (width, height, modulo = Infinity, parity =
 		}
 	}
 	return result;
-}
-const evenWidthDecentralizedCastles = (width, height, modulo = Infinity, parity = "even", usesFullHeight = true) => {
+}).memoize(true);
+const evenWidthDecentralizedCastles = ((width, height, modulo = Infinity, parity = "even", usesFullHeight = true) => {
 	if(width % 2n !== 0n) {
 		throw new Error(`The provided width must be even.`);
 	}
@@ -169,7 +148,7 @@ const evenWidthDecentralizedCastles = (width, height, modulo = Infinity, parity 
 		}
 	}
 	return result;
-};
+}).memoize(true);
 const decentralizedCastles = ((width, height, modulo = Infinity, parity = "even", usesFullHeight = true) => {
 	if(width === 2n) {
 		if(usesFullHeight) {
@@ -189,7 +168,7 @@ const decentralizedCastles = ((width, height, modulo = Infinity, parity = "even"
 			return oddWidthDecentralizedCastles(...args);
 		}
 	}
-});
+}).memoize(true);
 const numCastles = ((width, height, modulo = Infinity, parity = "even", usesFullHeight = true) => {
 	/* convert arguments to bigints */
 	width = BigInt(width), height = BigInt(height);
@@ -293,13 +272,13 @@ testing.addUnit("numCastles()", {
 		expect(numCastles(4, 2)).toEqual(10n);
 	},
 	"returns the correct result for a 13x10 rectangle": () => {
-		// expect(numCastles(13, 10)).toEqual(3729050610636n);
+		expect(numCastles(13, 10)).toEqual(3729050610636n);
 	},
 	"returns the correct result for a 10x13 rectangle": () => {
-		// expect(numCastles(10, 13)).toEqual(37959702514n);
+		expect(numCastles(10, 13)).toEqual(37959702514n);
 	},
 	"returns the correct result for a 100x100 rectangle": () => {
-		// expect(numCastles(100, 100, 1000000007)).toEqual(841913936n);
+		expect(numCastles(100, 100, 1000000007)).toEqual(841913936n);
 	},
 	/* other test cases */
 	"returns the correct result for a 10x2 non-full-height rectangle": () => {
@@ -400,4 +379,4 @@ testing.addUnit("oddCastlesWidth2()", oddCastlesWidth2, [
 ]);
 
 // testing.testAll();
-testing.runTestByName("centralizedCastles() - returns the correct result for a 5x3 non-full-height rectangle");
+testing.runTestByName("numCastles() - returns the correct result for a 100x100 rectangle");

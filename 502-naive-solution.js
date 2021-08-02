@@ -177,4 +177,4 @@ testing.addUnit("Castle.numCastles()", {
 });
 testing.runTestByName("Castle.numCastles() - returns the correct result for a 3x3 rectangle");
 
-Castle.visualize(5, 3, true);
+Castle.visualize(5, 3, true, "even", false);
