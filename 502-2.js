@@ -58,7 +58,7 @@ const centralizedCastles = ((width, height, modulo = Infinity, parity = "even", 
 				if(width === LOG_WIDTH && height === LOG_HEIGHT && LOGGING_ENABLED) {
 					console.log(parities);
 				}
-				const booleanArrays = usesFullHeight ? REACH_TOPS_3 : [ [false, false] ];
+				const booleanArrays = usesFullHeight ? REACH_TOPS_3 : [ [false, false, false] ];
 				for(const booleanArray of booleanArrays) {
 					if(width === LOG_WIDTH && height === LOG_HEIGHT && LOGGING_ENABLED) {
 						console.log(booleanArray);
@@ -109,7 +109,7 @@ const centralizedCastles = ((width, height, modulo = Infinity, parity = "even", 
 						))
 					);
 					if(width === LOG_WIDTH && height === LOG_HEIGHT && LOGGING_ENABLED) {
-						console.log(`${leftCastles} * ${rightCastles} * ${centerCastles} = ${leftCastles * rightCastles * centerCastles}`);
+						console.log(`${leftCastles} * ${centerCastles} * ${rightCastles} = ${leftCastles * rightCastles * centerCastles}`);
 					}
 					numIncreased += (leftCastles * rightCastles * centerCastles);
 					result += (leftCastles * rightCastles * centerCastles);
