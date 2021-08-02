@@ -38,14 +38,30 @@ const USES_WIDTHS = [
 	[false, true]
 ];
 
+const LOG_WIDTH = 5n;
+const LOG_HEIGHT = 3n;
+const LOGGING_ENABLED = true;
+
 const centralizedCastles = ((width, height, modulo = Infinity, parity = "even", usesFullHeight = true) => {
+	if(width === LOG_WIDTH && height === LOG_HEIGHT && LOGGING_ENABLED) {
+		console.log(`calculating the number ${width}x${height} ${parity}-parity ${usesFullHeight ? "full-height" : "non-full-height"} castles`);
+	}
 	let result = 0n;
 	for(let leftBlock = 1n - (width % 2n); leftBlock <= width / 2n; leftBlock ++) {
 		for(let rightBlock = 1n - (width % 2n); rightBlock <= width / 2n; rightBlock ++) {
+			if(width === LOG_WIDTH && height === LOG_HEIGHT && LOGGING_ENABLED) {
+				console.groupCollapsed(`left = ${leftBlock}, right = ${rightBlock} (${width / 2n - leftBlock - 1n}x${height} / ${leftBlock + rightBlock + (width % 2n)}x${height - 1n} / ${width / 2n - rightBlock - 1n}x${height})`);
+			}
 			const parityCombinations = (parity === "even" ? EVEN_PARITY_COMBINATIONS_3 : ODD_PARITY_COMBINATIONS_3);
 			for(const parities of parityCombinations) {
+				if(width === LOG_WIDTH && height === LOG_HEIGHT && LOGGING_ENABLED) {
+					console.log(parities);
+				}
 				const booleanArrays = usesFullHeight ? REACH_TOPS_3 : [ [false, false] ];
 				for(const booleanArray of booleanArrays) {
+					if(width === LOG_WIDTH && height === LOG_HEIGHT && LOGGING_ENABLED) {
+						console.log(booleanArray);
+					}
 					let leftCastles = numCastles(
 						width / 2n - leftBlock - 1n, height,
 						modulo, parities[0], booleanArray[0]
@@ -68,8 +84,18 @@ const centralizedCastles = ((width, height, modulo = Infinity, parity = "even", 
 							modulo, parities[2], booleanArray[2]
 						))
 					);
-					if(leftCastles === 0n && parities[0] === "odd" && !booleanArray[0]) { leftCastles ++; }
-					if(rightCastles === 0n && parities[2] === "odd" && !booleanArray[2]) { rightCastles ++; }
+					if(leftCastles === 0n && parities[0] === "odd" && !booleanArray[0]) {
+						leftCastles ++;
+						if(width === LOG_WIDTH && height === LOG_HEIGHT && LOGGING_ENABLED) {
+							console.log("incrementing leftCastles from 0 to 1");
+						}
+					}
+					if(rightCastles === 0n && parities[2] === "odd" && !booleanArray[2]) {
+						rightCastles ++;
+						if(width === LOG_WIDTH && height === LOG_HEIGHT && LOGGING_ENABLED) {
+							console.log("incrementing rightCastles from 0 to 1");
+						}
+					}
 					const centerCastles = numCastles(
 						leftBlock + rightBlock + (width % 2n), height - 1n,
 						modulo, parities[1], booleanArray[1]
@@ -81,8 +107,14 @@ const centralizedCastles = ((width, height, modulo = Infinity, parity = "even", 
 							modulo, parities[1], booleanArray[1]
 						))
 					);
+					if(width === LOG_WIDTH && height === LOG_HEIGHT && LOGGING_ENABLED) {
+						console.log(`${leftCastles} * ${rightCastles} * ${centerCastles} = ${leftCastles * rightCastles * centerCastles}`);
+					}
 					result += (leftCastles * rightCastles * centerCastles);
 				}
+			}
+			if(width === LOG_WIDTH && height === LOG_HEIGHT && LOGGING_ENABLED) {
+				console.groupEnd();
 			}
 		}
 	}
@@ -365,4 +397,4 @@ testing.addUnit("oddCastlesWidth2()", oddCastlesWidth2, [
 ]);
 
 // testing.testAll();
-testing.runTestByName("centralizedCastles() - returns the correct result for a 7x4 rectangle");
+testing.runTestByName("centralizedCastles() - returns the correct result for a 5x3 non-full-height rectangle");
