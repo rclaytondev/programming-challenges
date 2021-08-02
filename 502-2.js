@@ -52,6 +52,7 @@ const centralizedCastles = ((width, height, modulo = Infinity, parity = "even", 
 			if(width === LOG_WIDTH && height === LOG_HEIGHT && LOGGING_ENABLED) {
 				console.groupCollapsed(`left = ${leftBlock}, right = ${rightBlock} (${width / 2n - leftBlock - 1n}x${height} / ${leftBlock + rightBlock + (width % 2n)}x${height - 1n} / ${width / 2n - rightBlock - 1n}x${height})`);
 			}
+			let numIncreased = 0n;
 			const parityCombinations = (parity === "even" ? EVEN_PARITY_COMBINATIONS_3 : ODD_PARITY_COMBINATIONS_3);
 			for(const parities of parityCombinations) {
 				if(width === LOG_WIDTH && height === LOG_HEIGHT && LOGGING_ENABLED) {
@@ -110,10 +111,12 @@ const centralizedCastles = ((width, height, modulo = Infinity, parity = "even", 
 					if(width === LOG_WIDTH && height === LOG_HEIGHT && LOGGING_ENABLED) {
 						console.log(`${leftCastles} * ${rightCastles} * ${centerCastles} = ${leftCastles * rightCastles * centerCastles}`);
 					}
+					numIncreased += (leftCastles * rightCastles * centerCastles);
 					result += (leftCastles * rightCastles * centerCastles);
 				}
 			}
 			if(width === LOG_WIDTH && height === LOG_HEIGHT && LOGGING_ENABLED) {
+				console.log(`total: added ${numIncreased} castles`);
 				console.groupEnd();
 			}
 		}
