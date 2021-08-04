@@ -11,7 +11,7 @@ const numCastles = ((width, height, parity = "even", includeLeftBlocks = true, i
 		return ((parity === "even") === (height % 2n === 0n)) ? 1n : 0n;
 	}
 	if(height === 1n) {
-		
+
 	}
 
 	let result = 0n;
@@ -128,4 +128,4 @@ testing.addUnit("numCastles()", {
 	},
 });
 // testing.testAll();
-testing.runTestByName("numCastles() - returns the correct result for a 4x2 rectangle");
+// testing.runTestByName("numCastles() - returns the correct result for a 4x2 rectangle");
