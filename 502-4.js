@@ -32,6 +32,9 @@ const numCastles = (width, height, modulo = Infinity) => {
 				cachedResults.set(`${lastItem.node.x},${lastItem.node.y},${lastItem.node.previousMove},${lastItem.node.parity},${lastItem.node.hasReachedTop}`, lastItem.sum)
 				stack.pop();
 				stack[stack.length - 1].sum += lastItem.sum;
+				if(modulo !== Infinity) {
+					stack[stack.length - 1].sum %= modulo;
+				}
 				stack[stack.length - 1].predecessorsCalculated ++;
 				continue;
 			}
@@ -39,6 +42,9 @@ const numCastles = (width, height, modulo = Infinity) => {
 			if(cachedResults.has(stringified)) {
 				const cachedResult = cachedResults.get(stringified);
 				lastItem.sum += cachedResult;
+				if(modulo !== Infinity) {
+					lastItem.sum %= modulo;
+				}
 				lastItem.predecessorsCalculated ++;
 			}
 			else {
@@ -52,6 +58,9 @@ const numCastles = (width, height, modulo = Infinity) => {
 			}
 		} while(stack[0].predecessorsCalculated < stack[0].predecessors.length);
 		result += stack[0].sum;
+		if(modulo !== Infinity) {
+			result %= modulo;
+		}
 	}
 	return result;
 };
