@@ -4,15 +4,61 @@ const numCastles = (width, height, modulo = Infinity) => {
 	if(modulo !== Infinity) { modulo = BigInt(modulo); }
 	height --; // accounts for required full-width block on the bottom row
 	let result = 0n;
+	const cachedResults = new Map();
+	cachedResults.set("0,0,right,even,false", 1n);
 	for(let y = 0n; y <= height; y ++) {
-		result += numPaths(width, height, width, y, "right", "odd", true, modulo);
-		if(modulo !== Infinity) { result %= modulo; }
+		const stack = [{
+			node: {
+				x: width, y: y,
+				parity: "odd",
+				hasReachedTop: true,
+				previousMove: "right"
+			},
+			predecessors: [],
+			predecessorsCalculated: 0,
+			sum: 0n
+		}];
+		do {
+			const lastItem = stack[stack.length - 1];
+			if(!lastItem.predecessors?.length) {
+				lastItem.predecessors = getPredecessors(
+					width, height,
+					lastItem.node.x, lastItem.node.y,
+					lastItem.node.previousMove, lastItem.node.parity, lastItem.node.hasReachedTop
+				);
+			}
+			const nextPredecessor = lastItem.predecessors[lastItem.predecessorsCalculated];
+			if(lastItem.predecessorsCalculated >= lastItem.predecessors.length) {
+				cachedResults.set(`${lastItem.node.x},${lastItem.node.y},${lastItem.node.previousMove},${lastItem.node.parity},${lastItem.node.hasReachedTop}`, lastItem.sum)
+				stack.pop();
+				stack[stack.length - 1].sum += lastItem.sum;
+				stack[stack.length - 1].predecessorsCalculated ++;
+				continue;
+			}
+			const stringified = `${nextPredecessor.x},${nextPredecessor.y},${nextPredecessor.previousMove},${nextPredecessor.parity},${nextPredecessor.hasReachedTop}`;
+			if(cachedResults.has(stringified)) {
+				const cachedResult = cachedResults.get(stringified);
+				lastItem.sum += cachedResult;
+				lastItem.predecessorsCalculated ++;
+			}
+			else {
+				const newStackItem = {
+					node: nextPredecessor,
+					predecessors: [],
+					predecessorsCalculated: 0,
+					sum: 0n
+				};
+				stack.push(newStackItem);
+			}
+		} while(stack[0].predecessorsCalculated < stack[0].predecessors.length);
+		result += stack[0].sum;
 	}
 	return result;
 };
 const getPredecessors = (rectWidth, rectHeight, x, y, previousMove, parity, hasReachedTop) => {
+	let predecessors = [];
 	if(previousMove === "right") {
-		return [
+		predecessors = [
 			{ x: x - 1n, y, previousMove: "up", parity, hasReachedTop },
 			{ x: x - 1n, y, previousMove: "right", parity, hasReachedTop },
 			{ x: x - 1n, y, previousMove: "down", parity, hasReachedTop }
@@ -20,7 +66,7 @@ const getPredecessors = (rectWidth, rectHeight, x, y, previousMove, parity, hasR
 	}
 	else if(previousMove === "up") {
 		const oppositeParity = (parity === "even") ? "odd" : "even";
-		let predecessors = [
+		predecessors = [
 			{ x, y: y - 1n, previousMove: "right", parity: oppositeParity, hasReachedTop },
 			{ x, y: y - 1n, previousMove: "up", parity: oppositeParity, hasReachedTop },
 		];
@@ -30,15 +76,21 @@ const getPredecessors = (rectWidth, rectHeight, x, y, previousMove, parity, hasR
 				{ x, y: y - 1n, previousMove: "up", parity: oppositeParity, hasReachedTop: false },
 			);
 		}
-		return predecessors;
 	}
 	else if(previousMove === "down") {
-		return [
+		predecessors = [
 			{ x, y: y + 1n, previousMove: "right", parity, hasReachedTop },
 			{ x, y: y + 1n, previousMove: "down", parity, hasReachedTop }
 		];
 	}
-
+	predecessors = predecessors.filter(p => !(
+		(p.x < 0n || p.y < 0n || p.x > rectWidth || p.y > rectHeight) ||
+		(p.y === rectHeight && !p.hasReachedTop) ||
+		(p.x === 0n && p.previousMove === "right" && p.y !== 0n) ||
+		(p.y === 0n && p.previousMove === "up") ||
+		(p.y === rectHeight && p.previousMove === "down")
+	));
+	return predecessors;
 };
 const numPaths = ((rectWidth, rectHeight, x, y, previousMove, parity, hasReachedTop, modulo = Infinity) => {
 	if(
