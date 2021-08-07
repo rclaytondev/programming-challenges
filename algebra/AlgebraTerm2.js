@@ -24,13 +24,21 @@ class AlgebraTerm2 {
 						substring.startsWith("-") &&
 						i !== 0 &&
 						tokens[tokens.length - 1] !== "(" &&
-						!FIND_OPERATOR.test(tokens[tokens.length - 1])
+						!FIND_OPERATOR.test(tokens[tokens.length - 1].token)
 					) {
-						tokens.push("-");
+						tokens.push({ token: "-", type: "operator" });
 						break;
 					}
 					const [token] = regex.exec(substring);
-					tokens.push(token);
+					tokens.push({
+						token: token,
+						type: (
+							regex === FIND_NUMBER ? "number" :
+							regex === FIND_VARIABLE ? "variable" :
+							regex === FIND_PARENTHESE ? "parenthese" :
+							"operator"
+						)
+					});
 					i += token.length - 1;
 					break;
 				}
@@ -127,31 +135,77 @@ testing.addUnit("AlgebraTerm2.toString()", {
 testing.addUnit("AlgebraTerm2.tokenize()", {
 	"can tokenize an expression with single-letter variables": () => {
 		const tokens = AlgebraTerm2.tokenize("x + y");
-		expect(tokens).toEqual(["x", "+", "y"]);
+		expect(tokens).toEqual([
+			{ token: "x", type: "variable" },
+			{ token: "+", type: "operator" },
+			{ token: "y", type: "variable" }
+		]);
 	},
 	"can tokenize an expression with weird whitespace": () => {
 		const tokens = AlgebraTerm2.tokenize("   x  +	  y ");
-		expect(tokens).toEqual(["x", "+", "y"]);
+		expect(tokens).toEqual([
+			{ token: "x", type: "variable" },
+			{ token: "+", type: "operator" },
+			{ token: "y", type: "variable" }
+		]);
 	},
 	"can tokenize an expression with no whitespace": () => {
 		const tokens = AlgebraTerm2.tokenize("x+y-z");
-		expect(tokens).toEqual(["x", "+", "y", "-", "z"]);
+		expect(tokens).toEqual([
+			{ token: "x", type: "variable" },
+			{ token: "+", type: "operator" },
+			{ token: "y", type: "variable" },
+			{ token: "-", type: "operator" },
+			{ token: "z", type: "variable" }
+		]);
 	},
 	"can tokenize an expression with numbers": () => {
-		const tokens = AlgebraTerm2.tokenize("1 + 2 - 3 * 4 / 5 ^ 6");
-		expect(tokens).toEqual(["1", "+", "2", "-", "3", "*", "4", "/", "5", "^", "6"]);
+		const tokens = AlgebraTerm2.tokenize("1 + 2");
+		expect(tokens).toEqual([
+			{ token: "1", type: "number" },
+			{ token: "+", type: "operator" },
+			{ token: "2", type: "number" }
+		]);
 	},
 	"can tokenize an expression with parentheses": () => {
-		const tokens = AlgebraTerm2.tokenize("1 + (2 * 3) - (4 * (5 / 6))");
-		expect(tokens).toEqual(["1", "+", "(", "2", "*", "3", ")", "-", "(", "4", "*", "(", "5", "/", "6", ")", ")"]);
+		const tokens = AlgebraTerm2.tokenize("1 + (2 * (3 ^ 4))");
+		expect(tokens).toEqual([
+			{ token: "1", type: "number" },
+			{ token: "+", type: "operator" },
+			{ token: "(", type: "parenthese" },
+			{ token: "2", type: "number" },
+			{ token: "*", type: "operator" },
+			{ token: "(", type: "parenthese" },
+			{ token: "3", type: "number" },
+			{ token: "^", type: "operator" },
+			{ token: "4", type: "number" },
+			{ token: ")", type: "parenthese" },
+			{ token: ")", type: "parenthese" },
+		]);
 	},
 	"can tokenize an expression with numbers containing decimal points": () => {
 		const tokens = AlgebraTerm2.tokenize("1.2 + 3.4");
-		expect(tokens).toEqual(["1.2", "+", "3.4"]);
+		expect(tokens).toEqual([
+			{ token: "1.2", type: "number" },
+			{ token: "+", type: "operator" },
+			{ token: "3.4", type: "number" }
+		]);
+	},
+	"can tokenize an expression with negative numbers": () => {
+		const tokens = AlgebraTerm2.tokenize("1 + -2");
+		expect(tokens).toEqual([
+			{ token: "1", type: "number" },
+			{ token: "+", type: "operator" },
+			{ token: "-2", type: "number" }
+		]);
 	},
 	"can tokenize an expression with multi-letter variable names containing numbers and underscores": () => {
 		const tokens = AlgebraTerm2.tokenize("fOo123_4 - BAr_7_8__9");
-		expect(tokens).toEqual(["fOo123_4", "-", "BAr_7_8__9"]);
+		expect(tokens).toEqual([
+			{ token: "fOo123_4", type: "variable" },
+			{ token: "-", type: "operator" },
+			{ token: "BAr_7_8__9", type: "variable" }
+		]);
 	}
 });
 testing.addUnit("AlgebraTerm2.parse()", {
