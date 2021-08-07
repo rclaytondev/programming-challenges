@@ -211,7 +211,6 @@ testing.addUnit("numCastles()", {
 	},
 });
 testing.testUnit("numPaths()");
-testing.testAll();
 
 const solve = () => {
 	const MODULO = 1000000007;

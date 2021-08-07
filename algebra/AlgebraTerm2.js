@@ -8,16 +8,40 @@ class AlgebraTerm2 {
 
 	static parse(string) {
 		if(string.includes("(")) {
-
+			const firstParenthese = string.indexOf("(");
+			let closingParenthese = 0;
+			let parenthesesDepth = 1;
+			for(let i = firstParenthese + 1; i < string.length; i ++) {
+				if(string[i] === "(") { parenthesesDepth ++; }
+				else if(string[i] === ")") { parenthesesDepth --; }
+				if(parenthesesDepth === 0) {
+					closingParenthese = i;
+					break;
+				}
+			}
+			const substring = string.substring(firstParenthese + 1, closingParenthese);
+			const depth = substring.match(/NESTED_EXPRESSION_\d+/g)?.length ?? 0;
+			const subExpression = AlgebraTerm2.parse(substring);
+			const outerExpressionString = string.replace(`(${substring})`, `NESTED_EXPRESSION_${depth + 1}`);
+			const outerExpression = AlgebraTerm2.parse(outerExpressionString);
+			return outerExpression.substitute(`NESTED_EXPRESSION_${depth + 1}`, subExpression);
 		}
-		// debugger;
-		// string = string.trim().replace(/);
+		string = string.replace(/\s+/, "");
 		const ORDER_OF_OPERATIONS = [
 			["^"],
 			["*", "/"],
 			["+", "-"]
 		];
+		const tokens = string.match(/(\w([\d_]+))|(\d)/g)
+		for(const operatorList of ORDER_OF_OPERATIONS) {
+			const firstOperator = (operatorList
+				.map(o => tokens.indexOf(o))
+				.filter(n => n !== -1)
+				.min()
+			) ?? -1;
+			if(firstOperator === -1) { continue; }
 
+		}
 	}
 	toString() {
 		const operand1 = (typeof this.term1 === "number" || typeof this.term1 === "string") ? this.term1 : `(${this.term1})`;
@@ -89,7 +113,59 @@ testing.addUnit("AlgebraTerm2.parse()", {
 				2
 			)
 		);
-	}
+	},
+	"can parse an expression with redundant parentheses": () => {
+		const term = AlgebraTerm2.parse("((((5)))) + ((x))");
+		expect(term).toEqual(new AlgebraTerm2("+", 5, "x"));
+	},
+	"can parse an expression containing a non-integer": () => {
+		const term = AlgebraTerm2.parse("1.23 * x");
+		expect(term).toEqual(new AlgebraTerm2("*", 1.23, "x"));
+	},
+	"can parse an expression containing a negative number": () => {
+		const term = AlgebraTerm2.parse("-123 * x");
+		expect(term).toEqual(new AlgebraTerm2("*", -123, "x"));
+	},
+	"can parse an expression with a negative sign at the beginning of the string": () => {
+		const term = AlgebraTerm2.parse("-x + 3");
+		expect(term).toEqual(new AlgebraTerm2("+", new AlgebraTerm2("-", 0, "x"), 3));
+	},
+	"can parse an expression with a negative sign at the beginning of a parenthesized subexpression": () => {
+		const term = AlgebraTerm2.parse("5 + (-x)");
+		expect(term).toEqual(new AlgebraTerm2("+", 5, new AlgebraTerm2("-", 0, "x")));
+	},
+	"can parse an expression with a negative sign after another operator": () => {
+		const term = AlgebraTerm2.parse("5 * -x");
+		expect(term).toEqual(new AlgebraTerm2("*", 5, new AlgebraTerm2("-", 0, "x")));
+	},
+	"can parse an expression with a negative sign in front of parentheses": () => {
+		const term = AlgebraTerm2.parse("5 * -(x)");
+		expect(term).toEqual(new AlgebraTerm2("*", 5, new AlgebraTerm2("-", 0, "x")));
+	},
+	"can parse an expression with a multi-letter, multi-number variable name": () => {
+		const term = AlgebraTerm2.parse("foo123 / 17");
+		expect(term).toEqual(new AlgebraTerm2("/", "foo123", 17));
+	},
+	"can parse a multi-operator expression without parentheses": () => {
+		const term = AlgebraTerm2.parse("y + 7 - 3");
+		expect(term).toEqual(new AlgebraTerm2("-", new AlgebraTerm2("+", "y", 7), 3));
+	},
+	"can parse an expression with a single pair of parentheses": () => {
+		const term = AlgebraTerm2.parse("2 * (x + 1)");
+		expect(term).toEqual(new AlgebraTerm2("*", 2, new AlgebraTerm2("+", "x", 1)));
+	},
+	"correctly uses the order of operations when there are no parentheses": () => {
+		const term = AlgebraTerm2.parse("x + y * z"); // x + (y * z), not (x + y) * z
+		expect(term).toEqual(new AlgebraTerm2("+", "x", new AlgebraTerm2("*", "y", "z")));
+	},
+	"correctly uses the order of operations when there are equal-precedence operators - test case 1": () => {
+		const term = AlgebraTerm2.parse("x + y - z");
+		expect(term).toEqual(new AlgebraTerm2("-", new AlgebraTerm2("+", "x", "y"), "z"));
+	},
+	"correctly uses the order of operations when there are equal-precedence operators - test case 2": () => {
+		const term = AlgebraTerm2.parse("x - y + z");
+		expect(term).toEqual(new AlgebraTerm2("+", new AlgebraTerm2("-", "x", "y"), "z"));
+	},
 });
 testing.addUnit("AlgebraTerm2.sum()", {
 	"correctly returns the sum of a single term": () => {
@@ -143,3 +219,4 @@ testing.addUnit("AlgebraTerm2.substitute()", {
 		expect(substituted.toString()).toEqual("((y / 3) + 2) * 5");
 	}
 });
+testing.testUnit("AlgebraTerm2.parse()");

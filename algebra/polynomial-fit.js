@@ -29,4 +29,3 @@ testing.addUnit("fitPolynomial()", {
 		expect(polynomial.toString()).toEqual("((x ^ 2) + (5 * x)) + 4")
 	}
 });
-testing.testAll();
