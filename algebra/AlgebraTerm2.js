@@ -40,6 +40,22 @@ class AlgebraTerm2 {
 			return new AlgebraTerm2("+", AlgebraTerm2.sum(...others), last);
 		}
 	}
+
+	substitute(value, replacement) {
+		const term1 = ((this.term1 instanceof AlgebraTerm2)
+			? this.term1.substitute(value, replacement)
+			: this.term1
+		);
+		const term2 = ((this.term2 instanceof AlgebraTerm2)
+			? this.term2.substitute(value, replacement)
+			: this.term2
+		);
+		return new AlgebraTerm2(
+			this.operation,
+			term1 === value ? replacement : term1,
+			term2 === value ? replacement : term2,
+		);
+	}
 }
 
 testing.addUnit("AlgebraTerm2.toString()", {
@@ -96,7 +112,34 @@ testing.addUnit("AlgebraTerm2.sum()", {
 	}
 });
 testing.addUnit("AlgebraTerm2.substitute()", {
-	"can substitute a variable for another variable": () => {
-
+	"can replace a variable with another variable": () => {
+		const term = new AlgebraTerm2("+", "x", 2); // x + 2
+		const substituted = term.substitute("x", "y");
+		expect(substituted.toString()).toEqual("y + 2");
+	},
+	"can replace a variable with another variable in a nested expression": () => {
+		const term = new AlgebraTerm2("*", new AlgebraTerm2("+", "x", 2), 3); // (x + 2) * 3
+		const substituted = term.substitute("x", "y");
+		expect(substituted.toString()).toEqual("(y + 2) * 3");
+	},
+	"can replace a variable with a number": () => {
+		const term = new AlgebraTerm2("/", "x", 2); // x/2
+		const substituted = term.substitute("x", 3);
+		expect(substituted.toString()).toEqual("3 / 2");
+	},
+	"can replace a variable with a number in a nested expression": () => {
+		const term = new AlgebraTerm2("*", new AlgebraTerm2("+", "x", 2), 5); // (x + 2) * 5
+		const substituted = term.substitute("x", 3);
+		expect(substituted.toString()).toEqual("(3 + 2) * 5");
+	},
+	"can replace a variable with an expression": () => {
+		const term = new AlgebraTerm2("*", "x", 5);
+		const substituted = term.substitute("x", new AlgebraTerm2("+", "x", 2));
+		expect(substituted.toString()).toEqual("(x + 2) * 5");
+	},
+	"can replace a variable with an expression in a nested expression": () => {
+		const term = new AlgebraTerm2("*", new AlgebraTerm2("+", "x", 2), 5); // (x + 2) * 5
+		const substituted = term.substitute("x", new AlgebraTerm2("/", "y", 3));
+		expect(substituted.toString()).toEqual("((y / 3) + 2) * 5");
 	}
 });
