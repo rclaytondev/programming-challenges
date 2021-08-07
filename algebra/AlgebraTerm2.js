@@ -6,6 +6,38 @@ class AlgebraTerm2 {
 		this.term2 = term2;
 	}
 
+	static tokenize(string) {
+		const FIND_WHITESPACE = /\s+/g;
+		const FIND_NUMBER = /^-?((\d+\.\d+)|(\d+))/;
+		const FIND_VARIABLE = /^[A-Za-z]\w*/;
+		const FIND_PARENTHESE = /^(\(|\))/;
+		const FIND_OPERATOR = /^\+|-|\*|\/|\^/;
+		const TOKEN_TYPES = [FIND_NUMBER, FIND_VARIABLE, FIND_PARENTHESE, FIND_OPERATOR];
+		string = string.replace(FIND_WHITESPACE, "");
+		const tokens = [];
+		for(let i = 0; i < string.length; i ++) {
+			const substring = string.substring(i);
+			for(const regex of TOKEN_TYPES) {
+				if(regex.test(substring)) {
+					if(
+						regex === FIND_NUMBER &&
+						substring.startsWith("-") &&
+						i !== 0 &&
+						tokens[tokens.length - 1] !== "(" &&
+						!FIND_OPERATOR.test(tokens[tokens.length - 1])
+					) {
+						tokens.push("-");
+						break;
+					}
+					const [token] = regex.exec(substring);
+					tokens.push(token);
+					i += token.length - 1;
+					break;
+				}
+			}
+		}
+		return tokens;
+	}
 	static parse(string) {
 		if(string.includes("(")) {
 			const firstParenthese = string.indexOf("(");
@@ -90,6 +122,36 @@ testing.addUnit("AlgebraTerm2.toString()", {
 	"returns the string representation of 2 * (x - 3)": () => {
 		const term = new AlgebraTerm2("*", 2, new AlgebraTerm2("-", "x", 3));
 		expect(term.toString()).toEqual("2 * (x - 3)");
+	}
+});
+testing.addUnit("AlgebraTerm2.tokenize()", {
+	"can tokenize an expression with single-letter variables": () => {
+		const tokens = AlgebraTerm2.tokenize("x + y");
+		expect(tokens).toEqual(["x", "+", "y"]);
+	},
+	"can tokenize an expression with weird whitespace": () => {
+		const tokens = AlgebraTerm2.tokenize("   x  +	  y ");
+		expect(tokens).toEqual(["x", "+", "y"]);
+	},
+	"can tokenize an expression with no whitespace": () => {
+		const tokens = AlgebraTerm2.tokenize("x+y-z");
+		expect(tokens).toEqual(["x", "+", "y", "-", "z"]);
+	},
+	"can tokenize an expression with numbers": () => {
+		const tokens = AlgebraTerm2.tokenize("1 + 2 - 3 * 4 / 5 ^ 6");
+		expect(tokens).toEqual(["1", "+", "2", "-", "3", "*", "4", "/", "5", "^", "6"]);
+	},
+	"can tokenize an expression with parentheses": () => {
+		const tokens = AlgebraTerm2.tokenize("1 + (2 * 3) - (4 * (5 / 6))");
+		expect(tokens).toEqual(["1", "+", "(", "2", "*", "3", ")", "-", "(", "4", "*", "(", "5", "/", "6", ")", ")"]);
+	},
+	"can tokenize an expression with numbers containing decimal points": () => {
+		const tokens = AlgebraTerm2.tokenize("1.2 + 3.4");
+		expect(tokens).toEqual(["1.2", "+", "3.4"]);
+	},
+	"can tokenize an expression with multi-letter variable names containing numbers and underscores": () => {
+		const tokens = AlgebraTerm2.tokenize("fOo123_4 - BAr_7_8__9");
+		expect(tokens).toEqual(["fOo123_4", "-", "BAr_7_8__9"]);
 	}
 });
 testing.addUnit("AlgebraTerm2.parse()", {
