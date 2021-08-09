@@ -46,41 +46,86 @@ class AlgebraTerm2 {
 		}
 		return tokens;
 	}
-	static parse(string) {
-		if(string.includes("(")) {
-			const firstParenthese = string.indexOf("(");
-			let closingParenthese = 0;
-			let parenthesesDepth = 1;
-			for(let i = firstParenthese + 1; i < string.length; i ++) {
-				if(string[i] === "(") { parenthesesDepth ++; }
-				else if(string[i] === ")") { parenthesesDepth --; }
-				if(parenthesesDepth === 0) {
-					closingParenthese = i;
-					break;
-				}
+	static parse(string, tokens = AlgebraTerm2.tokenize(string)) {
+		const depth = tokens.count(t => t.type === "meta-variable");
+		if(tokens.some(t => t.token === "(")) {
+			const openingParenthese = tokens.findIndex(t => t.token === "(");
+			const closingParenthese = tokens.findIndex(
+				(t, i) => i > openingParenthese &&
+				(tokens.slice(0, i + 1).count(v => v.token === "(") ===
+				tokens.slice(0, i + 1).count(v => v.token === ")"))
+			);
+			const subExpressionTokens = tokens.slice(openingParenthese + 1, closingParenthese);
+			const subExpression = AlgebraTerm2.parse(null, subExpressionTokens);
+			const outerExpressionTokens = [
+				...tokens.slice(0, openingParenthese),
+				{ token: `NESTED_EXPRESSION_${depth}`, type: "meta-variable" },
+				...tokens.slice(closingParenthese + 1)
+			];
+			if(outerExpressionTokens.length === 1) {
+				return subExpression;
 			}
-			const substring = string.substring(firstParenthese + 1, closingParenthese);
-			const depth = substring.match(/NESTED_EXPRESSION_\d+/g)?.length ?? 0;
-			const subExpression = AlgebraTerm2.parse(substring);
-			const outerExpressionString = string.replace(`(${substring})`, `NESTED_EXPRESSION_${depth + 1}`);
-			const outerExpression = AlgebraTerm2.parse(outerExpressionString);
-			return outerExpression.substitute(`NESTED_EXPRESSION_${depth + 1}`, subExpression);
+			const outerExpression = AlgebraTerm2.parse(null, outerExpressionTokens);
+			return outerExpression.substitute(`NESTED_EXPRESSION_${depth}`, subExpression);
 		}
-		string = string.replace(/\s+/, "");
+		for(let i = 0; i < tokens.length; i ++) {
+			const token = tokens[i];
+			const isUnaryMinus = (token.token === "-" && (
+				i === 0 ||
+				tokens[i - 1].token === "(" ||
+				tokens[i - 1].type === "operator"
+			));
+			if(isUnaryMinus) {
+				/* no parentheses --> minus sign only applies to next token */
+				const negatedToken = tokens[i + 1];
+				tokens.splice(
+					i, 2,
+					{ token: "(", type: "parenthese" },
+					{ token: "0", type: "number" },
+					{ token: "-", type: "operator" },
+					negatedToken,
+					{ token: ")", type: "parenthese" }
+				);
+				return AlgebraTerm2.parse(string, tokens);
+			}
+		}
+		if(tokens.length === 1) {
+			const [token] = tokens;
+			if(token.type === "number") {
+				return Number.parseFloat(token.token);
+			}
+			else if(token.type === "variable") {
+				return token.token;
+			}
+			else {
+				throw new AlgebraParseError(`Single-token expression: expected the token to be a number or a variable, but instead it was a ${token.type}`);
+			}
+		}
+		if(tokens.length === 3) {
+			return new AlgebraTerm2(
+				tokens[1].token,
+				(tokens[0].type === "number") ? Number.parseFloat(tokens[0].token) : tokens[0].token,
+				(tokens[2].type === "number") ? Number.parseFloat(tokens[2].token) : tokens[2].token
+			);
+		}
 		const ORDER_OF_OPERATIONS = [
 			["^"],
 			["*", "/"],
 			["+", "-"]
 		];
-		const tokens = string.match(/(\w([\d_]+))|(\d)/g)
-		for(const operatorList of ORDER_OF_OPERATIONS) {
-			const firstOperator = (operatorList
-				.map(o => tokens.indexOf(o))
-				.filter(n => n !== -1)
-				.min()
-			) ?? -1;
-			if(firstOperator === -1) { continue; }
-
+		for(const operators of ORDER_OF_OPERATIONS) {
+			const firstOperatorIndex = tokens.findIndex(t => operators.includes(t.token));
+			const firstOperator = tokens[firstOperatorIndex];
+			if(firstOperatorIndex === -1) { continue; }
+			const subExpressionTokens = tokens.slice(firstOperatorIndex - 1, firstOperatorIndex + 2);
+			const subExpression = AlgebraTerm2.parse(null, subExpressionTokens);
+			const outerExpressionTokens = [
+				...tokens.slice(0, firstOperatorIndex - 1),
+				{ token: `NESTED_EXPRESSION_${depth}`, type: "meta-variable" },
+				...tokens.slice(firstOperatorIndex + 2)
+			];
+			const outerExpression = AlgebraTerm2.parse(null, outerExpressionTokens);
+			return outerExpression.substitute(`NESTED_EXPRESSION_${depth}`, subExpression);
 		}
 	}
 	toString() {
@@ -336,3 +381,4 @@ testing.addUnit("AlgebraTerm2.substitute()", {
 	}
 });
 testing.testUnit("AlgebraTerm2.parse()");
+// testing.runTestByName("AlgebraTerm2.parse() - can parse a multi-operator expression without parentheses");
