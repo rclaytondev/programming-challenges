@@ -8,9 +8,17 @@ const fitPolynomial = (degree, points) => {
 	}
 	const polynomial = Expression.sum(...terms);
 	const distances = points.map(({ x, y }) => {
-		// return new Expression("-", polynomial, )
+		return new Expression("-", polynomial.substitute("x", x), y).simplify();
 	});
-	// debugger;
+	const distancesSquared = distances.map(d => new Expression("^", d, 2));
+	const sumOfDistSq = Expression.sum(...distancesSquared);
+	let equations = [];
+	for(let exponent = 0; exponent <= degree; exponent ++) {
+		const variable = `c${exponent}`;
+		const derivative = Expression.differentiate(distancesSquared, variable);
+		equations.push(new Equation(derivative, 0)); // set the derivative to 0 and then solve
+	}
+	debugger;
 };
 
 testing.addUnit("fitPolynomial()", {
@@ -29,3 +37,4 @@ testing.addUnit("fitPolynomial()", {
 		expect(polynomial.toString()).toEqual("((x ^ 2) + (5 * x)) + 4")
 	}
 });
+testing.testUnit("fitPolynomial()");
