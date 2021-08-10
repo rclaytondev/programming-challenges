@@ -1,63 +1,63 @@
 class LinearEquation {
-	constructor(expression1, expression2) {
-		this.expression1 = expression1;
-		this.expression2 = expression2;
+	constructor(LinearExpression1, LinearExpression2) {
+		this.LinearExpression1 = LinearExpression1;
+		this.LinearExpression2 = LinearExpression2;
 	}
 	static parse(string) {
 		const [expr1, expr2] = string.split("=");
 		return new LinearEquation(
-			Expression.parse(expr1.trim()),
-			Expression.parse(expr2.trim())
+			LinearExpression.parse(expr1.trim()),
+			LinearExpression.parse(expr2.trim())
 		);
 	}
 
 	standardForm() {
 		/* returns a new, equivalent equation, of the form '1x + 2y + 3z + ... = 12345' */
 		let result = this.clone();
-		this.expression1.terms.forEach(term => {
+		this.LinearExpression1.terms.forEach(term => {
 			if(term.variableName == null) {
 				result.subtract(term);
 			}
 		});
-		this.expression2.terms.forEach(term => {
+		this.LinearExpression2.terms.forEach(term => {
 			if(term.variableName != null) {
 				result.subtract(term);
 			}
 		});
 		result = result.combineLikeTerms().removeZeroTerms();
-		if(result.expression2.terms.size === 0) {
-			result.expression2.terms.add(new AlgebraTerm(0, null));
+		if(result.LinearExpression2.terms.size === 0) {
+			result.LinearExpression2.terms.add(new LinearAlgebraTerm(0, null));
 		}
 		return result;
 	}
 
 	combineLikeTerms() {
 		return new LinearEquation(
-			this.expression1.combineLikeTerms(),
-			this.expression2.combineLikeTerms()
+			this.LinearExpression1.combineLikeTerms(),
+			this.LinearExpression2.combineLikeTerms()
 		);
 	}
 	removeZeroTerms() {
 		return new LinearEquation(
-			this.expression1.removeZeroTerms(),
-			this.expression2.removeZeroTerms()
+			this.LinearExpression1.removeZeroTerms(),
+			this.LinearExpression2.removeZeroTerms()
 		);
 	}
 
-	add(algebraTerm) {
-		this.expression1.terms.add(algebraTerm);
-		this.expression2.terms.add(algebraTerm);
+	add(LinearAlgebraTerm) {
+		this.LinearExpression1.terms.add(LinearAlgebraTerm);
+		this.LinearExpression2.terms.add(LinearAlgebraTerm);
 	}
-	subtract(algebraTerm) {
-		this.expression1.terms.add(new AlgebraTerm(-algebraTerm.coefficient, algebraTerm.variableName));
-		this.expression2.terms.add(new AlgebraTerm(-algebraTerm.coefficient, algebraTerm.variableName));
+	subtract(LinearAlgebraTerm) {
+		this.LinearExpression1.terms.add(new LinearAlgebraTerm(-LinearAlgebraTerm.coefficient, LinearAlgebraTerm.variableName));
+		this.LinearExpression2.terms.add(new LinearAlgebraTerm(-LinearAlgebraTerm.coefficient, LinearAlgebraTerm.variableName));
 	}
 
 	toString() {
-		return `${this.expression1} = ${this.expression2}`;
+		return `${this.LinearExpression1} = ${this.LinearExpression2}`;
 	}
 	variables() {
-		return this.expression1.variables().union(this.expression2.variables());
+		return this.LinearExpression1.variables().union(this.LinearExpression2.variables());
 	}
 }
 
@@ -67,43 +67,43 @@ testing.addUnit("LinearEquation.parse()", LinearEquation.parse, [
 	[
 		"x = y",
 		new LinearEquation(
-			new Expression([new AlgebraTerm(1, "x")]),
-			new Expression([new AlgebraTerm(1, "y")]),
+			new LinearExpression([new LinearAlgebraTerm(1, "x")]),
+			new LinearExpression([new LinearAlgebraTerm(1, "y")]),
 		)
 	],
 	[
 		"3a = 10b",
 		new LinearEquation(
-			new Expression([new AlgebraTerm(3, "a")]),
-			new Expression([new AlgebraTerm(10, "b")]),
+			new LinearExpression([new LinearAlgebraTerm(3, "a")]),
+			new LinearExpression([new LinearAlgebraTerm(10, "b")]),
 		)
 	],
 	[
 		"1.79a = 18.56b",
 		new LinearEquation(
-			new Expression([new AlgebraTerm(1.79, "a")]),
-			new Expression([new AlgebraTerm(18.56, "b")]),
+			new LinearExpression([new LinearAlgebraTerm(1.79, "a")]),
+			new LinearExpression([new LinearAlgebraTerm(18.56, "b")]),
 		)
 	],
 	[
 		"-10a = -9b",
 		new LinearEquation(
-			new Expression([new AlgebraTerm(-10, "a")]),
-			new Expression([new AlgebraTerm(-9, "b")]),
+			new LinearExpression([new LinearAlgebraTerm(-10, "a")]),
+			new LinearExpression([new LinearAlgebraTerm(-9, "b")]),
 		)
 	],
 	[
 		"10a + 6b = 4c + 18d",
 		new LinearEquation(
-			new Expression([new AlgebraTerm(10, "a"), new AlgebraTerm(6, "b")]),
-			new Expression([new AlgebraTerm(4, "c"), new AlgebraTerm(18, "d")]),
+			new LinearExpression([new LinearAlgebraTerm(10, "a"), new LinearAlgebraTerm(6, "b")]),
+			new LinearExpression([new LinearAlgebraTerm(4, "c"), new LinearAlgebraTerm(18, "d")]),
 		)
 	],
 	[
 		"10a - 6b = 4c - 18d",
 		new LinearEquation(
-			new Expression([new AlgebraTerm(10, "a"), new AlgebraTerm(-6, "b")]),
-			new Expression([new AlgebraTerm(4, "c"), new AlgebraTerm(-18, "d")]),
+			new LinearExpression([new LinearAlgebraTerm(10, "a"), new LinearAlgebraTerm(-6, "b")]),
+			new LinearExpression([new LinearAlgebraTerm(4, "c"), new LinearAlgebraTerm(-18, "d")]),
 		)
 	],
 ]);

@@ -25,15 +25,15 @@ class LinearEquationSystem {
 			/* only one equation of the form ax = b --> x = b/a. */
 			const variableName = variables[0];
 			return {
-				[variableName]: standardForm[0].expression2.terms.onlyItem().coefficient / standardForm[0].expression1.terms.onlyItem().coefficient
+				[variableName]: standardForm[0].LinearExpression2.terms.onlyItem().coefficient / standardForm[0].LinearExpression1.terms.onlyItem().coefficient
 			};
 		}
 		const coefficientMatrix = new Matrix(
 			standardForm.map(equation =>
-				variables.map(variable => equation.expression1.terms.find(t => t.variableName === variable)?.coefficient ?? 0)
+				variables.map(variable => equation.LinearExpression1.terms.find(t => t.variableName === variable)?.coefficient ?? 0)
 			)
 		);
-		const weightedSumMatrix = new Matrix(standardForm.map(eq => [[...eq.expression2.terms][0].coefficient]));
+		const weightedSumMatrix = new Matrix(standardForm.map(eq => [[...eq.LinearExpression2.terms][0].coefficient]));
 		const inverse = coefficientMatrix.inverse();
 		const answers = inverse.multiply(weightedSumMatrix);
 		const answersArray = answers.grid.rows.map(row => row[0]);
