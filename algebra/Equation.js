@@ -1,4 +1,4 @@
-class Equation2 {
+class Equation {
 	constructor(leftSide, rightSide) {
 		this.leftSide = leftSide;
 		this.rightSide = rightSide;

@@ -1,14 +1,14 @@
 const fitPolynomial = (degree, points) => {
-	/* returns an AlgebraTerm2 representing a polynomial that fits the points using a least-squares regression. */
+	/* returns an Expression representing a polynomial that fits the points using a least-squares regression. */
 	const terms = [];
 	for(let exponent = 0; exponent <= degree; exponent ++) {
-		terms.push(new AlgebraTerm2(
-			"*", `c${exponent}`, new AlgebraTerm2("^", "x", exponent)
+		terms.push(new Expression(
+			"*", `c${exponent}`, new Expression("^", "x", exponent)
 		));
 	}
-	const polynomial = AlgebraTerm2.sum(...terms);
+	const polynomial = Expression.sum(...terms);
 	const distances = points.map(({ x, y }) => {
-		// return new AlgebraTerm2("-", polynomial, )
+		// return new Expression("-", polynomial, )
 	});
 	// debugger;
 };
