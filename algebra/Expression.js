@@ -175,6 +175,41 @@ class Expression {
 	}
 
 	static SIMPLIFICATIONS = [
+		{
+			name: "numeric-simplification",
+			canApply: (expr) => {
+				return (typeof expr.term1 === "number" && typeof expr.term2 === "number");
+			},
+			apply: (expr) => {
+				switch (expr.operation) {
+					case "+": return expr.term1 + expr.term2;
+					case "-": return expr.term1 - expr.term2;
+					case "*": return expr.term1 * expr.term2;
+					case "/": return expr.term1 / expr.term2;
+					case "^": return expr.term1 ^ expr.term2;
+				}
+			}
+		},
+		{
+			name: "x^1 = x",
+			canApply: (expr) => expr.operation === "^" && expr.term2 === 1,
+			apply: (expr) => expr.term1
+		},
+		{
+			name: "x^0 = 1",
+			canApply: (expr) => expr.operation === "^" && expr.term2 === 0,
+			apply: (expr) => 1
+		},
+		{
+			name: "x*1 = x",
+			canApply: (expr) => expr.operation === "*" && (expr.term1 === 1 || expr.term2 === 1),
+			apply: (expr) => expr.term1 === 1 ? expr.term2 : expr.term1
+		},
+		{
+			name: "x*0 = 0",
+			canApply: (expr) => expr.operation === "*" && (expr.term1 === 0 || expr.term2 === 0),
+			apply: (expr) => 0
+		}
 	];
 	static findSimplification(simplificationID) {
 		return Expression.SIMPLIFICATIONS.find(s => s.name === simplificationID);
