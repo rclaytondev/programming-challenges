@@ -190,7 +190,8 @@ class Expression {
 				? Expression.simplify(expression.term2, simplificationID, simplifications)
 				: expression.term2
 			);
-			return simplification.apply(new Expression(expression.operation, term1, term2));
+			const newExpression = new Expression(expression.operation, term1, term2);
+			return simplification.canApply(newExpression) ? simplification.apply(newExpression) : newExpression;
 		}
 		whileLoop: while(true) {
 			if(!(expression instanceof Expression)) { return expression; }
