@@ -165,6 +165,45 @@ class Expression {
 			term2 === value ? replacement : term2,
 		);
 	}
+
+	subExpressions() {
+		return [
+			this,
+			...(this.term1.subExpressions?.() ?? []),
+			...(this.term2.subExpressions?.() ?? []),
+		];
+	}
+
+	static SIMPLIFICATIONS = [
+	];
+	static findSimplification(simplificationID) {
+		return Expression.SIMPLIFICATIONS.find(s => s.name === simplificationID);
+	}
+	static simplify(expression, simplificationID = "all", simplifications = Expression.SIMPLIFICATIONS) {
+		if(simplificationID !== "all") {
+			const simplification = simplifications.find(s => s.name === simplificationID);
+			const term1 = (expression.term1 instanceof Expression
+				? Expression.simplify(expression.term1, simplificationID, simplifications)
+				: expression.term1
+			);
+			const term2 = (expression.term2 instanceof Expression
+				? Expression.simplify(expression.term2, simplificationID, simplifications)
+				: expression.term2
+			);
+			return simplification.apply(new Expression(expression.operation, term1, term2));
+		}
+		whileLoop: while(true) {
+			if(!(expression instanceof Expression)) { return expression; }
+			const subExpressions = expression.subExpressions();
+			for(const simplification of simplifications) {
+				if(subExpressions.some(e => simplification.canApply(e))) {
+					expression = Expression.simplify(expression, simplification.name, [simplification]);
+					continue whileLoop;
+				}
+			}
+			return expression;
+		}
+	}
 }
 
 testing.addUnit("Expression.toString()", {
@@ -380,5 +419,42 @@ testing.addUnit("Expression.substitute()", {
 		expect(substituted.toString()).toEqual("((y / 3) + 2) * 5");
 	}
 });
-testing.testUnit("Expression.parse()");
-// testing.runTestByName("Expression.parse() - can parse a multi-operator expression without parentheses");
+(() => {
+	const testSimplification = {
+		name: "replace-x-with-y",
+		canApply: ({ term1, term2 }) => term1 === "x" || term2 === "x",
+		apply: (expr) => {
+			const t1 = (expr.term1 === "x" ? "y" : expr.term1);
+			const t2 = (expr.term2 === "x" ? "y" : expr.term2);
+			return new Expression(expr.operation, t1, t2);
+		}
+	};
+	testing.addUnit("Expression.simplify()", {
+		"can fully simplify an expression": () => {
+			const expr = Expression.parse("x + 1");
+			const simplified = Expression.simplify(expr, "all", [testSimplification]);
+			expect(`${simplified}`).toEqual("y + 1");
+		},
+		"can apply a specific simplification": () => {
+			const expr = Expression.parse("x + 1");
+			const simplified = Expression.simplify(expr, "replace-x-with-y", [testSimplification]);
+			expect(`${simplified}`).toEqual("y + 1");
+		},
+		"returns the original expression when no simplifications are applicable": () => {
+			const expr = Expression.parse("z + 1");
+			const simplified = Expression.simplify(expr, "replace-x-with-y", [testSimplification]);
+			expect(`${simplified}`).toEqual("z + 1");
+		},
+		"can simplify using non-top-level simplifications": () => {
+			const expr = Expression.parse("(x + 1) * 2");
+			const simplified = Expression.simplify(expr, "all", [testSimplification]);
+			expect(`${simplified}`).toEqual("(y + 1) * 2");
+		},
+		"can apply a specific non-top-level simplification": () => {
+			const expr = Expression.parse("(x + 1) * 2");
+			const simplified = Expression.simplify(expr, "replace-x-with-y", [testSimplification]);
+			expect(`${simplified}`).toEqual("(y + 1) * 2");
+		}
+	});
+}) ();
+testing.testUnit("Expression.simplify()");
