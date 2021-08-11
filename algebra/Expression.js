@@ -205,6 +205,9 @@ class Expression {
 			return expression;
 		}
 	}
+	simplify(simplificationID = "all", simplifications = Expression.SIMPLIFICATIONS) {
+		return Expression.simplify(this, simplificationID, simplifications);
+	}
 }
 
 testing.addUnit("Expression.toString()", {
