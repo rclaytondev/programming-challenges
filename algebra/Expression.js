@@ -243,6 +243,74 @@ class Expression {
 	simplify(simplificationID = "all", simplifications = Expression.SIMPLIFICATIONS) {
 		return Expression.simplify(this, simplificationID, simplifications);
 	}
+
+	static DERIVATIVE_RULES = [
+		{
+			name: "sum-rule",
+			canApply: (expr) => (expr.operation === "+"),
+			apply: ({ term1, term2 }, variable) => new Expression(
+				"+",
+				Expression.differentiate(term1, variable),
+				Expression.differentiate(term2, variable)
+			)
+		},
+		{
+			name: "difference-rule",
+			canApply: (expr) => (expr.operation === "-"),
+			apply: ({ term1, term2 }, variable) => new Expression(
+				"-",
+				Expression.differentiate(term1, variable),
+				Expression.differentiate(term2, variable)
+			)
+		},
+		{
+			name: "product-rule",
+			canApply: (expr) => (expr.operation === "*"),
+			apply: ({ term1, term2 }, variable) => new Expression(
+				"+",
+				new Expression(
+					"*",
+					Expression.differentiate(term1, variable),
+					term2
+				),
+				new Expression(
+					"*",
+					term1,
+					Expression.differentiate(term2, variable),
+				),
+			)
+		},
+		{
+			name: "power-rule",
+			canApply: (expr) => (expr.operation === "^" && typeof expr.term2 === "number"),
+			apply: ({ term1, term2 }, variable) => new Expression(
+				"*",
+				term2,
+				new Expression(
+					"*",
+					new Expression("^", term1, term2 - 1),
+					Expression.differentiate(term1)
+				)
+			)
+		}
+	];
+	static differentiate(expr, variable) {
+		if(typeof expr === "number") { return 0; }
+		else if(typeof expr === "string") {
+			return (expr === variable) ? 0 : 1;
+		}
+		else {
+			for(const derivativeRule of Expression.DERIVATIVE_RULES) {
+				if(derivativeRule.canApply(expr, variable)) {
+					return derivativeRule.apply(expr, variable);
+				}
+			}
+			throw new Error("Expression format not supported.");
+		}
+	}
+	differentiate(variable) {
+		return Expression.differentiate(this, variable);
+	}
 }
 
 testing.addUnit("Expression.toString()", {
