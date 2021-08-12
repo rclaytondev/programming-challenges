@@ -209,6 +209,21 @@ class Expression {
 			name: "x*0 = 0",
 			canApply: (expr) => expr.operation === "*" && (expr.term1 === 0 || expr.term2 === 0),
 			apply: (expr) => 0
+		},
+		{
+			name: "combine-like-terms",
+			canApply: (expr) => {
+				const terms = [];
+				for(const subExpression of Tree.iterate(expr, (expr) =>
+					expr.operation !== "+" ? [] : [
+						expr.term1, expr.term2
+					].filter(e => e && (typeof e === "string" || e.operation === "*"))
+				)) {
+					if(subExpression === expr) { continue; }
+					terms.push(subExpression);
+				}
+				const foo = 123;
+			}
 		}
 	];
 	static findSimplification(simplificationID) {
@@ -564,4 +579,27 @@ testing.addUnit("Expression.substitute()", {
 		}
 	});
 }) ();
-testing.testUnit("Expression.simplify()");
+testing.addUnit("Expression.simplify() - combine-like-terms", {
+	"can simplify the expression 2x + 3x": () => {
+		const term = Expression.parse("2 * x + 3 * x");
+		const simplified = term.simplify();
+		expect(term).toEqual("5 * x");
+	},
+	"can simplify the expression (2x) + (x * 3)": () => {
+		const term = Expression.parse("2 * x + x * 3");
+		const simplified = term.simplify();
+		expect(term).toEqual("5 * x");
+	},
+	"can simplify the expression 2x + 3y + 4x + 5y": () => {
+		const term = Expression.parse("(2*x) + (3*y) + (4*x) + (5*y)");
+		debugger;
+		const simplified = term.simplify();
+		expect(term).toEqual("(6 * x) + (8 * y)");
+	},
+	"can simplify the expression 3x - 2x": () => {
+		const term = Expression.parse("5 * x - 3 * x");
+		const simplified = term.simplify();
+		expect(term).toEqual("2 * x");
+	}
+});
+testing.testUnit("Expression.simplify() - combine-like-terms");
