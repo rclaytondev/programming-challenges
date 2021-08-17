@@ -63,18 +63,6 @@ testing.addUnit("Polynomial.evaluate()", {
 		expect(polynomial.evaluate(10)).toEqual(152);
 	}
 });
-testing.addUnit("Polynomial.fitToPoints()", {
-	"can fit a line perfectly to two points": () => {
-		const polynomial = Polynomial.fitToPoints(
-			new Vector(1, 5),
-			new Vector(3, 7)
-		); // y = x + 4
-		const linearTerm = polynomial.terms.find(t => t.exponent === 1);
-		expect(linearTerm.coefficient).toEqual(1);
-		const constantTerm = polynomial.terms.find(t => t.exponent === 0);
-		expect(constantTerm.coefficient).toEqual(4);
-	}
-});
 testing.addUnit("extrapolateTime()", {
 	"can predict the time for a linear-time algorithm": () => {
 		const polynomial = extrapolateTime(
