@@ -6,19 +6,19 @@ const fitPolynomial = (degree, points) => {
 			"*", `c${exponent}`, new Expression("^", "x", exponent)
 		));
 	}
-	const polynomial = Expression.sum(...terms);
-	const distances = points.map(({ x, y }) => {
-		return new Expression("-", polynomial.substitute("x", x), y).simplify();
-	});
+	const polynomial = Expression.sum(...terms).simplify();
+	const distances = points.map(({ x, y }) => (
+		new Expression("-", polynomial.substitute("x", x), y).simplify()
+	));
 	const distancesSquared = distances.map(d => new Expression("^", d, 2));
-	const sumOfDistSq = Expression.sum(...distancesSquared);
+	const sumOfDistSq = Expression.sum(...distancesSquared).simplify();
 	let equations = [];
 	for(let exponent = 0; exponent <= degree; exponent ++) {
 		const variable = `c${exponent}`;
-		const derivative = Expression.differentiate(distancesSquared, variable);
+		const derivative = sumOfDistSq.differentiate(variable).simplify();
+		debugger;
 		equations.push(new Equation(derivative, 0)); // set the derivative to 0 and then solve
 	}
-	debugger;
 };
 
 testing.addUnit("fitPolynomial()", {
@@ -37,4 +37,4 @@ testing.addUnit("fitPolynomial()", {
 		expect(polynomial.toString()).toEqual("((x ^ 2) + (5 * x)) + 4")
 	}
 });
-testing.testUnit("fitPolynomial()");
+// testing.testUnit("fitPolynomial()");
