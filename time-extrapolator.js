@@ -63,19 +63,19 @@ testing.addUnit("Polynomial.evaluate()", {
 		expect(polynomial.evaluate(10)).toEqual(152);
 	}
 });
-testing.addUnit("extrapolateTime()", {
-	"can predict the time for a linear-time algorithm": () => {
-		const polynomial = extrapolateTime(
-			(num) => printMessage("example message", num),
-			[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-			1,
-			10
-		);
-		const expectedTime = polynomial.evaluate(100);
-		const actualTime = timeAlgorithm(
-			() => printMessage("example message", 100),
-			10
-		);
-		expect(expectedTime).toEqual(actualTime);
-	}
-});
+// testing.addUnit("extrapolateTime()", {
+// 	"can predict the time for a linear-time algorithm": () => {
+// 		const polynomial = extrapolateTime(
+// 			(num) => printMessage("example message", num),
+// 			[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+// 			1,
+// 			10
+// 		);
+// 		const expectedTime = polynomial.evaluate(100);
+// 		const actualTime = timeAlgorithm(
+// 			() => printMessage("example message", 100),
+// 			10
+// 		);
+// 		expect(expectedTime).toEqual(actualTime);
+// 	}
+// });
