@@ -47,7 +47,7 @@ class Expression {
 		return tokens;
 	}
 	static parse(string, tokens = Expression.tokenize(string)) {
-		const depth = tokens.count(t => t.type === "meta-variable");
+		let depth = (tokens.max(t => t.depth).depth ?? 0) + 1;
 		if(tokens.some(t => t.token === "(")) {
 			const openingParenthese = tokens.findIndex(t => t.token === "(");
 			const closingParenthese = tokens.findIndex(
@@ -59,7 +59,7 @@ class Expression {
 			const subExpression = Expression.parse(null, subExpressionTokens);
 			const outerExpressionTokens = [
 				...tokens.slice(0, openingParenthese),
-				{ token: `NESTED_EXPRESSION_${depth}`, type: "meta-variable" },
+				{ token: `NESTED_EXPRESSION_${depth}`, type: "meta-variable", depth },
 				...tokens.slice(closingParenthese + 1)
 			];
 			if(outerExpressionTokens.length === 1) {
@@ -121,7 +121,7 @@ class Expression {
 			const subExpression = Expression.parse(null, subExpressionTokens);
 			const outerExpressionTokens = [
 				...tokens.slice(0, firstOperatorIndex - 1),
-				{ token: `NESTED_EXPRESSION_${depth}`, type: "meta-variable" },
+				{ token: `NESTED_EXPRESSION_${depth}`, type: "meta-variable", depth },
 				...tokens.slice(firstOperatorIndex + 2)
 			];
 			const outerExpression = Expression.parse(null, outerExpressionTokens);
@@ -488,6 +488,22 @@ testing.addUnit("Expression.parse()", {
 		const term = Expression.parse("x - y + z");
 		expect(term).toEqual(new Expression("+", new Expression("-", "x", "y"), "z"));
 	},
+	"correctly parses 2x + 3y + 4x + 5y (regression test)": () => {
+		const term = Expression.parse("(2*x) + (3*y) + (4*x) + (5*y)");
+		expect(term).toEqual(new Expression(
+			"+",
+			new Expression(
+				"+",
+				new Expression(
+					"+",
+					new Expression("*", 2, "x"),
+					new Expression("*", 3, "y")
+				),
+				new Expression("*", 4, "x")
+			),
+			new Expression("*", 5, "y")
+		));
+	}
 });
 testing.addUnit("Expression.sum()", {
 	"correctly returns the sum of a single term": () => {
@@ -592,7 +608,6 @@ testing.addUnit("Expression.simplify() - combine-like-terms", {
 	},
 	"can simplify the expression 2x + 3y + 4x + 5y": () => {
 		const term = Expression.parse("(2*x) + (3*y) + (4*x) + (5*y)");
-		debugger;
 		const simplified = term.simplify();
 		expect(term).toEqual("(6 * x) + (8 * y)");
 	},
@@ -602,4 +617,4 @@ testing.addUnit("Expression.simplify() - combine-like-terms", {
 		expect(term).toEqual("2 * x");
 	}
 });
-testing.testUnit("Expression.simplify() - combine-like-terms");
+testing.runTestByName("can parse an expression with redundant parentheses");
