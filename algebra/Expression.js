@@ -149,6 +149,42 @@ class Expression {
 			return new Expression("+", Expression.sum(...others), last);
 		}
 	}
+	terms(extraInfo = false, negated = false) {
+		if(extraInfo) {
+			/*
+			Returns a list of objects, where each object has a property `term`, representing the term, and a boolean property `negated`, representing whether the term is being subtracted or added.
+			*/
+			const terms = [];
+			if(this.term1 instanceof Expression && ["+", "-"].includes(this.term1.operation)) {
+				terms.push(...this.term1.terms(true, negated));
+			}
+			else {
+				terms.push({ term: this.term1, negated: negated });
+			}
+			if(this.term2 instanceof Expression && ["+", "-"].includes(this.term2.operation)) {
+				terms.push(...this.term2.terms(true, this.operation === "+" ? negated : !negated));
+			}
+			else {
+				terms.push({ term: this.term2, negated: this.operation === "+" ? negated : !negated });
+			}
+			return terms;
+		}
+		else {
+			/*
+			Returns a list of all the terms in the sum, regardless of whether they are being added or subtracted.
+			*/
+			const terms = [];
+			for(const term of [this.term1, this.term2]) {
+				if(term instanceof Expression && ["+", "-"].includes(term.operation)) {
+					terms.push(...term.terms());
+				}
+				else {
+					terms.push(term);
+				}
+			}
+			return terms;
+		}
+	}
 
 	substitute(value, replacement) {
 		const term1 = ((this.term1 instanceof Expression)
@@ -173,6 +209,29 @@ class Expression {
 			...(this.term2.subExpressions?.() ?? []),
 		];
 	}
+	variables(depth) {
+		if(depth < 0) { return new Set(); }
+		let variables = new Set([]);
+		if(typeof this.term1 === "string") { variables.add(this.term1); }
+		else if(this.term1 instanceof Expression) {
+			variables = variables.union(this.term1.variables());
+		}
+		if(typeof this.term2 === "string") { variables.add(this.term2); }
+		else if(this.term2 instanceof Expression) {
+			variables = variables.union(this.term2.variables());
+		}
+		return variables;
+	}
+
+	isLinearTerm() {
+		return (
+			(this.operation === "*") && (
+				(typeof this.term1 === "number" && typeof this.term2 === "string") ||
+				(typeof this.term2 === "number" && typeof this.term1 === "string")
+			)
+		);
+	}
+
 
 	static SIMPLIFICATIONS = [
 		{
@@ -213,16 +272,21 @@ class Expression {
 		{
 			name: "combine-like-terms",
 			canApply: (expr) => {
-				const terms = [];
-				for(const subExpression of Tree.iterate(expr, (expr) =>
-					expr.operation !== "+" ? [] : [
-						expr.term1, expr.term2
-					].filter(e => e && (typeof e === "string" || e.operation === "*"))
-				)) {
-					if(subExpression === expr) { continue; }
-					terms.push(subExpression);
+				if(expr.operation !== "+" && expr.operation !== "-") { return false; }
+				const terms = expr.terms();
+				return terms.some(term1 => terms.some(term2 => (
+					term1 !== term2 &&
+					term1.isLinearTerm() && term2.isLinearTerm() &&
+					[...term1.variables()][0] === [...term2.variables()][0]
+				)));
+			},
+			apply: (expr) => {
+				const terms = expr.terms(true);
+				const resultTerms = [];
+				for(const variable of expr.variables()) {
+					// const matchingTerms = terms.find(t => t.)
 				}
-				const foo = 123;
+				return Expression.sum(...resultTerms);
 			}
 		}
 	];
@@ -598,23 +662,69 @@ testing.addUnit("Expression.substitute()", {
 testing.addUnit("Expression.simplify() - combine-like-terms", {
 	"can simplify the expression 2x + 3x": () => {
 		const term = Expression.parse("2 * x + 3 * x");
-		const simplified = term.simplify();
+		const simplified = Expression.findSimplification("combine-like-terms").apply(term);
 		expect(term).toEqual("5 * x");
 	},
 	"can simplify the expression (2x) + (x * 3)": () => {
 		const term = Expression.parse("2 * x + x * 3");
-		const simplified = term.simplify();
+		const simplified = Expression.findSimplification("combine-like-terms").apply(term);
 		expect(term).toEqual("5 * x");
 	},
 	"can simplify the expression 2x + 3y + 4x + 5y": () => {
 		const term = Expression.parse("(2*x) + (3*y) + (4*x) + (5*y)");
-		const simplified = term.simplify();
+		const simplified = Expression.findSimplification("combine-like-terms").apply(term);
 		expect(term).toEqual("(6 * x) + (8 * y)");
 	},
 	"can simplify the expression 3x - 2x": () => {
 		const term = Expression.parse("5 * x - 3 * x");
-		const simplified = term.simplify();
+		const simplified = Expression.findSimplification("combine-like-terms").apply(term);
 		expect(term).toEqual("2 * x");
+	},
+	"can simplify the expression 2x + (y * z) + 3x": () => {
+		const term = Expression.parse("2 * x + (y * z) + 3 * x");
+		const simplified = Expression.findSimplification("combine-like-terms").apply(term);
+		expect(term).toEqual("(5 * x) + (y * z)");
+	},
+	"can simplify an expression that is a sum of multiples of the same expression": () => {
+
 	}
 });
-testing.runTestByName("can parse an expression with redundant parentheses");
+testing.addUnit("Expression.terms()", {
+	"can return the terms of a sum of two variables": () => {
+		const result = Expression.parse("x + y").terms();
+		expect(result).toEqual(["x", "y"]);
+	},
+	"can return the terms of a difference of two variables": () => {
+		const result = Expression.parse("x - y").terms();
+		expect(result).toEqual(["x", "y"]);
+	},
+	"can return the terms of a sum of three or more variables": () => {
+		const result = Expression.parse("x + y + z").terms();
+		expect(result).toEqual(["x", "y", "z"]);
+	},
+	"can return the terms and signs of a sum of three or more variables": () => {
+		const result = Expression.parse("x + y + z").terms(true);
+		expect(result).toEqual([
+			{ term: "x", negated: false },
+			{ term: "y", negated: false },
+			{ term: "z", negated: false },
+		]);
+	},
+	"can return the terms and signs of a sum / difference": () => {
+		const result = Expression.parse("x - y + z").terms(true);
+		expect(result).toEqual([
+			{ term: "x", negated: false },
+			{ term: "y", negated: true },
+			{ term: "z", negated: false },
+		]);
+	},
+	"can return the terms and signs of a sum / difference with parentheses": () => {
+		const result = Expression.parse("x - (y + z)").terms(true);
+		expect(result).toEqual([
+			{ term: "x", negated: false },
+			{ term: "y", negated: true },
+			{ term: "z", negated: true },
+		]);
+	},
+});
+testing.testUnit("Expression.simplify() - combine-like-terms");
