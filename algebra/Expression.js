@@ -281,12 +281,35 @@ class Expression {
 				)));
 			},
 			apply: (expr) => {
-				const terms = expr.terms(true);
-				const resultTerms = [];
-				for(const variable of expr.variables()) {
-					// const matchingTerms = terms.find(t => t.)
+				let terms = expr.terms(true);
+				for(const term of terms) {
+					if(typeof term.term === "string") {
+						term.term = new Expression("*", 1, term.term);
+					}
 				}
-				return Expression.sum(...resultTerms);
+				const isApplicable = t => (
+					t.term.operation === "*" && [t.term.term1, t.term.term2].some(v => typeof v === "number")
+				);
+				const applicableTerms = terms.filter(isApplicable);
+				const otherTerms = terms.filter(t => !isApplicable(t));
+				const resultTerms = [];
+				const matches = (t1, t2) => {
+					const exp1 = [t1.term1, t1.term2].find(v => typeof v !== "number");
+					const exp2 = [t2.term1, t2.term2].find(v => typeof v !== "number");
+					return exp1.equals(exp2);
+				};
+				for(const [i, term] of applicableTerms.entries()) {
+					const multipliedExpression = [term.term.term1, term.term.term2].find(v => typeof v !== "number");
+					const matchingTerms = applicableTerms.filter(t => matches(t.term, term.term));
+					const matchingIndicies = matchingTerms.map(t => applicableTerms.indexOf(t));
+					if(matchingIndicies.some(v => v < i)) { continue; }
+					const coefficientSum = matchingTerms.sum(t =>
+						(typeof t.term.term1 === "number" ? t.term.term1 : t.term.term2)
+						* (t.negated ? -1 : 1)
+					);
+					resultTerms.push(new Expression("*", coefficientSum, multipliedExpression))
+				}
+				return Expression.sum(...[...resultTerms, ...otherTerms.map(t => t.term)]);
 			}
 		}
 	];
@@ -663,30 +686,32 @@ testing.addUnit("Expression.simplify() - combine-like-terms", {
 	"can simplify the expression 2x + 3x": () => {
 		const term = Expression.parse("2 * x + 3 * x");
 		const simplified = Expression.findSimplification("combine-like-terms").apply(term);
-		expect(term).toEqual("5 * x");
+		expect(`${simplified}`).toEqual("5 * x");
 	},
 	"can simplify the expression (2x) + (x * 3)": () => {
 		const term = Expression.parse("2 * x + x * 3");
 		const simplified = Expression.findSimplification("combine-like-terms").apply(term);
-		expect(term).toEqual("5 * x");
+		expect(`${simplified}`).toEqual("5 * x");
 	},
 	"can simplify the expression 2x + 3y + 4x + 5y": () => {
 		const term = Expression.parse("(2*x) + (3*y) + (4*x) + (5*y)");
 		const simplified = Expression.findSimplification("combine-like-terms").apply(term);
-		expect(term).toEqual("(6 * x) + (8 * y)");
+		expect(`${simplified}`).toEqual("(6 * x) + (8 * y)");
 	},
 	"can simplify the expression 3x - 2x": () => {
 		const term = Expression.parse("5 * x - 3 * x");
 		const simplified = Expression.findSimplification("combine-like-terms").apply(term);
-		expect(term).toEqual("2 * x");
+		expect(`${simplified}`).toEqual("2 * x");
 	},
 	"can simplify the expression 2x + (y * z) + 3x": () => {
 		const term = Expression.parse("2 * x + (y * z) + 3 * x");
 		const simplified = Expression.findSimplification("combine-like-terms").apply(term);
-		expect(term).toEqual("(5 * x) + (y * z)");
+		expect(`${simplified}`).toEqual("(5 * x) + (y * z)");
 	},
 	"can simplify an expression that is a sum of multiples of the same expression": () => {
-
+		const term = Expression.parse("2 * (x * y) + 3 * (x * y)");
+		const simplified = Expression.findSimplification("combine-like-terms").apply(term);
+		expect(`${simplified}`).toEqual("5 * (x * y)");
 	}
 });
 testing.addUnit("Expression.terms()", {
