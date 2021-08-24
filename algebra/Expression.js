@@ -276,7 +276,8 @@ class Expression {
 				const terms = expr.terms();
 				return terms.some(term1 => terms.some(term2 => (
 					term1 !== term2 &&
-					term1.isLinearTerm() && term2.isLinearTerm() &&
+					(typeof term1 === "string" || term1.isLinearTerm()) &&
+					(typeof term2 === "string" || term2.isLinearTerm()) &&
 					[...term1.variables()][0] === [...term2.variables()][0]
 				)));
 			},
@@ -712,6 +713,13 @@ testing.addUnit("Expression.simplify() - combine-like-terms", {
 		const term = Expression.parse("2 * (x * y) + 3 * (x * y)");
 		const simplified = Expression.findSimplification("combine-like-terms").apply(term);
 		expect(`${simplified}`).toEqual("5 * (x * y)");
+	},
+	"can simplify an expression that contains a variable without a coefficient": () => {
+		const simplification = Expression.findSimplification("combine-like-terms");
+		const term = Expression.parse("(2 * x) + (3 * x) + x");
+		expect(simplification.canApply(term)).toEqual(true);
+		const simplified = simplification.apply(term);
+		expect(`${simplified}`).toEqual("6 * x");
 	}
 });
 testing.addUnit("Expression.terms()", {
