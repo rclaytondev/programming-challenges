@@ -409,7 +409,7 @@ class Expression {
 				new Expression(
 					"*",
 					new Expression("^", term1, term2 - 1),
-					Expression.differentiate(term1)
+					Expression.differentiate(term1, variable)
 				)
 			)
 		}
@@ -705,6 +705,11 @@ testing.addUnit("Expression.differentiate()", [
 		const expr = Expression.parse("a + 2*b - 5");
 		const result = expr.differentiate("a").simplify();
 		expect(result).toEqual(1);
+	},
+	() => {
+		const expr = Expression.parse("(a + b)^2");
+		const result = expr.differentiate("a").simplify();
+		expect(`${result}`).toEqual(`2 * (a + b)`);
 	}
 ]);
 testing.addUnit("Expression.simplify() - combine-like-terms", {
