@@ -235,6 +235,7 @@ class Expression {
 
 	static SIMPLIFICATIONS = [
 		{
+			/* only works when the numbers are adjacent in the binary tree representing the expression. (I.e. it is not smart enough to simplify (1 + x) + 2.)*/
 			name: "numeric-simplification",
 			canApply: (expr) => {
 				return (typeof expr.term1 === "number" && typeof expr.term2 === "number");
@@ -270,47 +271,63 @@ class Expression {
 			apply: (expr) => 0
 		},
 		{
+			name: "x+0 = x",
+			canApply: (expr) => expr.operation === "+" && (expr.term1 === 0 || expr.term2 === 0),
+			apply: (expr) => (expr.term1 === 0) ? expr.term2 : expr.term1
+		},
+		{
 			name: "combine-like-terms",
+			termMatches: (t1, t2) => {
+				if(typeof t1 === "object" && !(t1 instanceof Expression)) { t1 = t1.term; }
+				if(typeof t2 === "object" && !(t2 instanceof Expression)) { t2 = t2.term; }
+				const expr1 = [t1.term1, t1.term2].find(v => typeof v !== "number");
+				const expr2 = [t2.term1, t2.term2].find(v => typeof v !== "number");
+				if(expr1 != null && expr2 != null) { return expr1.equals(expr2); }
+				else { return (expr1 == null) === (expr2 == null); }
+			},
+			getCoefficient: (expr) => {
+				if(!(typeof expr === "object" && expr instanceof Expression)) { expr = expr.term; }
+				if(expr.operation !== "*") { return null; }
+				return [expr.term1, expr.term2].find(v => typeof v === "number");
+			},
 			canApply: (expr) => {
 				if(expr.operation !== "+" && expr.operation !== "-") { return false; }
-				const terms = expr.terms();
+				const { termMatches, getCoefficient } = Expression.findSimplification("combine-like-terms");
+				const terms = expr.terms(true).map(term => getCoefficient(term) == null
+					? { term: new Expression("*", 1, term.term), negated: term.negated }
+					: term
+				);
 				return terms.some(term1 => terms.some(term2 => (
-					term1 !== term2 &&
-					(typeof term1 === "string" || term1.isLinearTerm()) &&
-					(typeof term2 === "string" || term2.isLinearTerm()) &&
-					[...term1.variables()][0] === [...term2.variables()][0]
+					term1 !== term2 && termMatches(term1, term2)
 				)));
 			},
 			apply: (expr) => {
-				let terms = expr.terms(true);
-				for(const term of terms) {
-					if(typeof term.term === "string") {
-						term.term = new Expression("*", 1, term.term);
-					}
-				}
-				const isApplicable = t => (
-					t.term.operation === "*" && [t.term.term1, t.term.term2].some(v => typeof v === "number")
+				const { termMatches, getCoefficient } = Expression.findSimplification("combine-like-terms");
+				const terms = expr.terms(true);
+				const constantTerms = terms.filter(v => typeof v.term === "number");
+				const otherTerms = (terms
+					.filter(v => typeof v.term !== "number")
+					.map(term => getCoefficient(term) == null
+						? { term: new Expression("*", 1, term.term), negated: term.negated }
+						: term
+					)
 				);
-				const applicableTerms = terms.filter(isApplicable);
-				const otherTerms = terms.filter(t => !isApplicable(t));
 				const resultTerms = [];
-				const matches = (t1, t2) => {
-					const exp1 = [t1.term1, t1.term2].find(v => typeof v !== "number");
-					const exp2 = [t2.term1, t2.term2].find(v => typeof v !== "number");
-					return exp1.equals(exp2);
-				};
-				for(const [i, term] of applicableTerms.entries()) {
+				for(const [i, term] of otherTerms.entries()) {
 					const multipliedExpression = [term.term.term1, term.term.term2].find(v => typeof v !== "number");
-					const matchingTerms = applicableTerms.filter(t => matches(t.term, term.term));
-					const matchingIndicies = matchingTerms.map(t => applicableTerms.indexOf(t));
+					const matchingTerms = otherTerms.filter(t => termMatches(t.term, term.term));
+					const matchingIndicies = matchingTerms.map(t => otherTerms.indexOf(t));
 					if(matchingIndicies.some(v => v < i)) { continue; }
 					const coefficientSum = matchingTerms.sum(t =>
 						(typeof t.term.term1 === "number" ? t.term.term1 : t.term.term2)
 						* (t.negated ? -1 : 1)
 					);
-					resultTerms.push(new Expression("*", coefficientSum, multipliedExpression))
+					if(coefficientSum === 1) { resultTerms.push(multipliedExpression); }
+					else if(coefficientSum !== 0) {
+						resultTerms.push(new Expression("*", coefficientSum, multipliedExpression))
+					}
 				}
-				return Expression.sum(...[...resultTerms, ...otherTerms.map(t => t.term)]);
+				return Expression.sum(...resultTerms, constantTerms.map(v => v.term).sum());
 			}
 		}
 	];
@@ -684,42 +701,59 @@ testing.addUnit("Expression.substitute()", {
 	});
 }) ();
 testing.addUnit("Expression.simplify() - combine-like-terms", {
-	"can simplify the expression 2x + 3x": () => {
+	"works in the basic case": () => {
 		const term = Expression.parse("2 * x + 3 * x");
-		const simplified = Expression.findSimplification("combine-like-terms").apply(term);
+		const simplified = term.simplify();
 		expect(`${simplified}`).toEqual("5 * x");
 	},
-	"can simplify the expression (2x) + (x * 3)": () => {
+	"works when the variables are being multiplied in a different order": () => {
 		const term = Expression.parse("2 * x + x * 3");
-		const simplified = Expression.findSimplification("combine-like-terms").apply(term);
+		const simplified = term.simplify();
 		expect(`${simplified}`).toEqual("5 * x");
 	},
-	"can simplify the expression 2x + 3y + 4x + 5y": () => {
+	"works when there are multiple pairs of non-adjacent terms to be combined": () => {
 		const term = Expression.parse("(2*x) + (3*y) + (4*x) + (5*y)");
-		const simplified = Expression.findSimplification("combine-like-terms").apply(term);
+		const simplified = term.simplify();
 		expect(`${simplified}`).toEqual("(6 * x) + (8 * y)");
 	},
-	"can simplify the expression 3x - 2x": () => {
+	"works when a term is being subtracted": () => {
 		const term = Expression.parse("5 * x - 3 * x");
-		const simplified = Expression.findSimplification("combine-like-terms").apply(term);
+		const simplified = term.simplify();
 		expect(`${simplified}`).toEqual("2 * x");
 	},
-	"can simplify the expression 2x + (y * z) + 3x": () => {
+	"works when the terms to be combined are non-adjacent": () => {
 		const term = Expression.parse("2 * x + (y * z) + 3 * x");
-		const simplified = Expression.findSimplification("combine-like-terms").apply(term);
+		const simplified = term.simplify();
 		expect(`${simplified}`).toEqual("(5 * x) + (y * z)");
 	},
 	"can simplify an expression that is a sum of multiples of the same expression": () => {
 		const term = Expression.parse("2 * (x * y) + 3 * (x * y)");
-		const simplified = Expression.findSimplification("combine-like-terms").apply(term);
+		const simplified = term.simplify();
 		expect(`${simplified}`).toEqual("5 * (x * y)");
 	},
-	"can simplify an expression that contains a variable without a coefficient": () => {
+	"works when there is a variable without a coefficient": () => {
 		const simplification = Expression.findSimplification("combine-like-terms");
 		const term = Expression.parse("(2 * x) + (3 * x) + x");
 		expect(simplification.canApply(term)).toEqual(true);
-		const simplified = simplification.apply(term);
+		const simplified = term.simplify();
 		expect(`${simplified}`).toEqual("6 * x");
+	},
+	"works when there is a variable, an expression, and a number": () => {
+		const simplification = Expression.findSimplification("combine-like-terms");
+		const term = Expression.parse("x + (y * z) + 5");
+		expect(simplification.canApply(term)).toEqual(false);
+	},
+	"works when there are multiple subexpressions without a coefficient": () => {
+		const simplification = Expression.findSimplification("combine-like-terms");
+		const term = Expression.parse("2*(x*y) + (x*y)");
+		expect(simplification.canApply(term)).toEqual(true);
+		const simplified = term.simplify();
+		expect(`${simplified}`).toEqual("3 * (x * y)");
+	},
+	"works when there are non-adjacent constant terms": () => {
+		const term = Expression.parse("(1 + x) + 2");
+		const simplified = term.simplify();
+		expect(`${simplified}`).toEqual("x + 3");
 	}
 });
 testing.addUnit("Expression.terms()", {
@@ -760,4 +794,3 @@ testing.addUnit("Expression.terms()", {
 		]);
 	},
 });
-testing.testUnit("Expression.simplify() - combine-like-terms");
