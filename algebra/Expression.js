@@ -417,7 +417,7 @@ class Expression {
 	static differentiate(expr, variable) {
 		if(typeof expr === "number") { return 0; }
 		else if(typeof expr === "string") {
-			return (expr === variable) ? 0 : 1;
+			return (expr === variable) ? 1 : 0;
 		}
 		else {
 			for(const derivativeRule of Expression.DERIVATIVE_RULES) {
@@ -700,6 +700,13 @@ testing.addUnit("Expression.substitute()", {
 		}
 	});
 }) ();
+testing.addUnit("Expression.differentiate()", [
+	() => {
+		const expr = Expression.parse("a + 2*b - 5");
+		const result = expr.differentiate("a").simplify();
+		expect(result).toEqual(1);
+	}
+]);
 testing.addUnit("Expression.simplify() - combine-like-terms", {
 	"works in the basic case": () => {
 		const term = Expression.parse("2 * x + 3 * x");
@@ -794,3 +801,4 @@ testing.addUnit("Expression.terms()", {
 		]);
 	},
 });
+testing.testUnit("Expression.differentiate()");
