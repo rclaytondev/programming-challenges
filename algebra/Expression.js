@@ -329,6 +329,31 @@ class Expression {
 				}
 				return Expression.sum(...resultTerms, constantTerms.map(v => v.term).sum());
 			}
+		},
+		{
+			name: "distribute",
+			canApply: (expr) => {
+				const { term1, term2 } = expr;
+				return (
+					expr.operation === "*" &&
+					(term1.operation === "+" || term1.operation === "-") &&
+					(term2.operation === "+" || term2.operation === "-")
+				);
+			},
+			apply: (expr) => {
+				let result = null;
+				for(const [i, t1] of [expr.term1.term1, expr.term1.term2].entries()) {
+					for(const [j, t2] of [expr.term2.term1, expr.term2.term2].entries()) {
+						result = ((result == null)
+							? new Expression("*", t1, t2)
+							: new Expression("+", result, new Expression("*", t1, t2))
+						);
+						const isInverted = (i === 1 && expr.term1.operation === "-") !== (j === 1 && expr.term2.operation === "-");
+						if(isInverted) { result.operation = "-"; }
+					}
+				}
+				return result;
+			}
 		}
 	];
 	static findSimplification(simplificationID) {
@@ -768,6 +793,13 @@ testing.addUnit("Expression.simplify() - combine-like-terms", {
 		expect(`${simplified}`).toEqual("x + 3");
 	}
 });
+testing.addUnit("Expression.simplify() - distribute", {
+	"can distribute multiplication in the basic case": () => {
+		const term = Expression.parse("(a + b) * (a + b)");
+		const simplified = term.simplify();
+		expect(`${simplified}`).toEqual("(((a * a) + (a * b)) + (b * a)) + (b * b)");
+	}
+});
 testing.addUnit("Expression.terms()", {
 	"can return the terms of a sum of two variables": () => {
 		const result = Expression.parse("x + y").terms();
@@ -806,4 +838,4 @@ testing.addUnit("Expression.terms()", {
 		]);
 	},
 });
-testing.testUnit("Expression.differentiate()");
+testing.testUnit("Expression.simplify() - distribute");
