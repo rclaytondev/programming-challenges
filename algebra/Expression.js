@@ -331,7 +331,8 @@ class Expression {
 			}
 		},
 		{
-			name: "distribute",
+			// e.g. (a + b) * (c + d) = ac + ad + bc + bd
+			name: "multiply",
 			canApply: (expr) => {
 				const { term1, term2 } = expr;
 				return (
@@ -353,6 +354,24 @@ class Expression {
 					}
 				}
 				return result;
+			}
+		},
+		{
+			// e.g. 2(x + y) = 2x + 2y
+			name: "distribute",
+			canApply: (term) => (
+				term.operation === "*" &&
+				(term.term1.operation === "+" || term.term1.operation === "-")
+				!== (term.term2.operation === "+" || term.term2.operation === "-")
+			),
+			apply: (expr) => {
+				const expr1 = (expr.term1.operation === "+" || expr.term1.operation === "-") ? expr.term2 : expr.term1;
+				const expr2 = (expr.term1.operation === "+" || expr.term1.operation === "-") ? expr.term1 : expr.term2;
+				return new Expression(
+					expr2.operation,
+					new Expression("*", expr1, expr2.term1),
+					new Expression("*", expr1, expr2.term2),
+				);
 			}
 		}
 	];
@@ -793,11 +812,18 @@ testing.addUnit("Expression.simplify() - combine-like-terms", {
 		expect(`${simplified}`).toEqual("x + 3");
 	}
 });
-testing.addUnit("Expression.simplify() - distribute", {
-	"can distribute multiplication in the basic case": () => {
+testing.addUnit("Expression.simplify() - multiply", {
+	"can multiply expressions in the basic case": () => {
 		const term = Expression.parse("(a + b) * (a + b)");
 		const simplified = term.simplify();
 		expect(`${simplified}`).toEqual("(((a * a) + (a * b)) + (b * a)) + (b * b)");
+	}
+});
+testing.addUnit("Expression.simplify() - distribute", {
+	"can distribute multiplication in the basic case": () => {
+		const term = Expression.parse("2 * (x + y)");
+		const simplified = term.simplify();
+		expect(`${simplified}`).toEqual("(2 * x) + (2 * y)");
 	}
 });
 testing.addUnit("Expression.terms()", {
