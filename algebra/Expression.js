@@ -135,6 +135,17 @@ class Expression {
 	}
 
 	static sum(...terms) {
+		if(terms.every(t => t.term instanceof Expression || typeof t.term === "string" || typeof t.term === "number")) {
+			if(terms[0].negated) {
+				terms.unshift({ negated: false, term: 0 });
+			}
+			let result = terms[0].term;
+			for(const term of terms.slice(1)) {
+				result = new Expression(term.negated ? "-" : "+", result, term.term);
+			}
+			return result;
+		}
+
 		if(terms.length === 1) {
 			const [term] = terms;
 			return term;
@@ -147,6 +158,21 @@ class Expression {
 			const last = terms[terms.length - 1];
 			const others = terms.slice(0, terms.length - 1);
 			return new Expression("+", Expression.sum(...others), last);
+		}
+	}
+	static product(...terms) {
+		if(terms.every(t => t.term instanceof Expression || typeof t.term === "string" || typeof t.term === "number")) {
+			if(terms[0].divided) {
+				terms.unshift({ divided: false, term: 1 });
+			}
+			let result = terms[0].term;
+			for(const term of terms.slice(1)) {
+				result = new Expression(term.divided ? "/" : "*", result, term.term);
+			}
+			return result;
+		}
+		else {
+			return terms.reduce((a, b) => new Expression("*", a, b));
 		}
 	}
 	terms(extraInfo = false, negated = false) {
@@ -181,6 +207,35 @@ class Expression {
 				else {
 					terms.push(term);
 				}
+			}
+			return terms;
+		}
+	}
+	multiplicativeTerms(extraInfo = false, divided = false) {
+		if(extraInfo) {
+			const terms = [];
+			if(this.term1 instanceof Expression && ["*", "/"].includes(this.term1.operation)) {
+				terms.push(...this.term1.multiplicativeTerms(true, divided));
+			}
+			else {
+				terms.push({ term: this.term1, divided });
+			}
+			if(this.term2 instanceof Expression && ["*", "/"].includes(this.term2.operation)) {
+				terms.push(...this.term2.multiplicativeTerms(true, this.operation === "*" ? divided : !divided));
+			}
+			else {
+				terms.push({ term: this.term2, divided: this.operation === "*" ? divided : !divided });
+			}
+			return terms;
+		}
+		else {
+			const terms = [];
+			for(const term of Tree.iterate(
+				this,
+				(term) => (["*", "/"].includes(term.operation) ? [term.term1, term.term2] : []),
+				true
+			)) {
+				terms.push(term);
 			}
 			return terms;
 		}
@@ -372,6 +427,91 @@ class Expression {
 					new Expression("*", expr1, expr2.term1),
 					new Expression("*", expr1, expr2.term2),
 				);
+			}
+		},
+		{
+			/* rearranges sums of multiple things to make other simplifications easier. */
+			name: "rearrange-addition",
+			compareTerms: (term1, term2) => {
+				if(typeof term1 !== typeof term2) {
+					/* sort numbers before variables and variables before subexpressions */
+					const order = ["number", "string", "object"];
+					return Array.SORT_ASCENDING(
+						order.indexOf(typeof term1),
+						order.indexOf(typeof term2)
+					);
+				}
+				else {
+					if(term1.equals(term2)) { return 0; }
+					else if(typeof term1 === "number") {
+						return Array.SORT_ASCENDING(term1, term2);
+					}
+					else if(typeof term1 === "string") {
+						return term1.localeCompare(term2);
+					}
+					else if(term1 instanceof Expression && term2 instanceof Expression) {
+						const { compareTerms } = Expression.findSimplification("rearrange-addition");
+						/* find the first value in the tree where they aren't equal and compare using that */
+						for(const [value1, value2] of Tree.iterate(
+							[term1, term2],
+							([t1, t2]) => [[t1.term1, t2.term1], [t1.term2, t2.term2]].filter(v => !v.includes(undefined))
+						)) {
+							if(!value1.equals(value2) && value1 !== term1 && value2 !== term2) {
+								return compareTerms(value1, value2);
+							}
+						}
+					}
+					else {
+						throw new Error("Unexpected.");
+					}
+				}
+			},
+			canApply: (expr) => {
+				if(expr.operation !== "+" && expr.operation !== "-") { return false; }
+				for(const term of Tree.iterate(
+					expr,
+					(ex) => ["+", "-"].includes(ex.operation) ? [ex.term1, ex.term2] : []
+				)) {
+					/* addition should be evaluated left-to-right (i.e. there should be no parentheses) */
+					if(
+						["+", "-"].includes(term.operation) &&
+						["+", "-"].includes(term.term2.operation)
+					) { return true; }
+				}
+				const terms = expr.terms();
+				const { compareTerms } = Expression.findSimplification("rearrange-addition");
+				return !terms.isSorted(compareTerms);
+			},
+			apply: (expr) => {
+				const terms = expr.terms(true);
+				const { compareTerms } = Expression.findSimplification("rearrange-addition");
+				const newTerms = terms.sort((a, b) => compareTerms(a.term, b.term));
+				return Expression.sum(...newTerms);
+			}
+		},
+		{
+			name: "rearrange-multiplication",
+			canApply: (expr) => {
+				if(expr.operation !== "*" && expr.operation !== "/") { return false; }
+				const terms = expr.multiplicativeTerms();
+				for(const term of Tree.iterate(
+					expr,
+					(ex) => ["*", "/"].includes(ex.operation) ? [ex.term1, ex.term2] : []
+				)) {
+					/* addition should be evaluated left-to-right (i.e. there should be no parentheses) */
+					if(
+						["*", "/"].includes(term.operation) &&
+						["*", "/"].includes(term.term2.operation)
+					) { return true; }
+				}
+				const { compareTerms } = Expression.findSimplification("rearrange-addition");
+				return !terms.isSorted(compareTerms);
+			},
+			apply: (expr) => {
+				const terms = expr.multiplicativeTerms(true);
+				const { compareTerms } = Expression.findSimplification("rearrange-addition");
+				const newTerms = terms.sort((a, b) => compareTerms(a.term, b.term));
+				return Expression.product(...newTerms);
 			}
 		}
 	];
@@ -672,7 +812,26 @@ testing.addUnit("Expression.sum()", {
 		const term3 = new Expression("*", "x", 4);
 		const sum = Expression.sum(term1, term2, term3);
 		expect(sum).toEqual(new Expression("+", new Expression("+", term1, term2), term3));
-	}
+	},
+	"correctly returns the sum / difference of multiple terms": () => {
+		const terms = [
+			{ term: "x", negated: false },
+			{ term: "y", negated: true },
+			{ term: "z", negated: false },
+		];
+		const sum = Expression.sum(...terms);
+		expect(`${sum}`).toEqual("(x - y) + z");
+	},
+	"correctly returns the sum / difference of multiple terms when the first term is subtracted": () => {
+		const terms = [
+			{ term: "x", negated: true },
+			{ term: "y", negated: false },
+			{ term: "z", negated: true },
+		];
+		const sum = Expression.sum(...terms);
+		expect(`${sum}`).toEqual("((0 - x) + y) - z");
+	},
+
 });
 testing.addUnit("Expression.substitute()", {
 	"can replace a variable with another variable": () => {
@@ -753,7 +912,7 @@ testing.addUnit("Expression.differentiate()", [
 	() => {
 		const expr = Expression.parse("(a + b)^2");
 		const result = expr.differentiate("a").simplify();
-		expect(`${result}`).toEqual(`2 * (a + b)`);
+		expect(`${result}`).toEqual(`(2 * a) + (2 * b)`);
 	}
 ]);
 testing.addUnit("Expression.simplify() - combine-like-terms", {
@@ -809,7 +968,7 @@ testing.addUnit("Expression.simplify() - combine-like-terms", {
 	"works when there are non-adjacent constant terms": () => {
 		const term = Expression.parse("(1 + x) + 2");
 		const simplified = term.simplify();
-		expect(`${simplified}`).toEqual("x + 3");
+		expect(`${simplified}`).toEqual("3 + x");
 	}
 });
 testing.addUnit("Expression.simplify() - multiply", {
@@ -824,6 +983,47 @@ testing.addUnit("Expression.simplify() - distribute", {
 		const term = Expression.parse("2 * (x + y)");
 		const simplified = term.simplify();
 		expect(`${simplified}`).toEqual("(2 * x) + (2 * y)");
+	}
+});
+testing.addUnit("Expression.simplify() - rearrange-addition", {
+	"works in the basic case": () => {
+		const term = Expression.parse("(2 + x) + 3");
+		const simplified = Expression.findSimplification("rearrange-addition").apply(term);
+		expect(`${simplified}`).toEqual("(2 + 3) + x");
+	},
+	"rearranges polynomials into the expected order": () => {
+		const term = Expression.parse("x^5 + x^2 + 5 + x^4 + x^3 + x + x^7");
+		const simplified = Expression.findSimplification("rearrange-addition").apply(term);
+		expect(`${simplified}`).toEqual("(((((5 + x) + (x ^ 2)) + (x ^ 3)) + (x ^ 4)) + (x ^ 5)) + (x ^ 7)");
+	},
+	"works when there are terms being added and subtracted": () => {
+		const term = Expression.parse("x + z - y");
+		const simplified = Expression.findSimplification("rearrange-addition").apply(term);
+		expect(`${simplified}`).toEqual("(x - y) + z");
+	},
+	"works when the term being subtracted becomes the first term after rearranging": () => {
+		const term = Expression.parse("y - x");
+		const simplified = Expression.findSimplification("rearrange-addition").apply(term);
+		expect(`${simplified}`).toEqual("(0 - x) + y");
+	},
+	"works when the terms are in the right order, but are being added in the wrong order": () => {
+		const term = Expression.parse("2 + (2 + x)");
+		expect(Expression.findSimplification("rearrange-addition").canApply(term)).toEqual(true);
+		const simplified = Expression.findSimplification("rearrange-addition").apply(term);
+		expect(`${simplified}`).toEqual("(2 + 2) + x");
+	}
+});
+testing.addUnit("Expression.simplify() - rearrange-multiplication", {
+	"works in the basic case": () => {
+		const term = Expression.parse("(2 * x) * 3");
+		const simplified = Expression.findSimplification("rearrange-multiplication").apply(term);
+		expect(`${simplified}`).toEqual("(2 * 3) * x");
+	},
+	"works when the terms are in the right order, but are being multiplied in the wrong order": () => {
+		const term = Expression.parse("2 * (2 * x)");
+		expect(Expression.findSimplification("rearrange-multiplication").canApply(term)).toEqual(true);
+		const simplified = Expression.findSimplification("rearrange-multiplication").apply(term);
+		expect(`${simplified}`).toEqual("(2 * 2) * x");
 	}
 });
 testing.addUnit("Expression.terms()", {
@@ -864,4 +1064,5 @@ testing.addUnit("Expression.terms()", {
 		]);
 	},
 });
-testing.testUnit("Expression.simplify() - distribute");
+testing.testUnit("Expression.simplify() - rearrange-multiplication");
+testing.testUnit("Expression.simplify() - rearrange-addition");
