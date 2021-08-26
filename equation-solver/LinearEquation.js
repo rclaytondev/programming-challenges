@@ -1,5 +1,10 @@
 class LinearEquation {
 	constructor(LinearExpression1, LinearExpression2) {
+		if(arguments[0] instanceof Equation) {
+			const [equation] = arguments;
+			this.LinearExpression1 = new LinearExpression(equation.leftSide);
+			this.LinearExpression2 = new LinearExpression(equation.rightSide);
+		}
 		this.LinearExpression1 = LinearExpression1;
 		this.LinearExpression2 = LinearExpression2;
 	}
@@ -44,13 +49,13 @@ class LinearEquation {
 		);
 	}
 
-	add(LinearAlgebraTerm) {
-		this.LinearExpression1.terms.add(LinearAlgebraTerm);
-		this.LinearExpression2.terms.add(LinearAlgebraTerm);
+	add(linearAlgebraTerm) {
+		this.LinearExpression1.terms.add(linearAlgebraTerm);
+		this.LinearExpression2.terms.add(linearAlgebraTerm);
 	}
-	subtract(LinearAlgebraTerm) {
-		this.LinearExpression1.terms.add(new LinearAlgebraTerm(-LinearAlgebraTerm.coefficient, LinearAlgebraTerm.variableName));
-		this.LinearExpression2.terms.add(new LinearAlgebraTerm(-LinearAlgebraTerm.coefficient, LinearAlgebraTerm.variableName));
+	subtract(linearAlgebraTerm) {
+		this.LinearExpression1.terms.add(new LinearAlgebraTerm(-linearAlgebraTerm.coefficient, linearAlgebraTerm.variableName));
+		this.LinearExpression2.terms.add(new LinearAlgebraTerm(-linearAlgebraTerm.coefficient, linearAlgebraTerm.variableName));
 	}
 
 	toString() {
@@ -130,3 +135,25 @@ testing.addUnit("LinearEquation.standardForm()", [
 		"5x = 3"
 	]
 ]);
+testing.addUnit("LinearEquation constructor", {
+	"can construct a linear equation from a generic but linear equation": () => {
+		const equation = new Equation(
+			Expression.parse("x + (2 * y) - z"),
+			5
+		);
+		debugger;
+		const linearEquation = new LinearEquation(equation);
+		expect(linearEquation).toEqual(new LinearEquation(
+			new LinearExpression([
+				new LinearAlgebraTerm(1, "x"),
+				new LinearAlgebraTerm(2, "y"),
+				new LinearAlgebraTerm(-1, "z")
+			]),
+			new LinearExpression([
+				new LinearAlgebraTerm(0, null)
+			])
+		));
+	}
+});
+testing.testAll();
+// testing.runTestByName("LinearEquation.standardForm() - test case 2");

@@ -3,6 +3,10 @@
 
 class LinearExpression {
 	constructor(terms) {
+		if(arguments[0] instanceof Expression) {
+			const [expression] = arguments;
+			const exprTerms = expression.terms();
+		}
 		if(terms instanceof Set) {
 			this.terms = terms;
 		}
