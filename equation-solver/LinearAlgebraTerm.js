@@ -1,9 +1,27 @@
 /* represents an algebraic term consisting of a constant value or a variable multplied by a constant. */
 
 class LinearAlgebraTerm {
-	constructor(coefficient, variableName) {
-		this.coefficient = coefficient;
-		this.variableName = variableName;
+	constructor() {
+		if(typeof arguments[0] === "number") {
+			const [coefficient, variableName] = arguments;
+			this.variableName = variableName ?? null;
+			this.coefficient = coefficient;
+		}
+		else if(typeof arguments[0] === "string") {
+			const [variableName] = arguments;
+			this.variableName = variableName;
+			this.coefficient = 1;
+		}
+		else if(arguments[0] instanceof Expression) {
+			const [term] = arguments;
+			expect(term.operation).toEqual("*");
+			const coefficient = [term.term1, term.term2].find(v => typeof v === "number");
+			const variableName = [term.term1, term.term2].find(v => typeof v === "string");
+			expect(coefficient).toNotEqual(undefined);
+			expect(variableName).toNotEqual(undefined);
+			this.coefficient = coefficient;
+			this.variableName = variableName;
+		}
 	}
 	static parse(string) {
 		if(/\d/g.test(string)) {
@@ -37,7 +55,7 @@ class LinearAlgebraTerm {
 		if(this.coefficient == 1) { return this.variableName; }
 		if(this.coefficient == -1) { return `-${this.variableName}`; }
 		return `${this.coefficient}${this.variableName}`;
-	}	
+	}
 }
 testing.addUnit("LinearAlgebraTerm.parse()", LinearAlgebraTerm.parse, [
 	["123x", new LinearAlgebraTerm(123, "x")],

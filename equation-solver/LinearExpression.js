@@ -3,11 +3,26 @@
 
 class LinearExpression {
 	constructor(terms) {
-		if(arguments[0] instanceof Expression) {
-			const [expression] = arguments;
-			const exprTerms = expression.terms();
+		if(typeof arguments[0] === "string") {
+			const [variable] = arguments;
+			const term = new LinearAlgebraTerm(variable, 1);
+			this.terms = new Set([term]);
 		}
-		if(terms instanceof Set) {
+		else if(typeof arguments[0] === "number") {
+			const [number] = arguments;
+			const term = new LinearAlgebraTerm(number);
+			this.terms = new Set([term]);
+		}
+		else if(arguments[0] instanceof Expression) {
+			const [expression] = arguments;
+			this.terms = new Set();
+			for(const term of expression.terms(true)) {
+				const linearTerm = new LinearAlgebraTerm(term.term);
+				if(term.negated) { linearTerm.coefficient *= -1; }
+				this.terms.add(linearTerm);
+			}
+		}
+		else if(terms instanceof Set) {
 			this.terms = terms;
 		}
 		else {

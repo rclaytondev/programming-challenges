@@ -210,7 +210,6 @@ testing.addUnit("numCastles()", {
 		expect(result).toEqual(7063n);
 	},
 });
-testing.testUnit("numPaths()");
 
 const solve = () => {
 	const MODULO = 1000000007;

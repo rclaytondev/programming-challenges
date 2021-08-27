@@ -175,6 +175,5 @@ testing.addUnit("Castle.numCastles()", {
 	// 	expect(Castle.numCastles(100, 100, 1000000007)).toEqual(841913936);
 	// }
 });
-testing.runTestByName("Castle.numCastles() - returns the correct result for a 3x3 rectangle");
 
 Castle.visualize(5, 3, true, "even", false);

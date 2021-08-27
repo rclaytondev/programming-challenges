@@ -1064,5 +1064,3 @@ testing.addUnit("Expression.terms()", {
 		]);
 	},
 });
-testing.testUnit("Expression.simplify() - rearrange-multiplication");
-testing.testUnit("Expression.simplify() - rearrange-addition");

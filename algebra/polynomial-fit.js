@@ -16,25 +16,31 @@ const fitPolynomial = (degree, points) => {
 	for(let exponent = 0; exponent <= degree; exponent ++) {
 		const variable = `c${exponent}`;
 		const derivative = sumOfDistSq.differentiate(variable).simplify();
-		debugger;
 		equations.push(new Equation(derivative, 0)); // set the derivative to 0 and then solve
 	}
+	const linearEquations = equations.map(e => new LinearEquation(e).standardForm());
+	const systemOfEquations = new LinearEquationSystem(linearEquations);
+	const solutions = systemOfEquations.solve();
+	let result = polynomial.clone();
+	for(const [variable, value] of Object.entries(solutions)) {
+		result = result.substitute(variable, value);
+	}
+	return result;
 };
 
-// testing.addUnit("fitPolynomial()", {
-// 	"can perfectly fit a line to two points": () => {
-// 		const line = fitPolynomial(
-// 			1,
-// 			[new Vector(2, 5), new Vector(4, 9)]
-// 		);
-// 		expect(line.toString()).toEqual("(2 * x) + 1");
-// 	},
-// 	"can perfectly fit a parabola to three points": () => {
-// 		const polynomial = fitPolynomial(
-// 			2,
-// 			[new Vector(-6, 10), new Vector(3, 28), new Vector(5, 54)]
-// 		); // x^2 + 5x + 4
-// 		expect(polynomial.toString()).toEqual("((x ^ 2) + (5 * x)) + 4")
-// 	}
-// });
-// testing.testUnit("fitPolynomial()");
+testing.addUnit("fitPolynomial()", {
+	"can perfectly fit a line to two points": () => {
+		const line = fitPolynomial(
+			1,
+			[new Vector(2, 5), new Vector(4, 9)]
+		);
+		expect(line.toString()).toEqual("(2 * x) + 1");
+	},
+	"can perfectly fit a parabola to three points": () => {
+		const polynomial = fitPolynomial(
+			2,
+			[new Vector(-6, 10), new Vector(3, 28), new Vector(5, 54)]
+		); // x^2 + 5x + 4
+		expect(polynomial.toString()).toEqual("((x ^ 2) + (5 * x)) + 4")
+	}
+});

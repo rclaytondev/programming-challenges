@@ -1,12 +1,14 @@
 class LinearEquation {
-	constructor(LinearExpression1, LinearExpression2) {
+	constructor(linearExpression1, linearExpression2) {
 		if(arguments[0] instanceof Equation) {
 			const [equation] = arguments;
-			this.LinearExpression1 = new LinearExpression(equation.leftSide);
-			this.LinearExpression2 = new LinearExpression(equation.rightSide);
+			this.linearExpression1 = new LinearExpression(equation.leftSide);
+			this.linearExpression2 = new LinearExpression(equation.rightSide);
 		}
-		this.LinearExpression1 = LinearExpression1;
-		this.LinearExpression2 = LinearExpression2;
+		else {
+			this.linearExpression1 = linearExpression1;
+			this.linearExpression2 = linearExpression2;
+		}
 	}
 	static parse(string) {
 		const [expr1, expr2] = string.split("=");
@@ -19,50 +21,50 @@ class LinearEquation {
 	standardForm() {
 		/* returns a new, equivalent equation, of the form '1x + 2y + 3z + ... = 12345' */
 		let result = this.clone();
-		this.LinearExpression1.terms.forEach(term => {
+		this.linearExpression1.terms.forEach(term => {
 			if(term.variableName == null) {
 				result.subtract(term);
 			}
 		});
-		this.LinearExpression2.terms.forEach(term => {
+		this.linearExpression2.terms.forEach(term => {
 			if(term.variableName != null) {
 				result.subtract(term);
 			}
 		});
 		result = result.combineLikeTerms().removeZeroTerms();
-		if(result.LinearExpression2.terms.size === 0) {
-			result.LinearExpression2.terms.add(new LinearAlgebraTerm(0, null));
+		if(result.linearExpression2.terms.size === 0) {
+			result.linearExpression2.terms.add(new LinearAlgebraTerm(0, null));
 		}
 		return result;
 	}
 
 	combineLikeTerms() {
 		return new LinearEquation(
-			this.LinearExpression1.combineLikeTerms(),
-			this.LinearExpression2.combineLikeTerms()
+			this.linearExpression1.combineLikeTerms(),
+			this.linearExpression2.combineLikeTerms()
 		);
 	}
 	removeZeroTerms() {
 		return new LinearEquation(
-			this.LinearExpression1.removeZeroTerms(),
-			this.LinearExpression2.removeZeroTerms()
+			this.linearExpression1.removeZeroTerms(),
+			this.linearExpression2.removeZeroTerms()
 		);
 	}
 
 	add(linearAlgebraTerm) {
-		this.LinearExpression1.terms.add(linearAlgebraTerm);
-		this.LinearExpression2.terms.add(linearAlgebraTerm);
+		this.linearExpression1.terms.add(linearAlgebraTerm);
+		this.linearExpression2.terms.add(linearAlgebraTerm);
 	}
 	subtract(linearAlgebraTerm) {
-		this.LinearExpression1.terms.add(new LinearAlgebraTerm(-linearAlgebraTerm.coefficient, linearAlgebraTerm.variableName));
-		this.LinearExpression2.terms.add(new LinearAlgebraTerm(-linearAlgebraTerm.coefficient, linearAlgebraTerm.variableName));
+		this.linearExpression1.terms.add(new LinearAlgebraTerm(-linearAlgebraTerm.coefficient, linearAlgebraTerm.variableName));
+		this.linearExpression2.terms.add(new LinearAlgebraTerm(-linearAlgebraTerm.coefficient, linearAlgebraTerm.variableName));
 	}
 
 	toString() {
-		return `${this.LinearExpression1} = ${this.LinearExpression2}`;
+		return `${this.linearExpression1} = ${this.linearExpression2}`;
 	}
 	variables() {
-		return this.LinearExpression1.variables().union(this.LinearExpression2.variables());
+		return this.linearExpression1.variables().union(this.linearExpression2.variables());
 	}
 }
 
@@ -141,19 +143,7 @@ testing.addUnit("LinearEquation constructor", {
 			Expression.parse("x + (2 * y) - z"),
 			5
 		);
-		debugger;
 		const linearEquation = new LinearEquation(equation);
-		expect(linearEquation).toEqual(new LinearEquation(
-			new LinearExpression([
-				new LinearAlgebraTerm(1, "x"),
-				new LinearAlgebraTerm(2, "y"),
-				new LinearAlgebraTerm(-1, "z")
-			]),
-			new LinearExpression([
-				new LinearAlgebraTerm(0, null)
-			])
-		));
+		expect(`${linearEquation}`).toEqual("x + 2y - z = 5");
 	}
 });
-testing.testAll();
-// testing.runTestByName("LinearEquation.standardForm() - test case 2");
