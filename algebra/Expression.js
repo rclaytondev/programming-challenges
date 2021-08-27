@@ -301,7 +301,7 @@ class Expression {
 					case "-": return expr.term1 - expr.term2;
 					case "*": return expr.term1 * expr.term2;
 					case "/": return expr.term1 / expr.term2;
-					case "^": return expr.term1 ^ expr.term2;
+					case "^": return expr.term1 ** expr.term2;
 				}
 			}
 		},
@@ -1024,6 +1024,13 @@ testing.addUnit("Expression.simplify() - rearrange-multiplication", {
 		expect(Expression.findSimplification("rearrange-multiplication").canApply(term)).toEqual(true);
 		const simplified = Expression.findSimplification("rearrange-multiplication").apply(term);
 		expect(`${simplified}`).toEqual("(2 * 2) * x");
+	}
+});
+testing.addUnit("Expression.simplify() - specific simplifications", {
+	"can simplify (-6)^2": () => {
+		const expression = Expression.parse("(-6)^2");
+		const simplified = Expression.simplify(expression);
+		expect(simplified).toEqual(36);
 	}
 });
 testing.addUnit("Expression.terms()", {
