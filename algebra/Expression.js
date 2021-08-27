@@ -944,7 +944,7 @@ testing.addUnit("Expression.simplify() - combine-like-terms", {
 	"can simplify an expression that is a sum of multiples of the same expression": () => {
 		const term = Expression.parse("2 * (x * y) + 3 * (x * y)");
 		const simplified = term.simplify();
-		expect(`${simplified}`).toEqual("5 * (x * y)");
+		expect(`${simplified}`).toEqual("(5 * x) * y");
 	},
 	"works when there is a variable without a coefficient": () => {
 		const simplification = Expression.findSimplification("combine-like-terms");
@@ -963,7 +963,7 @@ testing.addUnit("Expression.simplify() - combine-like-terms", {
 		const term = Expression.parse("2*(x*y) + (x*y)");
 		expect(simplification.canApply(term)).toEqual(true);
 		const simplified = term.simplify();
-		expect(`${simplified}`).toEqual("3 * (x * y)");
+		expect(`${simplified}`).toEqual("(3 * x) * y");
 	},
 	"works when there are non-adjacent constant terms": () => {
 		const term = Expression.parse("(1 + x) + 2");
@@ -975,7 +975,7 @@ testing.addUnit("Expression.simplify() - multiply", {
 	"can multiply expressions in the basic case": () => {
 		const term = Expression.parse("(a + b) * (a + b)");
 		const simplified = term.simplify();
-		expect(`${simplified}`).toEqual("(((a * a) + (a * b)) + (b * a)) + (b * b)");
+		expect(`${simplified}`).toEqual("((a * a) + (b * b)) + ((2 * a) * b)");
 	}
 });
 testing.addUnit("Expression.simplify() - distribute", {
