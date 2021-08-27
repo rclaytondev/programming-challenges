@@ -25,7 +25,17 @@ const fitPolynomial = (degree, points) => {
 	for(const [variable, value] of Object.entries(solutions)) {
 		result = result.substitute(variable, value);
 	}
-	return result;
+	/* round to nearest 10^-12 place */
+	for(const subExpression of result.subExpressions()) {
+		const { term1, term2 } = subExpression;
+		if(typeof term1 === "number") {
+			subExpression.term1 = Math.round(subExpression.term1 * 1e12) / 1e12;
+		}
+		if(typeof term2 === "number") {
+			subExpression.term2 = Math.round(subExpression.term2 * 1e12) / 1e12;
+		}
+	}
+	return result.simplify();
 };
 
 testing.addUnit("fitPolynomial()", {
@@ -34,13 +44,11 @@ testing.addUnit("fitPolynomial()", {
 			1,
 			[new Vector(2, 5), new Vector(4, 9)]
 		);
-		expect(line.toString()).toEqual("(2 * x) + 1");
+		expect(line.toString()).toEqual("1 + (2 * x)");
 	},
 	"can perfectly fit a parabola to three points": () => {
-		const polynomial = fitPolynomial(
-			2,
-			[new Vector(-6, 10), new Vector(3, 28), new Vector(5, 54)]
-		); // x^2 + 5x + 4
-		expect(polynomial.toString()).toEqual("((x ^ 2) + (5 * x)) + 4")
+		const points = [new Vector(-6, 10), new Vector(3, 28), new Vector(5, 54)];
+		const polynomial = fitPolynomial(2, points); // x^2 + 5x + 4
+		expect(polynomial.toString()).toEqual("(4 + (5 * x)) + (x ^ 2)");
 	}
 });
