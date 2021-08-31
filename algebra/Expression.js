@@ -287,6 +287,22 @@ class Expression {
 		);
 	}
 
+	heuristicEquals(expression) {
+		/* may give the wrong answer. Substitutes random values for variables and checks if the numeric values are equal. */
+		const variables = this.variables();
+		let expr1 = (this instanceof Expression) ? this : new Expression("+", 0, this);
+		let expr2 = (expression instanceof Expression) ? expression : new Expression("+", 0, expression);
+		for(const variable of variables) {
+			const value = Math.round(Math.random() * 100);
+			expr1 = expr1.substitute(variable, value);
+			expr2 = expr2.substitute(variable, value);
+		}
+		expr1 = expr1.simplify("numeric-simplification");
+		expr2 = expr2.simplify("numeric-simplification");
+		const TOLERANCE = 1e-9;
+		return Math.abs(expr1 - expr2) <= TOLERANCE;
+	}
+
 
 	static SIMPLIFICATIONS = [
 		{
