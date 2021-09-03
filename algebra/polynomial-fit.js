@@ -1,4 +1,35 @@
 const ALPHABET = "abcdefghijklmnopqrstuvwxyz";
+const solveSystem = (...equations) => {
+	/* attempts to solve the system of equations using a multivariable generalization of Newton's method. */
+	const variables = [...equations.map(eq => eq.variables()).reduce((a, b) => a.union(b))];
+	const expressions = equations.map(equation => (
+		new Expression("-", equation.leftSide, equation.rightSide).simplify()
+	));
+	const errors = expressions.map(exp => new Expression("^", exp, 2));
+	const sumOfErrors = Expression.sum(...errors).simplify();
+	const derivatives = variables.map((v) => sumOfErrors.differentiate(v).simplify());
+	let guess = new NVector(...new Array(variables.length).fill(0));
+	const NUM_ITERATIONS = 10;
+	for(let i = 0; i < NUM_ITERATIONS; i ++) {
+		if(sumOfErrors.substitute(variables, guess.numbers).simplify() === 0) {
+			break;
+		}
+		let newGuessNumbers = [];
+		for(const [j, variable] of variables.entries()) {
+			let derivative = derivatives[j];
+			derivative = derivative.substitute(variables, guess.numbers);
+			const slope = derivative.simplify();
+			if(slope === 0) { slope = 0.0001; }
+			newGuessNumbers[j] = guess.numbers[j] - (sumOfErrors.substitute(variables, guess.numbers).simplify() / slope);
+		}
+		guess = new NVector(...newGuessNumbers);
+	}
+	const result = {};
+	for(const [i, number] of guess.numbers.entries()) {
+		result[variables[i]] = number;
+	}
+	return result;
+};
 const fitPolynomial = (degree, points) => {
 	/* returns an Expression representing a polynomial that fits the points using a least-squares regression. */
 	const terms = [];
@@ -90,6 +121,18 @@ const fitPolynomialMV = (degree, numVariables, points) => {
 	return result.simplify();
 };
 
+
+testing.addUnit("solveSystem()", {
+	"can solve a system of linear equations": () => {
+		const solutions = solveSystem(
+			new Equation(Expression.parse("x + y"), 10),
+			new Equation(Expression.parse("x - y"), 0)
+		);
+		const { x, y } = solutions;
+		expect(x).toEqual(5);
+		expect(y).toEqual(5);
+	}
+});
 testing.addUnit("fitPolynomial()", {
 	"can perfectly fit a line to two points": () => {
 		const line = fitPolynomial(
