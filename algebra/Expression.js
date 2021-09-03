@@ -241,20 +241,32 @@ class Expression {
 		}
 	}
 
-	substitute(value, replacement) {
-		const term1 = ((this.term1 instanceof Expression)
-			? this.term1.substitute(value, replacement)
-			: this.term1
-		);
-		const term2 = ((this.term2 instanceof Expression)
-			? this.term2.substitute(value, replacement)
-			: this.term2
-		);
-		return new Expression(
-			this.operation,
-			term1 === value ? replacement : term1,
-			term2 === value ? replacement : term2,
-		);
+	substitute() {
+		if(Array.isArray(arguments[0]) && Array.isArray(arguments[1])) {
+			const [values, replacements] = arguments;
+			let result = this;
+			for(const [i, value] of values.entries()) {
+				const replacement = replacements[i];
+				result = result.substitute(value, replacement);
+			}
+			return result;
+		}
+		else {
+			const [value, replacement] = arguments;
+			const term1 = ((this.term1 instanceof Expression)
+				? this.term1.substitute(value, replacement)
+				: this.term1
+			);
+			const term2 = ((this.term2 instanceof Expression)
+				? this.term2.substitute(value, replacement)
+				: this.term2
+			);
+			return new Expression(
+				this.operation,
+				term1 === value ? replacement : term1,
+				term2 === value ? replacement : term2,
+			);
+		}
 	}
 
 	subExpressions() {
@@ -879,6 +891,11 @@ testing.addUnit("Expression.substitute()", {
 		const term = new Expression("*", new Expression("+", "x", 2), 5); // (x + 2) * 5
 		const substituted = term.substitute("x", new Expression("/", "y", 3));
 		expect(substituted.toString()).toEqual("((y / 3) + 2) * 5");
+	},
+	"can perform the substitution when given a list of things to replace": () => {
+		const expression = Expression.parse("x + y - z");
+		const substituted = expression.substitute(["x", "y", "z"], [1, 2, 3]);
+		expect(`${substituted}`).toEqual("(1 + 2) - 3");
 	}
 });
 (() => {
