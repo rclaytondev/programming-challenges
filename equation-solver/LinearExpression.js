@@ -58,6 +58,11 @@ class LinearExpression {
 		return new LinearExpression(this.terms.filter(t => t.coefficient !== 0));
 	}
 
+	coefficientOf(variable) {
+		const term = this.terms.find(t => t.variableName === variable);
+		return (term == null) ? 0 : term.coefficient;
+	}
+
 	toString() {
 		const terms = [...this.terms].sort((a, b) => (a.variableName < b.variableName) ? -1 : 1);
 		const termStrings = terms.map(t => t.toString());

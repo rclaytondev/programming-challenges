@@ -9,7 +9,7 @@ const solveSystem = (...equations) => {
 	const sumOfErrors = Expression.sum(...errors).simplify();
 	const derivatives = variables.map((v) => sumOfErrors.differentiate(v).simplify());
 	let guess = new NVector(...new Array(variables.length).fill(0));
-	const NUM_ITERATIONS = 10;
+	const NUM_ITERATIONS = 30;
 	for(let i = 0; i < NUM_ITERATIONS; i ++) {
 		if(sumOfErrors.substitute(variables, guess.numbers).simplify() === 0) {
 			break;
@@ -120,7 +120,44 @@ const fitPolynomialMV = (degree, numVariables, points) => {
 	}
 	return result.simplify();
 };
+const fitFunction = (func, points, inputVariables = ["x"]) => {
+	/*
+	`func` is the form of the function to be fitted (e.g. "ax^2 + bx + c"). It can be a string or an Expression.
+	`inputVariables` are the variables (as opposed to the parameters that define the function)
+	`points` is the set of points to fit the function to.
+	The result will be a function that looks like `func`, but with the parameters replaced with actual values.
+	*/
+	if(typeof func === "string") { func = Expression.parse(func); }
 
+	const distances = points.map(point => {
+		if(point instanceof NVector) {
+			const { numbers } = point;
+			let substituted = func;
+			for(const [i, number] of numbers.slice(0, ).entries()) {
+				substituted = substituted.substitute(variables[i], number);
+			}
+			return new Expression("-", substituted, numbers[numbers.length - 1]);
+		}
+		else {
+			const { x, y } = point;
+			return new Expression("-", func.substitute(inputVariables[0], x), y);
+		}
+	});
+	const distancesSquared = distances.map(exp => new Expression("^", exp, 2).simplify());
+	const sumOfDistSq = Expression.sum(...distancesSquared).simplify();
+	const parameters = func.variables().difference(new Set(inputVariables));
+	const equations = [];
+	for(const parameter of parameters) {
+		const derivative = sumOfDistSq.differentiate(parameter).simplify();
+		equations.push(new Equation(derivative, 0));
+	}
+	const solutions = solveSystem(...equations);
+	let result = func.clone();
+	for(const [parameter, parameterValue] of Object.entries(solutions)) {
+		result = result.substitute(parameter, parameterValue);
+	}
+	return result;
+};
 
 testing.addUnit("solveSystem()", {
 	"can solve a system of linear equations": () => {
@@ -185,3 +222,14 @@ testing.addUnit("fitPolynomialMV()", {
 		expect(`${polynomial}`).toEqual("((-1 * b) + (2 * a)) + ((a ^ 2) * (b ^ 2))");
 	}
 });
+testing.addUnit("fitFunction()", {
+	"can fit a line to two points": () => {
+		const points = [ new Vector(0, 5), new Vector(1, 7) ];
+		const result = new LinearExpression(fitFunction("a * x + b", points));
+		// 2x + 5
+		expect(result.coefficientOf("x")).toApproximatelyEqual(2, 0.01);
+		expect(result.coefficientOf(null)).toApproximatelyEqual(5, 0.01);
+	}
+});
+testing.testUnit("solveSystem()");
+testing.testUnit("fitFunction()");

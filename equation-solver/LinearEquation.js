@@ -38,6 +38,16 @@ class LinearEquation {
 		return result;
 	}
 
+	coefficientOf(variable) {
+		/* returns the coefficient on the variable. Assumes the equation is in standard form. */
+		const term = this.linearExpression1.terms.find(term => term.variableName === variable);
+		return (term == null) ? 0 : term.coefficient;
+	}
+	weightedSum() {
+		/* if the equation is in the form 'ax + by + cz + ... = S', this function returns the value of S. */
+		return [...this.linearExpression2.terms][0].coefficient;
+	}
+
 	combineLikeTerms() {
 		return new LinearEquation(
 			this.linearExpression1.combineLikeTerms(),
