@@ -47,4 +47,3 @@ testing.addUnit("Array.median()", {
 		expect(() => numbers.median()).toThrow();
 	}
 });
-testing.testAll();

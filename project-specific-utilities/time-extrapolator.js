@@ -49,7 +49,32 @@ utils.time.extrapolate = (algorithm, complexity, variables, inputs, numTrials = 
 	}
 	return fitFunction(complexity, dataPoints, variables);
 };
-
+utils.time.format = (milliseconds) => {
+	/* returns a */
+	const MILLISECOND = { name: "millisecond", time: 1 };
+	const SECOND = { name: "second", time: 1000 * MILLISECOND.time };
+	const MINUTE = { name: "minute", time: 60 * SECOND.time };
+	const HOUR = { name: "hour", time: 60 * MINUTE.time };
+	const DAY = { name: "day", time: 24 * HOUR.time };
+	const MONTH = { name: "month", time: 30.4375 * DAY.time };
+	const YEAR = { name: "year", time: 12 * MONTH.time };
+	const UNITS = [YEAR, MONTH, DAY, HOUR, MINUTE, SECOND, MILLISECOND];
+	const strings = [];
+	for(const unit of UNITS) {
+		const amount = Math.floor(milliseconds / unit.time);
+		milliseconds %= unit.time;
+		if(amount === 1) {
+			strings.push(`1 ${unit.name}`);
+		}
+		else if(amount > 0) {
+			strings.push(`${amount} ${unit.name}s`);
+		}
+	}
+	if(strings.length === 0) {
+		return "0 milliseconds";
+	}
+	return strings.join(", ");
+};
 
 testing.addUnit("utils.time.extrapolate()", {
 	"can predict the time an O(n) algorithm will take to run": () => {
@@ -78,3 +103,11 @@ testing.addUnit("utils.time.extrapolate()", {
 	}
 });
 testing.testUnit("utils.time.extrapolate()");
+testing.addUnit("utils.time.format()", {
+	"can format a time in milliseconds": () => {
+		const time = 473461210000;
+		const formatted = utils.time.format(time);
+		expect(formatted).toEqual("15 years, 1 day, 3 hours, 10 seconds")
+	}
+});
+testing.testUnit("utils.time.format()");
