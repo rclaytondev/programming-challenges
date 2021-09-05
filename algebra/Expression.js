@@ -541,6 +541,26 @@ class Expression {
 				const newTerms = terms.sort((a, b) => compareTerms(a.term, b.term));
 				return Expression.product(...newTerms);
 			}
+		},
+		{
+			name: "distribute-squaring",
+			canApply: (expr) => {
+				const { term1, term2 } = expr;
+				return (
+					expr.operation === "^" &&
+					expr.term2 === 2 &&
+					(term1.operation === "+" || term1.operation === "-")
+				);
+			},
+			apply: (expr) => {
+				const { term1 } = expr;
+				const { term1: a, term2: b } = term1;
+				return Expression.sum(
+					new Expression("^", a, 2),
+					Expression.product((term1.operation === "-") ? -2 : 2, a, b),
+					new Expression("^", b, 2)
+				);
+			}
 		}
 	];
 	static findSimplification(simplificationID) {
@@ -1057,6 +1077,18 @@ testing.addUnit("Expression.simplify() - rearrange-multiplication", {
 		expect(Expression.findSimplification("rearrange-multiplication").canApply(term)).toEqual(true);
 		const simplified = Expression.findSimplification("rearrange-multiplication").apply(term);
 		expect(`${simplified}`).toEqual("(2 * 2) * x");
+	}
+});
+testing.addUnit("Expression.simplify() - distribute-squaring", {
+	"can simplify (a + b)^2": () => {
+		const expr = Expression.parse("(a + b) ^ 2");
+		const simplified = expr.simplify();
+		expect(`${simplified}`).toEqual("((a ^ 2) + (b ^ 2)) + ((2 * a) * b)");
+	},
+	"can simplify (a - b)^2": () => {
+		const expr = Expression.parse("(a - b) ^ 2");
+		const simplified = expr.simplify();
+		expect(`${simplified}`).toEqual("((a ^ 2) + (b ^ 2)) + ((-2 * a) * b)");
 	}
 });
 testing.addUnit("Expression.simplify() - specific simplifications", {
