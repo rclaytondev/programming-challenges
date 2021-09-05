@@ -11,7 +11,7 @@ const solveSystem = (...equations) => {
 	let guess = new NVector(...new Array(variables.length).fill(0));
 	const NUM_ITERATIONS = 30;
 	for(let i = 0; i < NUM_ITERATIONS; i ++) {
-		if(sumOfErrors.substitute(variables, guess.numbers).simplify() === 0) {
+		if(sumOfErrors.substitute(variables, guess.numbers).simplify() <= 1e-10) {
 			break;
 		}
 		let newGuessNumbers = [];
