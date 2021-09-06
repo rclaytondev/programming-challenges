@@ -134,7 +134,7 @@ const fitFunction = (func, points, inputVariables = ["x"]) => {
 			const { numbers } = point;
 			let substituted = func;
 			for(const [i, number] of numbers.slice(0, ).entries()) {
-				substituted = substituted.substitute(variables[i], number);
+				substituted = substituted.substitute(inputVariables[i], number);
 			}
 			return new Expression("-", substituted, numbers[numbers.length - 1]);
 		}

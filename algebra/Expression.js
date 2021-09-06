@@ -176,68 +176,34 @@ class Expression {
 		}
 	}
 	terms(extraInfo = false, negated = false) {
-		if(extraInfo) {
-			/*
-			Returns a list of objects, where each object has a property `term`, representing the term, and a boolean property `negated`, representing whether the term is being subtracted or added.
-			*/
-			const terms = [];
-			if(this.term1 instanceof Expression && ["+", "-"].includes(this.term1.operation)) {
-				terms.push(...this.term1.terms(true, negated));
-			}
-			else {
-				terms.push({ term: this.term1, negated: negated });
-			}
-			if(this.term2 instanceof Expression && ["+", "-"].includes(this.term2.operation)) {
-				terms.push(...this.term2.terms(true, this.operation === "+" ? negated : !negated));
-			}
-			else {
-				terms.push({ term: this.term2, negated: this.operation === "+" ? negated : !negated });
-			}
-			return terms;
-		}
-		else {
-			/*
-			Returns a list of all the terms in the sum, regardless of whether they are being added or subtracted.
-			*/
-			const terms = [];
-			for(const term of [this.term1, this.term2]) {
-				if(term instanceof Expression && ["+", "-"].includes(term.operation)) {
-					terms.push(...term.terms());
-				}
-				else {
-					terms.push(term);
-				}
-			}
-			return terms;
-		}
+		return Expression.terms(this, ...arguments);
 	}
 	multiplicativeTerms(extraInfo = false, divided = false) {
-		if(extraInfo) {
-			const terms = [];
-			if(this.term1 instanceof Expression && ["*", "/"].includes(this.term1.operation)) {
-				terms.push(...this.term1.multiplicativeTerms(true, divided));
-			}
-			else {
-				terms.push({ term: this.term1, divided });
-			}
-			if(this.term2 instanceof Expression && ["*", "/"].includes(this.term2.operation)) {
-				terms.push(...this.term2.multiplicativeTerms(true, this.operation === "*" ? divided : !divided));
-			}
-			else {
-				terms.push({ term: this.term2, divided: this.operation === "*" ? divided : !divided });
-			}
-			return terms;
+		return Expression.multiplicativeTerms(this, ...arguments);
+	}
+
+	static terms(expr, extraInfo = false, negated = false) {
+		if(typeof expr === "string" || typeof expr === "number" || (expr instanceof Expression && !["+", "-"].includes(expr.operation))) {
+			return [(extraInfo) ? { term: expr, negated } : expr];
 		}
-		else {
-			const terms = [];
-			for(const term of Tree.iterate(
-				this,
-				(term) => (["*", "/"].includes(term.operation) ? [term.term1, term.term2] : []),
-				true
-			)) {
-				terms.push(term);
-			}
-			return terms;
+		else if(expr instanceof Expression) {
+			const { term1, term2 } = expr;
+			return [
+				...Expression.terms(term1, extraInfo, negated),
+				...Expression.terms(term2, extraInfo, (expr.operation === "-") ? !negated : negated)
+			];
+		}
+	}
+	static multiplicativeTerms(expr, extraInfo = false, divided = false) {
+		if(typeof expr === "string" || typeof expr === "number" || (expr instanceof Expression && !["*", "/"].includes(expr.operation))) {
+			return [(extraInfo) ? { term: expr, divided } : expr];
+		}
+		else if(expr instanceof Expression) {
+			const { term1, term2 } = expr;
+			return [
+				...Expression.multiplicativeTerms(term1, extraInfo, divided),
+				...Expression.multiplicativeTerms(term2, extraInfo, (expr.operation === "/") ? !divided : divided)
+			];
 		}
 	}
 
@@ -361,50 +327,47 @@ class Expression {
 		{
 			name: "combine-like-terms",
 			termMatches: (t1, t2) => {
-				if(typeof t1 === "object" && !(t1 instanceof Expression)) { t1 = t1.term; }
-				if(typeof t2 === "object" && !(t2 instanceof Expression)) { t2 = t2.term; }
-				const expr1 = [t1.term1, t1.term2].find(v => typeof v !== "number");
-				const expr2 = [t2.term1, t2.term2].find(v => typeof v !== "number");
-				if(expr1 != null && expr2 != null) { return expr1.equals(expr2); }
-				else { return (expr1 == null) === (expr2 == null); }
+				const { getMultipliedExpression } = Expression.findSimplification("combine-like-terms");
+				const multipliedExp1 = getMultipliedExpression(t1);
+				const multipliedExp2 = getMultipliedExpression(t2);
+				return multipliedExp1.equals(multipliedExp2);
 			},
 			getCoefficient: (expr) => {
-				if(!(typeof expr === "object" && expr instanceof Expression)) { expr = expr.term; }
-				if(expr.operation !== "*") { return null; }
-				return [expr.term1, expr.term2].find(v => typeof v === "number");
+				const { negated, term } = expr;
+				if(typeof term === "number") { return term; }
+				else if(typeof term === "string") { return 1; }
+				const terms = term.multiplicativeTerms(true);
+				const numbers = terms.filter(v => typeof v.term === "number");
+				let result = numbers.reduce((acc, term) => (term.divided ? acc / term.term : acc * term.term), 1);
+				if(negated) { result *= -1; }
+				return result;
+			},
+			getMultipliedExpression: (expr) => {
+				if(!(expr.term instanceof Expression)) { return expr.term; }
+				const terms = expr.term.multiplicativeTerms?.(true);
+				const nonNumbers = terms.filter(t => typeof t.term !== "number");
+				return Expression.product(...nonNumbers);
 			},
 			canApply: (expr) => {
 				if(expr.operation !== "+" && expr.operation !== "-") { return false; }
 				const { termMatches, getCoefficient } = Expression.findSimplification("combine-like-terms");
-				const terms = expr.terms(true).map(term => getCoefficient(term) == null
-					? { term: new Expression("*", 1, term.term), negated: term.negated }
-					: term
-				);
+				const terms = expr.terms(true);
 				return terms.some(term1 => terms.some(term2 => (
 					term1 !== term2 && termMatches(term1, term2)
 				)));
 			},
 			apply: (expr) => {
-				const { termMatches, getCoefficient } = Expression.findSimplification("combine-like-terms");
+				const { termMatches, getCoefficient, getMultipliedExpression } = Expression.findSimplification("combine-like-terms");
 				const terms = expr.terms(true);
 				const constantTerms = terms.filter(v => typeof v.term === "number");
-				const otherTerms = (terms
-					.filter(v => typeof v.term !== "number")
-					.map(term => getCoefficient(term) == null
-						? { term: new Expression("*", 1, term.term), negated: term.negated }
-						: term
-					)
-				);
+				const otherTerms = terms.filter(v => typeof v.term !== "number")
 				const resultTerms = [];
 				for(const [i, term] of otherTerms.entries()) {
-					const multipliedExpression = [term.term.term1, term.term.term2].find(v => typeof v !== "number");
-					const matchingTerms = otherTerms.filter(t => termMatches(t.term, term.term));
+					const multipliedExpression = getMultipliedExpression(term);
+					const matchingTerms = otherTerms.filter(t => termMatches(t, term));
 					const matchingIndicies = matchingTerms.map(t => otherTerms.indexOf(t));
 					if(matchingIndicies.some(v => v < i)) { continue; }
-					const coefficientSum = matchingTerms.sum(t =>
-						(typeof t.term.term1 === "number" ? t.term.term1 : t.term.term2)
-						* (t.negated ? -1 : 1)
-					);
+					const coefficientSum = matchingTerms.sum(t => getCoefficient(t));
 					if(coefficientSum === 1) { resultTerms.push(multipliedExpression); }
 					else if(coefficientSum !== 0) {
 						resultTerms.push(new Expression("*", coefficientSum, multipliedExpression))
@@ -1022,6 +985,17 @@ testing.addUnit("Expression.simplify() - combine-like-terms", {
 		const term = Expression.parse("(1 + x) + 2");
 		const simplified = term.simplify();
 		expect(`${simplified}`).toEqual("3 + x");
+	},
+	"works when there are non-adjacent numbers being multiplied together": () => {
+		const term = Expression.parse("((3 * x) * (y * 5)) + (x * y)");
+		const simplified = term.simplify();
+		expect(`${simplified}`).toEqual("(16 * x) * y");
+	},
+	"does not attempt to simplify x^2 + 2x": () => {
+		const simplification = Expression.findSimplification("combine-like-terms");
+		const expr = Expression.parse("x^2 + 2*x");
+		const canApply = simplification.canApply(expr);
+		expect(canApply).toEqual(false);
 	}
 });
 testing.addUnit("Expression.simplify() - multiply", {

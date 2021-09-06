@@ -44,7 +44,7 @@ utils.time.extrapolate = (algorithm, complexity, variables, inputs, numTrials = 
 				runtimes.push(timeRecorder(() => algorithm(input)));
 			}
 			const median = runtimes.median();
-			dataPoints.push(new Vector([...input.numbers, median]));
+			dataPoints.push(new NVector([...input.numbers, median]));
 		}
 	}
 	return fitFunction(complexity, dataPoints, variables);
