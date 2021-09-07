@@ -26,6 +26,7 @@ utils.time.extrapolate = (algorithm, complexity, variables, inputs, numTrials = 
 	complexity = (typeof complexity === "string") ? Expression.parse(complexity) : complexity;
 	const dataPoints = [];
 	for(const input of inputs) {
+		Function.prototype.memoize.clear();
 		if(dataPointType === "all") {
 			for(let i = 0; i < numTrials; i ++) {
 				const runtime = timeRecorder(() => algorithm(input));

@@ -235,7 +235,7 @@ const timePolynomial = utils.time.extrapolate(
 	"a * w * h + b * w + c * h + d",
 	["w", "h"],
 	testCases,
-	10
+	30
 );
 const time1 = timePolynomial.substitute(["w", "h"], [100, 1e12]).simplify();
 const time2 = timePolynomial.substitute(["w", "h"], [10000, 10000]).simplify();
