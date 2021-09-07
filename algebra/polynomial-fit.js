@@ -20,8 +20,7 @@ const minimize = (expression) => {
 			...new Array(variables.length)
 			.fill()
 			.map((v, i) => new Set([newGuessNumbers[i], guess.numbers[i]]))
-			.filter(combination => !combination.equals(guess.numbers))
-		);
+		).filter(combination => !combination.equals(guess.numbers));
 		guess = new NVector([...combinations].min((combination) =>
 			expression.substitute(variables, combination).simplify()
 		));
@@ -120,5 +119,15 @@ testing.addUnit("fitFunction()", {
 		// 2x - 1/3
 		expect(result.coefficientOf("x")).toApproximatelyEqual(2, 0.01);
 		expect(result.coefficientOf(null)).toApproximatelyEqual(-1/3, 0.01);
+	}
+});
+testing.addUnit("minimize()", {
+	"can minimize a linear expression": () => {
+		const expression = Expression.parse(
+			"((((((6260 + (-6608 * m)) + (-2088 * b)) + ((6 * b) ^ 2)) + ((12 * b) ^ 2)) + ((12 * m) ^ 2)) + ((40 * m) ^ 2)) + ((1104 * b) * m)"
+		);
+		const { m, b } = minimize(expression);
+		expect(m).toApproximatelyEqual(2, 1e-5);
+		expect(b).toApproximatelyEqual(-1/3, 1e-5);
 	}
 });
