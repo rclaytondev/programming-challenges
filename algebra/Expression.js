@@ -129,6 +129,9 @@ class Expression {
 		}
 	}
 	toString() {
+		if(this.operation === "log") {
+			return `log(${this.term1}, ${this.term2})`;
+		}
 		const operand1 = (typeof this.term1 === "number" || typeof this.term1 === "string") ? this.term1 : `(${this.term1})`;
 		const operand2 = (typeof this.term2 === "number" || typeof this.term2 === "string") ? this.term2 : `(${this.term2})`;
 		return `${operand1} ${this.operation} ${operand2}`;
@@ -296,6 +299,7 @@ class Expression {
 					case "*": return expr.term1 * expr.term2;
 					case "/": return expr.term1 / expr.term2;
 					case "^": return expr.term1 ** expr.term2;
+					case "log": return Math.logBase(expr.term1, expr.term2);
 				}
 			}
 		},
@@ -636,6 +640,10 @@ testing.addUnit("Expression.toString()", {
 	"returns the string representation of 2 * (x - 3)": () => {
 		const term = new Expression("*", 2, new Expression("-", "x", 3));
 		expect(term.toString()).toEqual("2 * (x - 3)");
+	},
+	"returns the string representation of log(3, x)": () => {
+		const term = new Expression("log", 3, "x");
+		expect(term.toString()).toEqual("log(3, x)");
 	}
 });
 testing.addUnit("Expression.tokenize()", {
