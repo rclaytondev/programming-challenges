@@ -177,3 +177,19 @@ testing.addUnit("Castle.numCastles()", {
 });
 
 Castle.visualize(5, 3, true, "even", false);
+
+// const testCases = new Grid(5, 5).map((v, x, y) => new Vector(x + 1, y + 1)).rows.flat(100);
+// const timePolynomial = utils.time.extrapolate(
+// 	(vector) => {
+// 		const [x, y] = vector.numbers;
+// 		return Castle.numCastles(x, y, Infinity);
+// 	},
+// 	"a * h^(b * w + c) * w * h + d * w * h + e * w * h + f",
+// 	["w", "h"],
+// 	testCases,
+// 	5
+// );
+// const time1 = timePolynomial.substitute(["w", "h"], [100, 1e12]).simplify();
+// const time2 = timePolynomial.substitute(["w", "h"], [10000, 10000]).simplify();
+// const time3 = timePolynomial.substitute(["w", "h"], [1e12, 100]).simplify();
+// const totalTime = time1 + time2 + time3;
