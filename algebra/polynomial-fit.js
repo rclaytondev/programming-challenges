@@ -1,17 +1,11 @@
 const ALPHABET = "abcdefghijklmnopqrstuvwxyz";
-const solveSystem = (...equations) => {
-	/* attempts to solve the system of equations using a multivariable generalization of Newton's method. */
-	const variables = [...equations.map(eq => eq.variables()).reduce((a, b) => a.union(b))];
-	const expressions = equations.map(equation => (
-		new Expression("-", equation.leftSide, equation.rightSide).simplify()
-	));
-	const errors = expressions.map(exp => new Expression("^", exp, 2));
-	const sumOfErrors = Expression.sum(...errors).simplify();
-	const derivatives = variables.map((v) => sumOfErrors.differentiate(v).simplify());
+const minimize = (expression) => {
+	const variables = [...expression.variables()];
+	const derivatives = variables.map((v) => expression.differentiate(v).simplify());
 	let guess = new NVector(...new Array(variables.length).fill(0));
 	const NUM_ITERATIONS = 30;
 	for(let i = 0; i < NUM_ITERATIONS; i ++) {
-		if(sumOfErrors.substitute(variables, guess.numbers).simplify() <= 1e-10) {
+		if(expression.substitute(variables, guess.numbers).simplify() <= 1e-10) {
 			break;
 		}
 		let newGuessNumbers = [];
@@ -20,7 +14,7 @@ const solveSystem = (...equations) => {
 			derivative = derivative.substitute(variables, guess.numbers);
 			const slope = derivative.simplify();
 			if(slope === 0) { slope = 0.0001; }
-			newGuessNumbers[j] = guess.numbers[j] - (sumOfErrors.substitute(variables, guess.numbers).simplify() / slope);
+			newGuessNumbers[j] = guess.numbers[j] - (expression.substitute(variables, guess.numbers).simplify() / slope);
 		}
 		const combinations = Set.cartesianProduct(
 			...new Array(variables.length)
@@ -29,7 +23,7 @@ const solveSystem = (...equations) => {
 			.filter(combination => !combination.equals(guess.numbers))
 		);
 		guess = new NVector([...combinations].min((combination) =>
-			sumOfErrors.substitute(variables, combination).simplify()
+			expression.substitute(variables, combination).simplify()
 		));
 	}
 	const result = {};
@@ -37,6 +31,16 @@ const solveSystem = (...equations) => {
 		result[variables[i]] = number;
 	}
 	return result;
+};
+const solveSystem = (...equations) => {
+	/* attempts to solve the system of equations using a multivariable generalization of Newton's method. */
+	const variables = [...equations.map(eq => eq.variables()).reduce((a, b) => a.union(b))];
+	const expressions = equations.map(equation => (
+		new Expression("-", equation.leftSide, equation.rightSide).simplify()
+	));
+	const errors = expressions.map(exp => new Expression("^", exp, 2));
+	const sumOfErrors = Expression.sum(...errors).simplify();
+	return minimize(sumOfErrors);
 };
 const fitFunction = (func, points, inputVariables = ["x"]) => {
 	/*
