@@ -260,5 +260,3 @@ testing.addUnit("fitFunction()", {
 		expect(result.coefficientOf(null)).toApproximatelyEqual(-1/3, 0.01);
 	}
 });
-testing.testUnit("solveSystem()");
-testing.testUnit("fitFunction()");

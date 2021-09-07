@@ -102,7 +102,6 @@ testing.addUnit("utils.time.extrapolate()", {
 		testing.assertEqualApprox(constantTerm, 40, 1e-3);
 	}
 });
-testing.testUnit("utils.time.extrapolate()");
 testing.addUnit("utils.time.format()", {
 	"can format a time in milliseconds": () => {
 		const time = 473461210000;
@@ -110,4 +109,3 @@ testing.addUnit("utils.time.format()", {
 		expect(formatted).toEqual("15 years, 1 day, 3 hours, 10 seconds")
 	}
 });
-testing.testUnit("utils.time.format()");
