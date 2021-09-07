@@ -22,7 +22,15 @@ const solveSystem = (...equations) => {
 			if(slope === 0) { slope = 0.0001; }
 			newGuessNumbers[j] = guess.numbers[j] - (sumOfErrors.substitute(variables, guess.numbers).simplify() / slope);
 		}
-		guess = new NVector(...newGuessNumbers);
+		const combinations = Set.cartesianProduct(
+			...new Array(variables.length)
+			.fill()
+			.map((v, i) => new Set([newGuessNumbers[i], guess.numbers[i]]))
+			.filter(combination => !combination.equals(guess.numbers))
+		);
+		guess = new NVector([...combinations].min((combination) =>
+			sumOfErrors.substitute(variables, combination).simplify()
+		));
 	}
 	const result = {};
 	for(const [i, number] of guess.numbers.entries()) {
@@ -168,6 +176,16 @@ testing.addUnit("solveSystem()", {
 		const { x, y } = solutions;
 		expect(x).toEqual(5);
 		expect(y).toEqual(5);
+	},
+	"can solve a more complicated system of linear equations": () => {
+		const equations = [
+			new Equation(Expression.parse("(-76 + (12 * b)) + (40 * m)"), 0),
+			new Equation(Expression.parse("(-22 + (6 * b)) + (12 * m)"), 0)
+		];
+		const solutions = solveSystem(...equations);
+		const { m, b } = solutions;
+		expect(m).toApproximatelyEqual(2, 1e-5);
+		expect(b).toApproximatelyEqual(-1/3, 1e-5);
 	}
 });
 testing.addUnit("fitPolynomial()", {
@@ -229,6 +247,17 @@ testing.addUnit("fitFunction()", {
 		// 2x + 5
 		expect(result.coefficientOf("x")).toApproximatelyEqual(2, 0.01);
 		expect(result.coefficientOf(null)).toApproximatelyEqual(5, 0.01);
+	},
+	"can approximately fit a line to three points": () => {
+		const points = [
+			new Vector(0, 0),
+			new Vector(2, 3),
+			new Vector(4, 8)
+		];
+		const result = new LinearExpression(fitFunction("m * x + b", points));
+		// 2x - 1/3
+		expect(result.coefficientOf("x")).toApproximatelyEqual(2, 0.01);
+		expect(result.coefficientOf(null)).toApproximatelyEqual(-1/3, 0.01);
 	}
 });
 testing.testUnit("solveSystem()");
