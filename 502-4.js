@@ -224,3 +224,20 @@ const solve = () => {
 	console.log(`the answer is ${result}`);
 	return result;
 };
+
+
+const testCases = new Grid(10, 10).map((v, x, y) => new Vector(x + 1, y + 1)).rows.flat(100);
+const timePolynomial = utils.time.extrapolate(
+	(vector) => {
+		const [x, y] = vector.numbers;
+		return numCastles(x, y, Infinity);
+	},
+	"a * w * h + b * w + c * h + d",
+	["w", "h"],
+	testCases,
+	10
+);
+const time1 = timePolynomial.substitute(["w", "h"], [100, 1e12]).simplify();
+const time2 = timePolynomial.substitute(["w", "h"], [10000, 10000]).simplify();
+const time3 = timePolynomial.substitute(["w", "h"], [1e12, 100]).simplify();
+const totalTime = time1 + time2 + time3;
