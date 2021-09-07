@@ -169,9 +169,9 @@ testing.addUnit("numCastles()", {
 	"returns the correct result for a 10x13 rectangle": () => {
 		expect(numCastles(10, 13)).toEqual(37959702514n);
 	},
-	"returns the correct result for a 100x100 rectangle": () => {
-		expect(numCastles(100, 100, 1000000007)).toEqual(841913936n);
-	},
+	// "returns the correct result for a 100x100 rectangle": () => {
+	// 	expect(numCastles(100, 100, 1000000007)).toEqual(841913936n);
+	// },
 	/* other test cases */
 	"returns the correct result for a 2x2 rectangle": () => {
 		const result = numCastles(2n, 2n);
