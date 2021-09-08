@@ -616,6 +616,27 @@ class Expression {
 					Expression.differentiate(term1, variable)
 				)
 			)
+		},
+		{
+			name: "generalized-power-rule",
+			canApply: (expr) => (expr.operation === "^" && typeof expr.term2 !== "number"),
+			apply: ({ term1, term2 }, variable) => new Expression(
+				"*",
+				new Expression("^", term1, term2),
+				new Expression(
+					"+",
+					new Expression(
+						"*",
+						Expression.differentiate(term1, variable),
+						new Expression("/", term1, term2)
+					),
+					new Expression(
+						"*",
+						Expression.differentiate(term2, variable),
+						new Expression("log", Math.E, term1)
+					)
+				)
+			)
 		}
 	];
 	static differentiate(expr, variable) {
@@ -942,6 +963,11 @@ testing.addUnit("Expression.differentiate()", [
 		const expr = Expression.parse("(a + b)^2");
 		const result = expr.differentiate("a").simplify();
 		expect(`${result}`).toEqual(`(2 * a) + (2 * b)`);
+	},
+	() => {
+		const expr = Expression.parse("x ^ x");
+		const result = expr.differentiate("x").simplify();
+		expect(`${result}`).toEqual(`(x ^ x) + ((log(2.718281828459045, x)) * (x ^ x))`);
 	}
 ]);
 testing.addUnit("Expression.simplify() - combine-like-terms", {
