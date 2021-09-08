@@ -26,22 +26,26 @@ utils.time.extrapolate = (algorithm, complexity, variables, inputs, numTrials = 
 	complexity = (typeof complexity === "string") ? Expression.parse(complexity) : complexity;
 	const dataPoints = [];
 	for(const input of inputs) {
-		Function.prototype.memoize.clear();
 		if(dataPointType === "all") {
 			for(let i = 0; i < numTrials; i ++) {
+				Function.prototype.memoize.clear();
 				const runtime = timeRecorder(() => algorithm(input));
 				dataPoints.push(new NVector([...input.numbers, runtime]));
 			}
 		}
 		else if(dataPointType === "average") {
-			dataPoints.push(new NVector([
-				...input.numbers,
-				timeRecorder(() => algorithm(input), numTrials)
-			]));
+			const runtimes = [];
+			for(let i = 0; i < numTrials; i ++) {
+				Function.prototype.memoize.clear();
+				const runtime = timeRecorder(() => algorithm(input));
+				runtimes.push(runtime);
+			}
+			dataPoints.push(new NVector([...input.numbers, runtimes.average()]));
 		}
 		else if(dataPointType === "median") {
 			const runtimes = [];
 			for(let i = 0; i < numTrials; i ++) {
+				Function.prototype.memoize.clear();
 				runtimes.push(timeRecorder(() => algorithm(input)));
 			}
 			const median = runtimes.median();
