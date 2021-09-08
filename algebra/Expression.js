@@ -339,6 +339,35 @@ class Expression {
 			apply: (expr) => 1
 		},
 		{
+			name: "(ab)^c = a^c * b^c",
+			canApply: (expr) => {
+				const { term1, term2 } = expr;
+				return expr.operation === "^" && term1.operation === "*";
+			},
+			apply: (expr) => {
+				const power = expr.term2;
+				const { term1, term2 } = expr.term1;
+				return new Expression(
+					"*",
+					new Expression("^", term1, power),
+					new Expression("^", term2, power)
+				);
+			}
+		},
+		{
+			name: "(a^b)^c = a^(b * c)",
+			canApply: (expr) => expr.operation === "^" && expr.term1.operation === "^",
+			apply: (expr) => {
+				const { term1, term2: c } = expr;
+				const { term1: a, term2: b } = term1;
+				return new Expression(
+					"^",
+					a,
+					new Expression("*", b, c)
+				);
+			}
+		},
+		{
 			name: "combine-like-terms",
 			termMatches: (t1, t2) => {
 				const { getMultipliedExpression } = Expression.findSimplification("combine-like-terms");
