@@ -334,6 +334,11 @@ class Expression {
 			apply: (expr) => 1
 		},
 		{
+			name: "1^x = 1",
+			canApply: (expr) => expr.operation === "^" && expr.term1 === 1,
+			apply: (expr) => 1
+		},
+		{
 			name: "combine-like-terms",
 			termMatches: (t1, t2) => {
 				const { getMultipliedExpression } = Expression.findSimplification("combine-like-terms");

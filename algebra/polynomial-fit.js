@@ -57,11 +57,11 @@ const fitFunction = (func, points, inputVariables = ["x"]) => {
 			for(const [i, number] of numbers.slice(0, ).entries()) {
 				substituted = substituted.substitute(inputVariables[i], number);
 			}
-			return new Expression("-", substituted, numbers[numbers.length - 1]);
+			return new Expression("-", substituted, numbers[numbers.length - 1]).simplify();
 		}
 		else {
 			const { x, y } = point;
-			return new Expression("-", func.substitute(inputVariables[0], x), y);
+			return new Expression("-", func.substitute(inputVariables[0], x), y).simplify();
 		}
 	});
 	const distancesSquared = distances.map(exp => new Expression("^", exp, 2).simplify());
