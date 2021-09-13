@@ -34,3 +34,13 @@ const solve = () => {
 	const result = admissiblePaths(1e7, 1e7, 1e9 + 7);
 	console.log(`the answer is ${result}`);
 }
+
+const testCases = new Array(100).fill().map((v, i) => i);
+const timePolynomial = utils.time.extrapolate(
+	({ numbers: [gridSize] }) => admissiblePaths(gridSize, gridSize),
+	"a * n^2 + b * n + c",
+	["n"],
+	testCases,
+	10
+);
+const time = timePolynomial.substitute("n", 10000000).simplify();
