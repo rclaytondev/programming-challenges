@@ -1,12 +1,12 @@
 const isPerfectSquare = (num) => Math.floor(Math.sqrt(num)) ** 2 === num;
 const isAdmissible = (x, y) => !(isPerfectSquare(x) && isPerfectSquare(y) && isPerfectSquare(x + y));
 const admissiblePaths = ((x, y, modulo = Infinity) => {
-	if(x < 0 || y < 0) { return 0; }
-	if(x === 0 || y === 0) { return 1; }
-	if(!isAdmissible(x, y)) { return 0; }
+	if(x < 0 || y < 0) { return 0n; }
+	if(x === 0 || y === 0) { return 1n; }
+	if(!isAdmissible(x, y)) { return 0n; }
 	let result = admissiblePaths(x - 1, y, modulo) + admissiblePaths(x, y - 1, modulo);
 	if(modulo != Infinity) {
-		result %= modulo;
+		result %= BigInt(modulo);
 	}
 	return result;
 }).memoize(true);
