@@ -1,3 +1,31 @@
+const supportBigInts = (func) => {
+	/* Returns a new function that does the same calculations as `func`, but supports BigInts.
+	The resulting function will call `func` with the inputs converted to BigInts.
+	The result will be a BigInt if:
+	- One of the inputs is a BigInt
+	- The number is greater than Number.MAX_SAFE_INTEGER
+	and will be a Number otherwise.
+	*/
+	return function(...args) {
+		const bigintInput = args.some(arg => typeof arg === "bigint");
+		const convertedArgs = args.map(arg => (typeof arg === "number" && arg != Infinity && !Number.isNaN(arg)) ? BigInt(arg) : arg);
+		const result = func(...convertedArgs);
+		if(bigintInput || result > Number.MAX_SAFE_INTEGER) {
+			return BigInt(result);
+		}
+		else { return Number(result); }
+	};
+};
+Math.multiplesInRange = supportBigInts(function(num, min, max) {
+	/* returns how many multiples of `num` are between `min` and `max` (inclusive). */
+	if(min % num != 0) {
+		min = num * (min / num + 1n);
+	}
+	if(max % num !== 0) {
+		max = num * (max / num);
+	}
+	return (max - min) / num + 1n;
+});
 Math.modulateIntoRange = function(value, min, max) {
 	const divideCeil = (a, b) => (a / b) + ((a % b === 0n) ? 0n : 1n); // divides bigints and rounds up
 	if(typeof value === "bigint" || typeof min === "bigint" || typeof max === "bigint") {
@@ -23,23 +51,85 @@ Math.modulateIntoRange = function(value, min, max) {
 	}
 	else { return value; }
 };
-Math.combination = (function(n, r) {
+Math.combination = supportBigInts((function(n, r, modulo = Infinity) {
 	/*
-	returns the value of nCr.
-	If n or r are BigInts, the result will be a BigInt.
-	If the result is greater than Number.MAX_SAFE_INTEGER, the result will be a BigInt.
-	Otherwise, the result will be a Number.
+	returns the value of nCr, modulo `modulo`, if a modulo is provided.
 	*/
-	const bigintInput = (typeof n === "bigint" || typeof r === "bigint");
-	n = BigInt(n), r = BigInt(r);
 	let result = 1n;
-	for(let i = n - r + 1n; i <= n; i ++) { result *= i; }
-	for(let i = 1n; i <= r; i ++) { result /= i; }
-	if(!bigintInput && result <= Number.MAX_SAFE_INTEGER) {
-		result = Number(result);
+	for(let i = 1n; i <= r; i ++) {
+		result *= (n - r + i);
+		result /= i;
+		if(modulo != Infinity) { result %= modulo; }
 	}
 	return result;
-}).memoize();
+}).memoize(true));
+Math.modularProduct = function(modulo, numbers) {
+	const bigintInput = (typeof modulo === "bigint" || numbers.some(v => typeof v === "bigint"));
+	numbers = numbers.map(n => BigInt(n));
+	if(modulo != Infinity) { modulo = BigInt(modulo); }
+	let result = bigintInput ? 1n : 1;
+	for(const number of numbers) {
+		result *= number;
+		if(modulo != Infinity) {
+			result %= modulo;
+		}
+	}
+	if(bigintInput || number > Number.MAX_SAFE_INTEGER) {
+		return BigInt(result);
+	}
+	else { return Number(result); }
+};
+Math.modularExponentiate = supportBigInts(function(modulo, base, exponent) {
+	if(exponent == 0) { return 1; }
+	if(exponent == 1) { return (modulo == Infinity) ? base : (base % modulo); }
+	const largestPowerOfTwo = BigInt(2 ** Math.floor(Math.log2(Number(exponent))));
+	const remainder = exponent - largestPowerOfTwo;
+	if(remainder == 0) {
+		/* `exponent` is a power of two */
+		let result = base;
+		const numIterations = BigInt(Math.log2(Number(exponent)));
+		for(let i = 0; i < numIterations; i ++) {
+			result *= result;
+			if(modulo != Infinity) {
+				result %= modulo;
+			}
+		}
+		return result;
+	}
+	else {
+		return (
+			Math.modularExponentiate(modulo, base, largestPowerOfTwo)
+			* Math.modularExponentiate(modulo, base, remainder)
+		) % modulo;
+	}
+});
+testing.addUnit("supportBigInts()", {
+	"returns a function that returns a number when the inputs are all numbers": () => {
+		const add = (a, b) => a + b;
+		const result = supportBigInts(add)(1, 2);
+		expect(result).toStrictlyEqual(3);
+	},
+	"returns a function that returns a BigInt when any input is a BigInt": () => {
+		const add = (a, b) => a + b;
+		const result = supportBigInts(add)(1, 2n);
+		expect(result).toStrictlyEqual(3n);
+	},
+	"returns a function that returns a BigInt when the result is greater than Number.MAX_SAFE_INTEGER": () => {
+		const add = (a, b) => a + b;
+		const result = supportBigInts(add)(Number.MAX_SAFE_INTEGER, 1);
+		expect(result).toStrictlyEqual(BigInt(Number.MAX_SAFE_INTEGER) + 1n);
+	},
+});
+testing.addUnit("Math.multiplesInRange()", {
+	"returns the correct result when the min and the max are divisible by the number": () => {
+		const result = Math.multiplesInRange(5, 15, 30);
+		expect(result).toEqual(4); // 15, 20, 25, 30
+	},
+	"returns the correct result when the min and the max are not divisible by the number": () => {
+		const result = Math.multiplesInRange(10, 7, 35);
+		expect(result).toEqual(3); // 10, 20, 30
+	}
+});
 testing.addUnit("Math.modulateIntoRange()", {
 	"can modulate a number into a range when it is greater than the maximum": () => {
 		const result = Math.modulateIntoRange(123, 10, 20);
@@ -82,6 +172,24 @@ testing.addUnit("Math.combination()", {
 	"returns a BigInt when the result is greater than Number.MAX_SAFE_INTEGER": () => {
 		const result = Math.combination(100, 20);
 		expect(result).toEqual(535983370403809682970n);
+	},
+	"can return the result modulo a number": () => {
+		const result = Math.combination(10, 5, 100);
+		expect(result).toEqual(52);
+	},
+	// "works for really big inputs (performance test)": () => {
+	// 	const result = Math.combination(2e7, 1e7, 1000);
+	// 	expect(result).toEqual(40);
+	// }
+});
+testing.addUnit("Math.modularExponentiate()", {
+	"returns the correct result for (2^10) % 100": () => {
+		const result = Math.modularExponentiate(100, 2, 10);
+		expect(result).toEqual(24);
+	},
+	"returns the correct result for (3^8) % 1000": () => {
+		const result = Math.modularExponentiate(1000, 3, 8);
+		expect(result).toEqual(561);
 	}
 });
 testing.testUnit("Math.modulateIntoRange()");

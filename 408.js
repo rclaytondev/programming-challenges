@@ -80,12 +80,13 @@ const solve = () => {
 };
 
 
-const testCases = new Array(100).fill().map((v, i) => i);
+const testCases = new Array(50).fill().map((v, i) => 20 * i + 500);
 const timePolynomial = utils.time.extrapolate(
 	({ numbers: [gridSize] }) => admissiblePaths(gridSize, gridSize),
 	"a * n^2 + b * n + c",
 	["n"],
 	testCases,
-	10
+	30
 );
 const time = timePolynomial.substitute("n", 10000000).simplify();
+console.log(utils.time.format(time));
