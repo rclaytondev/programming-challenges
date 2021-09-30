@@ -12,7 +12,8 @@ class Expression {
 		const FIND_VARIABLE = /^[A-Za-z]\w*/;
 		const FIND_PARENTHESE = /^(\(|\))/;
 		const FIND_OPERATOR = /^\+|-|\*|\/|\^/;
-		const TOKEN_TYPES = [FIND_NUMBER, FIND_VARIABLE, FIND_PARENTHESE, FIND_OPERATOR];
+		const FIND_COMMA = /^,/;
+		const TOKEN_TYPES = [FIND_NUMBER, FIND_VARIABLE, FIND_PARENTHESE, FIND_COMMA, FIND_OPERATOR];
 		string = string.replace(FIND_WHITESPACE, "");
 		const tokens = [];
 		for(let i = 0; i < string.length; i ++) {
@@ -34,8 +35,9 @@ class Expression {
 						token: token,
 						type: (
 							regex === FIND_NUMBER ? "number" :
-							regex === FIND_VARIABLE ? "variable" :
+							regex === FIND_VARIABLE ? (token === "log" ? "function" : "variable") :
 							regex === FIND_PARENTHESE ? "parenthese" :
+							regex === FIND_COMMA ? "comma" :
 							"operator"
 						)
 					});
@@ -50,15 +52,25 @@ class Expression {
 		let depth = (tokens.max(t => t.depth).depth ?? 0) + 1;
 		if(tokens.some(t => t.token === "(")) {
 			const openingParenthese = tokens.findIndex(t => t.token === "(");
+			const previousToken = tokens[openingParenthese - 1];
 			const closingParenthese = tokens.findIndex(
 				(t, i) => i > openingParenthese &&
 				(tokens.slice(0, i + 1).count(v => v.token === "(") ===
 				tokens.slice(0, i + 1).count(v => v.token === ")"))
 			);
 			const subExpressionTokens = tokens.slice(openingParenthese + 1, closingParenthese);
-			const subExpression = Expression.parse(null, subExpressionTokens);
+			let subExpression;
+			if(previousToken?.type === "function") {
+				const commaIndex = subExpressionTokens.findIndex(v => v.type === "comma");
+				const arg1 = Expression.parse(null, subExpressionTokens.slice(0, commaIndex));
+				const arg2 = Expression.parse(null, subExpressionTokens.slice(commaIndex + 1));
+				subExpression = new Expression(previousToken.token, arg1, arg2);
+			}
+			else {
+				subExpression = Expression.parse(null, subExpressionTokens);
+			}
 			const outerExpressionTokens = [
-				...tokens.slice(0, openingParenthese),
+				...tokens.slice(0, (previousToken?.type === "function") ? openingParenthese - 1 : openingParenthese),
 				{ token: `NESTED_EXPRESSION_${depth}`, type: "meta-variable", depth },
 				...tokens.slice(closingParenthese + 1)
 			];
@@ -780,6 +792,17 @@ testing.addUnit("Expression.tokenize()", {
 			{ token: "-", type: "operator" },
 			{ token: "BAr_7_8__9", type: "variable" }
 		]);
+	},
+	"can tokenize an expression with functions and commas": () => {
+		const tokens = Expression.tokenize("log(123, 456)");
+		expect(tokens).toEqual([
+			{ token: "log", type: "function" },
+			{ token: "(", type: "parenthese" },
+			{ token: "123", type: "number" },
+			{ token: ",", type: "comma" },
+			{ token: "456", type: "number" },
+			{ token: ")", type: "parenthese" }
+		]);
 	}
 });
 testing.addUnit("Expression.parse()", {
@@ -835,6 +858,10 @@ testing.addUnit("Expression.parse()", {
 	"can parse an expression with a multi-letter, multi-number variable name": () => {
 		const term = Expression.parse("foo123 / 17");
 		expect(term).toEqual(new Expression("/", "foo123", 17));
+	},
+	"can parse an expression with a logarithm": () => {
+		const term = Expression.parse("log(2, x)");
+		expect(term).toEqual(new Expression("log", 2, "x"));
 	},
 	"can parse a multi-operator expression without parentheses": () => {
 		const term = Expression.parse("y + 7 - 3");

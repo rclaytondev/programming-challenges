@@ -192,4 +192,3 @@ testing.addUnit("Math.modularExponentiate()", {
 		expect(result).toEqual(561);
 	}
 });
-testing.testUnit("Math.modulateIntoRange()");
