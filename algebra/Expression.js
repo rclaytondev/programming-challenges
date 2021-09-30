@@ -683,6 +683,15 @@ class Expression {
 					)
 				)
 			)
+		},
+		{
+			name: "logarithm-rule",
+			canApply: (expr) => (expr.operation === "log" && typeof expr.term1 === "number"),
+			apply: ({ term1, term2 }, variable) => new Expression(
+				"/",
+				Expression.differentiate(term2, variable),
+				new Expression("*", Math.log(term1), term2)
+			)
 		}
 	];
 	static differentiate(expr, variable) {
@@ -1029,6 +1038,11 @@ testing.addUnit("Expression.differentiate()", [
 		const expr = Expression.parse("x ^ x");
 		const result = expr.differentiate("x").simplify();
 		expect(`${result}`).toEqual(`(x ^ x) + ((log(2.718281828459045, x)) * (x ^ x))`);
+	},
+	() => {
+		const expr = Expression.parse("log(2, x)");
+		const result = expr.differentiate("x").simplify();
+		expect(`${result}`).toEqual("1.4426950408889634 / x")
 	}
 ]);
 testing.addUnit("Expression.simplify() - combine-like-terms", {
