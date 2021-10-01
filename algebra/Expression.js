@@ -634,6 +634,19 @@ class Expression {
 			)
 		},
 		{
+			name: "quotient-rule",
+			canApply: (expr) => expr.operation === "/",
+			apply: ({ term1, term2 }, variable) => new Expression(
+				"/",
+				new Expression(
+					"-",
+					new Expression("*", term2, Expression.differentiate(term1)),
+					new Expression("*", term1, Expression.differentiate(term2)),
+				),
+				new Expression("^", term2, 2)
+			)
+		},
+		{
 			name: "product-rule",
 			canApply: (expr) => (expr.operation === "*"),
 			apply: ({ term1, term2 }, variable) => new Expression(
