@@ -140,13 +140,44 @@ class Expression {
 			return outerExpression.substitute(`NESTED_EXPRESSION_${depth}`, subExpression);
 		}
 	}
-	toString() {
-		if(this.operation === "log") {
-			return `log(${this.term1}, ${this.term2})`;
+	toString(prettify = false) {
+		if(prettify && ["+", "-", "*", "/"].includes(this.operation)) {
+			if(this.operation === "+" || this.operation === "-") {
+				const terms = this.terms(true);
+				const toString = (t) => t instanceof Expression ? t.toString(true) : `${t}`;
+				let string = toString(terms[0].term);
+				for(const term of terms.slice(1)) {
+					if(term.negated) { string += ` - ${toString(term.term)}`; }
+					else { string += ` + ${toString(term.term)}`; }
+				}
+				return string;
+			}
+			else if(this.operation === "*" || this.operation === "/") {
+				const toString = (t) => {
+					if(t instanceof Expression) {
+						return (["+", "-"].includes(t.operation)) ? `(${t.toString(true)})` : t.toString(true)
+					}
+					else { return `${t}`; }
+				};
+				const terms = this.multiplicativeTerms(true);
+				let string = toString(terms[0].term);
+				for(const term of terms.slice(1)) {
+					const operator = term.divided ? "/" : "*";
+					string += ` ${operator} ${toString(term.term)}`;
+				}
+				return string;
+			}
 		}
-		const operand1 = (typeof this.term1 === "number" || typeof this.term1 === "string") ? this.term1 : `(${this.term1})`;
-		const operand2 = (typeof this.term2 === "number" || typeof this.term2 === "string") ? this.term2 : `(${this.term2})`;
-		return `${operand1} ${this.operation} ${operand2}`;
+		else {
+			if(this.operation === "log") {
+				const operand1 = (this.term1 instanceof Expression) ? this.term1.prettify(true) : this.term1;
+				const operand2 = (this.term2 instanceof Expression) ? this.term2.prettify(true) : this.term2;
+				return `log(${operand1}, ${operand2})`;
+			}
+			const operand1 = (typeof this.term1 === "number" || typeof this.term1 === "string") ? this.term1 : `(${this.term1.toString(prettify)})`;
+			const operand2 = (typeof this.term2 === "number" || typeof this.term2 === "string") ? this.term2 : `(${this.term2.toString(prettify)})`;
+			return `${operand1} ${this.operation} ${operand2}`;
+		}
 	}
 
 	static sum(...terms) {
@@ -738,6 +769,38 @@ testing.addUnit("Expression.toString()", {
 	"returns the string representation of log(3, x)": () => {
 		const term = new Expression("log", 3, "x");
 		expect(term.toString()).toEqual("log(3, x)");
+	},
+	"returns a pretty string representation of x + y + z": () => {
+		const expr = new Expression("+", "x", new Expression("+", "y", "z"));
+		expect(expr.toString(true)).toEqual("x + y + z");
+	},
+	"returns a pretty string representation of 1 + 2 + 3": () => {
+		const expr = new Expression("+", 1, new Expression("+", 2, 3));
+		expect(expr.toString(true)).toEqual("1 + 2 + 3");
+	},
+	"returns a pretty string representation of x * y * z": () => {
+		const expr = new Expression("*", "x", new Expression("*", "y", "z"));
+		expect(expr.toString(true)).toEqual("x * y * z");
+	},
+	"returns a pretty string representation of x * (y + z)": () => {
+		const expr = new Expression("*", "x", new Expression("+", "y", "z"));
+		expect(expr.toString(true)).toEqual("x * (y + z)");
+	},
+	"returns a pretty string representation of (x + y) * z": () => {
+		const expr = new Expression("*", new Expression("+", "x", "y"), "z");
+		expect(expr.toString(true)).toEqual("(x + y) * z");
+	},
+	"returns a pretty string representation of 5 * x ^ 2": () => {
+		const expr = new Expression("*", 5, new Expression("^", "x", 2));
+		expect(expr.toString(true)).toEqual("5 * x ^ 2");
+	},
+	"returns a pretty string representation of (a + b) ^ (c + d)": () => {
+		const expr = new Expression("^", new Expression("+", "a", "b"), new Expression("+", "c", "d"));
+		expect(expr.toString(true)).toEqual("(a + b) ^ (c + d)");
+	},
+	"returns a pretty string representation of (a + b + c) ^ 2": () => {
+		const expr = new Expression("^", new Expression("+", "a", new Expression("+", "b", "c")), 2);
+		expect(expr.toString(true)).toEqual("(a + b + c) ^ 2");
 	}
 });
 testing.addUnit("Expression.tokenize()", {
