@@ -67,14 +67,14 @@ Math.modularProduct = function(modulo, numbers) {
 	const bigintInput = (typeof modulo === "bigint" || numbers.some(v => typeof v === "bigint"));
 	numbers = numbers.map(n => BigInt(n));
 	if(modulo != Infinity) { modulo = BigInt(modulo); }
-	let result = bigintInput ? 1n : 1;
+	let result = 1n;
 	for(const number of numbers) {
 		result *= number;
 		if(modulo != Infinity) {
 			result %= modulo;
 		}
 	}
-	if(bigintInput || number > Number.MAX_SAFE_INTEGER) {
+	if(bigintInput || result > Number.MAX_SAFE_INTEGER) {
 		return BigInt(result);
 	}
 	else { return Number(result); }
@@ -97,10 +97,11 @@ Math.modularExponentiate = supportBigInts(function(modulo, base, exponent) {
 		return result;
 	}
 	else {
-		return (
+		const result = (
 			Math.modularExponentiate(modulo, base, largestPowerOfTwo)
 			* Math.modularExponentiate(modulo, base, remainder)
-		) % modulo;
+		);
+		return modulo === Infinity ? result : result % modulo;
 	}
 });
 testing.addUnit("supportBigInts()", {
