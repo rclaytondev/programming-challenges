@@ -55,13 +55,11 @@ Math.combination = supportBigInts((function(n, r, modulo = Infinity) {
 	/*
 	returns the value of nCr, modulo `modulo`, if a modulo is provided.
 	*/
-	let result = 1n;
-	for(let i = 1n; i <= r; i ++) {
-		result *= (n - r + i);
-		result /= i;
-		if(modulo != Infinity) { result %= modulo; }
-	}
-	return result;
+	const f1 = Factorization.factorial(Number(n));
+	const f2 = Factorization.factorial(Number(r));
+	const f3 = Factorization.factorial(Number(n - r));
+	const result = f1.divide(f2.multiply(f3));
+	return result.toNumber(modulo);
 }).memoize(true));
 Math.modularProduct = function(modulo, numbers) {
 	const bigintInput = (typeof modulo === "bigint" || numbers.some(v => typeof v === "bigint"));

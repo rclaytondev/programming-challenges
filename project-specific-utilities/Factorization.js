@@ -58,7 +58,7 @@ class Factorization {
 
 	static factorial(number) {
 		let exponents = [];
-		for(const prime of Sequence.PRIMES.termsBelow(number)) {
+		for(const prime of Sequence.PRIMES.termsBelow(number, true)) {
 			exponents.push(0);
 			for(let i = 1; prime ** i <= number; i ++) {
 				exponents[exponents.length - 1] += Math.floor(number / (prime ** i));
