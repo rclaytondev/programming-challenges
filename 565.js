@@ -1,0 +1,75 @@
+const productPartitions = (number, lowerBound = 0) => {
+	if(number === 1) { return [[]]; }
+	if(Math.isPrime(number) && number >= lowerBound) { return [[number]]; }
+
+	let results = [];
+	for(const divisor of Math.divisors(number)) {
+		if(divisor !== 1 && divisor >= lowerBound) {
+			results = results.concat(productPartitions(number / divisor, divisor).map(array => [divisor, ...array]));
+		}
+	}
+	return results;
+};
+const sumOfPrimePowers = (number) => {
+	/* returns the list of all primes p such that `number` can be expressed as a sum of consecutive powers of p, starting with 1. */
+	const possiblePrimes = Math.factorize(number - 1).deduplicate();
+	return possiblePrimes.filter(p => {
+		return Math.logBase(p, number * (p - 1) + 1) % 1 === 0;
+	});
+};
+
+const calculateSum = (upperBound, divisorOfSum) => {
+	const answers = new Set();
+	for(let multiplier = 1n; BigInt(divisorOfSum) * multiplier <= BigInt(upperBound) ** 2n; multiplier ++) {
+		const multiple = BigInt(divisorOfSum) * multiplier;
+		const partitions = productPartitions(Number(multiple));
+		for(const partition of partitions) {
+			const ways = new Map();
+			for(const number of partition) {
+				ways.set(number, sumOfPrimePowers(number));
+			}
+			if([...ways.values()].some(v => v.length === 0)) { continue; }
+			for(const factorization of Tree.iterate(new Map(), function*(factorization) {
+				if(factorization.size === partition.length) { return; }
+				const nextWays = ways.get(partition[factorization.size]);
+				for(const prime of nextWays) {
+					if(!factorization.get(prime)) {
+						const nextFactorization = new Map(factorization);
+						const exponent = Math.logBase(prime, partition[factorization.size] * (prime - 1) + 1) - 1;
+						nextFactorization.set(prime, exponent);
+						yield nextFactorization;
+					}
+				}
+				return [];
+			}, true)) {
+				if(factorization.size === partition.length) {
+					const number = [...factorization.entries()].map(([p, e]) => p ** e).product();
+					if(number <= upperBound) {
+						answers.add(number);
+					}
+				}
+			}
+		}
+	}
+	return [...answers].sum();
+};
+testing.addUnit(productPartitions, [
+	[10, [[2, 5], [10]]],
+	[12, [[2, 2, 3], [2, 6], [3, 4], [12]]],
+	[36, [[2, 2, 3, 3], [2, 2, 9], [2, 3, 6], [2, 18], [3, 3, 4], [3, 12], [4, 9], [6, 6], [36]]]
+]);
+testing.addUnit(sumOfPrimePowers, [
+	[5, []],
+	[4, [3]],
+	[31, [2, 5]]
+]);
+testing.addUnit(calculateSum, [
+	[20, 7, 49],
+	// [1e6, 2017, 150850429n],
+	// [1e9, 2017, 249652238344557n],
+
+
+	[100, 7, 1419],
+	// [1000, 17, 18342],
+	// [10000, 17, 2956152]
+]);
