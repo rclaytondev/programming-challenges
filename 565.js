@@ -20,7 +20,8 @@ const sumOfPrimePowers = (number) => {
 
 const calculateSum = (upperBound, divisorOfSum) => {
 	const answers = new Set();
-	for(let multiplier = 1n; BigInt(divisorOfSum) * multiplier <= BigInt(upperBound) ** 2n; multiplier ++) {
+	const maxDivisorSum = (upperBound + Math.sqrt(upperBound)) / 2 + upperBound * Math.log(Math.sqrt(upperBound));
+	for(let multiplier = 1n; BigInt(divisorOfSum) * multiplier <= maxDivisorSum; multiplier ++) {
 		const multiple = BigInt(divisorOfSum) * multiplier;
 		const partitions = productPartitions(Number(multiple));
 		for(const partition of partitions) {
