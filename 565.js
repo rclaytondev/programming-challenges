@@ -23,31 +23,12 @@ const calculateSum = (upperBound, divisorOfSum) => {
 	const maxDivisorSum = (upperBound + Math.sqrt(upperBound)) / 2 + upperBound * Math.log(Math.sqrt(upperBound));
 	for(let multiplier = 1n; BigInt(divisorOfSum) * multiplier <= maxDivisorSum; multiplier ++) {
 		const multiple = BigInt(divisorOfSum) * multiplier;
-		const partitions = productPartitions(Number(multiple));
-		for(const partition of partitions) {
-			const ways = new Map();
-			for(const number of partition) {
-				ways.set(number, sumOfPrimePowers(number));
-			}
-			if([...ways.values()].some(v => v.length === 0)) { continue; }
-			for(const factorization of Tree.iterate(new Map(), function*(factorization) {
-				if(factorization.size === partition.length) { return; }
-				const nextWays = ways.get(partition[factorization.size]);
-				for(const prime of nextWays) {
-					if(!factorization.get(prime)) {
-						const nextFactorization = new Map(factorization);
-						const exponent = Math.logBase(prime, partition[factorization.size] * (prime - 1) + 1) - 1;
-						nextFactorization.set(prime, exponent);
-						yield nextFactorization;
-					}
-				}
-				return [];
-			}, true)) {
-				if(factorization.size === partition.length) {
-					const number = [...factorization.entries()].map(([p, e]) => p ** e).product();
-					if(number <= upperBound) {
-						answers.add(number);
-					}
+		const ways = sumOfPrimePowers(Number(multiple));
+		for(const prime of ways) {
+			const exponent = Math.logBase(prime, Number(multiple) * (prime - 1) + 1) - 1;
+			for(let multiplier = 0; multiplier * (prime ** exponent) <= upperBound; multiplier ++) {
+				if(multiplier % prime !== 0) {
+					answers.add(multiplier * (prime ** exponent));
 				}
 			}
 		}
@@ -66,7 +47,7 @@ testing.addUnit(sumOfPrimePowers, [
 ]);
 testing.addUnit(calculateSum, [
 	[20, 7, 49],
-	// [1e6, 2017, 150850429n],
+	[1e6, 2017, 150850429n],
 	// [1e9, 2017, 249652238344557n],
 
 
