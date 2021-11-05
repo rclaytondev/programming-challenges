@@ -10,12 +10,28 @@ const productPartitions = (number, lowerBound = 0) => {
 	}
 	return results;
 };
+const geometricSum = (ratio, numTerms) => {
+	/* returns the value of 1 + ratio + ratio^2 + ratio^3 + ... + ratio^(numTerms - 1). */
+	if(ratio === 1) { return numTerms; }
+	if(ratio % 1 === 0 && numTerms % 1 === 0) {
+		return (BigInt(ratio) ** BigInt(numTerms) - 1n) / (BigInt(ratio) - 1n);
+	}
+	return ((ratio ** numTerms) - 1) / (ratio - 1);
+};
 const sumOfPrimePowers = (number) => {
 	/* returns the list of all primes p such that `number` can be expressed as a sum of consecutive powers of p, starting with 1. */
-	const possiblePrimes = Math.factorize(number - 1).deduplicate();
-	return possiblePrimes.filter(p => {
-		return Math.logBase(p, number * (p - 1) + 1) % 1 === 0;
-	});
+	let results = [];
+	for(let numTerms = 2; numTerms <= Math.log2(number + 1); numTerms ++) {
+		const possiblePrime = utils.binarySearch(
+			1,
+			number,
+			(r) => BigInt(geometricSum(r, numTerms)) - BigInt(number)
+		);
+		if(geometricSum(possiblePrime, numTerms) == number && Math.isPrime(possiblePrime)) {
+			results.unshift(possiblePrime);
+		}
+	}
+	return results;
 };
 
 const calculateSum = (upperBound, divisorOfSum) => {
@@ -43,7 +59,8 @@ testing.addUnit(productPartitions, [
 testing.addUnit(sumOfPrimePowers, [
 	[5, []],
 	[4, [3]],
-	[31, [2, 5]]
+	[31, [2, 5]],
+	[94907917, []]
 ]);
 testing.addUnit(calculateSum, [
 	[20, 7, 49],
