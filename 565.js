@@ -35,7 +35,7 @@ const sumOfPrimePowers = (number) => {
 };
 
 const calculateSum = (upperBound, divisorOfSum) => {
-	const answers = new Set();
+	const answers = [];
 	const maxDivisorSum = (upperBound + Math.sqrt(upperBound)) / 2 + upperBound * Math.log(Math.sqrt(upperBound));
 	for(let multiplier = 1n; BigInt(divisorOfSum) * multiplier <= maxDivisorSum; multiplier ++) {
 		const multiple = BigInt(divisorOfSum) * multiplier;
@@ -43,13 +43,13 @@ const calculateSum = (upperBound, divisorOfSum) => {
 		for(const prime of ways) {
 			const exponent = Math.logBase(prime, Number(multiple) * (prime - 1) + 1) - 1;
 			for(let multiplier = 0; multiplier * (prime ** exponent) <= upperBound; multiplier ++) {
-				if(multiplier % prime !== 0) {
-					answers.add(multiplier * (prime ** exponent));
+				if(multiplier % prime !== 0 && !answers.includes(multiplier * (prime ** exponent))) {
+					answers.push(multiplier * (prime ** exponent));
 				}
 			}
 		}
 	}
-	return [...answers].sum();
+	return answers.sum();
 };
 testing.addUnit(productPartitions, [
 	[10, [[2, 5], [10]]],
