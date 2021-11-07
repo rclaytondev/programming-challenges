@@ -54,6 +54,13 @@ class Factorization {
 		}
 	}
 
+	numerator() {
+		return new Factorization(this.exponents.map(v => Math.max(v, 0)), this.sign);
+	}
+	denominator() {
+		return new Factorization(this.exponents.map(v => -Math.min(v, 0)), this.sign);
+	}
+
 	toNumber(modulo = Infinity) {
 		return Math.modularProduct(modulo, this.exponents.map((e, i) => {
 			return Math.modularExponentiate(modulo, Sequence.PRIMES.nthTerm(i), e);
@@ -140,5 +147,19 @@ testing.addUnit("Factorization.factorial()", {
 	"can return a factorized representation of the factorial of a number": () => {
 		const result = Factorization.factorial(4);
 		expect(result.exponents).toEqual([3, 1]);
+	}
+});
+testing.addUnit("Factorization.numerator()", {
+	"correctly returns the numerator": () => {
+		const factorization = new Factorization([4, 2, -5, 3, -7, -9]);
+		const numerator = factorization.numerator();
+		expect(numerator).toEqual(new Factorization([4, 2, 0, 3, 0, 0]));
+	}
+});
+testing.addUnit("Factorization.denominator()", {
+	"correctly returns the denominator": () => {
+		const factorization = new Factorization([4, 2, -5, 3, -7, -9]);
+		const denominator = factorization.denominator();
+		expect(denominator).toEqual(new Factorization([0, 0, 5, 0, 7, 9]));
 	}
 });
