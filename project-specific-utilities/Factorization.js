@@ -93,6 +93,10 @@ class Factorization {
 		}));
 	}
 
+	isInteger() {
+		return this.exponents.every(v => v >= 0);
+	}
+
 	static factorial(number) {
 		let exponents = [];
 		for(const prime of Sequence.PRIMES.termsBelow(number, true)) {
@@ -211,4 +215,14 @@ testing.addUnit("Factorization.add()", {
 		expect(sum.exponents).toEqual([2, 2, -1]); // 36/5
 		expect(sum.sign).toEqual(1);
 	}
+});
+testing.addUnit("Factorization.isInteger()", {
+	"returns true for integers": () => {
+		const factorization = new Factorization([3, 0, 5, 1]);
+		expect(factorization.isInteger()).toEqual(true);
+	},
+	"returns false for non-integers": () => {
+		const factorization = new Factorization([3, 0, -5, 1]);
+		expect(factorization.isInteger()).toEqual(false);
+	},
 });
