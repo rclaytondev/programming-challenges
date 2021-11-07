@@ -36,7 +36,7 @@ class Factorization {
 			for(let i = 0; i < Math.max(this.exponents.length, factorization.exponents.length); i ++) {
 				newExponents[i] = (this.exponents[i] ?? 0) - (factorization.exponents[i] ?? 0);
 			}
-			return new Factorization(newExponents);
+			return new Factorization(newExponents, this.sign * factorization.sign);
 		}
 	}
 	multiply() {
@@ -50,7 +50,7 @@ class Factorization {
 			for(let i = 0; i < Math.max(this.exponents.length, factorization.exponents.length); i ++) {
 				newExponents[i] = (this.exponents[i] ?? 0) + (factorization.exponents[i] ?? 0);
 			}
-			return new Factorization(newExponents);
+			return new Factorization(newExponents, this.sign * factorization.sign);
 		}
 	}
 	add() {
@@ -146,6 +146,12 @@ testing.addUnit("Factorization.divide()", {
 		const factorization = new Factorization([3, 1, 0, 2]);
 		const quotient = factorization.divide(4);
 		expect(quotient.exponents).toEqual([1, 1, 0, 2]);
+	},
+	"returns a negative number when the signs are opposite": () => {
+		const f1 = new Factorization([1, 2, 3], 1);
+		const f2 = new Factorization([4, 5, 6], -1);
+		const quotient = f1.divide(f2);
+		expect(quotient.sign).toEqual(-1);
 	}
 });
 testing.addUnit("Factorization.multiply()", {
@@ -159,6 +165,12 @@ testing.addUnit("Factorization.multiply()", {
 		const f1 = new Factorization([1, 2, 1, 0, 3]);
 		const product = f1.multiply(864);
 		expect(product.exponents).toEqual([6, 5, 1, 0, 3]);
+	},
+	"returns a negative number when the signs are opposite": () => {
+		const f1 = new Factorization([1, 2, 3], 1);
+		const f2 = new Factorization([4, 5, 6], -1);
+		const product = f1.multiply(f2);
+		expect(product.sign).toEqual(-1);
 	}
 });
 testing.addUnit("Factorization.toNumber()", {
