@@ -53,6 +53,24 @@ class Factorization {
 			return new Factorization(newExponents);
 		}
 	}
+	add() {
+		if(typeof arguments[0] === "number") {
+			const [number] = arguments;
+			return this.add(new Factorization(number));
+		}
+		else {
+			const [factorization] = arguments;
+			const num1 = this.numerator();
+			const denom1 = this.denominator();
+			const num2 = factorization.numerator();
+			const denom2 = factorization.denominator();
+			const newDenominator = denom1.multiply(denom2);
+			const newNumerator = new Factorization(
+				(num1.multiply(denom2).toNumber() + num2.multiply(denom1).toNumber())
+			);
+			return newNumerator.divide(newDenominator);
+		}
+	}
 
 	numerator() {
 		return new Factorization(this.exponents.map(v => Math.max(v, 0)), this.sign);
@@ -177,5 +195,20 @@ testing.addUnit("Factorization.lcm()", {
 		const f2 = new Factorization([3, 2, 1, 2, 3]);
 		const lcm = f1.lcm(f2);
 		expect(lcm).toEqual(new Factorization([3, 2, 3, 2, 3]));
+	}
+});
+testing.addUnit("Factorization.add()", {
+	"can add two Factorizations of integers": () => {
+		const f1 = new Factorization(12);
+		const f2 = new Factorization(17);
+		const sum = f1.add(f2);
+		expect(sum.toNumber()).toEqual(29);
+	},
+	"can add two Factorizations of rational numbers": () => {
+		const f1 = new Factorization([3, -1, -1]); // 8/15
+		const f2 = new Factorization([2, -1, 1]); // 20/3
+		const sum = f1.add(f2);
+		expect(sum.exponents).toEqual([2, 2, -1]); // 36/5
+		expect(sum.sign).toEqual(1);
 	}
 });
