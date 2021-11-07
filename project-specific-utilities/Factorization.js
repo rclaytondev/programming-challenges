@@ -76,7 +76,7 @@ class Factorization {
 		return new Factorization(this.exponents.map(v => Math.max(v, 0)), this.sign);
 	}
 	denominator() {
-		return new Factorization(this.exponents.map(v => -Math.min(v, 0)), this.sign);
+		return new Factorization(this.exponents.map(v => -Math.min(v, 0)));
 	}
 
 	lcm(factorization) {
@@ -189,6 +189,11 @@ testing.addUnit("Factorization.numerator()", {
 		const factorization = new Factorization([4, 2, -5, 3, -7, -9]);
 		const numerator = factorization.numerator();
 		expect(numerator).toEqual(new Factorization([4, 2, 0, 3, 0, 0]));
+	},
+	"returns the numerator with the same sign as the Factorization": () => {
+		const factorization = new Factorization([1, -2, 3], -1);
+		const numerator = factorization.numerator();
+		expect(numerator).toEqual(new Factorization([1, 0, 3], -1));
 	}
 });
 testing.addUnit("Factorization.denominator()", {
@@ -196,6 +201,11 @@ testing.addUnit("Factorization.denominator()", {
 		const factorization = new Factorization([4, 2, -5, 3, -7, -9]);
 		const denominator = factorization.denominator();
 		expect(denominator).toEqual(new Factorization([0, 0, 5, 0, 7, 9]));
+	},
+	"returns the denominator with a positive sign": () => {
+		const factorization = new Factorization([1, -2, 3], -1);
+		const denominator = factorization.denominator();
+		expect(denominator).toEqual(new Factorization([0, 2, 0], 1));
 	}
 });
 testing.addUnit("Factorization.lcm()", {
