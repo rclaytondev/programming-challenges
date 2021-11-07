@@ -116,6 +116,54 @@ class Factorization {
 		}
 		return new Factorization(exponents);
 	}
+
+	toString(format = "default") {
+		if(this.sign === 0) { return "0"; }
+		if(this.exponents.every(v => v == 0)) { return "1"; }
+
+		if(format === "default") {
+			const result = this.exponents.map((exponent, i) => {
+				const prime = Sequence.PRIMES.nthTerm(i);
+				if(exponent >= 0) {
+					return `${prime}^${exponent}`;
+				}
+				else {
+					return `${prime}^(${exponent})`;
+				}
+			}).join(" * ");
+			return (this.sign > 0) ? result : `-${result}`;
+		}
+		else if(format === "pretty") {
+			const toString = (factorization) => (
+				factorization.exponents
+				.map((exponent, i) => {
+					const prime = Sequence.PRIMES.nthTerm(i);
+					if(exponent === 0) { return ""; }
+					if(exponent === 1) { return prime; }
+					return `${prime}^${exponent}`;
+				})
+				.filter(v => v !== "")
+				.join(" * ")
+			);
+
+			const numerator = this.numerator();
+			const denominator = this.denominator();
+			let result;
+			if(denominator.exponents.every(v => v === 0)) {
+				result = toString(numerator);
+			}
+			else if(numerator.exponents.every(v => v === 0)) {
+				result = `1 / (${toString(denominator)})`;
+			}
+			else {
+				result = `(${toString(numerator)}) / (${toString(denominator)})`;
+			}
+			return (this.sign > 0) ? `${result}` : `-${result}`;
+		}
+		else if(format === "rational") {
+			return `${this.numerator().toNumber()}/${this.denominator().toNumber()}`;
+		}
+	}
 }
 
 testing.addUnit("Factorization constructor", {
@@ -276,4 +324,48 @@ testing.addUnit("Factorization.isInteger()", {
 		const factorization = new Factorization([3, 0, -5, 1]);
 		expect(factorization.isInteger()).toEqual(false);
 	},
+});
+testing.addUnit("Factorization.toString()", {
+	"can convert it to a string in the default format": () => {
+		const result = new Factorization([1, 2, 0, -3]);
+		const string = result.toString();
+		expect(string).toEqual(`2^1 * 3^2 * 5^0 * 7^(-3)`);
+	},
+	"can convert negative numbers to a string in the default format": () => {
+		const result = new Factorization([1, 2, 0, -3], -1);
+		const string = result.toString();
+		expect(string).toEqual(`-2^1 * 3^2 * 5^0 * 7^(-3)`);
+	},
+
+	"can convert it to a string in the pretty format": () => {
+		const result = new Factorization([1, 2, 0, -3]);
+		const string = result.toString("pretty");
+		expect(string).toEqual(`(2 * 3^2) / (7^3)`);
+	},
+	"can convert negative numbers to a string in the pretty format": () => {
+		const result = new Factorization([1, 2, 0, -3], -1);
+		const string = result.toString("pretty");
+		expect(string).toEqual(`-(2 * 3^2) / (7^3)`);
+	},
+	"can convert an integer to a string in the pretty format": () => {
+		const result = new Factorization([1, 2]);
+		const string = result.toString("pretty");
+		expect(string).toEqual(`2 * 3^2`);
+	},
+	"can convert a unit fraction to a string in the pretty format": () => {
+		const result = new Factorization([-1, -2]);
+		const string = result.toString("pretty");
+		expect(string).toEqual(`1 / (2 * 3^2)`);
+	},
+
+	"can convert it to a string in the rational number format": () => {
+		const result = new Factorization([1, 2, 0, -3]);
+		const string = result.toString("rational");
+		expect(string).toEqual(`18/343`);
+	},
+	"can convert negative numbers to a string in the rational number format": () => {
+		const result = new Factorization([1, 2, 0, -3], -1);
+		const string = result.toString("rational");
+		expect(string).toEqual(`-18/343`);
+	}
 });
