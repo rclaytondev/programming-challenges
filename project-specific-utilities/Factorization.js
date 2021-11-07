@@ -88,9 +88,9 @@ class Factorization {
 	}
 
 	toNumber(modulo = Infinity) {
-		return Math.modularProduct(modulo, this.exponents.map((e, i) => {
+		return Math.modularProduct(modulo, [this.sign, ...this.exponents.map((e, i) => {
 			return Math.modularExponentiate(modulo, Sequence.PRIMES.nthTerm(i), e);
-		}));
+		})]);
 	}
 
 	isInteger() {
@@ -171,6 +171,11 @@ testing.addUnit("Factorization.toNumber()", {
 		const factorization = new Factorization([3, 0, 0, 5]);
 		const number = factorization.toNumber(1000);
 		expect(number).toEqual(456);
+	},
+	"works for negative numbers": () => {
+		const factorization = new Factorization([4, 1, 3], -1);
+		const number = factorization.toNumber();
+		expect(number).toEqual(-6000);
 	}
 });
 testing.addUnit("Factorization.factorial()", {
