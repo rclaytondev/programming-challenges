@@ -71,6 +71,15 @@ class Factorization {
 			return newNumerator.divide(newDenominator);
 		}
 	}
+	subtract() {
+		if(typeof arguments[0] === "number") {
+			return this.add(-arguments[0]);
+		}
+		else {
+			const [factorization] = arguments;
+			return this.add(new Factorization(factorization.exponents, -factorization.sign));
+		}
+	}
 
 	numerator() {
 		return new Factorization(this.exponents.map(v => Math.max(v, 0)), this.sign);
@@ -241,6 +250,21 @@ testing.addUnit("Factorization.add()", {
 		const sum = f1.add(f2);
 		expect(sum.exponents).toEqual([2, 2, -1]); // 36/5
 		expect(sum.sign).toEqual(1);
+	}
+});
+testing.addUnit("Factorization.subtract()", {
+	"can subtract two Factorizations of integers": () => {
+		const f1 = new Factorization(12);
+		const f2 = new Factorization(17);
+		const difference = f1.subtract(f2);
+		expect(difference.toNumber()).toEqual(-5);
+	},
+	"can subtract two Factorizations of rational numbers": () => {
+		const f1 = new Factorization([3, -1, -1]); // 8/15
+		const f2 = new Factorization([2, -1, 1]); // 20/3
+		const difference = f1.subtract(f2);
+		expect(difference.exponents).toEqual([2, -1, -1, 0, 0, 0, 0, 0, 1]); // -92/15
+		expect(difference.sign).toEqual(-1);
 	}
 });
 testing.addUnit("Factorization.isInteger()", {
