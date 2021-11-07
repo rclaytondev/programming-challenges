@@ -61,6 +61,14 @@ class Factorization {
 		return new Factorization(this.exponents.map(v => -Math.min(v, 0)), this.sign);
 	}
 
+	lcm(factorization) {
+		return new Factorization(
+			new Array(Math.max(this.exponents.length, factorization.exponents.length))
+			.fill()
+			.map((v, i) => Math.max(this.exponents[i] ?? 0, factorization.exponents[i] ?? 0))
+		);
+	}
+
 	toNumber(modulo = Infinity) {
 		return Math.modularProduct(modulo, this.exponents.map((e, i) => {
 			return Math.modularExponentiate(modulo, Sequence.PRIMES.nthTerm(i), e);
@@ -161,5 +169,13 @@ testing.addUnit("Factorization.denominator()", {
 		const factorization = new Factorization([4, 2, -5, 3, -7, -9]);
 		const denominator = factorization.denominator();
 		expect(denominator).toEqual(new Factorization([0, 0, 5, 0, 7, 9]));
+	}
+});
+testing.addUnit("Factorization.lcm()", {
+	"correctly calculates the LCM of the two Factorizations": () => {
+		const f1 = new Factorization([1, 2, 3, 2, 1]);
+		const f2 = new Factorization([3, 2, 1, 2, 3]);
+		const lcm = f1.lcm(f2);
+		expect(lcm).toEqual(new Factorization([3, 2, 3, 2, 3]));
 	}
 });
