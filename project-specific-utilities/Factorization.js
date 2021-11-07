@@ -3,21 +3,25 @@ class Factorization {
 	constructor() {
 		if(typeof arguments[0] === "number") {
 			const [number] = arguments;
-			const factorized = Math.factorize(number, "prime-exponents");
+			const factorized = Math.factorize(Math.abs(number), "prime-exponents");
 			this.exponents = [];
-			for(let [prime, exponent] of Object.entries(factorized)) {
-				prime = Number.parseInt(prime);
-				this.exponents[Sequence.PRIMES.indexOf(prime)] = exponent;
-			}
-			for(const [i, exponent] of this.exponents.entries()) {
-				if(typeof exponent !== "number") {
-					this.exponents[i] = 0;
+			this.sign = Math.sign(number);
+			if(number !== 0) {
+				for(let [prime, exponent] of Object.entries(factorized)) {
+					prime = Number.parseInt(prime);
+					this.exponents[Sequence.PRIMES.indexOf(prime)] = exponent;
+				}
+				for(const [i, exponent] of this.exponents.entries()) {
+					if(typeof exponent !== "number") {
+						this.exponents[i] = 0;
+					}
 				}
 			}
 		}
 		else if(Array.isArray(arguments[0])) {
-			const [exponents] = arguments;
+			const [exponents, sign] = arguments;
 			this.exponents = exponents;
+			this.sign = sign ?? 1;
 		}
 	}
 
@@ -72,10 +76,26 @@ testing.addUnit("Factorization constructor", {
 	"can create a Factorization from a Number": () => {
 		const result = new Factorization(340);
 		expect(result.exponents).toEqual([2, 0, 1, 0, 0, 0, 1]);
+		expect(result.sign).toEqual(1);
+	},
+	"can create a Factorization from a negative Number": () => {
+		const result = new Factorization(-340);
+		expect(result.exponents).toEqual([2, 0, 1, 0, 0, 0, 1]);
+		expect(result.sign).toEqual(-1);
+	},
+	"can create a Factorization from the number 0": () => {
+		const result = new Factorization(0);
+		expect(result.exponents).toEqual([]);
+		expect(result.sign).toEqual(0);
 	},
 	"can create a Factorization from a list of exponents": () => {
 		const result = new Factorization([2, 0, 1, 0, 0, 0, 1]);
 		expect(result.exponents).toEqual([2, 0, 1, 0, 0, 0, 1]);
+	},
+	"can create a Factorization from a list of exponents and a sign": () => {
+		const result = new Factorization([], -1);
+		expect(result.exponents).toEqual([]);
+		expect(result.sign).toEqual(-1);
 	}
 });
 testing.addUnit("Factorization.divide()", {
