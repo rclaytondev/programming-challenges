@@ -18,3 +18,26 @@ const invWinnings = (desiredGold) => {
 		}
 	}
 };
+
+
+for(let i = 0; i < 10; i ++) {
+	console.log(`winnings(${i}) = ${winnings(i, i).toString("pretty")}`);
+}
+
+for(let g = 0; g < 10; g ++) {
+	for(let t = 0; t < 10; t ++) {
+		const result = winnings(g, t);
+		const numerator = result.numerator();
+		const denominator = result.denominator();
+		if(
+			(
+				numerator.exponents.length !== 0 &&
+				numerator.exponents.slice(1).some(v => v !== 0)
+			) ||
+			!denominator.exponents.every(v => v === 1 || v === 0)
+		) {
+			console.log(`found a counterexample: winnings(${g}, ${t}) = ${result.toString("pretty")}`);
+		}
+	}
+}
+console.log(`finished searching for counterexamples`);
