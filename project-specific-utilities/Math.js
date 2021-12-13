@@ -102,6 +102,14 @@ Math.modularExponentiate = supportBigInts(function(modulo, base, exponent) {
 		return modulo === Infinity ? result : result % modulo;
 	}
 });
+Math.defactorize = function(exponents) {
+	if(Array.isArray(exponents)) {
+		return exponents.map((e, i) => Sequence.PRIMES.nthTerm(i) ** e).product();
+	}
+	else if(typeof exponents === "object") {
+		return Object.entries(exponents).map(([prime, exponent]) => Number.parseInt(prime) ** exponent).product();
+	}
+};
 testing.addUnit("supportBigInts()", {
 	"returns a function that returns a number when the inputs are all numbers": () => {
 		const add = (a, b) => a + b;
@@ -189,5 +197,15 @@ testing.addUnit("Math.modularExponentiate()", {
 	"returns the correct result for (3^8) % 1000": () => {
 		const result = Math.modularExponentiate(1000, 3, 8);
 		expect(result).toEqual(561);
+	}
+});
+testing.addUnit("Math.defactorize()", {
+	"can defactorize an array of exponents": () => {
+		const result = Math.defactorize([1, 2, 3]);
+		expect(result).toEqual(2250); // 2^1 * 3^2 * 5^3
+	},
+	"can defactorize an object containing prime/exponent pairs as keys": () => {
+		const result = Math.defactorize({ "2": 1, "3": 2, "5": 3 });
+		expect(result).toEqual(2250); // 2^1 * 3^2 * 5^3
 	}
 });

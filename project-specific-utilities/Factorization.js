@@ -3,6 +3,11 @@ class Factorization {
 	constructor() {
 		if(typeof arguments[0] === "number") {
 			const [number] = arguments;
+			if(number == 0) {
+				this.sign = 0;
+				this.exponents = [];
+				return;
+			}
 			const factorized = Math.factorize(Math.abs(number), "prime-exponents");
 			this.exponents = [];
 			this.sign = Math.sign(number);
