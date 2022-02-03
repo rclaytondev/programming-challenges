@@ -209,3 +209,32 @@ testing.addUnit("Math.defactorize()", {
 		expect(result).toEqual(2250); // 2^1 * 3^2 * 5^3
 	}
 });
+
+Math.integersBetween = function(min, max) {
+	[min, max] = [Math.min(min, max), Math.max(min, max)];
+	min = Math.ceil(min);
+	max = Math.floor(max);
+	const result = [];
+	for(let i = min; i <= max; i ++) {
+		result.push(i);
+	}
+	return result;
+};
+testing.addUnit("Math.integersBetween()", {
+	"works when min and max are integers": () => {
+		const result = Math.integersBetween(3, 5);
+		expect(result).toEqual([3, 4, 5]);
+	},
+	"works when min and max are non-integers": () => {
+		const result = Math.integersBetween(7.2, 9.1);
+		expect(result).toEqual([8, 9]);
+	},
+	"works when min and max are in the wrong order": () => {
+		const result = Math.integersBetween(7, 4);
+		expect(result).toEqual([ 4, 5, 6, 7 ]);
+	},
+	"works when min and max are non-integers, negative, and in the wrong order": () => {
+		const result = Math.integersBetween(-1.2, -2.7);
+		expect(result).toEqual([-2]);
+	}
+});
