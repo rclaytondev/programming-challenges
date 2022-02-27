@@ -36,23 +36,11 @@ const leastWith2ToTheNDivisors = (log2OfDivisors, modulo = Infinity) => {
 	});
 	return result;
 };
-testing.addUnit("leastWith2ToTheNDivisors()", {
-	"returns the correct result for 2": () => {
-		expect(leastWith2ToTheNDivisors(2)).toEqual(6n);
-	},
-	"returns the correct result for 3": () => {
-		expect(leastWith2ToTheNDivisors(3)).toEqual(24n);
-	},
-	"returns the correct result for 4": () => {
-		expect(leastWith2ToTheNDivisors(4)).toEqual(120n);
-	},
-	"returns the correct result for 5": () => {
-		expect(leastWith2ToTheNDivisors(5)).toEqual(840n);
-	},
-	"returns the correct result for 6": () => {
-		expect(leastWith2ToTheNDivisors(6)).toEqual(7560n);
-	},
-	"returns the correct result for 7": () => {
-		expect(leastWith2ToTheNDivisors(7)).toEqual(83160n);
-	},
-});
+testing.addUnit(leastWith2ToTheNDivisors, [
+	[2, 6n],
+	[3, 24n],
+	[4, 120n],
+	[5, 840n],
+	[6, 7560n],
+	[7, 83160n]
+]);
