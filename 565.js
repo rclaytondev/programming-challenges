@@ -22,11 +22,13 @@ const sumOfPrimePowers = (number) => {
 	/* returns the list of all primes p such that `number` can be expressed as a sum of consecutive powers of p, starting with 1. */
 	let results = [];
 	for(let numTerms = 2; numTerms <= Math.log2(number + 1); numTerms ++) {
-		const possiblePrime = utils.binarySearch(
-			1,
-			number,
-			(r) => BigInt(geometricSum(r, numTerms)) - BigInt(number)
-		);
+		const possiblePrime = Math.round(utils.newtonsMethod(
+			r => (r ** (numTerms) - 1) / (r - 1) - number,
+			r => ((r - 1) * numTerms * (r ** (numTerms - 1)) - r ** numTerms + 1) / (r - 1) ** 2,
+			number ** (1 / numTerms),
+			10,
+			0.2
+		));
 		if(geometricSum(possiblePrime, numTerms) == number && Math.isPrime(possiblePrime)) {
 			results.unshift(possiblePrime);
 		}

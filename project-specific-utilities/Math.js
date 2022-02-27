@@ -238,3 +238,57 @@ testing.addUnit("Math.integersBetween()", {
 		expect(result).toEqual([-2]);
 	}
 });
+
+utils.newtonsMethod = (func, derivative, initialGuess = 0, numIterations = 10, tolerance = 1e-10) => {
+	let guess = initialGuess;
+	for(let i = 0; i < numIterations; i ++) {
+		const value = func(guess);
+		if(Math.abs(value) < tolerance) {
+			return guess;
+		}
+		const slope = derivative(guess);
+		if(slope === 0) {
+			guess ++;
+		}
+		else {
+			guess = guess - value / slope;
+		}
+	}
+	return null;
+};
+testing.addUnit("newtonsMethod()", {
+	"can find an x-intercept of a function": () => {
+		const line = (x) => -3 * x + 6;
+		const derivative = (x) => -3;
+		const xIntercept = utils.newtonsMethod(line, derivative);
+		expect(xIntercept).toEqual(2);
+	},
+	"stops searching when the x-intercept is found": () => {
+		let iterations = 0;
+		const line = (x) => {
+			iterations ++;
+			return 2 * x + 10;
+		};
+		const derivative = (x) => 2;
+		const xIntercept = utils.newtonsMethod(line, derivative);
+		expect(xIntercept).toEqual(-5);
+		expect(iterations).toEqual(2);
+	},
+	"only runs one iteration when the initial guess is an x-intercept": () => {
+		let iterations = 0;
+		const func = (x) => {
+			iterations ++;
+			return x ** 2 - 3 * x;
+		};
+		const derivative = (x) => 2 * x - 3;
+		const xIntercept = utils.newtonsMethod(func, derivative);
+		expect(xIntercept).toEqual(0);
+		expect(iterations).toEqual(1);
+	},
+	"works when the derivative is zero at some point": () => {
+		const func = (x) => -(x ** 3) + 8;
+		const derivative = (x) => -3 * x ** 2;
+		const xIntercept = utils.newtonsMethod(func, derivative);
+		expect(xIntercept).toEqual(2);
+	}
+});
