@@ -56,17 +56,3 @@ testing.addUnit("leastWith2ToTheNDivisors()", {
 		expect(leastWith2ToTheNDivisors(7)).toEqual(83160n);
 	},
 });
-
-
-// testing.testAll();
-const MODULO = 500500507;
-console.log(`the answer is ${leastWith2ToTheNDivisors(500500, MODULO)}`);
-
-
-const num1 = Math.round(Math.random() * 100);
-const num2 = Math.round(Math.random() * 100);
-const num3 = Math.round(Math.random() * 100);
-const modulo = Math.round(Math.random() * 100);
-let product = 1;
-const actualAnswer = (num1 * num2 * num3) % modulo;
-const myAnswer = ((((num1 % modulo) * num2) % modulo) * num3) % modulo;
