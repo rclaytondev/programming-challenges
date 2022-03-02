@@ -1,25 +1,18 @@
 const leastWith2ToTheNDivisors = (log2OfDivisors) => {
-	// debugger;
 	let smallestNumber = Infinity;
 	for(const exponents of Tree.iterate([], function*(exponents) {
 		if(
 			exponents.map(e => e + 1).product() >= 2 ** log2OfDivisors
-		) {
-			// console.log(`reached a leaf at [${exponents.join(", ")}]`);
-			return;
-		}
+		) { return; }
 		let minExponent = 1;
 		let maxExponent = (exponents.length) ? exponents[exponents.length - 1] : 2 ** log2OfDivisors - 1;
 		for(let exponent = minExponent; exponent <= maxExponent; exponent = exponent * 2 + 1) {
 			yield [...exponents, exponent];
 		}
 	}, false, "bfs")) {
-		// console.log(exponents);
-		// debugger;
 		const divisors = exponents.map(e => e + 1).product();
 		const number = Math.defactorize(exponents);
 		if(number < smallestNumber && divisors === 2 ** log2OfDivisors) {
-			// console.log(`new smallest number is ${number}`);
 			smallestNumber = number;
 		}
 	}
