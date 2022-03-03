@@ -4,7 +4,8 @@ const leastWith2ToTheNDivisors = (log2OfDivisors) => {
 	let smallestNumber = Infinity;
 	for(const exponents of Tree.iterate([], function*(exponents) {
 		if(
-			exponents.map(e => e + 1).product() >= 2 ** log2OfDivisors
+			exponents.map(e => e + 1).product() >= 2 ** log2OfDivisors // too many divisors
+			|| Math.defactorize(exponents) >= smallestNumber // number is too large
 		) { return; }
 		const lastExponent = exponents[exponents.length - 1];
 		const lastPrime = Sequence.PRIMES.nthTerm(exponents.length - 1);
