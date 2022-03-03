@@ -1,3 +1,5 @@
+let iterations = 0;
+
 const leastWith2ToTheNDivisors = (log2OfDivisors) => {
 	let smallestNumber = Infinity;
 	for(const exponents of Tree.iterate([], function*(exponents) {
@@ -18,6 +20,7 @@ const leastWith2ToTheNDivisors = (log2OfDivisors) => {
 			exponent = exponent * 2 + 1
 		) { yield [...exponents, exponent]; }
 	}, false, "bfs")) {
+		iterations ++;
 		const divisors = exponents.map(e => e + 1).product();
 		const number = Math.defactorize(exponents);
 		if(number < smallestNumber && divisors === 2 ** log2OfDivisors) {
@@ -34,3 +37,9 @@ testing.addUnit(leastWith2ToTheNDivisors, [
 	[6, 7560n],
 	[7, 83160n]
 ]);
+
+
+
+iterations = 0;
+leastWith2ToTheNDivisors(50);
+console.log(`iterations: ${iterations}`);
