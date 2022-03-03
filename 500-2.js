@@ -13,7 +13,7 @@ const leastWith2ToTheNDivisors = (log2OfDivisors) => {
 		let maxExponent = (exponents.length) ? Math.min(
 			exponents[exponents.length - 1],
 			2 * (lastExponent + 1) * Math.logBase(nextPrime, lastPrime) - 1
-		) : 2 ** log2OfDivisors - 1;
+		) : Math.sqrt(2 * (2 ** log2OfDivisors) / Math.logBase(3, 2)) - 1;
 		for(
 			let exponent = (minExponent <= 1) ? 1 : Math.max(1, 2 ** (Math.floor(Math.log2(minExponent))) - 1);
 			exponent <= Math.floor(maxExponent);
