@@ -15,11 +15,17 @@ const leastWith2ToTheNDivisors = (log2OfDivisors) => {
 			exponents[exponents.length - 1],
 			2 * (lastExponent + 1) * Math.logBase(nextPrime, lastPrime) - 1
 		) : Math.sqrt(2 * (2 ** log2OfDivisors) / Math.logBase(3, 2)) - 1;
+		const finalExponent = 2 ** (log2OfDivisors - exponents.map(e => Math.log2(e + 1)).sum()) - 1; // what the exponent would be if this was the last prime + exponent in the factorization
+		if(finalExponent <= maxExponent) { yield [...exponents, finalExponent]; }
 		for(
 			let exponent = (minExponent <= 1) ? 1 : Math.max(1, 2 ** (Math.floor(Math.log2(minExponent))) - 1);
 			exponent <= Math.floor(maxExponent);
 			exponent = exponent * 2 + 1
-		) { yield [...exponents, exponent]; }
+		) {
+			if(exponent !== finalExponent) {
+				yield [...exponents, exponent];
+			}
+		}
 	}, false, "bfs")) {
 		iterations ++;
 		const divisors = exponents.map(e => e + 1).product();

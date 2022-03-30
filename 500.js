@@ -42,5 +42,20 @@ testing.addUnit(leastWith2ToTheNDivisors, [
 	[4, 120n],
 	[5, 840n],
 	[6, 7560n],
-	[7, 83160n]
+	[7, 83160n],
+
+	// tests for the modular arithmetic
+	[7, 1000, 160n],
+	[7, 31, 18n],
+	[6, 1000, 560n]
 ]);
+
+
+
+
+// for(let d = 1; d < Infinity; d ++) {
+// 	const theAnswer = naiveSolution(d);
+// 	const exponents = Math.factorize(theAnswer, "exponents-list");
+// 	const string = exponents.map((e, i) => `${e === 1 ? Sequence.PRIMES.nthTerm(i) : `${Sequence.PRIMES.nthTerm(i)}^${e}`}`).join(" * ");
+// 	console.log(`${theAnswer} = ${string} is the smallest number with 2^${d} = ${2 ** d} divisors`);
+// }
