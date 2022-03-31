@@ -292,3 +292,7 @@ testing.addUnit("newtonsMethod()", {
 		expect(xIntercept).toEqual(2);
 	}
 });
+
+Math.lcm = supportBigInts(function(a, b) {
+	return a * b / Math.gcd(a, b);
+});

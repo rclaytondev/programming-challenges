@@ -1,12 +1,10 @@
-let timesCalled = 0;
 const nthFraction = (function nthFraction(n) {
-	timesCalled ++;
 	if(n === 1) {
-		return new Factorization(3).divide(new Factorization(2));
+		return new Rational(3, 2);
 	}
-	return nthFraction(n - 1).add(1).reciprocal().add(1);
+	return nthFraction(n - 1).add(new Rational(1)).reciprocal().add(new Rational(1));
 }).memoize(true);
-testing.addUnit("nthFraction()", (n) => nthFraction(n).toString("rational"), [
+testing.addUnit("nthFraction()", (n) => nthFraction(n).toString(), [
 	[1, "3/2"],
 	[2, "7/5"],
 	[3, "17/12"],
@@ -20,9 +18,9 @@ testing.addUnit("nthFraction()", (n) => nthFraction(n).toString("rational"), [
 const solve = () => {
 	let result = 0;
 	for(let i = 1; i <= 1000; i ++) {
-		const fraction = nthFraction(i);
-		const numeratorDigits = fraction.numerator().toNumber().toString().length;
-		const denominatorDigits = fraction.denominator().toNumber().toString().length;
+		const fraction = nthFraction(i).simplify();
+		const numeratorDigits = fraction.numerator.toString().length;
+		const denominatorDigits = fraction.denominator.toString().length;
 		if(numeratorDigits > denominatorDigits) {
 			result ++;
 		}
