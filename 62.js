@@ -1,16 +1,19 @@
+const BASE_10_DIGITS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
 const solve = (numPermutedCubes = 5) => {
-	for(let i = 1; i < Infinity; i ++) {
+	let digitCountsMap = {};
+	let upperBound = Infinity;
+	let candidates = [];
+	for(let i = 1; i ** 3 < upperBound; i ++) {
 		const cube = i ** 3;
 		const digits = cube.digits();
-		let actualPermutedCubes = 0;
-		for(const permutation of digits.permutations()) {
-			const permutedCube = Number.fromDigits(permutation);
-			if(permutation[0] !== 0 && Math.cbrt(permutedCube) % 1 === 0) {
-				actualPermutedCubes ++;
-			}
-		}
-		if(actualPermutedCubes === numPermutedCubes) {
-			return cube;
+		const digitCounts = `${BASE_10_DIGITS.map(d => digits.count(d))}`;
+		digitCountsMap[digitCounts] ??= { numPermutedCubes: 0, firstCube: cube };
+		digitCountsMap[digitCounts].numPermutedCubes ++;
+		if(digitCountsMap[digitCounts].numPermutedCubes === numPermutedCubes) {
+			upperBound = Math.min(upperBound, 10 ** digits.length);
+			candidates.push(digitCountsMap[digitCounts].firstCube);
 		}
 	}
+	return candidates.min();
 };
