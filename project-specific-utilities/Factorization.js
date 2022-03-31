@@ -85,6 +85,9 @@ class Factorization {
 			return this.add(new Factorization(factorization.exponents, -factorization.sign));
 		}
 	}
+	reciprocal() {
+		return new Factorization(this.exponents.map(e => -e), this.sign);
+	}
 
 	numerator() {
 		return new Factorization(this.exponents.map(v => Math.max(v, 0)), this.sign);
