@@ -296,3 +296,15 @@ testing.addUnit("newtonsMethod()", {
 Math.lcm = supportBigInts(function(a, b) {
 	return a * b / Math.gcd(a, b);
 });
+
+Number.fromDigits = function() {
+	if([...arguments].every(v => typeof v === "number")) {
+		return [...arguments].map((digit, i) => digit * 10 ** (arguments.length - i - 1)).sum();
+	}
+	else if(arguments[0] instanceof Array && arguments[0].every(v => typeof v === "number")) {
+		return arguments[0].map((digit, i) => digit * 10 ** (arguments[0].length - i - 1)).sum();
+	}
+	else {
+		throw new Error(`Unsupported input format.`);
+	}
+};
