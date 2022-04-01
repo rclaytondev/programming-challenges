@@ -1,7 +1,10 @@
 const minimalSolution = (d) => {
-	for(let y = 1; y < Infinity; y ++) {
-		const x = Math.sqrt(1 + d * y ** 2);
-		if(x % 1 === 0) { return x; }
+	d = BigInt(d);
+	for(let y = 1n; y < Infinity; y ++) {
+		const x = utils.bigintSqrt(1n + d * y ** 2n);
+		if(x ** 2n === 1n + d * y ** 2n) {
+			return x;
+		}
 	}
 };
 

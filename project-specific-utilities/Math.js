@@ -308,3 +308,7 @@ Number.fromDigits = function() {
 		throw new Error(`Unsupported input format.`);
 	}
 };
+utils.bigintSqrt = function(input) {
+	input = BigInt(input);
+	return utils.binarySearch(0n, input, (n => n ** 2n - input), "first");
+};
