@@ -1,8 +1,7 @@
 const minimalSolution = (d) => {
-	for(let x = 2; x < Infinity; x ++) {
-		if(Math.sqrt((x ** 2 - 1) / d) % 1 === 0) {
-			return x;
-		}
+	for(let y = 1; y < Infinity; y ++) {
+		const x = Math.sqrt(1 + d * y ** 2);
+		if(x % 1 === 0) { return x; }
 	}
 };
 
