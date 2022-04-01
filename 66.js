@@ -5,10 +5,10 @@ const minimalSolution = (d) => {
 	}
 };
 
-const solve = () => {
+const solve = (upperBound = 1000) => {
 	let largestD = null;
 	let largestX = -Infinity;
-	for(let d = 1; d <= 1000; d ++) {
+	for(let d = 1; d <= upperBound; d ++) {
 		if(Math.sqrt(d) % 1 !== 0) {
 			const x = minimalSolution(d);
 			if(x > largestX) {
