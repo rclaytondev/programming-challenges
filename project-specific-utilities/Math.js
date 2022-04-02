@@ -309,6 +309,17 @@ Number.fromDigits = function() {
 	}
 };
 utils.bigintSqrt = function(input) {
-	input = BigInt(input);
-	return utils.binarySearch(0n, input, (n => n ** 2n - input), "first");
+	let guess = BigInt(Math.floor(Math.sqrt(Number(input))));
+	while(true) {
+		if(guess ** 2n <= input && (guess + 1n) ** 2n > input) {
+			return guess;
+		}
+		const square = guess ** 2n;
+		const slope = 2n * guess;
+		const newGuess = guess - (square - input) / slope;
+		if(newGuess === guess) {
+			guess = (square > input) ? guess - 1n : guess + 1n;
+		}
+		else { guess = newGuess; }
+	}
 };
