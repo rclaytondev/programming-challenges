@@ -58,7 +58,7 @@ class Castle {
 		if(width <= 0 || height <= 0) { return 0; }
 		let castles = 0;
 		for(const castle of Castle.allCastles(width, height)) {
-			if(castle.parity() === parity && castle.usesFullHeight() === usesFullHeight) {
+			if((parity == null || castle.parity() === parity) && castle.usesFullHeight() === usesFullHeight) {
 				castles ++;
 			}
 		}
@@ -141,6 +141,25 @@ class Castle {
 			document.body.appendChild(castle.visualize(GRID_SIZE));
 		}
 	}
+
+	pathString() {
+		let string = ``;
+		for(let x = 0; x < this.width; x ++) {
+			const difference = this.heights[x] - (this.heights[x - 1] ?? 0);
+			if(difference > 0) {
+				string += "U".repeat(difference);
+			}
+			else if(difference < 0) {
+				string += "D".repeat(-difference);
+			}
+			string += "R";
+		}
+		string += "D".repeat(this.heights[this.heights.length - 1]);
+		return string;
+	}
+	formatString() {
+		return [...this.pathString()].filter(dir => dir !== "R").join("");
+	}
 }
 
 testing.addUnit("Castle.numBlocks()", {
@@ -150,6 +169,20 @@ testing.addUnit("Castle.numBlocks()", {
 			[2, 3, 5, 2, 3, 1, 5, 4]
 		);
 		expect(castle.numBlocks()).toEqual(10);
+	}
+});
+testing.addUnit("Castle.pathString()", {
+	"returns the correct format string": () => {
+		const castle = new Castle(5, 2, [2, 1, 2, 1, 2]);
+		const string = castle.pathString();
+		expect(string).toEqual(`UURDRURDRURDD`);
+	}
+});
+testing.addUnit("Castle.formatString()", {
+	"returns the correct format string": () => {
+		const castle = new Castle(5, 2, [2, 1, 2, 1, 2]);
+		const string = castle.formatString();
+		expect(string).toEqual(`UUDUDUDD`);
 	}
 });
 testing.addUnit("Castle.numCastles()", {
@@ -176,7 +209,13 @@ testing.addUnit("Castle.numCastles()", {
 	// }
 });
 
-Castle.visualize(5, 3, true, "even", false);
+const WIDTH = 11;
+const HEIGHT = 2;
+Castle.visualize(WIDTH, HEIGHT, null, "even", true);
+console.log(`${Castle.numCastles(WIDTH, HEIGHT, Infinity, "even", true)} / ${Castle.numCastles(WIDTH, HEIGHT, Infinity, null, true)}`);
+for(let w = 1; w <= WIDTH; w ++) {
+	console.log(`even proportion for ${w}x${HEIGHT} is ${Castle.numCastles(w, HEIGHT, Infinity, "even", true)} / ${Castle.numCastles(w, HEIGHT, Infinity, null, true)}`);
+}
 
 // const testCases = new Grid(5, 5).map((v, x, y) => new Vector(x + 1, y + 1)).rows.flat(100);
 // const timePolynomial = utils.time.extrapolate(
