@@ -48,7 +48,11 @@ testing.addUnit("solve()", solve, [
 	[1, new Rational(0, 1)], // 1 point --> pick 0 and you're done
 	[2, new Rational(1, 2)], // 2 points --> pick 0 and then 1/2
 	[3, new Rational(1, 1)], // 3 points --> pick 0, then 2/3, then 1/3
-	[4, new Rational(3, 2)] // this test case comes from Project Euler
+	[4, new Rational(3, 2)], // this test case comes from Project Euler
+	[5, new Rational(2, 1)],
+	[6, new Rational(5, 2)],
+	[7, new Rational(3, 1)],
+	[8, new Rational(7, 2)]
 ]);
 testing.addUnit("PartialSolution.children()", {
 	"returns the correct first step for 2 points": () => {
