@@ -35,6 +35,9 @@ class Rational {
 		if(r1.sign() > r2.sign()) { return 1; }
 		return Math.sign(Number(r1.numerator * r2.denominator - r1.denominator * r2.numerator)) * r1.sign();
 	}
+	equals(rational) {
+		return this.compareTo(rational) === 0;
+	}
 
 	toString(mode = "default") {
 		if(mode === "default") {

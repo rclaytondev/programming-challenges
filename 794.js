@@ -14,18 +14,27 @@ class PartialSolution {
 				new Rational(numBelow, this.finalPositions.length + 1),
 				new Rational(numBelow + 1, this.finalPositions.length + 1)
 			);
-			return interval.intersection(newInterval);
+			return interval.intersects(newInterval) ? interval.intersection(newInterval) : null;
 		};
 		for(let newPoint = 1; newPoint <= this.numPoints; newPoint ++) {
 			if(!this.finalPositions.includes(newPoint)) {
-				children.push(new PartialSolution(
+				const newChild = new PartialSolution(
 					this.numPoints,
 					[...this.finalPositions, newPoint],
 					[
 						...this.intervals.map((interval, index) => updateInterval(this.finalPositions[index], newPoint, interval)),
-						updateInterval(newPoint, newPoint)
+						updateInterval(
+							newPoint, newPoint,
+							new RationalRange(
+								new Rational(newPoint - 1, this.numPoints),
+								new Rational(newPoint, this.numPoints)
+							)
+						)
 					]
-				));
+				);
+				if(newChild.intervals.every(i => i !== null)) {
+					children.push(newChild);
+				}
 			}
 		}
 		return children;
@@ -59,8 +68,8 @@ testing.addUnit("PartialSolution.children()", {
 		const solution = new PartialSolution(2, []);
 		const children = solution.children();
 		expect(children).toEqual([
-			new PartialSolution(2, [1], [new RationalRange(new Rational(0, 1), new Rational(1, 1))]),
-			new PartialSolution(2, [2], [new RationalRange(new Rational(0, 1), new Rational(1, 1))])
+			new PartialSolution(2, [1], [new RationalRange(new Rational(0, 1), new Rational(1, 2))]),
+			new PartialSolution(2, [2], [new RationalRange(new Rational(1, 2), new Rational(1, 1))])
 		]);
 	},
 	"returns the correct second step for 2 points": () => {

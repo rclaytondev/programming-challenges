@@ -12,6 +12,9 @@ class RationalRange {
 		const newMax = Rational.min(this.max, range.max);
 		return new RationalRange(newMin, newMax);
 	}
+	intersects(range) {
+		return this.min.compareTo(range.max) < 0 && this.max.compareTo(range.min) > 0;
+	}
 
 	toString() {
 		return `${this.min.toString("pretty")} - ${this.max.toString("pretty")}`;
