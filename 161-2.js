@@ -119,5 +119,14 @@ class Tiling {
 	toString() {
 		return `[${this.grid.rows.map(row => `[${row.join("")}]`).join(",")}]`;
 	}
+
+	clone() {
+		const height = this.grid.height();
+		const grid = new Grid(this.grid.width(), height);
+		for(let y = 0; y < height; y ++) {
+			grid.rows[y] = this.grid.rows[y].slice();
+		}
+		return new Tiling(grid);
+	}
 }
 Tiling.numTilings = Tiling.numTilings.memoize(true);
