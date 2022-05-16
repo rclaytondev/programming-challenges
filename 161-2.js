@@ -102,8 +102,8 @@ class Tiling {
 	static numTilings() {
 		if(arguments[0] instanceof Tiling) {
 			const [tiling] = arguments;
-			if(tiling.isComplete()) { return 1; }
-			let result = 0;
+			if(tiling.isComplete()) { return 1n; }
+			let result = 0n;
 			for(const child of tiling.children()) {
 				result += Tiling.numTilings(child);
 			}
