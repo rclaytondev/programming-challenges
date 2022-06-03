@@ -323,3 +323,14 @@ utils.bigintSqrt = function(input) {
 		else { guess = newGuess; }
 	}
 };
+
+Math.isPrime = function(number) {
+	number = BigInt(number);
+	// same as the isPrime function in `utils`, but it supports BigInts.
+	if(number === 1n) { return false; }
+	if(number % 2n === 0n && number !== 2n) { return false; }
+	for(let i = 3n; i * i <= number; i += 2n) {
+		if(number % i === 0n) { return false; }
+	}
+	return true;
+};
