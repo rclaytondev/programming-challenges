@@ -173,5 +173,10 @@ testing.addUnit("combinedVolume()", {
 		const c2 = new Cuboid(1, 2, 1, 2, 4, 2);
 		const volume = combinedVolume([c1, c2]);
 		expect(volume).toEqual(30); // = (2 * 2 * 4) + (2 * 2 * 4) - (1 * 1 * 2)
+	},
+
+	"works for the first 100 cuboids provided by Project Euler": () => {
+		const volume = combinedVolume(allCuboids.slice(0, 100));
+		expect(volume).toEqual(723581599);
 	}
 });
