@@ -111,37 +111,26 @@ for(const cuboid of cuboidGenerator) {
 	else { break; }
 }
 
-const nonemptySubsets = function*(size, cuboids = allCuboids, intersection = Infinity) {
-	/* yields all nonempty subsets of `cuboids` (the global variable) with a nonempty intersection. */
-	if(size === 1) {
-		for(const [index, cuboid] of cuboids.entries()) {
-			if(cuboid.intersects(intersection)) {
-				yield [cuboid];
-			}
-		}
-	}
-	else {
-		for(let [index, firstCuboid] of cuboids.entries()) {
-			if(firstCuboid.intersects(intersection)) {
-				for(const subset of nonemptySubsets(
-					size - 1,
-					cuboids.slice(index + 1),
-					firstCuboid.intersection(intersection)
-				)) { yield [firstCuboid, ...subset]; }
-			}
-		}
-	}
-};
 const combinedVolume = (cuboids = allCuboids) => {
 	let volume = 0;
-	for(let subsetSize = 1; subsetSize <= allCuboids.length; subsetSize ++) {
-		// console.log(subsetSize);
-		for(const subset of nonemptySubsets(subsetSize, cuboids)) {
-			const intersectionVolume = Cuboid.intersection(subset).volume();
-			volume += intersectionVolume * (-1) ** (subsetSize + 1);
+	const intersections = [
+		{
+			intersection: Infinity,
+			numCuboids: 0
+		}
+	];
+	for(const cuboid of cuboids) {
+		for(const { intersection, numCuboids } of [...intersections]) {
+			if(cuboid.intersects(intersection)) {
+				const newIntersection = cuboid.intersection(intersection);
+				volume += newIntersection.volume() * (numCuboids % 2 === 0 ? 1 : -1);
+				intersections.push({
+					intersection: newIntersection,
+					numCuboids: numCuboids + 1
+				});
+			}
 		}
 	}
-	// console.log(volume);
 	return volume;
 };
 testing.addUnit("combinedVolume()", {
