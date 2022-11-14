@@ -26,18 +26,21 @@ testing.addUnit("totient()", totient, [
 	[18, 6]
 ]);
 
+const chainLength = ((n) => {
+	if(n === 1) { return 1; }
+	return chainLength(totient(n)) + 1;
+}).memoize(true);
 const solve = (upperBound = 4e7, length = 25) => {
-	let lengths = [0, 1];
 	let result = 0;
-	for(let i = 2; i < upperBound; i ++) {
-		lengths[i] = lengths[totient(i)] + 1;
-		if(Math.isPrime(i) && lengths[i] === length) {
-			result += i;
+	for(const prime of Sequence.PRIMES) {
+		if(prime >= upperBound) { break; }
+		if(chainLength(prime) === length) {
+			result += prime;
 		}
 	}
 	return result;
 };
 console.time();
 // console.log(solve(1e5, 25));
-console.log(solve());
+// console.log(solve());
 console.timeEnd();
