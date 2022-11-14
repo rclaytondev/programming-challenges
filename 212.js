@@ -51,6 +51,31 @@ class Cuboid {
 		}
 		return result;
 	}
+
+	static left(cuboid) {
+		if(cuboid === Infinity) { return -Infinity; }
+		return cuboid.x;
+	}
+	static right(cuboid) {
+		if(cuboid === Infinity) { return Infinity; }
+		return cuboid.x + cuboid.width;
+	}
+	static top(cuboid) {
+		if(cuboid === Infinity) { return -Infinity; }
+		return cuboid.y;
+	}
+	static bottom(cuboid) {
+		if(cuboid === Infinity) { return Infinity; }
+		return cuboid.y + cuboid.height;
+	}
+	static front(cuboid) {
+		if(cuboid === Infinity) { return -Infinity; }
+		return cuboid.z;
+	}
+	static back(cuboid) {
+		if(cuboid === Infinity) { return Infinity; }
+		return cuboid.z + cuboid.depth;
+	}
 }
 testing.addUnit("Cuboid.intersects()", {
 	"returns true when the cuboids intersect": () => {
@@ -111,28 +136,58 @@ for(const cuboid of cuboidGenerator) {
 	else { break; }
 }
 
+const DIRECTIONS = ["left", "right", "top", "bottom", "front", "back"];
+const NEGATIVE_DIRECTIONS = ["left", "top", "front"];
+const POSITIVE_DIRECTIONS = ["right", "bottom", "back"];
 const combinedVolume = (cuboids = allCuboids) => {
 	let volume = 0;
-	const intersections = [
+	const initialIntersections = [
 		{
 			intersection: Infinity,
 			numCuboids: 0
 		}
 	];
+	const intersections = {
+		left: [...initialIntersections],
+		right: [...initialIntersections],
+		top: [...initialIntersections],
+		bottom: [...initialIntersections],
+		front: [...initialIntersections],
+		back: [...initialIntersections]
+	};
 	for(const cuboid of cuboids) {
-		for(const { intersection, numCuboids } of [...intersections]) {
+		const indices = {};
+		for(const direction of DIRECTIONS) {
+			indices[direction] = utils.binarySearch(
+				0,
+				intersections[direction].length - 1,
+				(index) => Math.sign(Cuboid[direction](intersections[direction][index].intersection) - Cuboid[direction](cuboid)),
+				(NEGATIVE_DIRECTIONS.includes(direction)) ? "last" : "first"
+			);
+		}
+		const optimalDirection = DIRECTIONS.min(dir => indices[dir] * NEGATIVE_DIRECTIONS.includes(dir) ? -1 : 1);
+		const directionSign = NEGATIVE_DIRECTIONS.includes(optimalDirection) ? -1 : 1;
+		const index = indices[optimalDirection];
+		for(let i = index; 0 <= i && i < intersections[optimalDirection].length; i += directionSign) {
+			const { intersection, numCuboids } = intersections[optimalDirection][i];
 			if(cuboid.intersects(intersection)) {
 				const newIntersection = cuboid.intersection(intersection);
 				volume += newIntersection.volume() * (numCuboids % 2 === 0 ? 1 : -1);
-				intersections.push({
-					intersection: newIntersection,
-					numCuboids: numCuboids + 1
-				});
+				for(const direction of DIRECTIONS) {
+					intersections[direction] = utils.binaryInsert(
+						intersections[direction],
+						{ intersection: newIntersection, numCuboids: numCuboids + 1 },
+						(c1, c2) => Math.sign(Cuboid[direction](c1.intersection) - Cuboid[direction](c2.intersection))
+					);
+				}
 			}
 		}
 	}
 	return volume;
 };
+console.time();
+console.log(`volume: ${combinedVolume()}`);
+console.timeEnd();
 testing.addUnit("combinedVolume()", {
 	"correctly returns the combined volume of the cuboids": () => {
 		const c1 = new Cuboid(0, 0, 0, 2, 2, 2);
