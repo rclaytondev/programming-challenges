@@ -180,46 +180,21 @@ const NEGATIVE_DIRECTIONS = ["left", "top", "front"];
 const POSITIVE_DIRECTIONS = ["right", "bottom", "back"];
 const combinedVolumeBaseCase = (cuboids = allCuboids) => {
 	let volume = 0;
-	const initialIntersections = [
+	const intersections = [
 		{
 			intersection: Infinity,
 			numCuboids: 0
 		}
 	];
-	const intersections = {
-		left: [...initialIntersections],
-		right: [...initialIntersections],
-		top: [...initialIntersections],
-		bottom: [...initialIntersections],
-		front: [...initialIntersections],
-		back: [...initialIntersections]
-	};
 	for(const cuboid of cuboids) {
-		const indices = {};
-		for(const direction of DIRECTIONS) {
-			indices[direction] = utils.binarySearch(
-				0,
-				intersections[direction].length - 1,
-				(index) => Math.sign(Cuboid[direction](intersections[direction][index].intersection) - Cuboid[direction](cuboid)),
-				(NEGATIVE_DIRECTIONS.includes(direction)) ? "last" : "first"
-			);
-		}
-		const optimalDirection = DIRECTIONS.min(dir => indices[dir] * NEGATIVE_DIRECTIONS.includes(dir) ? -1 : 1);
-		const directionSign = NEGATIVE_DIRECTIONS.includes(optimalDirection) ? -1 : 1;
-		const index = indices[optimalDirection];
-		const numIntersections = intersections[optimalDirection].length;
-		for(let i = index; 0 <= i && i < numIntersections; i += directionSign) {
-			const { intersection, numCuboids } = intersections[optimalDirection][i];
+		for(const { intersection, numCuboids } of [...intersections]) {
 			if(cuboid.intersects(intersection)) {
 				const newIntersection = cuboid.intersection(intersection);
 				volume += newIntersection.volume() * (numCuboids % 2 === 0 ? 1 : -1);
-				for(const direction of DIRECTIONS) {
-					intersections[direction] = utils.binaryInsert(
-						intersections[direction],
-						{ intersection: newIntersection, numCuboids: numCuboids + 1 },
-						(c1, c2) => Math.sign(Cuboid[direction](c1.intersection) - Cuboid[direction](c2.intersection))
-					);
-				}
+				intersections.push({
+					intersection: newIntersection,
+					numCuboids: numCuboids + 1
+				});
 			}
 		}
 	}
