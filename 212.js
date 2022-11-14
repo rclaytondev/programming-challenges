@@ -29,6 +29,7 @@ class Cuboid {
 		const bottom = Math.min(this.y + this.height, cuboid.y + cuboid.height);
 		const front = Math.max(this.z, cuboid.z);
 		const back = Math.min(this.z + this.depth, cuboid.z + cuboid.depth);
+		if(right - left < 0 || bottom - top < 0 || back - front < 0) { return null; }
 		return new Cuboid(
 			left, top, front,
 			right - left, bottom - top, back - front
@@ -84,6 +85,16 @@ class Cuboid {
 	static back(cuboid) {
 		if(cuboid === Infinity) { return Infinity; }
 		return cuboid.z + cuboid.depth;
+	}
+
+	static boundingBox(cuboids) {
+		const left = cuboids.min(c => Cuboid.left(c), null, "value");
+		const right = cuboids.max(c => Cuboid.right(c), null, "value");
+		const top = cuboids.min(c => Cuboid.top(c), null, "value");
+		const bottom = cuboids.max(c => Cuboid.bottom(c), null, "value");
+		const front = cuboids.min(c => Cuboid.front(c), null, "value");
+		const back = cuboids.max(c => Cuboid.back(c), null, "value");
+		return new Cuboid(left, top, front, right - left, bottom - top, back - front);
 	}
 }
 testing.addUnit("Cuboid.intersects()", {
@@ -167,7 +178,7 @@ const pruneCuboids = (cuboids) => {
 const DIRECTIONS = ["left", "right", "top", "bottom", "front", "back"];
 const NEGATIVE_DIRECTIONS = ["left", "top", "front"];
 const POSITIVE_DIRECTIONS = ["right", "bottom", "back"];
-const combinedVolume = (cuboids = allCuboids) => {
+const combinedVolumeBaseCase = (cuboids = allCuboids) => {
 	let volume = 0;
 	const initialIntersections = [
 		{
@@ -213,6 +224,38 @@ const combinedVolume = (cuboids = allCuboids) => {
 		}
 	}
 	return volume;
+};
+const combinedVolume = (cuboids = allCuboids) => {
+	const BASE_CASE_CUTOFF = 10; // run the old algorithm if there are fewer than this many cuboids
+	if(cuboids.length < BASE_CASE_CUTOFF) {
+		return combinedVolumeBaseCase(cuboids);
+	}
+	else {
+		const boundingBox = Cuboid.boundingBox(cuboids);
+		const largestDimension = ["width", "height", "depth"].max(d => boundingBox[d]);
+		const half1Size = Math.floor(boundingBox[largestDimension] / 2);
+		const half2Size = boundingBox[largestDimension] - half1Size;
+		const half1 = boundingBox.clone();
+		const half2 = boundingBox.clone();
+		if(largestDimension === "width") {
+			half1.width = half1Size;
+			half2.width = half2Size;
+			half2.x = boundingBox.x + half1Size;
+		}
+		else if(largestDimension === "height") {
+			half1.height = half1Size;
+			half2.height = half2Size;
+			half2.y = boundingBox.y + half1Size;
+		}
+		else if(largestDimension === "depth") {
+			half1.depth = half1Size;
+			half2.depth = half2Size;
+			half2.z = boundingBox.z + half1Size;
+		}
+		const cuboids1 = cuboids.map(c => c.intersection(half1)).filter(c => c != null);
+		const cuboids2 = cuboids.map(c => c.intersection(half2)).filter(c => c != null);
+		return combinedVolume(cuboids1) + combinedVolume(cuboids2);
+	}
 };
 console.time();
 console.log(`volume: ${combinedVolume()}`);
