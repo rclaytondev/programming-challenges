@@ -168,7 +168,8 @@ const combinedVolume = (cuboids = allCuboids) => {
 		const optimalDirection = DIRECTIONS.min(dir => indices[dir] * NEGATIVE_DIRECTIONS.includes(dir) ? -1 : 1);
 		const directionSign = NEGATIVE_DIRECTIONS.includes(optimalDirection) ? -1 : 1;
 		const index = indices[optimalDirection];
-		for(let i = index; 0 <= i && i < intersections[optimalDirection].length; i += directionSign) {
+		const numIntersections = intersections[optimalDirection].length;
+		for(let i = index; 0 <= i && i < numIntersections; i += directionSign) {
 			const { intersection, numCuboids } = intersections[optimalDirection][i];
 			if(cuboid.intersects(intersection)) {
 				const newIntersection = cuboid.intersection(intersection);
