@@ -34,6 +34,15 @@ class Cuboid {
 			right - left, bottom - top, back - front
 		);
 	}
+	contains(cuboid) {
+		if(cuboid == null) { return true; }
+		if(cuboid === Infinity) { return false; }
+		return (
+			cuboid.x >= this.x && cuboid.x + cuboid.width <= this.x + this.width &&
+			cuboid.y >= this.y && cuboid.y + cuboid.height <= this.y + this.height &&
+			cuboid.z >= this.z && cuboid.z + cuboid.depth <= this.z + this.depth
+		);
+	}
 
 	static intersection(cuboids) {
 		if(arguments[0] instanceof Cuboid) {
@@ -128,13 +137,32 @@ const cuboidGenerator = new Sequence(function*() {
 		);
 	}
 });
-const allCuboids = [];
+let allCuboids = [];
 for(const cuboid of cuboidGenerator) {
 	if(cuboid instanceof Cuboid) {
 		allCuboids.push(cuboid);
 	}
 	else { break; }
 }
+
+const pruneCuboids = (cuboids) => {
+	/* returns the list of cuboids after any cuboids that are contained in another cuboid are removed. */
+	let numPruned = 0;
+	cuboids = [...cuboids];
+	for(let i = 0; i < cuboids.length; i ++) {
+		const cuboid1 = cuboids[i];
+		for(const cuboid2 of cuboids) {
+			if(cuboid2 !== cuboid1 && cuboid2.contains(cuboid1)) {
+				numPruned ++;
+				cuboids.splice(i, 1);
+				continue;
+			}
+		}
+	}
+	console.log(`pruned ${numPruned} cuboids`);
+	return cuboids;
+};
+// allCuboids = pruneCuboids(allCuboids);
 
 const DIRECTIONS = ["left", "right", "top", "bottom", "front", "back"];
 const NEGATIVE_DIRECTIONS = ["left", "top", "front"];
