@@ -31,17 +31,33 @@ const inverseTotient = (n) => {
 	// phi(p^n) = p^n - p^(n-1) = p^(n-1)(p-1).
 	let primes = [];
 	for(const divisor of Math.divisors(n)) {
-		if(Math.isPrime(divisor + 1)) {
+		if(Math.isPrime(divisor + 1) && exponentIn(n / divisor, divisor + 1) + 1 > 0) {
 			const prime = divisor + 1;
-			primes.push({ prime: prime, maxExponent: exponentIn(n, prime) + 1 });
+			primes.push({ prime: prime, maxExponent: exponentIn(n / divisor, prime) + 1 });
 		}
 	}
 	// primes = [...]
 	let result = [];
-	for(let factorization of Set.cartesianProduct(...primes.map(p => new Array(p.maxExponent + 1).fill().map((n, i) => i)))) {
-		const totient = factorization.map((exponent, i) => exponent === 0 ? 1 : primes[i].prime ** (exponent - 1) * (primes[i].prime - 1)).product();
-		if(totient === n) {
-			result.push(factorization.map((exponent, i) => primes[i].prime ** exponent).product());
+	for(const { factorization, product } of Tree.iterate({ factorization: {}, product: 1 }, function*({ factorization, product }) {
+		if(Object.keys(factorization).length === primes.length) { return; }
+		const { prime, maxExponent } = primes[Object.keys(factorization).length];
+		yield ({
+			factorization: { ...factorization, [prime]: 0 },
+			product: product
+		});
+		for(let exponent = 1; exponent <= maxExponent; exponent ++) {
+			const newProduct = product * (prime ** (exponent - 1)) * (prime - 1);
+			if(n % newProduct === 0) {
+				yield {
+					factorization: { ...factorization, [prime]: exponent },
+					product: newProduct
+				};
+			}
+			else { break; }
+		}
+	}, true)) {
+		if(product === n) {
+			result.push(Math.defactorize(factorization));
 		}
 	}
 	return result.sort(Array.SORT_ASCENDING);
@@ -85,5 +101,5 @@ testing.addUnit("solve()", solve, [
 ]);
 
 console.time();
-solve(4e7, 11);
+solve(4e7, 13);
 console.timeEnd();
