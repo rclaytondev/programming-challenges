@@ -83,3 +83,7 @@ const solve = (upperBound = 4e7, chainLength = 25) => {
 testing.addUnit("solve()", solve, [
 	[100, 4, 12]
 ]);
+
+console.time();
+solve(4e7, 11);
+console.timeEnd();
