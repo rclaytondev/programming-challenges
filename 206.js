@@ -1,5 +1,7 @@
 const solve = () => {
-	for(let i = 1010101000n; i < Infinity; i += 100n) {
+	const upperBound = 1389026624n; // approximately sqrt(1929394959697989990)
+	const lowerBound = 1010101000n; // approximately sqrt(1020304050607080900)
+	for(let i = lowerBound; i < upperBound; i += 100n) {
 		const square = i ** 2n;
 		const digits = `${square}`;
 		if(digits.length === 19 && (
@@ -8,6 +10,11 @@ const solve = () => {
 		)) {
 			console.log(`the answer is ${i}`);
 			return i;
+		}
+
+		if(i % (100n * BigInt(1e5)) == 0) {
+			const progress = Number((i - lowerBound)) / Number((upperBound - lowerBound));
+			console.log(`${(Number(progress) * 100).toFixed(3)}% complete`);
 		}
 	}
 };
