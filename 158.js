@@ -9,15 +9,21 @@ const combination = (n, r) => {
 	}
 	return result;
 };
+const numIncreasingSequences = (numTerms, min, max) => combination(numTerms + (max - min), numTerms);
+testing.addUnit("numIncreasingSequences()", [
+	[3, 1, 2, 4] // 4 sequences: 111, 112, 122, 222
+]);
 
 const numStrings = (length, alphabetSize = 26) => {
 	/* returns the number of strings such that exactly one character comes lexicographically after its predecessor in the string. */
 	let result = 0;
-	for(let index = 1; index < length; index ++) {
-		for(let charID = 0; charID < alphabetSize; charID ++) {
-			const combinationsBefore = combination(index + charID, index);
-			const combinationsAfter = combination((length - index - 1) + (alphabetSize - charID - 1), alphabetSize - charID - 1);
-			result += combinationsBefore * combinationsAfter;
+	for(let index = 0; index < length; index ++) {
+		for(let firstCharID = 1; firstCharID < alphabetSize; firstCharID ++) {
+			for(let secondCharID = 0; secondCharID < firstCharID; secondCharID ++) {
+				const combinationsBefore = numIncreasingSequences(index, 0, firstCharID);
+				const combinationsAfter = numIncreasingSequences(length - index - 2, secondCharID, alphabetSize - 1);
+				result += combinationsBefore * combinationsAfter; // number of strings where at index `index`, there is a `firstCharID` character that decreases to a `secondCharID` character at the index `index + 1`.
+			}
 		}
 	}
 	return result;
