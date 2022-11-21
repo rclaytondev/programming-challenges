@@ -10,6 +10,7 @@ const solve = (upperBound) => {
 	}]; // G(n) = floor((n + 0)/2) + 1 for n between 2 and 5 inclusive
 	let currentLine = piecewiseLines[0];
 	let segmentsGenerated = 1;
+	let iterations = 0;
 	while(piecewiseLines[piecewiseLines.length - 1].endIndex < upperBound ** 3) {
 		const lastLine = piecewiseLines[piecewiseLines.length - 1];
 		const nextValue = Math.floor((lastLine.endIndex + lastLine.xOffset) / lastLine.slopeDenominator) + lastLine.yOffset + 1;
@@ -26,7 +27,13 @@ const solve = (upperBound) => {
 			currentLine = piecewiseLines[piecewiseLines.indexOf(currentLine) + 1];
 			segmentsGenerated = 0;
 		}
+		iterations ++;
+		if(iterations % 1000 === 0) {
+			const progress = 100 * lastLine.endIndex / (upperBound ** 3);
+			console.log(`${progress.toFixed(4)}% complete`);
+		}
 	}
+	debugger;
 	const golombSequence = (index) => {
 		const line = piecewiseLines.find(l => l.startIndex <= index && index <= l.endIndex);
 		return Math.floor((index + line.xOffset) / line.slopeDenominator) + line.yOffset;
