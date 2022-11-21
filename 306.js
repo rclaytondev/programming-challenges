@@ -35,10 +35,26 @@ const numWinningPositions = (upperBound) => {
 			console.log(`calculated up to ${currentPosition}`);
 		}
 	}
+	// console.log(grundyValues);
+	console.log(grundyValues.slice(0, 34));
+	console.log(grundyValues.slice(34, 34 * 2));
+	console.log(grundyValues.slice(34 * 2, 34 * 3));
+	console.log(grundyValues.slice(34 * 3, 34 * 4));
+	console.log(grundyValues.slice(34 * 4, 34 * 5));
+	console.log(grundyValues.slice(34 * 5, 34 * 6));
+	console.log(grundyValues.slice(34 * 6, 34 * 7));
+	console.log(grundyValues.slice(34 * 7, 34 * 8));
+	console.log(grundyValues.slice(34 * 8, 34 * 9));
+	console.log(grundyValues.slice(34 * 9, 34 * 10));
+	console.log(grundyValues.slice(34 * 10, 34 * 11));
+	console.log(grundyValues.slice(34 * 11, 34 * 12));
+	const losingPositions = grundyValues.map((v, i) => v === 0 ? i : null).filter(v => v !== null);
+	debugger;
 	return result;
 };
 
 testing.addUnit("numWinningPositions()", numWinningPositions, [
-	[5, 3],
-	[50, 40]
+	// [5, 3],
+	// [50, 40]
 ]);
+numWinningPositions(500);
