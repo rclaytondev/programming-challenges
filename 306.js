@@ -21,7 +21,7 @@ const numWinningPositions = (upperBound) => {
 	const grundyValues = [0];
 	for(let currentPosition = 1; currentPosition <= upperBound; currentPosition ++) {
 		const options = []; // list of Grundy values for each of the options that the current player has
-		for(let currentMove = 0; currentMove < currentPosition - 1; currentMove ++) {
+		for(let currentMove = 0; currentMove < Math.floor(currentPosition / 2); currentMove ++) {
 			const leftPosition = grundyValues[currentMove];
 			const rightPosition = grundyValues[currentPosition - currentMove - 2];
 			options.push(leftPosition ^ rightPosition);
