@@ -35,7 +35,16 @@ const solve = (upperBound) => {
 	}
 	debugger;
 	const golombSequence = (index) => {
-		const line = piecewiseLines.find(l => l.startIndex <= index && index <= l.endIndex);
+		const lineIndex = utils.binarySearch(
+			0, piecewiseLines.length - 1,
+			(lineIndex) => {
+				const line = piecewiseLines[lineIndex];
+				if(line.endIndex < index) { return -1; }
+				else if(line.startIndex > index) { return 1; }
+				else { return 0; }
+			}
+		);
+		const line = piecewiseLines[lineIndex];
 		return Math.floor((index + line.xOffset) / line.slopeDenominator) + line.yOffset;
 	};
 	for(let i = 2; i < upperBound; i ++) {
