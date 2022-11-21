@@ -1,39 +1,38 @@
 const solve = (upperBound) => {
 	/* Returns the sum of G(n^3) for all 1 <= n <= upperBound. */
-	let result = 1; // G(1) = 1
+	let result = 1n; // G(1) = 1
 	const piecewiseLines = [{
-		slopeDenominator: 2, // slope = 1/2
-		xOffset: 0,
-		yOffset: 1,
-		startIndex: 2,
-		endIndex: 5
+		slopeDenominator: 2n, // slope = 1/2
+		xOffset: 0n,
+		yOffset: 1n,
+		startIndex: 2n,
+		endIndex: 5n
 	}]; // G(n) = floor((n + 0)/2) + 1 for n between 2 and 5 inclusive
 	let currentLine = piecewiseLines[0];
 	let segmentsGenerated = 1;
 	let iterations = 0;
 	while(piecewiseLines[piecewiseLines.length - 1].endIndex < upperBound ** 3) {
 		const lastLine = piecewiseLines[piecewiseLines.length - 1];
-		const nextValue = Math.floor((lastLine.endIndex + lastLine.xOffset) / lastLine.slopeDenominator) + lastLine.yOffset + 1;
+		const nextValue = ((lastLine.endIndex + lastLine.xOffset) / lastLine.slopeDenominator) + lastLine.yOffset + 1n;
 
-		const slopeDenominator = piecewiseLines.length + 2;
-		const startIndex = lastLine.endIndex + 1;
+		const slopeDenominator = BigInt(piecewiseLines.length) + 2n;
+		const startIndex = lastLine.endIndex + 1n;
 		const endIndex = lastLine.endIndex + slopeDenominator * currentLine.slopeDenominator;
 		const xOffset = -(startIndex % slopeDenominator);
-		const yOffset = nextValue - Math.floor((startIndex + xOffset) / slopeDenominator);
+		const yOffset = nextValue - ((startIndex + xOffset) / slopeDenominator);
 		piecewiseLines.push({ slopeDenominator, startIndex, endIndex, xOffset, yOffset });
 
 		segmentsGenerated ++;
-		if(segmentsGenerated >= (currentLine.endIndex - currentLine.startIndex + 1) / currentLine.slopeDenominator) {
+		if(segmentsGenerated >= (currentLine.endIndex - currentLine.startIndex + 1n) / currentLine.slopeDenominator) {
 			currentLine = piecewiseLines[piecewiseLines.indexOf(currentLine) + 1];
 			segmentsGenerated = 0;
 		}
 		iterations ++;
 		if(iterations % 1000 === 0) {
-			const progress = 100 * lastLine.endIndex / (upperBound ** 3);
+			const progress = 100 * Number(lastLine.endIndex) / (upperBound ** 3);
 			console.log(`${progress.toFixed(4)}% complete`);
 		}
 	}
-	debugger;
 	const golombSequence = (index) => {
 		const lineIndex = utils.binarySearch(
 			0, piecewiseLines.length - 1,
@@ -45,10 +44,11 @@ const solve = (upperBound) => {
 			}
 		);
 		const line = piecewiseLines[lineIndex];
-		return Math.floor((index + line.xOffset) / line.slopeDenominator) + line.yOffset;
+		return ((index + BigInt(line.xOffset)) / BigInt(line.slopeDenominator)) + BigInt(line.yOffset);
 	};
-	for(let i = 2; i < upperBound; i ++) {
-		result += golombSequence(i ** 3);
+	debugger;
+	for(let i = 2n; i < upperBound; i ++) {
+		result += golombSequence(i ** 3n);
 	}
 	return result;
 };
