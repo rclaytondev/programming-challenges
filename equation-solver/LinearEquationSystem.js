@@ -60,14 +60,30 @@ testing.addUnit("LinearEquationSystem.variables()", [
 		new Set(["a", "b", "c", "d"])
 	]
 ]);
-testing.addUnit("LinearEquationSystem.solve()", [
-	(equations) => new LinearEquationSystem(equations).solve(),
-	[
-		["x = 2x - 1"],
-		{ x: 1 }
-	],
-	[
-		["y = x", "y = -x + 10"],
-		{ x: 5, y: 5 }
-	]
-]);
+testing.addUnit("LinearEquationSystem.solve()", {
+	"can solve a 1-variable, 1-equation system": () => {
+		const system = new LinearEquationSystem(["x = 2x - 1"]);
+		const solution = system.solve();
+		expect(solution).toEqual({ x: 1 });
+	},
+	"can solve a 2-variable, 2-equation system": () => {
+		const system = new LinearEquationSystem(["y = x", "y = -x + 10"]);
+		const solution = system.solve();
+		expect(solution).toEqual({ x: 5, y: 5 });
+	},
+	"works when the variable names have multiple letters and/or numbers": () => {
+		const system = new LinearEquationSystem([
+			new LinearEquation(
+				new LinearExpression([
+					new LinearAlgebraTerm(1, "foo123")
+				]),
+				new LinearExpression([
+					new LinearAlgebraTerm(2, "foo123"),
+					new LinearAlgebraTerm(-1, null)
+				])
+			)
+		]);
+		const solution = system.solve();
+		expect(solution).toEqual({ foo123: 1 });
+	}
+});
