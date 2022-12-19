@@ -46,4 +46,19 @@ const minDistSquared = (points, sortAxis = "x") => {
 };
 testing.addUnit(solveSquared, [
 	[14, 298603741129]
-])
+]);
+
+testing.addUnit("minDistSquared()", {
+	"works when the minimal-distance pair is in the middle, but farther than d/2 units away": () => {
+		const result = minDistSquared([
+			new Vector(0, 10),
+			new Vector(0, 16),
+			new Vector(7, 0),
+			new Vector(8, 16),
+			new Vector(12, 0),
+			new Vector(16, 10),
+			new Vector(16, 16)
+		]);
+		expect(result).toEqual(5 ** 2);
+	}
+});
