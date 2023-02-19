@@ -1,32 +1,32 @@
 const stirling = (function stirling(setSize, partitionSize) {
-	if(setSize >= 0 && partitionSize === setSize) { return 1; }
-	if(setSize === 0 || partitionSize === 0) { return 0; }
-	return partitionSize * stirling(setSize - 1, partitionSize) + stirling(setSize - 1, partitionSize - 1);
+	if(setSize >= 0n && partitionSize === setSize) { return 1n; }
+	if(setSize === 0n || partitionSize === 0n) { return 0n; }
+	return partitionSize * stirling(setSize - 1n, partitionSize) + stirling(setSize - 1n, partitionSize - 1n);
 }).memoize(true);
 testing.addUnit(stirling, [
-	[3, 2, 3],
-	[10, 5, 42525]
+	[3n, 2n, 3n],
+	[10n, 5n, 42525n]
 ]);
 const fallingPower = (n, power) => {
-	let product = 1;
-	for(let i = 0; i < power; i ++) {
+	let product = 1n;
+	for(let i = 0n; i < power; i ++) {
 		product *= (n - i);
 	}
 	return product;
 };
 testing.addUnit(fallingPower, [
-	[6, 2, 6 * 5],
-	[6, 3, 6 * 5 * 4]
+	[6n, 2n, BigInt(6 * 5)],
+	[6n, 3n, BigInt(6 * 5 * 4)]
 ]);
 
 const solve = (upperBound) => {
-	let sum = 0;
-	for(let k = 0; k <= upperBound; k ++) {
-		sum += stirling(upperBound, k) * fallingPower(upperBound, k) * 2 ** (upperBound - k);
+	let sum = 0n;
+	for(let k = 0n; k <= upperBound; k ++) {
+		sum += stirling(upperBound, k) * fallingPower(upperBound, k) * 2n ** (upperBound - k);
 	}
 	return sum;
 };
 
 testing.addUnit(solve, [
-	[10, 142469423360]
+	[10n, 142469423360n]
 ]);
