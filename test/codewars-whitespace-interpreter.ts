@@ -7,7 +7,7 @@ const TAB = "\t";
 const NEWLINE = "\n";
 
 class ProgramState {
-	stack: number[] = [];
+	stack: number[] = []; // the end of the list is the top of the stack
 	heap: Map<number, number> = new Map();
 	output: string = "";
 	readonly input: string = "";
@@ -70,7 +70,7 @@ class StackDeletionInstruction extends Instruction {
 		this.numToDelete = numToDelete;
 	}
 	execute(state: ProgramState) {
-		state.stack = state.stack.slice(state.stack.length - this.numToDelete);
+		state.stack = state.stack.slice(0, state.stack.length - this.numToDelete);
 	}
 }
 class StackSwapInstruction extends Instruction {
@@ -565,5 +565,14 @@ describe("parser.parseInstruction()", () => {
 		const [instruction, codeAfter] = parser.parseInstruction(LABEL_INSTRUCTION + LABEL + CODE_AFTER);
 		assert.deepEqual(instruction, new LabelInstruction(LABEL));
 		assert.equal(codeAfter, CODE_AFTER);
+	});
+});
+describe("StackDeletionInstruction.execute()", () => {
+	it("deletes the correct number of items from the top of the stack", () => {
+		const instruction = new StackDeletionInstruction(2);
+		const state = new ProgramState([instruction], "");
+		state.stack = [1, 2, 3, 4];
+		instruction.execute(state);
+		assert.deepEqual(state.stack, [1, 2]);
 	});
 });
