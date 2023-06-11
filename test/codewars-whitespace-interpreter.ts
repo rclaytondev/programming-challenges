@@ -64,13 +64,13 @@ class StackDuplicationInstruction extends Instruction {
 	}
 }
 class StackDeletionInstruction extends Instruction {
-	value: number;
-	constructor(value: number = 0) {
+	numToDelete: number;
+	constructor(numToDelete: number = 1) {
 		super();
-		this.value = value;
+		this.numToDelete = numToDelete;
 	}
 	execute(state: ProgramState) {
-		state.stack = state.stack.slice(state.stack.length - this.value - 1);
+		state.stack = state.stack.slice(state.stack.length - this.numToDelete);
 	}
 }
 class StackSwapInstruction extends Instruction {
