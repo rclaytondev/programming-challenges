@@ -15,7 +15,7 @@ class LiftSimulation {
 
 	}
 	isDone(): boolean {
-		
+		return true;
 	}
 }
 
@@ -26,7 +26,6 @@ export const theLift = (floorQueues: number[][], capacity: number): number[] => 
 	}
 	return simulation.floorsVisited;
 };
-
 
 import { expect } from 'chai';
 describe("Example Tests", function() {

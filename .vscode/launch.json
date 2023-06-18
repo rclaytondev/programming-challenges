@@ -9,7 +9,8 @@
 				"--timeout",
 				"999999",
 				"--colors",
-				"${workspaceFolder}/test"
+				"${fileDirname}\\${fileBasenameNoExtension}.js"
+				// Note to self: this is a very useful reference: https://code.visualstudio.com/docs/editor/variables-reference
 			],
 			"internalConsoleOptions": "openOnSessionStart",
 			"name": "Mocha Tests",
