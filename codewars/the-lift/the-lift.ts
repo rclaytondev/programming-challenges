@@ -14,6 +14,9 @@ class LiftSimulation {
 	constructor(floorQueues: number[][], capacity: number) {
 		this.floorQueues = floorQueues;
 		this.capacity = capacity;
+
+		this.liftContents = this.floorQueues[0];
+		this.floorQueues[0] = [];
 	}
 
 	moveLift() {
@@ -194,5 +197,20 @@ describe("Example Tests", function() {
 		];
 		const result = theLift(queues, 5);
 		expect(result).to.have.members([0]);
+	});
+	it("simulates a situation in which people move up and down", () => {
+		const queues = [
+			[1, 2, 3], // G
+			[], // 1
+			[], // 2
+			[], // 3
+			[], // 4
+			[], // 5
+			[5, 3, 2] // 6
+		];
+		LOGGING = true;
+		const result = theLift(queues, 5);
+		expect(result).to.have.members([0, 1, 2, 3, 6, 5, 3, 2, 0]);
+		LOGGING = false;
 	});
 });
