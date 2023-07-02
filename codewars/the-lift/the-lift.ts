@@ -1,3 +1,8 @@
+let LOGGING = false;
+const conditionalLog = (str: any) => {
+	if(LOGGING) { console.log(str); }
+};
+
 class LiftSimulation {
 	floorQueues: number[][];
 	liftContents: number[] = [];
@@ -16,7 +21,9 @@ class LiftSimulation {
 	}
 	update() {
 		this.moveLift();
+		conditionalLog((`moved ${this.liftDirection} to floor ${this.liftLocation}`));
 		if(this.shouldStop()) {
+			conditionalLog((`stopped at floor ${this.liftLocation}`));
 			this.floorsVisited.push(this.liftLocation);
 			this.peopleExitLift();
 			this.peopleEnterLift();
@@ -62,6 +69,7 @@ class LiftSimulation {
 	}
 	peopleExitLift() {
 		// const numExiting = this.liftContents.filter(p => p === this.liftLocation);
+		conditionalLog(`${this.liftContents.filter(p => p === this.liftLocation).length} people exited on floor ${this.liftLocation}`);
 		this.liftContents = this.liftContents.filter(p => p !== this.liftLocation)
 		// this.floorQueues[this.liftLocation] = [...this.floorQueues[this.liftLocation], ...new Array(numExiting).fill(this.liftLocation)];
 	}
@@ -74,11 +82,13 @@ class LiftSimulation {
 				this.liftDirection = "down";
 			}
 		}
+		conditionalLog(`new lift direction is ${this.liftDirection}`);
 
 		for(let i = 0; i < this.floorQueues[this.liftLocation].length; i ++) {
 			const destination = this.floorQueues[this.liftLocation][i];
 			if(this.liftContents.length < this.capacity && this.shouldEnter(destination)) {
 				this.liftContents.push(destination);
+				conditionalLog(`person with destination ${destination} entered the lift`);
 				this.floorQueues[this.liftLocation].splice(i, 1);
 				i --;
 			}
