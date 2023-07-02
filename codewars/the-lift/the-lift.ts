@@ -1,7 +1,7 @@
 class LiftSimulation {
 	floorQueues: number[][];
 	liftContents: number[] = [];
-	floorsVisited: number[] = [];
+	floorsVisited: number[] = [0];
 	liftDirection: "up" | "down" = "up";
 	liftLocation: number = 0;
 	capacity: number;
@@ -11,11 +11,91 @@ class LiftSimulation {
 		this.capacity = capacity;
 	}
 
+	moveLift() {
+		this.liftLocation += (this.liftDirection === "up" ? 1 : -1);
+	}
 	update() {
+		this.moveLift();
+		if(this.shouldStop()) {
+			this.floorsVisited.push(this.liftLocation);
+			this.peopleExitLift();
+			this.peopleEnterLift();
 
+			if(!this.canGoUp()) {
+				this.liftDirection = "down";
+			}
+			if(!this.canGoDown()) {
+				this.liftDirection = "up";
+			}
+		}
+	}
+	allPeopleArrived() {
+		return this.floorQueues.every((queue, floor) => queue.every(num => num === floor));
 	}
 	isDone(): boolean {
-		return true;
+		return this.liftLocation === 0 && this.allPeopleArrived();
+	}
+
+	shouldStop() {
+		return (
+			this.liftContents.includes(this.liftLocation) ||
+			(this.liftContents.length < this.capacity && 
+			this.floorQueues[this.liftLocation].some(destination => (
+				this.shouldEnter(destination) && (
+					(destination < this.liftLocation && this.floorQueues
+						.slice(this.liftLocation + 1)
+						.every((queue, floorNum) => queue.every(destination2 => destination2 > floorNum + this.liftLocation))
+					) || (destination > this.liftLocation && this.floorQueues
+						.slice(0, this.liftLocation)
+						.every((queue, floorNum) => queue.every(destination2 => destination2 < floorNum))
+					)
+				)
+			)))
+		)
+	}
+	shouldEnter(destination: number) {
+		return (
+			this.liftContents.length === 0 ||
+			(this.liftDirection === "up" && destination > this.liftLocation) ||
+			(this.liftDirection === "down" && destination < this.liftLocation)
+		)
+	}
+	peopleExitLift() {
+		// const numExiting = this.liftContents.filter(p => p === this.liftLocation);
+		this.liftContents = this.liftContents.filter(p => p !== this.liftLocation)
+		// this.floorQueues[this.liftLocation] = [...this.floorQueues[this.liftLocation], ...new Array(numExiting).fill(this.liftLocation)];
+	}
+	peopleEnterLift() {
+		if(this.liftContents.length === 0) {
+			if(this.floorQueues[this.liftLocation][0] > this.liftLocation) {
+				this.liftDirection = "up";
+			}
+			else {
+				this.liftDirection = "down";
+			}
+		}
+
+		for(let i = 0; i < this.floorQueues[this.liftLocation].length; i ++) {
+			const destination = this.floorQueues[this.liftLocation][i];
+			if(this.liftContents.length < this.capacity && this.shouldEnter(destination)) {
+				this.liftContents.push(destination);
+				this.floorQueues[this.liftLocation].splice(i, 1);
+				i --;
+			}
+		}
+	}
+	canGoUp() {
+		return (
+			this.liftContents.some(destination => destination > this.liftLocation) ||
+			this.floorQueues.slice(this.liftLocation + 1).some(queue => queue.length > 0)
+		);
+	}
+	canGoDown() {
+		return (
+			this.liftContents.some(destination => destination < this.liftLocation) ||
+			this.floorQueues.slice(0, this.liftLocation).some(queue => queue.length > 0) ||
+			(this.liftLocation !== 0 && this.allPeopleArrived())
+		);
 	}
 }
 
@@ -23,6 +103,9 @@ export const theLift = (floorQueues: number[][], capacity: number): number[] => 
 	const simulation = new LiftSimulation(floorQueues, capacity);
 	while(!simulation.isDone()) {
 		simulation.update();
+	}
+	if(simulation.floorsVisited[simulation.floorsVisited.length - 1] !== 0) {
+		simulation.floorsVisited.push(0);
 	}
 	return simulation.floorsVisited;
 };
