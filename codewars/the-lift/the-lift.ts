@@ -193,6 +193,19 @@ describe("Example Tests", function() {
 		var result = theLift(queues,5);
 		expect(result).to.have.members([0,5,4,3,2,1,0]);
 	});
+	it("simulates a situation in which people enter going the opposite direction of the lift", () => {
+		const queues = [
+			[3],
+			[2],
+			[0],
+			[2],
+			[],
+			[],
+			[5]
+		];
+		const result = theLift(queues, 5);
+		expect(result).to.have.members([0, 1, 2, 3, 6, 5, 3, 2, 0]);
+	});
 	
 	/* Tests written by me */
 	it("simulates a situation in which the elevator needs to go up and then down", () => {
