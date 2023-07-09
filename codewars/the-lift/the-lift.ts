@@ -72,7 +72,7 @@ class LiftSimulation {
 	}
 	peopleExitLift() {
 		// const numExiting = this.liftContents.filter(p => p === this.liftLocation);
-		conditionalLog(`${this.liftContents.filter(p => p === this.liftLocation).length} people exited on floor ${this.liftLocation}`);
+		conditionalLog(`${this.liftContents.filter(p => p === this.liftLocation).length} people exited on floor ${this.liftLocation} (lift now contains [${this.liftContents.filter(p => p !== this.liftLocation)}])`);
 		this.liftContents = this.liftContents.filter(p => p !== this.liftLocation)
 		// this.floorQueues[this.liftLocation] = [...this.floorQueues[this.liftLocation], ...new Array(numExiting).fill(this.liftLocation)];
 	}
@@ -91,7 +91,7 @@ class LiftSimulation {
 			const destination = this.floorQueues[this.liftLocation][i];
 			if(this.liftContents.length < this.capacity && this.shouldEnter(destination)) {
 				this.liftContents.push(destination);
-				conditionalLog(`person with destination ${destination} entered the lift`);
+				conditionalLog(`person with destination ${destination} entered the lift (lift now contains [${this.liftContents}])`);
 				this.floorQueues[this.liftLocation].splice(i, 1);
 				i --;
 			}
