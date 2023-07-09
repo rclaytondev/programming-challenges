@@ -49,7 +49,7 @@ class LiftSimulation {
 	shouldStop() {
 		return (
 			this.liftContents.includes(this.liftLocation) ||
-			(this.liftContents.length < this.capacity && 
+			(this.liftContents.length < this.capacity && // TODO: fix this?
 			this.floorQueues[this.liftLocation].some(destination => (
 				this.shouldEnter(destination) && (
 					(destination < this.liftLocation && this.floorQueues
@@ -65,7 +65,7 @@ class LiftSimulation {
 	}
 	shouldEnter(destination: number) {
 		return (
-			this.liftContents.length === 0 ||
+			// this.liftContents.length === 0 ||
 			(this.liftDirection === "up" && destination > this.liftLocation) ||
 			(this.liftDirection === "down" && destination < this.liftLocation)
 		)
@@ -77,14 +77,14 @@ class LiftSimulation {
 		// this.floorQueues[this.liftLocation] = [...this.floorQueues[this.liftLocation], ...new Array(numExiting).fill(this.liftLocation)];
 	}
 	peopleEnterLift() {
-		if(this.liftContents.length === 0) {
-			if(this.floorQueues[this.liftLocation][0] > this.liftLocation) {
-				this.liftDirection = "up";
-			}
-			else {
-				this.liftDirection = "down";
-			}
-		}
+		// if(this.liftContents.length === 0) {
+		// 	if(this.floorQueues[this.liftLocation][0] > this.liftLocation) {
+		// 		this.liftDirection = "up";
+		// 	}
+		// 	else {
+		// 		this.liftDirection = "down";
+		// 	}
+		// }
 		conditionalLog(`new lift direction is ${this.liftDirection}`);
 
 		for(let i = 0; i < this.floorQueues[this.liftLocation].length; i ++) {
@@ -203,7 +203,8 @@ describe("Example Tests", function() {
 			[],
 			[5]
 		];
-		const result = theLift(queues, 5);
+		debugger;
+		const result = theLift(queues, 5, true);
 		expect(result).to.have.members([0, 1, 2, 3, 6, 5, 3, 2, 0]);
 	});
 	
