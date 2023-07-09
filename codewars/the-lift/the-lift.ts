@@ -112,7 +112,22 @@ class LiftSimulation {
 	}
 }
 
-export const theLift = (floorQueues: number[][], capacity: number): number[] => {
+export const theLift = (floorQueues: number[][], capacity: number, debug = false): number[] => {
+	if(debug) {
+		LOGGING = true;
+		let result;
+		try {
+			result = theLift(floorQueues, capacity, false);
+		}
+		catch(error) {
+			throw error;
+		}
+		finally {
+			LOGGING = false;
+		}
+		return result;
+	}
+
 	const simulation = new LiftSimulation(floorQueues, capacity);
 	while(!simulation.isDone()) {
 		simulation.update();
@@ -208,9 +223,7 @@ describe("Example Tests", function() {
 			[], // 5
 			[5, 3, 2] // 6
 		];
-		LOGGING = true;
 		const result = theLift(queues, 5);
 		expect(result).to.have.members([0, 1, 2, 3, 6, 5, 3, 2, 0]);
-		LOGGING = false;
 	});
 });
