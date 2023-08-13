@@ -19,6 +19,9 @@ module.exports = {
 		"indent": ["error", "tab"],
 		"no-multi-spaces": ["error"],
 		"comma-dangle": ["error", "always-multiline"],
+		"no-mixed-spaces-and-tabs": ["error"],
+		"prefer-template": ["error"],
+		"template-curly-spacing": ["error", "never"],
 	},
 	"plugins": [
 		"@typescript-eslint",
