@@ -29,7 +29,15 @@ const distinctPermutations = function*<T>(array: T[]): Generator<T[], void, unkn
 };
 
 const shortestCommonSuperstring = function(strings: string[]): string {
-	return strings.join("");
+	if(strings.length === 0) { return ""; }
+	let shortest = concatWithOverlap(strings);
+	for(const permutation of distinctPermutations(strings)) {
+		const concatenation = concatWithOverlap(permutation);
+		if(concatenation.length < shortest.length) {
+			shortest = concatenation;
+		}
+	}
+	return shortest;
 };
 
 const testSCS = function(words: string[], expected: string) {
@@ -84,5 +92,8 @@ describe("distinctPermutations", () => {
 describe("shortestCommonSuperstring", () => {
 	it("works for two strings", () => {
 		testSCS(["abc", "cde"], "abcde");
+	});
+	it("works when there are no strings", () => {
+		testSCS([], "");
 	});
 });
