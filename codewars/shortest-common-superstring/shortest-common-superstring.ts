@@ -1,5 +1,5 @@
 import { describe, it } from "mocha";
-import { assert } from "chai";
+import { assert, expect } from "chai";
 
 const concatWithOverlap = function(strings: string[]): string {
 	if(strings.length === 1) {
@@ -14,6 +14,18 @@ const concatWithOverlap = function(strings: string[]): string {
 		}
 	}
 	return concatWithOverlap([concatWithOverlap(strings.slice(0, 2)), ...strings.slice(2)]);
+};
+
+const distinctPermutations = function*<T>(array: T[]): Generator<T[], void, unknown> {
+	if(array.length === 0) { yield [] as T[]; return; }
+	if(array.length === 1) { yield [...array]; return; }
+	for(const [index, item] of array.entries()) {
+		if(!array.slice(0, index).includes(item)) {
+			for(const permutation of distinctPermutations(array.filter((v, i) => i !== index))) {
+				yield [item, ...permutation];
+			}
+		}
+	}
 };
 
 const shortestCommonSuperstring = function(strings: string[]): string {
@@ -46,6 +58,27 @@ describe("concatWithOverlap", () => {
 	});
 	it("works when some of the strings are equal", () => {
 		assert.equal(concatWithOverlap(["ABC", "DEF", "DEF", "EFG"]), "ABCDEFG");
+	});
+});
+describe("distinctPermutations", () => {
+	it("yields all the distinct permutations of the given array", () => {
+		const result = [...distinctPermutations([1, 2, 3])];
+		expect(result).to.have.deep.members([
+			[1, 2, 3],
+			[1, 3, 2],
+			[2, 1, 3],
+			[2, 3, 1],
+			[3, 1, 2],
+			[3, 2, 1],
+		]);
+	});
+	it("only yields each permutation once, even when there are duplicates in the given array", () => {
+		const result = [...distinctPermutations([1, 2, 2])];
+		expect(result).to.have.deep.members([
+			[1, 2, 2],
+			[2, 1, 2],
+			[2, 2, 1],
+		]);
 	});
 });
 describe("shortestCommonSuperstring", () => {
