@@ -22,6 +22,7 @@ module.exports = {
 		"no-mixed-spaces-and-tabs": ["error"],
 		"prefer-template": ["error"],
 		"template-curly-spacing": ["error", "never"],
+		"func-style": ["error", "expression"],
 	},
 	"plugins": [
 		"@typescript-eslint",
