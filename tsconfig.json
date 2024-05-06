@@ -3,6 +3,7 @@
 	  "target": "es2017",
 	  "module": "commonjs",
 	  "sourceMap": true,
+	  "outDir": "compiled",
 	  
 
 	  // compiler options that I like:
