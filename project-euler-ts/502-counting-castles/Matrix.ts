@@ -4,21 +4,35 @@ export class Matrix<FieldElementType> {
 	width: number;
 	height: number;
 	field: Field<FieldElementType>;
-	private rows: FieldElementType[][]; // only contains nonzero entries, unless they're added
+	private rows: Map<number, Map<number, FieldElementType>>; // uses maps instead of arrays so we can only store nonzero entries (for high performance)
 
 	constructor(width: number, height: number, field: Field<FieldElementType>) {
 		this.field = field;
 		this.width = width;
 		this.height = height;
-		this.rows = [];
+		this.rows = new Map();
 	}
 	get(row: number, column: number): FieldElementType {
-		if(!this.rows[row]) { return this.field.zero; }
-		return this.rows[row][column] ?? this.field.zero;
+		if(!this.rows.get(row)) { return this.field.zero; }
+		return this.rows.get(row)!.get(column) ?? this.field.zero;
 	}
-	set(row: number, column: number, value: FieldElementType) {
-		this.rows[row] ??= [];
-		this.rows[row][column] = value;
+	set(rowIndex: number, column: number, value: FieldElementType) {
+		if(value === this.field.zero) {
+			const row = this.rows.get(rowIndex);
+			if(row) {
+				row.delete(column);
+				if(row.size === 0) {
+					this.rows.delete(rowIndex);
+				}
+			}
+		}
+		else {
+			let row = this.rows.get(rowIndex);
+			if(!row) {
+				this.rows.set(rowIndex, row = new Map());
+			}
+			row.set(column, value);
+		}
 	}
 
 	// static multiply<FieldElementType>(matrix1: Matrix<FieldElementType>, matrix2: Matrix<FieldElementType>): Matrix<FieldElementType> {
