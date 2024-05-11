@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { Field, reals } from "./Field";
+import { Field, integersModulo, reals } from "./Field";
 import { describe, it } from "mocha";
 
 export class Matrix<FieldElementType> {
@@ -131,8 +131,52 @@ export class Matrix<FieldElementType> {
 		this.setRow(row1, rowIndex1);
 		this.setRow(row2, rowIndex2);
 	}
+	multiplyRow(rowIndex: number, scalar: FieldElementType) {
+		for(const [index, entry] of (this.rows.get(rowIndex) ?? new Map<number, FieldElementType>()).entries()) {
+			this.set(rowIndex, index, this.field.multiply(entry, scalar));
+		}
+	}
+	addScaledRow(sourceRowIndex: number, destinationRowIndex: number, scalar: FieldElementType) {
+		for(const [index, entry] of (this.rows.get(sourceRowIndex) ?? new Map<number, FieldElementType>()).entries()) {
+			const newValue = this.field.add(this.field.multiply(entry, scalar), this.get(destinationRowIndex, index));
+			this.set(destinationRowIndex, index, newValue);
+		}
+	}
 	inverse(): Matrix<FieldElementType> | null {
+		/* Note: this modifies the matrix! (For performance reasons) */
 		const inverse = Matrix.identity(this.field, this.width);
+		for(let i = 0; i < this.height; i ++) {
+			/* Swap rows if necessary to make the (i, i) entry nonzero */
+			if(this.get(i, i) === this.field.zero) {
+				let foundNonzeroEntry = false;
+				for(let j = i + 1; j < this.height; j ++) {
+					if(this.get(j, i) !== this.field.zero) {
+						this.swapRows(i, j);
+						inverse.swapRows(i, j);
+						foundNonzeroEntry = true;
+						break;
+					}
+				}
+				if(!foundNonzeroEntry) { return null; }
+			}
+
+			inverse.multiplyRow(i, this.field.inverse(this.get(i, i)));
+			this.multiplyRow(i, this.field.inverse(this.get(i, i)));
+
+			/* Add a scaled copy of row i to make all the entries below (i, i) equal to zero */
+			for(let j = i + 1; j < this.height; j ++) {
+				inverse.addScaledRow(i, j, this.field.opposite(this.get(j, i)));
+				this.addScaledRow(i, j, this.field.opposite(this.get(j, i)));
+			}
+		}
+		for(let i = this.height - 1; i >= 0; i --) {
+			/* Add a scaled copy of row i to make all the entries above (i, i) equal to zero */
+			for(let j = i - 1; j >= 0; j --) {
+				inverse.addScaledRow(i, j, this.field.opposite(this.get(j, i)));
+				this.addScaledRow(i, j, this.field.opposite(this.get(j, i)));
+			}
+		}
+		return inverse;
 	}
 	subtract(matrix: Matrix<FieldElementType>) {
 		for(const [row, column, value] of matrix.nonzeroEntries()) {
@@ -140,6 +184,79 @@ export class Matrix<FieldElementType> {
 		}
 	}
 }
+
+describe("Matrix.inverse", () => {
+	it("correctly calculates the inverse of a 2x2 matrix over a finite field", () => {
+		const field = integersModulo(11);
+		const matrix = new Matrix(2, 2, field, [[3, 5], [1, 2]]);
+		const inverse = matrix.inverse();
+		assert.isNotNull(inverse);
+		assert.deepEqual(inverse!.values(), [
+			[2, 11-5],
+			[11-1, 3],
+		]);
+	});
+	it("correctly calculates the inverse of a 3x3 matrix with lots of zero entries", () => {
+		const matrix = new Matrix(3, 3, reals, [
+			[0, 2, 0],
+			[0, 0, 3],
+			[1, 0, 0],
+		]);
+		const inverse = matrix.inverse();
+		assert.isNotNull(inverse);
+		assert.deepEqual(inverse!.values(), [
+			[0, 0, 1],
+			[1/2, 0, 0],
+			[0, 1/3, 0],
+		]);
+	});
+	it("correctly calculates the inverse of a diagonal matrix", () => {
+		const matrix = new Matrix(3, 3, reals, [
+			[1, 0, 0],
+			[0, 2, 0],
+			[0, 0, 3],
+		]);
+		const inverse = matrix.inverse();
+		assert.isNotNull(inverse);
+		assert.deepEqual(inverse!.values(), [
+			[1, 0, 0],
+			[0, 1/2, 0],
+			[0, 0, 1/3],
+		]);
+	});
+	it("returns null if any of the columns are equal", () => {
+		const matrix = new Matrix(3, 3, reals, [
+			[1, 2, 1],
+			[3, 4, 3],
+			[5, 6, 5],
+		]);
+		assert.isNull(matrix.inverse());
+	});
+	it("returns null if any of the columns are scalar multiples of each other", () => {
+		const matrix = new Matrix(3, 3, reals, [
+			[1, 2, 10],
+			[3, 4, 30],
+			[5, 6, 50],
+		]);
+		assert.isNull(matrix.inverse());
+	});
+	it("returns null if any of the columns are linearly dependent", () => {
+		const matrix = new Matrix(3, 3, reals, [
+			[1, 2, 3],
+			[3, 4, 7],
+			[5, 6, 11],
+		]);
+		assert.isNull(matrix.inverse());
+	});
+	it("returns null for the zero matrix", () => {
+		const matrix = new Matrix(3, 3, reals, [
+			[0, 0, 0],
+			[0, 0, 0],
+			[0, 0, 0],
+		]);
+		assert.isNull(matrix.inverse());
+	});
+});
 describe("Matrix.swapRows", () => {
 	it("correctly swaps the rows", () => {
 		const matrix = new Matrix(2, 2, reals, [[1, 2], [3, 4]]);
