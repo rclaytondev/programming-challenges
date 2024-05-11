@@ -46,3 +46,10 @@ export const integersModulo = function(modulo: number) {
 		},
 	);
 };
+export const reals = new Field<number>(
+	0, 1,
+	(a, b) => a + b,
+	(a, b) => a * b,
+	x => -x,
+	x => 1/x,
+);
