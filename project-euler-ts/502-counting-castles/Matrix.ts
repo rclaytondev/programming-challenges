@@ -71,6 +71,16 @@ export class Matrix<FieldElementType> {
 	// 	for(let rowIndex = )
 	// }
 
+	values(): FieldElementType[][] {
+		const result: FieldElementType[][] = [];
+		for(let rowIndex = 0; rowIndex < this.height; rowIndex ++) {
+			result[rowIndex] = [];
+			for(let columnIndex = 0; columnIndex < this.height; columnIndex ++) {
+				result[rowIndex][columnIndex] = this.get(rowIndex, columnIndex);
+			}
+		}
+		return result;
+	}
 	*nonzeroEntries(): Generator<[number, number, FieldElementType]> {
 		for(const [rowIndex, row] of this.rows.entries()) {
 			for(const [columnIndex, value] of row.entries()) {
