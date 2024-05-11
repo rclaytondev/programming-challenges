@@ -48,9 +48,13 @@ export class Matrix<FieldElementType> {
 	// 	for(let rowIndex = )
 	// }
 
-	// nonzeroEntries*() {
-
-	// }
+	*nonzeroEntries(): Generator<[number, number, FieldElementType]> {
+		for(const [rowIndex, row] of this.rows.entries()) {
+			for(const [columnIndex, value] of row.entries()) {
+				yield [rowIndex, columnIndex, value];
+			}
+		}
+	}
 
 	static identity<FieldElementType>(field: Field<FieldElementType>, size: number) {
 		const result = new Matrix(size, size, field);
@@ -63,6 +67,8 @@ export class Matrix<FieldElementType> {
 		const inverse = Matrix.identity(this.field, this.width);
 	}
 	subtract(matrix: Matrix<FieldElementType>) {
-		
+		for(const [row, column, value] of matrix.nonzeroEntries()) {
+			this.set(row, column, this.field.subtract(this.get(row, column), value));
+		}
 	}
 }
