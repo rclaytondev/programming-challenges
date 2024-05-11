@@ -78,6 +78,20 @@ export class Matrix<FieldElementType> {
 			}
 		}
 	}
+	toString() {
+		const lines: string[] = [];
+		for(let y = 0; y < this.height; y ++) {
+			let line = "";
+			for(let x = 0; x < this.width; x ++) {
+				const maxWidth = Math.max(...new Array(this.height).fill(0).map((v, i) => `${this.get(i, x)}`.length));
+				const entry = `${this.get(y, x)}`;
+				const numSpaces = (x === this.width - 1 ? 0 : maxWidth - entry.length + 1);
+				line += (entry + " ".repeat(numSpaces));
+			}
+			lines.push(line);
+		}
+		return lines.join("\n");
+	}
 
 	static identity<FieldElementType>(field: Field<FieldElementType>, size: number) {
 		const result = new Matrix(size, size, field);
@@ -131,5 +145,15 @@ describe("Matrix.swapRows", () => {
 		assert.deepEqual(matrix["rows"], new Map([
 			[1, new Map([[1, 123]])],
 		]));
+	});
+});
+describe("Matrix.toString", () => {
+	it("converts the matrix to a multiline string, adding spacing so that all the columns line up", () => {
+		const matrix = new Matrix(3, 3, reals, [
+			[1, 2, 3],
+			[400000, 5, 6],
+			[7, 8, 9],
+		]);
+		assert.equal(matrix.toString(), "1      2 3\n400000 5 6\n7      8 9");
 	});
 });
