@@ -6,11 +6,16 @@ export class Matrix<FieldElementType> {
 	field: Field<FieldElementType>;
 	private rows: Map<number, Map<number, FieldElementType>>; // uses maps instead of arrays so we can only store nonzero entries (for high performance)
 
-	constructor(width: number, height: number, field: Field<FieldElementType>) {
+	constructor(width: number, height: number, field: Field<FieldElementType>, values: FieldElementType[][] = []) {
 		this.field = field;
 		this.width = width;
 		this.height = height;
 		this.rows = new Map();
+		for(const [rowIndex, row] of values.entries()) {
+			for(const [columnIndex, value] of row.entries()) {
+				this.set(rowIndex, columnIndex, value);
+			}
+		}
 	}
 	get(row: number, column: number): FieldElementType {
 		if(!this.rows.get(row)) { return this.field.zero; }
