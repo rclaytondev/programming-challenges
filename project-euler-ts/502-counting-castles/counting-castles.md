@@ -42,3 +42,7 @@ In this method, each node is a tuple consisting of:
 - The parity of the number of blocks in the incomplete castle.
 
 This is more efficient than the previous methods, with only 2 nodes for each point in the grid.
+
+But wait! This adds many more nonzero entries to each row and column (10^12 nonzero entries instead of 3 or 4 nonzero entries). This means I - A is much further away from the identity matrix, so row-reducing it to the identity will take much longer. Because of this, the previous method might actually be better.
+
+On the other hand, I think this results in a somewhat regular structure (i.e. there are more patterns). In particular, the adjacency matrix of this graph should be a sequence of identical blocks arranged along the diagonal. Therefore it might be better to use this method and row-reduce each block individually, in order to avoid doing essentially the same calculations 10^12 times.
