@@ -110,6 +110,14 @@ describe("GraphNode.predecessors", () => {
 	});
 });
 describe("castles", () => {
+	it("correctly calculates the number of castles in a 1x2 grid, modulo 1000000007", () => {
+		assert.equal(castles(1, 2, 1000000007), 1);
+	});
+	it("correctly calculates the number of castles in a 2x2 grid, modulo 1000000007", () => {
+		assert.equal(castles(2, 2, 1000000007), 3);
+	});
+
+	/* test cases provided by Project Euler (i.e. not calculated by me) */
 	it("correctly calculates the number of castles in a 4x2 grid, modulo 1000000007", () => {
 		assert.equal(castles(4, 2, 1000000007), 10);
 	});
