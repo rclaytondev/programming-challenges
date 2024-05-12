@@ -63,17 +63,17 @@ const getAdjacencyMatrix = (nodes: GraphNode[], reverseNodeMap: Map<string, numb
 	return matrix;
 };
 
-const nonFullHeightCastlesWithoutBase = (width: number, height: number, modulo: number): number => {
+const nonFullHeightOddCastlesWithoutBase = (width: number, height: number, modulo: number): number => {
 	const [nodes, reverseNodeMap] = initializeGraph(width, height);
 	const adjacencyMatrix = getAdjacencyMatrix(nodes, reverseNodeMap, height, modulo);
 	const sumOfPowers = Matrix.identity(adjacencyMatrix.field, adjacencyMatrix.width).subtract(adjacencyMatrix).inverse();
 	return sumOfPowers!.get(
 		reverseNodeMap.get("0,0,0")!,
-		reverseNodeMap.get(`${width - 1},0,0`)!,
+		reverseNodeMap.get(`${width},0,1`)!,
 	);
 };
 const castles = (width: number, height: number, modulo: number) => {
-	const result = nonFullHeightCastlesWithoutBase(width, height - 1, modulo) - nonFullHeightCastlesWithoutBase(width, height - 2, modulo);
+	const result = nonFullHeightOddCastlesWithoutBase(width, height - 1, modulo) - nonFullHeightOddCastlesWithoutBase(width, height - 2, modulo);
 	return generalizedModulo(result, modulo);
 };
 
