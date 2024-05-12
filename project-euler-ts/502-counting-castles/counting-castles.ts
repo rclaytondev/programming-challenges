@@ -38,7 +38,7 @@ class GraphNode {
 
 const initializeGraph = (width: number, height: number): [GraphNode[], Map<string, number>] => {
 	const nodes: GraphNode[] = [new GraphNode(0, 0, 0)];
-	const reverseNodeMap: Map<string, number> = new Map();
+	const reverseNodeMap: Map<string, number> = new Map([["0,0,0", 0]]);
 	for(let x = 1; x < width; x ++) {
 		for(let y = 0; y < height; y ++) {
 			nodes.push(new GraphNode(x, y, 0));
@@ -66,7 +66,11 @@ const getAdjacencyMatrix = (nodes: GraphNode[], reverseNodeMap: Map<string, numb
 const nonFullHeightCastlesWithoutBase = (width: number, height: number, modulo: number): number => {
 	const [nodes, reverseNodeMap] = initializeGraph(width, height);
 	const adjacencyMatrix = getAdjacencyMatrix(nodes, reverseNodeMap, height, modulo);
-	return Matrix.inv;
+	const sumOfPowers = Matrix.identity(adjacencyMatrix.field, adjacencyMatrix.width).subtract(adjacencyMatrix).inverse();
+	return sumOfPowers!.get(
+		reverseNodeMap.get("0,0,0")!,
+		reverseNodeMap.get(`${width - 1},0,0`)!,
+	);
 };
 const castles = (width: number, height: number, modulo: number) => {
 	const result = nonFullHeightCastlesWithoutBase(width, height - 1, modulo) - nonFullHeightCastlesWithoutBase(width, height - 2, modulo);

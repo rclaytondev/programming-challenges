@@ -182,6 +182,7 @@ export class Matrix<FieldElementType> {
 		for(const [row, column, value] of matrix.nonzeroEntries()) {
 			this.set(row, column, this.field.subtract(this.get(row, column), value));
 		}
+		return this;
 	}
 }
 
