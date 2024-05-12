@@ -47,6 +47,8 @@ const initializeGraph = (width: number, height: number): [GraphNode[], Map<strin
 			reverseNodeMap.set(`${x},${y},1`, nodes.length - 1);
 		}
 	}
+	nodes.push(new GraphNode(width + 1, 0, 1));
+	reverseNodeMap.set(`${width + 1},0,1`, nodes.length - 1);
 	return [nodes, reverseNodeMap];
 };
 const getAdjacencyMatrix = (nodes: GraphNode[], reverseNodeMap: Map<string, number>, height: number, modulo: number) : Matrix<number> => {
@@ -69,7 +71,7 @@ const nonFullHeightOddCastlesWithoutBase = (width: number, height: number, modul
 	const sumOfPowers = Matrix.identity(adjacencyMatrix.field, adjacencyMatrix.width).subtract(adjacencyMatrix).inverse();
 	return sumOfPowers!.get(
 		reverseNodeMap.get("0,0,0")!,
-		reverseNodeMap.get(`${width},0,1`)!,
+		reverseNodeMap.get(`${width + 1},0,1`)!,
 	);
 };
 const castles = (width: number, height: number, modulo: number) => {
