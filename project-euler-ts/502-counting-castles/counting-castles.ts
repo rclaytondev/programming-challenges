@@ -124,9 +124,38 @@ describe("castles", () => {
 	it("correctly calculates the number of castles in a 2x2 grid, modulo 1000000007", () => {
 		assert.equal(castles(2, 2, 1000000007), 3);
 	});
+	it("correctly calculates the number of castles in a 3x2 grid, modulo 1000000007", () => {
+		assert.equal(castles(3, 2, 1000000007), 6);
+	});
+	it("correctly calculates the number of castles in a 4x2 grid, modulo 3", () => {
+		assert.equal(castles(4, 2, 3), 1);
+	});
+	it("correctly calculates the number of castles in a 2x3 grid, modulo 1000000007", () => {
+		assert.equal(castles(2, 3, 1000000007), 0);
+	});
+	it("correctly calculates the number of castles in a 3x3 grid, modulo 1000000007", () => {
+		assert.equal(castles(3, 3, 1000000007), 3);
+	});
+	it("correctly calculates the number of castles in a 4x3 grid, modulo 1000000007", () => {
+		assert.equal(castles(4, 3, 1000000007), 21);
+	});
+	it("correctly calculates the number of castles in a 4x3 grid, modulo 11", () => {
+		assert.equal(castles(4, 3, 11), 10);
+	});
 
 	/* test cases provided by Project Euler (i.e. not calculated by me) */
 	it("correctly calculates the number of castles in a 4x2 grid, modulo 1000000007", () => {
 		assert.equal(castles(4, 2, 1000000007), 10);
 	});
+	it("correctly calculates the number of castles in a 13x10 grid, modulo 73338856117409", () => {
+		assert.equal(castles(13, 10, 73338856117409), 3729050610636);
+	});
+	it("correctly calculates the number of castles in a 10x13 grid, modulo 73338856117409", () => {
+		assert.equal(castles(10, 13, 73338856117409), 37959702514);
+	});
 });
+
+export const solve = () => {
+	const MODULO = 1000000007;
+	return (castles(10 ** 12, 100, MODULO) + castles(10000, 10000, MODULO) + castles(100, 10 ** 12, MODULO)) % MODULO;
+};
