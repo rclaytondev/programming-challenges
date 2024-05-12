@@ -3,6 +3,11 @@ import { Matrix } from "./Matrix";
 import { integersModulo } from "./Field";
 import { generalizedModulo } from "../utils-ts/Math";
 
+const oppositeParity = (parity: "even" | "odd") => {
+	if(parity === "even") { return "odd"; }
+	else { return "even"; }
+};
+
 class GraphNode {
 	x: number;
 	y: number;
@@ -22,11 +27,10 @@ class GraphNode {
 		const predecessors = [];
 		for(let y = 0; y <= height; y ++) {
 			if(y <= this.y) {
-				predecessors.push(new GraphNode(this.x - 1, y, (1 - ((this.y - y) % 2)) === 0 ? "even" : "odd"));
+				predecessors.push(new GraphNode(this.x - 1, y, (this.y - y) % 2 === 0 ? this.parity : oppositeParity(this.parity)));
 			}
 			else if(y > this.y) {
-				predecessors.push(new GraphNode(this.x - 1, y, "even"));
-				predecessors.push(new GraphNode(this.x - 1, y, "odd"));
+				predecessors.push(new GraphNode(this.x - 1, y, this.parity));
 			}
 		}
 		return predecessors;
@@ -100,12 +104,16 @@ describe("GraphNode.predecessors", () => {
 			new GraphNode(1, 1, "even"),
 			new GraphNode(1, 2, "odd"),
 
-			new GraphNode(1, 3, "even"),
 			new GraphNode(1, 3, "odd"),
-			new GraphNode(1, 4, "even"),
 			new GraphNode(1, 4, "odd"),
-			new GraphNode(1, 5, "even"),
 			new GraphNode(1, 5, "odd"),
+		]);
+	});
+	it("returns all the predecessors for a node with x>1 and y=0", () => {
+		const node = new GraphNode(2, 0, "even");
+		assert.sameDeepMembers(node.predecessors(1), [
+			new GraphNode(1, 0, "even"),
+			new GraphNode(1, 1, "even"),
 		]);
 	});
 });
