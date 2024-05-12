@@ -39,8 +39,8 @@ class GraphNode {
 const initializeGraph = (width: number, height: number): [GraphNode[], Map<string, number>] => {
 	const nodes: GraphNode[] = [new GraphNode(0, 0, 0)];
 	const reverseNodeMap: Map<string, number> = new Map([["0,0,0", 0]]);
-	for(let x = 1; x < width; x ++) {
-		for(let y = 0; y < height; y ++) {
+	for(let x = 1; x <= width; x ++) {
+		for(let y = 0; y <= height; y ++) {
 			nodes.push(new GraphNode(x, y, 0));
 			reverseNodeMap.set(`${x},${y},0`, nodes.length - 1);
 			nodes.push(new GraphNode(x, y, 1));
