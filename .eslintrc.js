@@ -23,6 +23,7 @@ module.exports = {
 		"prefer-template": ["error"],
 		"template-curly-spacing": ["error", "never"],
 		"func-style": ["error", "expression"],
+		"no-constant-condition": ["error", { "checkLoops": "allExceptWhileTrue" }],
 	},
 	"plugins": [
 		"@typescript-eslint",
