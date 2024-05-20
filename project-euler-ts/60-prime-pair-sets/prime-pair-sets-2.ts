@@ -11,7 +11,7 @@ const getSets = function*(setSize: number, sum: number, partialSet: number[] = [
 	else {
 		outerLoop: for(const nextTerm of Sequence.PRIMES.termsBetween(
 			partialSet[partialSet.length - 1] ?? 0,
-			sum - getArraySum(partialSet),
+			(sum - getArraySum(partialSet)) / (setSize - partialSet.length),
 			"exclusive", "inclusive"
 		)) {
 			for(const previousTerm of partialSet) {
