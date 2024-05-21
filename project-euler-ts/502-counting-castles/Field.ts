@@ -28,7 +28,7 @@ export class Field<ElementType> {
 		return this.add(element1, this.opposite(element2));
 	}
 	divide(element1: ElementType, element2: ElementType) {
-		return this.add(element1, this.opposite(element2));
+		return this.multiply(element1, this.inverse(element2));
 	}
 }
 export const integersModulo = function(modulo: number) {
