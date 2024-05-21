@@ -30,6 +30,20 @@ export class Field<ElementType> {
 	divide(element1: ElementType, element2: ElementType) {
 		return this.multiply(element1, this.inverse(element2));
 	}
+	exponentiate(element: ElementType, exponent: number) {
+		let result = this.one;
+		for(let i = 0; i < Math.abs(exponent); i ++) {
+			result = this.multiply(result, exponent > 0 ? element : this.inverse(element));
+		}
+		return result;
+	}
+	sum(...elements: ElementType[]) {
+		let result = this.zero;
+		for(const element of elements) {
+			result = this.add(result, element);
+		}
+		return result;
+	}
 }
 export const integersModulo = function(modulo: number) {
 	if(!isPrime(modulo)) {
