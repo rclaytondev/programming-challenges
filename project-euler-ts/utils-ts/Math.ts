@@ -21,7 +21,7 @@ export const gcd = (num1: number, num2: number): number => {
 	if(num1 === 0 || num2 === 0) { throw new Error("Cannot calculate GCD when either of the inputs are zero."); }
 	[num1, num2] = [Math.max(Math.abs(num1), Math.abs(num2)), Math.min(Math.abs(num1), Math.abs(num2))];
 	if(num1 % num2 === 0) { return num2; }
-	return gcd(num1 % num2, num1);
+	return gcd(num1 % num2, num2);
 };
 export const bezoutCoefficients = (num1: number, num2: number): [number, number] => {
 	if(num1 < 0 && num2 < 0) {
@@ -119,5 +119,8 @@ describe("bezoutCoefficients", () => {
 describe("gcd", () => {
 	it("returns the greatest common divisor of the two numbers", () => {
 		assert.equal(gcd(36, 84), 12);
+	});
+	it("works for another test case", () => {
+		assert.equal(gcd(24, 14), 2);
 	});
 });
