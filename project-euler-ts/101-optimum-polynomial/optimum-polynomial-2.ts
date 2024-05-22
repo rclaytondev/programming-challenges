@@ -1,18 +1,18 @@
 import { Polynomial } from "./PolynomialOverField.js";
 import { Field } from "../502-counting-castles/Field.js";
-import * as math from "../utils-ts/Math.js";
+import * as bigintMath from "../utils-ts/BigIntMath.js";
 
 class Rational {
-	numerator: number;
-	denominator: number;
-	constructor(numerator: number, denominator: number) {
-		this.numerator = numerator;
-		this.denominator = denominator;
+	numerator: bigint;
+	denominator: bigint;
+	constructor(numerator: bigint | number, denominator: bigint | number) {
+		this.numerator = BigInt(numerator);
+		this.denominator = BigInt(denominator);
 	}
 
 	simplify() {
-		if(this.numerator === 0) { return new Rational(0, 1); }
-		const gcd = math.gcd(this.numerator, this.denominator);
+		if(this.numerator === 0n) { return new Rational(0n, 1n); }
+		const gcd = bigintMath.gcd(this.numerator, this.denominator);
 		return new Rational(this.numerator / gcd, this.denominator / gcd);
 	}
 	add(rational: Rational) {
@@ -25,7 +25,7 @@ class Rational {
 		return new Rational(-this.numerator, this.denominator);
 	}
 	inverse() {
-		if(this.numerator === 0) {
+		if(this.numerator === 0n) {
 			throw new Error("Cannot find the inverse of 0.");
 		}
 		return new Rational(this.denominator, this.numerator);
