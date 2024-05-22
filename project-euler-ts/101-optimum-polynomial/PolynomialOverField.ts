@@ -55,6 +55,9 @@ export class Polynomial<FieldElementType> {
 	}
 
 	static interpolate<FieldElementType>(points: [FieldElementType, FieldElementType][], field: Field<FieldElementType>) {
+		if(points.length === 1) {
+			return new Polynomial(field, [points[0][1]]);
+		}
 		return Polynomial.sum(...points.map(([xValue, yValue], pointIndex) => {
 			const otherPoints = points.filter((p, i) => i !== pointIndex);
 			const basisPolynomial = Polynomial.multiply(...otherPoints.map(([x]) => new Polynomial(field, [field.opposite(x), field.one])));
