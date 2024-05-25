@@ -68,6 +68,13 @@ export class Sequence {
 			term = this.getTerm(index);
 		}
 	}
+	slice(startIndex: number, endIndex: number, startMode: "inclusive" | "exclusive" = "inclusive", endMode: "inclusive" | "exclusive" = "exclusive") {
+		let result = [];
+		for(let index = (startMode === "inclusive") ? startIndex : startIndex + 1; (endMode === "inclusive") ? (index <= endIndex) : (index < endIndex); index ++) {
+			result.push(this.getTerm(index));
+		}
+		return result;
+	}
 	*setsWithSum(setSize: number, sum: number, lowerBound: number = -Infinity): Generator<number[]> {
 		if(setSize === 0 && sum === 0) {
 			yield [];
