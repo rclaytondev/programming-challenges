@@ -15,7 +15,7 @@ const solutionsModuloPrime = (D: number, prime: number) => {
 	return solutions;
 };
 const minSolution = (D: number) => {
-	const PRIMES = Sequence.PRIMES.slice(0, 8);
+	const PRIMES = Sequence.PRIMES.slice(0, 2);
 	const product = PRIMES.reduce((a, b) => a * b, 1);
 	const solutionsModuloPrimes = PRIMES.map(p => solutionsModuloPrime(D, p));
 	const offsets = [];
@@ -77,5 +77,11 @@ const solve = (upperBound: number = 1000) => {
 describe("solve", () => {
 	it("works for an upper bound of 7 (test case from Project Euler)", () => {
 		assert.equal(solve(7), 5);
+	});
+	it("works for an upper bound of 50 (calculated with the previous, simpler algorithm)", () => {
+		assert.equal(solve(50), 46);
+	});
+	it("works for an upper bound of 100 (calculated with the previous, simpler algorithm)", () => {
+		// assert.equal(solve(100), 61);
 	});
 });

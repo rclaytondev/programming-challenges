@@ -10,7 +10,7 @@ const minSolution = (D: number) => {
 const solve = () => {
 	let highestD = 0;
 	let highestMinSolution = -Infinity;
-	for(let D = 1; D < 1000; D ++) {
+	for(let D = 1; D <= 50; D ++) {
 		if(Math.sqrt(D) % 1 === 0) { continue; }
 		const solution =  minSolution(D);
 		console.log(`For D=${D}, the minimal solution has x=${solution}`);
