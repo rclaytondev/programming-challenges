@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { Sequence } from "../utils-ts/Sequence.mjs";
+import { Sequence } from "../../utils-ts/modules/math/Sequence.mjs";
 import { describe, it } from "mocha";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 

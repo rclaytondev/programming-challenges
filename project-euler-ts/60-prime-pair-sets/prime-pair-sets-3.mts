@@ -1,6 +1,6 @@
 import { describe, it } from "mocha";
 import { assert } from "chai";
-import { Sequence } from "../utils-ts/Sequence.mjs";
+import { Sequence } from "../../utils-ts/modules/math/Sequence.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 
 const solve = (setSize: number = 5): number => {
