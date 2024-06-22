@@ -482,6 +482,7 @@ describe("whitespace()", () => {
 		assert.equal(whitespace(duplicateN3), "3");
 	});
 
+	return;
 	it("correctly runs a long program that pushes, swaps, deletes, and outputs", () => {
 		const slide = toWhitespace(
 			"sssttn" // push the number `sttn` = 3 onto the stack

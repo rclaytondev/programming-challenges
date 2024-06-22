@@ -7,7 +7,7 @@ const minSolution = (D: number) => {
 	throw new Error("Reached end of infinite loop.");
 };
 
-const solve = () => {
+export const solve = () => {
 	let highestD = 0;
 	let highestMinSolution = -Infinity;
 	for(let D = 1; D <= 50; D ++) {

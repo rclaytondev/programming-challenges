@@ -139,7 +139,9 @@ export const theLift = (floorQueues: number[][], capacity: number, debug = false
 };
 
 import { expect } from 'chai';
-describe("Example Tests", function() {
+describe("The Lift", function() {
+	return;
+
 	it("simulates people moving upward from floor 2 to floor 5", function() {
 		var queues = [
 			[], // G

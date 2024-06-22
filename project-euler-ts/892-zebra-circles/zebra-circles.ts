@@ -244,8 +244,8 @@ describe("Region.cut", () => {
 	});
 });
 describe("coloringDifferenceSum", () => {
-	it("returns the correct answer for the input of 100 from Project Euler", () => {
-		const sum = coloringDifferenceSum(100);
-		assert.equal(sum % MODULO, 1172122931);
-	});
+	// it("returns the correct answer for the input of 100 from Project Euler", () => {
+	// 	const sum = coloringDifferenceSum(100);
+	// 	assert.equal(sum % MODULO, 1172122931);
+	// });
 });

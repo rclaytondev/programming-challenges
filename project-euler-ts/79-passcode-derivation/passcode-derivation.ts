@@ -18,19 +18,21 @@ const allTuples = function*<T>(elements: T[], tupleSize: number): Generator<T[]>
 	}
 };
 
-outerLoop: for(let codeLength = 3; codeLength < Infinity; codeLength ++) {
-	codeLoop: for(const code of allTuples([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], codeLength)) {
-		for(const triple of TRIPLES) {
-			const firstIndex = code.indexOf(triple[0]);
-			const lastIndex = code.indexOf(triple[2]);
-			if(firstIndex === -1 || lastIndex === -1) {
-				continue codeLoop;
+export const solve = () => {
+	outerLoop: for(let codeLength = 3; codeLength < Infinity; codeLength ++) {
+		codeLoop: for(const code of allTuples([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], codeLength)) {
+			for(const triple of TRIPLES) {
+				const firstIndex = code.indexOf(triple[0]);
+				const lastIndex = code.indexOf(triple[2]);
+				if(firstIndex === -1 || lastIndex === -1) {
+					continue codeLoop;
+				}
+				if(!(code.slice(firstIndex + 1, lastIndex).includes(triple[1]))) {
+					continue codeLoop;
+				}
 			}
-			if(!(code.slice(firstIndex + 1, lastIndex).includes(triple[1]))) {
-				continue codeLoop;
-			}
+			console.log(`the code is ${code.join("")}`);
+			break outerLoop;
 		}
-		console.log(`the code is ${code.join("")}`);
-		break outerLoop;
 	}
-}
+};
