@@ -1,6 +1,6 @@
 import { assert } from "chai";
-import { Field, reals } from "../502-counting-castles/Field";
-import { getArraySum } from "../utils-ts/Array";
+import { Field, reals } from "../502-counting-castles/Field.mjs";
+import { getArraySum } from "../utils-ts/Array.mjs";
 
 export class Polynomial<FieldElementType> {
 	field: Field<FieldElementType>;

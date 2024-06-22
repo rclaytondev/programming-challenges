@@ -1,7 +1,7 @@
 import { assert } from "chai";
-import { Matrix } from "./Matrix";
-import { integersModulo } from "./Field";
-import { generalizedModulo } from "../utils-ts/Math";
+import { Matrix } from "./Matrix.mjs";
+import { integersModulo } from "./Field.mjs";
+import { generalizedModulo } from "../utils-ts/Math.mjs";
 
 const oppositeParity = (parity: "even" | "odd") => {
 	if(parity === "even") { return "odd"; }

@@ -1,6 +1,6 @@
-import { getArraySum } from "../utils-ts/Array";
-import { Sequence } from "../utils-ts/Sequence";
-import { Tree } from "../utils-ts/Tree";
+import { getArraySum } from "../utils-ts/Array.mjs";
+import { Sequence } from "../utils-ts/Sequence.mjs";
+import { Tree } from "../utils-ts/Tree.mjs";
 
 const TRIANGULARS = [...new Sequence(n => n * (n + 1) / 2).termsBetween(1000, 10000)];
 const SQUARES = [...new Sequence(n => n ** 2).termsBetween(1000, 10000)];

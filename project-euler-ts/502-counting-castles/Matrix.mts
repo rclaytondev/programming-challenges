@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { Field, integersModulo, reals } from "./Field";
+import { Field, integersModulo, reals } from "./Field.mjs";
 import { describe, it } from "mocha";
 
 export class Matrix<FieldElementType> {

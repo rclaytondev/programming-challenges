@@ -1,8 +1,8 @@
 import { describe, it } from "mocha";
 import { assert } from "chai";
-import { Sequence } from "../utils-ts/Sequence";
-import { isPrime } from "../utils-ts/Math";
-import { getArraySum } from "../utils-ts/Array";
+import { Sequence } from "../utils-ts/Sequence.mjs";
+import { isPrime } from "../utils-ts/Math.mjs";
+import { getArraySum } from "../utils-ts/Array.mjs";
 
 const solve = (setSize: number = 5): number => {
 	const cliques: number[][][] = new Array(setSize + 1).fill([]).map(v => []);

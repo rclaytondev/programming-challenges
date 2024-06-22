@@ -1,6 +1,6 @@
-import { Polynomial } from "./PolynomialOverField.js";
-import { Field } from "../502-counting-castles/Field.js";
-import * as bigintMath from "../utils-ts/BigIntMath.js";
+import { Polynomial } from "./PolynomialOverField.mjs";
+import { Field } from "../502-counting-castles/Field.mjs";
+import * as bigintMath from "../utils-ts/BigIntMath.mjs";
 
 class Rational {
 	numerator: bigint;

@@ -1,6 +1,6 @@
 import { assert } from "chai";
-import { Sequence } from "../utils-ts/Sequence";
-import { generalizedModulo } from "../utils-ts/Math";
+import { Sequence } from "../utils-ts/Sequence.mjs";
+import { generalizedModulo } from "../utils-ts/Math.mjs";
 
 const solutionsModuloPrime = (D: number, prime: number) => {
 	let solutions = [];

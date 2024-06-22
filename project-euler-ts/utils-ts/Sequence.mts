@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { isPrime } from "./Math";
+import { isPrime } from "./Math.mjs";
 
 export class Sequence {
 	/*

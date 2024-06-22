@@ -1,8 +1,8 @@
 import { assert } from "chai";
-import { isPrime } from "../utils-ts/Math";
-import { Sequence } from "../utils-ts/Sequence";
+import { isPrime } from "../utils-ts/Math.mjs";
+import { Sequence } from "../utils-ts/Sequence.mjs";
 import { describe, it } from "mocha";
-import { getArraySum } from "../utils-ts/Array";
+import { getArraySum } from "../utils-ts/Array.mjs";
 
 const getSets = function*(setSize: number, sum: number, partialSet: number[] = []): Generator<number[]> {
 	if(partialSet.length === setSize) {

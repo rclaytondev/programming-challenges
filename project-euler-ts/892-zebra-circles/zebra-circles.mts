@@ -1,6 +1,6 @@
 import { assert } from "chai";
 import { describe } from "mocha";
-import { Tree } from "../utils-ts/Tree";
+import { Tree } from "../utils-ts/Tree.mjs";
 
 const MODULO = 1234567891;
 

@@ -1,4 +1,4 @@
-import { bezoutCoefficients, generalizedModulo, isPrime } from "../utils-ts/Math";
+import { bezoutCoefficients, generalizedModulo, isPrime } from "../utils-ts/Math.mjs";
 
 export class Field<ElementType> {
 	zero: ElementType;

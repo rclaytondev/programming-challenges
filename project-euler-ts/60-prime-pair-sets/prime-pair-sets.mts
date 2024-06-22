@@ -1,6 +1,6 @@
 import { assert } from "chai";
-import { isPrime } from "../utils-ts/Math";
-import { Sequence } from "../utils-ts/Sequence";
+import { isPrime } from "../utils-ts/Math.mjs";
+import { Sequence } from "../utils-ts/Sequence.mjs";
 
 const allConcatsPrime = (numbers: number[]) => {
 	for(let i = 0; i < numbers.length; i ++) {

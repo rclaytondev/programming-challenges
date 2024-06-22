@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { getArraySum } from "../utils-ts/Array";
+import { getArraySum } from "../utils-ts/Array.mjs";
 
 class Polynomial {
 	coefficients: number[];
