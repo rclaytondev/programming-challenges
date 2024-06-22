@@ -1,6 +1,6 @@
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Sequence } from "../../utils-ts/modules/math/Sequence.mjs";
-import { Tree } from "../utils-ts/Tree.mjs";
+import { Tree } from "../../utils-ts/modules/math/Tree.mjs";
 
 const TRIANGULARS = [...new Sequence(n => n * (n + 1) / 2).termsBetween(1000, 10000)];
 const SQUARES = [...new Sequence(n => n ** 2).termsBetween(1000, 10000)];
