@@ -2,7 +2,7 @@ import { assert } from "chai";
 import { isPrime } from "../utils-ts/Math.mjs";
 import { Sequence } from "../utils-ts/Sequence.mjs";
 import { describe, it } from "mocha";
-import { getArraySum } from "../utils-ts/Array.mjs";
+import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 
 const getSets = function*(setSize: number, sum: number, partialSet: number[] = []): Generator<number[]> {
 	if(partialSet.length === setSize) {
@@ -11,7 +11,7 @@ const getSets = function*(setSize: number, sum: number, partialSet: number[] = [
 	else {
 		outerLoop: for(const nextTerm of Sequence.PRIMES.termsBetween(
 			partialSet[partialSet.length - 1] ?? 0,
-			(sum - getArraySum(partialSet)) / (setSize - partialSet.length),
+			(sum - MathUtils.sum(partialSet)) / (setSize - partialSet.length),
 			"exclusive", "inclusive"
 		)) {
 			for(const previousTerm of partialSet) {

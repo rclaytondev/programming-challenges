@@ -1,4 +1,4 @@
-import { getArraySum } from "../utils-ts/Array.mjs";
+import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Sequence } from "../utils-ts/Sequence.mjs";
 import { Tree } from "../utils-ts/Tree.mjs";
 
@@ -42,5 +42,5 @@ const solve = () => {
 		}
 	})].filter(partialResult => partialResult.numbers.length === POLYGONAL_TYPES.length);
 	console.log(`the tuples are ${results.map(r => `[${r.numbers.join(", ")}]`)}`);
-	return getArraySum(results[0].numbers);
+	return MathUtils.sum(results[0].numbers);
 };

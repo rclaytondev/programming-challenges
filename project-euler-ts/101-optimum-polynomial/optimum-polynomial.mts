@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { getArraySum } from "../utils-ts/Array.mjs";
+import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 
 class Polynomial {
 	coefficients: number[];
@@ -48,7 +48,7 @@ class Polynomial {
 		return result;
 	}
 	evaluate(input: number) {
-		return getArraySum(this.coefficients.map((coef, index) => coef * (input ** index)));
+		return MathUtils.sum(this.coefficients.map((coef, index) => coef * (input ** index)));
 	}
 
 	static interpolate(points: [number, number][]) {
