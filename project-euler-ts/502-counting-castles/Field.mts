@@ -1,4 +1,4 @@
-import { bezoutCoefficients, generalizedModulo, isPrime } from "../utils-ts/Math.mjs";
+import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 
 export class Field<ElementType> {
 	zero: ElementType;
@@ -46,7 +46,7 @@ export class Field<ElementType> {
 	}
 }
 export const integersModulo = function(modulo: number) {
-	if(!isPrime(modulo)) {
+	if(!MathUtils.isPrime(modulo)) {
 		throw new Error(`Cannot construct the field of integers modulo ${modulo}: the result will not be a field since ${modulo} is not prime.`);
 	}
 	return new Field<number>(
@@ -55,8 +55,8 @@ export const integersModulo = function(modulo: number) {
 		(a, b) => (a * b) % modulo,
 		num => (num === 0) ? num : modulo - num,
 		num => {
-			const [coef1] = bezoutCoefficients(num, modulo);
-			return generalizedModulo(coef1, modulo);
+			const [coef1] = MathUtils.bezoutCoefficients(num, modulo);
+			return MathUtils.generalizedModulo(coef1, modulo);
 		},
 	);
 };

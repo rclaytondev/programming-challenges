@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { isPrime } from "../utils-ts/Math.mjs";
+import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Sequence } from "../utils-ts/Sequence.mjs";
 
 const allConcatsPrime = (numbers: number[]) => {
@@ -7,7 +7,7 @@ const allConcatsPrime = (numbers: number[]) => {
 		for(let j = 0; j < numbers.length; j ++) {
 			if(i !== j) {
 				const concatenation = Number.parseInt(`${numbers[i]}${numbers[j]}`);
-				if(!isPrime(concatenation)) { return false; }
+				if(!MathUtils.isPrime(concatenation)) { return false; }
 			}
 		}
 	}

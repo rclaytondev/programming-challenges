@@ -1,5 +1,4 @@
 import { assert } from "chai";
-import { isPrime } from "../utils-ts/Math.mjs";
 import { Sequence } from "../utils-ts/Sequence.mjs";
 import { describe, it } from "mocha";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
@@ -15,7 +14,7 @@ const getSets = function*(setSize: number, sum: number, partialSet: number[] = [
 			"exclusive", "inclusive"
 		)) {
 			for(const previousTerm of partialSet) {
-				if(!isPrime(Number.parseInt(`${previousTerm}${nextTerm}`)) || !isPrime(Number.parseInt(`${nextTerm}${previousTerm}`))) {
+				if(!MathUtils.isPrime(Number.parseInt(`${previousTerm}${nextTerm}`)) || !MathUtils.isPrime(Number.parseInt(`${nextTerm}${previousTerm}`))) {
 					continue outerLoop;
 				}
 			}

@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { isPrime } from "./Math.mjs";
+import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 
 export class Sequence {
 	/*
@@ -93,7 +93,7 @@ export class Sequence {
 	static PRIMES = new Sequence(function*() {
 		let num = 2;
 		while(true) {
-			if(isPrime(num)) {
+			if(MathUtils.isPrime(num)) {
 				yield num;
 			}
 			num ++;

@@ -1,7 +1,6 @@
 import { describe, it } from "mocha";
 import { assert } from "chai";
 import { Sequence } from "../utils-ts/Sequence.mjs";
-import { isPrime } from "../utils-ts/Math.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 
 const solve = (setSize: number = 5): number => {
@@ -13,7 +12,7 @@ const solve = (setSize: number = 5): number => {
 		if(prime > maxPrime) { break; }
 		for(let cliqueSize = 0; cliqueSize < setSize; cliqueSize ++) {
 			for(const clique of cliques[cliqueSize]) {
-				if(!clique.includes(prime) && clique.every(num => isPrime(Number.parseInt(`${num}${prime}`)) && isPrime(Number.parseInt(`${prime}${num}`)))) {
+				if(!clique.includes(prime) && clique.every(num => MathUtils.isPrime(Number.parseInt(`${num}${prime}`)) && MathUtils.isPrime(Number.parseInt(`${prime}${num}`)))) {
 					cliques[cliqueSize + 1].push([...clique, prime]);
 					if(cliqueSize + 1 === setSize) {
 						console.log(`Found a ${cliqueSize + 1}-clique! (${[...clique, prime].join(",")})`)

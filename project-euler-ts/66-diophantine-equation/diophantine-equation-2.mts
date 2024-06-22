@@ -1,12 +1,12 @@
 import { assert } from "chai";
 import { Sequence } from "../utils-ts/Sequence.mjs";
-import { generalizedModulo } from "../utils-ts/Math.mjs";
+import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 
 const solutionsModuloPrime = (D: number, prime: number) => {
 	let solutions = [];
 	for(let x = 0; x < prime; x ++) {
 		for(let y = 0; y < prime; y ++) {
-			if(generalizedModulo((x ** 2 - (D * y ** 2)), prime) === 1) {
+			if(MathUtils.generalizedModulo((x ** 2 - (D * y ** 2)), prime) === 1) {
 				solutions.push(x);
 				break;
 			}

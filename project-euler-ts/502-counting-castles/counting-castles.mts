@@ -1,7 +1,7 @@
 import { assert } from "chai";
 import { Matrix } from "./Matrix.mjs";
 import { integersModulo } from "./Field.mjs";
-import { generalizedModulo } from "../utils-ts/Math.mjs";
+import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 
 const oppositeParity = (parity: "even" | "odd") => {
 	if(parity === "even") { return "odd"; }
@@ -80,7 +80,7 @@ const nonFullHeightOddCastlesWithoutBase = (width: number, height: number, modul
 };
 const castles = (width: number, height: number, modulo: number) => {
 	const result = nonFullHeightOddCastlesWithoutBase(width, height - 1, modulo) - nonFullHeightOddCastlesWithoutBase(width, height - 2, modulo);
-	return generalizedModulo(result, modulo);
+	return MathUtils.generalizedModulo(result, modulo);
 };
 
 
