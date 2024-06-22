@@ -1,6 +1,5 @@
 import { assert } from "chai";
 import { describe } from "mocha";
-import { Program } from "typescript";
 
 const SPACE = " ";
 const TAB = "\t";

@@ -10,7 +10,7 @@
 				"--timeout",
 				"999999",
 				"--colors",
-				"${fileDirname}\\${fileBasenameNoExtension}.js"
+				"${fileDirname}\\${fileBasenameNoExtension}.mjs"
 				// Note to self: this is a very useful reference: https://code.visualstudio.com/docs/editor/variables-reference
 			],
 			"internalConsoleOptions": "openOnSessionStart",
@@ -25,13 +25,13 @@
 		{
 			/*
 			Runs the compiled version of the currently open TS file, assuming the compiled JS is in the `compiled` subfolder.
-			Example: if you had open the file "folder-name/file-name.ts", this would run "compiled/folder-name/file-name.js".
+			Example: if you had open the file "folder-name/file-name.mts", this would run "compiled/folder-name/file-name.mjs".
 			*/
 			"args": [
 				"--timeout",
 				"999999",
 				"--colors",
-				"${fileWorkspaceFolder}\\compiled\\${relativeFileDirname}\\${fileBasenameNoExtension}.js"
+				"${fileWorkspaceFolder}\\compiled\\${relativeFileDirname}\\${fileBasenameNoExtension}.mjs"
 			],
 			"internalConsoleOptions": "openOnSessionStart",
 			"name": "Test Current Fle (`compiled` folder)",
@@ -50,7 +50,7 @@
 				"--timeout",
 				"999999",
 				"--colors",
-				"${workspaceFolder}\\compiled\\**\\*.js"
+				"${workspaceFolder}\\compiled\\**\\*.mjs"
 			],
 			"internalConsoleOptions": "openOnSessionStart",
 			"name": "All Mocha Tests",
