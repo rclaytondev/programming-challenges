@@ -452,7 +452,6 @@ describe("whitespace()", () => {
 			+ "tnst" // pop the value and output as a number
 			+ "nnn" // exit the program
 		);
-		debugger;
 		assert.equal(whitespace(discard), "2");
 	});
 	it("correctly runs a program that duplicates the top item using a no-argument duplication instruction", () => {
