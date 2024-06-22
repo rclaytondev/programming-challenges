@@ -1,5 +1,3 @@
-import { assert } from "chai";
-import { describe } from "mocha";
 import { Tree } from "../../utils-ts/modules/math/Tree.mjs";
 
 const MODULO = 1234567891;
@@ -17,7 +15,7 @@ const iterateCyclically = function*<T>(items: T[], startValue: T) {
 	}
 };
 
-abstract class Edge {
+export abstract class Edge {
 	abstract type: "line" | "arc";
 	vertex1: number;
 	vertex2: number;
@@ -54,7 +52,7 @@ abstract class Edge {
 	}
 	abstract edgeOfSameType(vertex1: number, vertex2: number): Edge;
 }
-class LineEdge extends Edge {
+export class LineEdge extends Edge {
 	type: "line" = "line";
 	edgeOfSameType(vertex1: number, vertex2: number) {
 		return new  LineEdge(vertex1, vertex2);
@@ -64,14 +62,14 @@ class LineEdge extends Edge {
 		return `${Math.min(this.vertex1, this.vertex2)},${Math.max(this.vertex1, this.vertex2)}`;
 	}
 };
-class ArcEdge extends Edge {
+export class ArcEdge extends Edge {
 	type: "arc" = "arc";
 	edgeOfSameType(vertex1: number, vertex2: number) {
 		return new  ArcEdge(vertex1, vertex2);
 	}
 };
 
-class Region {
+export class Region {
 	edges: Edge[] = [];
 
 	constructor(edges: Edge[]) {
@@ -105,7 +103,7 @@ class Region {
 	}
 }
 
-class PartialCutting {
+export class PartialCutting {
 	numPoints: number;
 	edges: LineEdge[];
 	regions: Region[];
@@ -188,7 +186,7 @@ class PartialCutting {
 		return Math.abs(numWhite - numBlack);
 	}
 }
-const allCuttings = function*(numPoints: number) {
+export const allCuttings = function*(numPoints: number) {
 	const EMPTY_CUTTING = new PartialCutting(numPoints);
 	for(const cutting of Tree.leaves(EMPTY_CUTTING, c => c.getChildren())) {
 		if(cutting.edges.length * 2 === numPoints) {
@@ -196,56 +194,10 @@ const allCuttings = function*(numPoints: number) {
 		}
 	}
 };
-const coloringDifferenceSum = (numPoints: number) => {
+export const coloringDifferenceSum = (numPoints: number) => {
 	let sum = 0;
 	for(const cutting of allCuttings(numPoints)) {
 		sum += cutting.coloringDifference();
 	}
 	return sum;
 };
-
-describe("allCuttings", () => {
-	it("returns the correct number of cuttings for 2 points", () => {
-		const cuttings = [...allCuttings(2)];
-		assert.lengthOf(cuttings, 1);
-	});
-	it("returns the correct number of cuttings for 4 points", () => {
-		const cuttings = [...allCuttings(4)];
-		assert.lengthOf(cuttings, 2);
-	});
-	it("returns the correct number of cuttings for 6 points", () => {
-		const cuttings = [...allCuttings(6)];
-		assert.lengthOf(cuttings, 5);
-	});
-});
-describe("Region.cut", () => {
-	it("cuts the region along the given line segment, returning the resulting two smaller regions", () => {
-		const region = new Region([
-			new LineEdge(1, 5),
-			new ArcEdge(5, 8),
-			new LineEdge(8, 12),
-			new ArcEdge(12, 1),
-		]);
-		const subregions = region.cut(new LineEdge(6, 15));
-		const subregion1 = subregions.find(s => s.edges.some(e => e.hasVertex(8)));
-		const subregion2 = subregions.find(s => s !== subregion1);
-		assert.deepEqual(subregion1, new Region([
-			new ArcEdge(6, 8),
-			new LineEdge(8, 12),
-			new ArcEdge(12, 15),
-			new LineEdge(15, 6)
-		]));
-		assert.deepEqual(subregion2, new Region([
-			new ArcEdge(15, 1),
-			new LineEdge(1, 5),
-			new ArcEdge(5, 6),
-			new LineEdge(6, 15)
-		]));
-	});
-});
-describe("coloringDifferenceSum", () => {
-	// it("returns the correct answer for the input of 100 from Project Euler", () => {
-	// 	const sum = coloringDifferenceSum(100);
-	// 	assert.equal(sum % MODULO, 1172122931);
-	// });
-});
