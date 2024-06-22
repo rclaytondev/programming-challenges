@@ -1,6 +1,6 @@
 import { Polynomial } from "./PolynomialOverField.mjs";
 import { Field } from "../502-counting-castles/Field.mjs";
-import * as bigintMath from "../utils-ts/BigIntMath.mjs";
+import { BigintMath } from "../../utils-ts/modules/math/BigintMath.mjs";
 
 class Rational {
 	numerator: bigint;
@@ -12,7 +12,7 @@ class Rational {
 
 	simplify() {
 		if(this.numerator === 0n) { return new Rational(0n, 1n); }
-		const gcd = bigintMath.gcd(this.numerator, this.denominator);
+		const gcd = BigintMath.gcd(this.numerator, this.denominator);
 		return new Rational(this.numerator / gcd, this.denominator / gcd);
 	}
 	add(rational: Rational) {
