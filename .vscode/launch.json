@@ -14,7 +14,7 @@
 				// Note to self: this is a very useful reference: https://code.visualstudio.com/docs/editor/variables-reference
 			],
 			"internalConsoleOptions": "openOnSessionStart",
-			"name": "Mocha (same folder)",
+			"name": "Test Current File (same folder)",
 			"program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
 			"request": "launch",
 			"skipFiles": [
@@ -34,7 +34,7 @@
 				"${fileWorkspaceFolder}\\compiled\\${relativeFileDirname}\\${fileBasenameNoExtension}.js"
 			],
 			"internalConsoleOptions": "openOnSessionStart",
-			"name": "Mocha (`compiled` folder)",
+			"name": "Test Current Fle (`compiled` folder)",
 			"program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
 			"request": "launch",
 			"skipFiles": [
@@ -42,5 +42,24 @@
 			],
 			"type": "node"
 		},
+		{
+			/* Runs all of the tests in the folder `compiled/tests`. */
+			"args": [
+				"-u",
+				"tdd",
+				"--timeout",
+				"999999",
+				"--colors",
+				"${workspaceFolder}\\compiled\\**\\*.js"
+			],
+			"internalConsoleOptions": "openOnSessionStart",
+			"name": "All Mocha Tests",
+			"program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+			"request": "launch",
+			"skipFiles": [
+				"<node_internals>/**"
+			],
+			"type": "node"
+		}
 	]
 }
