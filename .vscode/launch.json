@@ -45,8 +45,8 @@
 		{
 			/* Runs all of the tests in the folder `compiled/tests`. */
 			"args": [
-				"-u",
-				"tdd",
+				// "-u",
+				// "tdd",
 				"--timeout",
 				"999999",
 				"--colors",

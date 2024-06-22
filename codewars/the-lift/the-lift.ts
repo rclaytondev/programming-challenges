@@ -204,7 +204,7 @@ describe("Example Tests", function() {
 			[5]
 		];
 		debugger;
-		const result = theLift(queues, 5, true);
+		const result = theLift(queues, 5, false);
 		expect(result).to.have.members([0, 1, 2, 3, 6, 5, 3, 2, 0]);
 	});
 	

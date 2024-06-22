@@ -13,7 +13,7 @@ const solve = () => {
 	for(let D = 1; D <= 50; D ++) {
 		if(Math.sqrt(D) % 1 === 0) { continue; }
 		const solution =  minSolution(D);
-		console.log(`For D=${D}, the minimal solution has x=${solution}`);
+		// console.log(`For D=${D}, the minimal solution has x=${solution}`);
 		if(solution > highestMinSolution) {
 			highestMinSolution = solution;
 			highestD = D;
@@ -21,4 +21,4 @@ const solve = () => {
 	}
 	return highestD;
 };
-console.log(solve());
+// console.log(solve());

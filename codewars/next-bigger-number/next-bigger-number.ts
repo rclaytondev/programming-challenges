@@ -29,7 +29,7 @@ export const nextBigger = function(input: number): number {
 	const permutations = [...digitPermutationsAbove(toDigits(input), input)]
 		.map(digits => fromDigits(digits))
 		.filter(n => n !== input);
-	console.log(permutations);
+	// console.log(permutations);
 	if(permutations.length <= 0) { return -1; }
 	return Math.min(...permutations);
 };

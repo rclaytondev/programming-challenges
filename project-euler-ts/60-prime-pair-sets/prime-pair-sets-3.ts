@@ -31,4 +31,3 @@ describe("solve", () => {
 		assert.equal(solve(4), 792);
 	});
 });
-console.log(solve(5));

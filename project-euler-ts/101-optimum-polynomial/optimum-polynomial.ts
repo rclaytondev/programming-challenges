@@ -111,4 +111,4 @@ const solve = () => {
 	return result;
 };
 
-console.log(solve());
+// console.log(solve());

@@ -22,7 +22,6 @@ const solve = () => {
 	}
 	throw new Error("Unexpected: reached end of infinite loop.");
 };
-console.log(solve());
 
 
 describe("isPentagonal()", () => {

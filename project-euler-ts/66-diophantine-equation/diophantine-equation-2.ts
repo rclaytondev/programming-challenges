@@ -27,7 +27,7 @@ const minSolution = (D: number) => {
 			return i;
 		}
 	}
-	console.log(`Sieve size: ${product}; proportion checked: ${offsets.length / product}`);
+	// console.log(`Sieve size: ${product}; proportion checked: ${offsets.length / product}`);
 	for(let step = product; step < Infinity; step += product) {
 		for(const offset of offsets) {
 			const potentialSolution = step + offset;
@@ -65,7 +65,7 @@ const solve = (upperBound: number = 1000) => {
 	for(let D = 1; D <= upperBound; D ++) {
 		if(Math.sqrt(D) % 1 === 0) { continue; }
 		const solution = minSolution(D);
-		console.log(`For D=${D}, the minimal solution has x=${solution}`);
+		// console.log(`For D=${D}, the minimal solution has x=${solution}`);
 		if(solution > highestMinSolution) {
 			highestMinSolution = solution;
 			highestD = D;

@@ -44,4 +44,3 @@ const solve = () => {
 	console.log(`the tuples are ${results.map(r => `[${r.numbers.join(", ")}]`)}`);
 	return getArraySum(results[0].numbers);
 };
-console.log(`the answer is ${solve()}`);
