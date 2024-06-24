@@ -190,6 +190,10 @@ export class PartialCutting {
 		const numBlack = coloring.filter(([region, color]) => color === "black").length;
 		return Math.abs(numWhite - numBlack);
 	}
+
+	// equals(cutting: PartialCutting) {
+
+	// }
 }
 export const allCuttings = function*(numPoints: number) {
 	const EMPTY_CUTTING = new PartialCutting(numPoints);

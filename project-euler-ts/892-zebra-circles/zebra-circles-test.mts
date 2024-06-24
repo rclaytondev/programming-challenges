@@ -1,6 +1,6 @@
 import { assert } from "chai";
 import { describe } from "mocha";
-import { ArcEdge, LineEdge, Region, allCuttings } from "./zebra-circles.mjs";
+import { ArcEdge, LineEdge, PartialCutting, Region, allCuttings } from "./zebra-circles.mjs";
 
 describe("allCuttings", () => {
 	it("returns the correct number of cuttings for 2 points", () => {
@@ -41,6 +41,74 @@ describe("Region.cut", () => {
 		]));
 	});
 });
+// describe("PartialCutting.equals", () => {
+// 	const createCutting = () => new PartialCutting(
+// 		4,
+// 		[new LineEdge(1, 2), new LineEdge(3, 4)],
+// 		[
+// 			new Region([
+// 				new ArcEdge(1, 2),
+// 				new LineEdge(2, 1)
+// 			]),
+// 			new Region([
+// 				new LineEdge(1, 2),
+// 				new ArcEdge(2, 3),
+// 				new LineEdge(3, 4),
+// 				new ArcEdge(4, 1),
+// 			]),
+// 			new Region([
+// 				new LineEdge(4, 3),
+// 				new ArcEdge(3, 4)
+// 			])
+// 		]
+// 	);
+// 	it("returns true when the cutting is deeply equal, but not a reference", () => {
+// 		const cutting1 = createCutting();
+// 		const cutting2 = createCutting();
+// 		assert.isTrue(cutting1.equals(cutting2));
+// 	});
+// 	it("returns true when the cutting is the same, but has edges in a different order", () => {
+// 		const cutting1 = createCutting();
+// 		const cutting2 = createCutting();
+// 		cutting2.edges = [cutting2.edges[1], cutting2.edges[0]];
+// 		assert.isTrue(cutting1.equals(cutting2));
+// 	});
+// 	it("returns true when the cutting is the same, but some line edges have vertices listed in a different order", () => {
+// 		const cutting1 = createCutting();
+// 		const cutting2 = createCutting();
+// 		const edge = cutting2.edges[0];
+// 		[edge.vertex1, edge.vertex2] = [edge.vertex2, edge.vertex1];
+// 		assert.isTrue(cutting1.equals(cutting2));
+// 	});
+// 	it("returns true when the cutting is the same, but has regions in a different order", () => {
+// 		const cutting1 = createCutting();
+// 		const cutting2 = createCutting();
+// 		cutting2.regions = [cutting2.regions[1], cutting2.regions[0], cutting2.regions[2]];
+// 		assert.isTrue(cutting1.equals(cutting2));
+// 	});
+// 	it("returns true when the cutting is the same, but some of the region's edges have been cyclically permuted", () => {
+// 		const cutting1 = createCutting();
+// 		const cutting2 = createCutting();
+// 		const region = cutting2.regions[1];
+// 		region.edges = [region.edges[2], region.edges[3], region.edges[0], region.edges[1]];
+// 		assert.isTrue(cutting1.equals(cutting2));
+// 	});
+// 	it("returns false when the cuttings are completely different", () => {
+// 		const cutting1 = createCutting();
+// 		const cutting2 = new PartialCutting(
+// 			4,
+// 			[new LineEdge(1, 4), new LineEdge(2, 3)],
+// 			[
+// 				new Region([
+// 					new ArcEdge(1, 2),
+// 					new LineEdge(2, 3),
+// 					new ArcEdge(3, 4),
+// 					new LineEdge(4, 1)
+// 				]),
+// 			]
+// 		)
+// 	});
+// });
 describe("coloringDifferenceSum", () => {
 	// it("returns the correct answer for the input of 100 from Project Euler", () => {
 	// 	const sum = coloringDifferenceSum(100);
