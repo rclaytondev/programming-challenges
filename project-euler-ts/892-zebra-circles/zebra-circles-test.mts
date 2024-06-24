@@ -15,6 +15,28 @@ describe("allCuttings", () => {
 		const cuttings = [...allCuttings(6)];
 		assert.lengthOf(cuttings, 5);
 	});
+	it("returns one of the correct cuttings for 4 points", () => {
+		const cuttings = [...allCuttings(4)];
+		const actual = cuttings.find(c => c.edges.some(e => e.vertex1 === 1 && e.vertex2 === 2));
+		assert.deepEqual(actual?.numPoints, 4);
+		assert.deepEqual(actual!.edges, [new LineEdge(1, 2), new LineEdge(3, 4)]);
+		assert.sameDeepMembers(actual!.regions, [
+			new Region([
+				new ArcEdge(1, 2),
+				new LineEdge(2, 1)
+			]),
+			new Region([
+				new LineEdge(1, 2),
+				new ArcEdge(2, 3),
+				new LineEdge(3, 4),
+				new ArcEdge(4, 1),
+			]),
+			new Region([
+				new ArcEdge(3, 4),
+				new LineEdge(4, 3)
+			])
+		]);
+	});
 });
 describe("Region.cut", () => {
 	it("cuts the region along the given line segment, returning the resulting two smaller regions", () => {
