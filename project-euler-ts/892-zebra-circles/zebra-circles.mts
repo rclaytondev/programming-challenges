@@ -167,22 +167,27 @@ export class PartialCutting {
 		const edges = new Set(region.edges.filter(e => e instanceof LineEdge).map(e => (e as LineEdge).toString()));
 		return this.regions.filter(r => r !== region && r.edges.some(e => e instanceof LineEdge && edges.has(e.toString())));
 	}
-	coloringDifference() {
-		let numWhite = 0;
-		let numBlack = 0;
+	getColoring() {
 		let visitedRegions = new Set<Region>();
+		const coloredRegions: [Region, "white" | "black"][] = [];
 		for(const { node, ancestors } of Tree.nodesAndAncestors(
 			this.regions[0], 
 			(region) => this.adjacentRegions(region).filter(r => !visitedRegions.has(r)))
 		) {
 			visitedRegions.add(node);
 			if(ancestors.length % 2 === 0) {
-				numWhite ++;
+				coloredRegions.push([node, "white"]);
 			}
 			else {
-				numBlack ++;
+				coloredRegions.push([node, "black"]);
 			}
 		}
+		return coloredRegions;
+	}
+	coloringDifference() {
+		const coloring = this.getColoring();
+		const numWhite = coloring.filter(([region, color]) => color === "white").length;
+		const numBlack = coloring.filter(([region, color]) => color === "black").length;
 		return Math.abs(numWhite - numBlack);
 	}
 }
