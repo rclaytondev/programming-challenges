@@ -63,6 +63,63 @@ describe("Region.cut", () => {
 		]));
 	});
 });
+describe("PartialCutting.connect", () => {
+	it("correctly returns the cutting obtained by connecting the two given vertices", () => {
+		const cutting = new PartialCutting(
+			4,
+			[new LineEdge(1, 2)],
+			[
+				new Region([
+					new ArcEdge(1, 2),
+					new LineEdge(2, 1)
+				]),
+				new Region([
+					new LineEdge(1, 2),
+					new ArcEdge(2, 1)
+				])
+			]
+		);
+		const result = cutting.connect(3, 4, cutting.regions[1]);
+		const expected = new PartialCutting(
+			4,
+			[new LineEdge(1, 2), new LineEdge(3, 4)],
+			[
+				new Region([
+					new ArcEdge(1, 2),
+					new LineEdge(2, 1)
+				]),
+				new Region([
+					new LineEdge(1, 2),
+					new ArcEdge(2, 3),
+					new LineEdge(3, 4),
+					new ArcEdge(4, 1),
+				]),
+				new Region([
+					new ArcEdge(3, 4),
+					new LineEdge(4, 3)
+				])
+			]
+		);
+		assert.equal(result.numPoints, 4);
+		assert.deepEqual(result.edges, [new LineEdge(1, 2), new LineEdge(3, 4)]);
+		assert.sameDeepMembers(result.regions, [
+			new Region([
+				new ArcEdge(1, 2),
+				new LineEdge(2, 1)
+			]),
+			new Region([
+				new LineEdge(1, 2),
+				new ArcEdge(2, 3),
+				new LineEdge(3, 4),
+				new ArcEdge(4, 1),
+			]),
+			new Region([
+				new ArcEdge(3, 4),
+				new LineEdge(4, 3)
+			])
+		]);
+	});
+});
 // describe("PartialCutting.equals", () => {
 // 	const createCutting = () => new PartialCutting(
 // 		4,
