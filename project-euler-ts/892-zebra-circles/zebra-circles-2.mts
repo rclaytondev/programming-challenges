@@ -53,7 +53,7 @@ export class Tree {
 
 		const POSITIVE_INTEGERS = new Sequence(n => n + 1);
 		for(let numChildren = 1; numChildren < numNodes; numChildren ++) {
-			for(const partition of POSITIVE_INTEGERS.multisetsWithSum(numChildren, numNodes - 1)) {
+			for(const partition of POSITIVE_INTEGERS.multisetsWithSum(numNodes - 1, numChildren)) {
 				for(const trees of Tree.multisetsOfTrees(partition)) {
 					yield new Tree(trees);
 				}
