@@ -1,4 +1,5 @@
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
+import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Sequence } from "../../utils-ts/modules/math/Sequence.mjs";
 
 const cartesianProduct = function*<T>(...arrays: T[][]): Generator<T[]> {
@@ -84,9 +85,21 @@ export class Tree {
 		}
 		const POSITIVE_INTEGERS = new Sequence(n => n + 1);
 		const equivalenceClasses = Tree.equivalenceClasses(this.children);
-		const numRearrangements = equivalenceClasses.map(({ size, tree }) => 
+		const partitionsOfEquivalenceClasses = equivalenceClasses.map(({ size, tree }) => 
 			[...POSITIVE_INTEGERS.multisetsWithSum(size)]
 		);
-		for(const combination of cartesianProduct())
+		let result = 0;
+		for(const partitions of cartesianProduct(...partitionsOfEquivalenceClasses)) {
+			let termOfSum = MathUtils.factorial(this.children.length);
+			for(const [partitionIndex, partition] of partitions.entries()) {
+				const numRearrangements = equivalenceClasses[partitionIndex].tree.numRearrangements();
+				for(const [index, num] of partition.entries()) {
+					termOfSum /= MathUtils.factorial(num);
+					termOfSum *= (numRearrangements - index);
+				}
+			}
+			result += termOfSum;
+		}
+		return result;
 	}
 }
