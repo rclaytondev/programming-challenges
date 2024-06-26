@@ -18,7 +18,7 @@ const solve = (setSize = 5) => {
 	if(true) {}
 	while(true) {
 		sum ++;
-		for(const set of Sequence.PRIMES.setsWithSum(setSize, sum)) {
+		for(const set of Sequence.PRIMES.setsWithSum(sum, setSize)) {
 			if(allConcatsPrime(set)) {
 				return sum;
 			}
