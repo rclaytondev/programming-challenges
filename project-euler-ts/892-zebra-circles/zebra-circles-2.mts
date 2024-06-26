@@ -63,4 +63,30 @@ export class Tree {
 	equals(tree: Tree): boolean {
 		return this.children.length === tree.children.length && this.children.every((t, i) => t.equals(tree.children[i]));
 	}
+
+	static equivalenceClasses(trees: Tree[]) {
+		/* Assumes the trees are already sorted so that equal trees are adjacent to each other. */
+		const results: { size: number, tree: Tree}[] = [];
+		for(const [index, tree] of trees.entries()) {
+			if(index === 0 || !tree.equals(trees[index - 1])) {
+				results.push({ size: 1, tree: tree });
+			}
+			else {
+				const lastResult = results[results.length - 1];
+				lastResult.size ++;
+			}
+		}
+		return results;
+	}
+	numRearrangements() {
+		if(this.children.length === 0) {
+			return 1;
+		}
+		const POSITIVE_INTEGERS = new Sequence(n => n + 1);
+		const equivalenceClasses = Tree.equivalenceClasses(this.children);
+		const numRearrangements = equivalenceClasses.map(({ size, tree }) => 
+			[...POSITIVE_INTEGERS.multisetsWithSum(size)]
+		);
+		for(const combination of cartesianProduct())
+	}
 }

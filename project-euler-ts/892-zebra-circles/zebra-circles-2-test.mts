@@ -48,3 +48,45 @@ describe("Tree.treesUpToReordering", () => {
 		assert.sameDeepMembers(trees, expected);
 	});
 });
+describe("Tree.numRearrangements", () => {
+	it("works for a tree with 1 rearrangement", () => {
+		const tree = new Tree([Tree.line(2), Tree.line(2)]);
+		const numRearrangements = tree.numRearrangements();
+		assert.equal(numRearrangements, 1);
+	});
+	it("works for a tree with 2 rearrangements", () => {
+		const tree = new Tree([Tree.line(2), Tree.line(3)]);
+		const numRearrangements = tree.numRearrangements();
+		assert.equal(numRearrangements, 2);
+	});
+	it("works for a tree where vertices other than the root can be rearranged", () => {
+		const tree = new Tree([
+			new Tree([]),
+			new Tree([
+				Tree.line(1),
+				Tree.line(1),
+				Tree.line(2),
+			])
+		]);
+		const numRearrangements = tree.numRearrangements();
+		assert.equal(numRearrangements, 2 * 3);
+	});
+	it("works when some of the children are equal", () => {
+		const tree = new Tree([
+			new Tree([]),
+			new Tree([Tree.line(1), Tree.line(2)]),
+			new Tree([Tree.line(1), Tree.line(2)])
+		]);
+		const numRearrangements = tree.numRearrangements();
+		assert.equal(numRearrangements, 2 * 2 * 3);
+	});
+	it("works when some of the children are rearrangements of each other", () => {
+		const tree = new Tree([
+			new Tree([]),
+			new Tree([Tree.line(1), Tree.line(2)]),
+			new Tree([Tree.line(2), Tree.line(1)])
+		]);
+		const numRearrangements = tree.numRearrangements();
+		assert.equal(numRearrangements, 2 * 2 * 3);
+	});
+});
