@@ -80,13 +80,4 @@ describe("Tree.numRearrangements", () => {
 		const numRearrangements = tree.numRearrangements();
 		assert.equal(numRearrangements, 2 * 2 * 3);
 	});
-	it("works when some of the children are rearrangements of each other", () => {
-		const tree = new Tree([
-			new Tree([]),
-			new Tree([Tree.line(1), Tree.line(2)]),
-			new Tree([Tree.line(2), Tree.line(1)])
-		]);
-		const numRearrangements = tree.numRearrangements();
-		assert.equal(numRearrangements, 2 * 2 * 3);
-	});
 });

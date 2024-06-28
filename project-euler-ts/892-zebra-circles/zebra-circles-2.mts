@@ -97,6 +97,10 @@ export class Tree {
 					termOfSum /= MathUtils.factorial(num);
 					termOfSum *= (numRearrangements - index);
 				}
+				for(const num of new Set(partition)) {
+					const count = partition.filter(n => n === num).length;
+					termOfSum /= MathUtils.factorial(count);
+				}
 			}
 			result += termOfSum;
 		}
