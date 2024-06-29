@@ -64,6 +64,9 @@ export class Edge {
 		)
 	}
 
+	sort() {
+		return new Edge(Math.min(this.vertex1, this.vertex2), Math.max(this.vertex1, this.vertex2));
+	}
 	toString() {
 		return `(${this.vertex1},${this.vertex2})`;
 	}
@@ -150,8 +153,8 @@ export class PartialCutting {
 		);
 	}
 	adjacentRegions(region: Region) {
-		const edges = new Set(region.edges.map(e => e.toString()));
-		return this.regions.filter(r => r !== region && r.edges.some(e => edges.has(e.toString())));
+		const edges = new Set(region.edges.map(e => e.sort().toString()));
+		return this.regions.filter(r => r !== region && r.edges.some(e => edges.has(e.sort().toString())));
 	}
 	getColoring() {
 		let visitedRegions = new Set<Region>();

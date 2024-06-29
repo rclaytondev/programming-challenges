@@ -15,7 +15,6 @@ describe("allCuttings", () => {
 		const cuttings = [...allCuttings(6)];
 		assert.lengthOf(cuttings, 5);
 	});
-	return;
 	it("returns one of the correct cuttings for 4 points", () => {
 		const cuttings = [...allCuttings(4)];
 		const actual = cuttings.find(c => c.edges.some(e => e.vertex1 === 1 && e.vertex2 === 2));
