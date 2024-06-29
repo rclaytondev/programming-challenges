@@ -210,3 +210,13 @@ export const coloringDifferenceSum = (numPoints: number) => {
 	}
 	return sum;
 };
+
+export const cuttingsWithColoringDifference = (numPoints: number, coloringDifference: number) => {
+	let num = 0;
+	for(const cutting of allCuttings(numPoints)) {
+		if(cutting.coloringDifference() === coloringDifference) {
+			num ++;
+		}
+	}
+	return num;
+};

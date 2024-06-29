@@ -1,6 +1,6 @@
 import { assert } from "chai";
 import { describe } from "mocha";
-import { ArcEdge, LineEdge, PartialCutting, Region, allCuttings } from "./zebra-circles.mjs";
+import { ArcEdge, LineEdge, PartialCutting, Region, allCuttings, cuttingsWithColoringDifference } from "./zebra-circles.mjs";
 
 describe("allCuttings", () => {
 	it("returns the correct number of cuttings for 2 points", () => {
@@ -195,4 +195,23 @@ describe("coloringDifferenceSum", () => {
 	// 	const sum = coloringDifferenceSum(100);
 	// 	assert.equal(sum % MODULO, 1172122931);
 	// });
+});
+describe("cuttingsWithColoringDifference", () => {
+	const testCases: [number, number, number][] = [
+		[1, 0, 1],
+		[2, 1, 2],
+		[3, 0, 3],
+		[3, 2, 2],
+		[4, 1, 12],
+		[4, 3, 2],
+		[5, 0, 15],
+		[5, 2, 10],
+		[5, 4, 2]
+	];
+	for(const [n, difference, expected] of testCases) {
+		it(`correctly calculates the number of cuttings with ${2 * n} points and a coloring difference of ${difference}`, () => {
+			const actual = cuttingsWithColoringDifference(2 * n, difference);
+			assert.equal(actual, expected);
+		});
+	}
 });
