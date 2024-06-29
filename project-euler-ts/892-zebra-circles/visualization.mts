@@ -1,7 +1,7 @@
 import { CanvasIO, canvasIO } from "../../utils-ts/modules/CanvasIO.mjs";
 import { Vector } from "../../utils-ts/modules/geometry/Vector.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
-import { allCuttings, LineEdge, PartialCutting, Region } from "./zebra-circles.mjs";
+import { allCuttings, Edge, PartialCutting, Region } from "./zebra-circles.mjs";
 
 const NUM_POINTS = 4;
 const TEXT_SIZE = 20;
@@ -16,24 +16,7 @@ class Visualization {
 		return center.add(new Vector(Math.cos(angle), -Math.sin(angle)).multiply(radius));
 	}
 	static displayRegion(region: Region, color: "white" | "black", center: Vector, radius: number, canvasIO: CanvasIO) {
-		canvasIO.ctx.beginPath();
-		canvasIO.moveTo(Visualization.getPoint(region.edges[0].vertex1, center, radius));
-		for(const edge of region.edges) {
-			if(edge instanceof LineEdge) {
-				canvasIO.lineTo(Visualization.getPoint(edge.vertex2, center, radius));
-			}
-			else {
-				canvasIO.arcAbout(
-					center,
-					Visualization.getPoint(edge.vertex1, center, radius),
-					Visualization.getPoint(edge.vertex2, center, radius),
-					radius
-				);
-			}
-		}
-		canvasIO.ctx.fillStyle = (color === "white") ? WHITE_COLOR : BLACK_COLOR;
-		canvasIO.ctx.fill();
-		debugger;
+		// TODO
 	}
 	static displayCutting(cutting: PartialCutting, center: Vector, radius: number, canvasIO: CanvasIO) {
 		// canvasIO.strokeCircle(center.x, center.y, radius);

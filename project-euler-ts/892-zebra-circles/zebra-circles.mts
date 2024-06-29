@@ -1,3 +1,4 @@
+import { Utils } from "../../utils-ts/modules/Utils.mjs";
 import { Tree } from "../../utils-ts/modules/math/Tree.mjs";
 
 const MODULO = 1234567891;
@@ -15,8 +16,7 @@ const iterateCyclically = function*<T>(items: T[], startValue: T) {
 	}
 };
 
-export abstract class Edge {
-	abstract type: "line" | "arc";
+export class Edge {
 	vertex1: number;
 	vertex2: number;
 	constructor(vertex1: number, vertex2: number) {
@@ -50,65 +50,57 @@ export abstract class Edge {
 		}
 		return result;
 	}
-	abstract edgeOfSameType(vertex1: number, vertex2: number): Edge;
-}
-export class LineEdge extends Edge {
-	type: "line" = "line";
-	edgeOfSameType(vertex1: number, vertex2: number) {
-		return new  LineEdge(vertex1, vertex2);
+
+	reverse() {
+		return new Edge(this.vertex2, this.vertex1);
+	}
+
+	static areClockwise(vertex1: number, vertex2: number, vertex3: number) {
+		/* Returns whether vertex1, vertex2, and vertex3 are arranged clockwise (in that order) around the circle. */
+		return (
+			(vertex1 < vertex2 && vertex2 < vertex3) ||
+			(vertex3 < vertex1 && vertex1 < vertex2) ||
+			(vertex2 < vertex3 && vertex3 < vertex1)
+		)
 	}
 
 	toString() {
-		return `${Math.min(this.vertex1, this.vertex2)},${Math.max(this.vertex1, this.vertex2)}`;
+		return `(${this.vertex1},${this.vertex2})`;
 	}
-};
-export class ArcEdge extends Edge {
-	type: "arc" = "arc";
-	edgeOfSameType(vertex1: number, vertex2: number) {
-		return new  ArcEdge(vertex1, vertex2);
-	}
-};
+}
 
 export class Region {
-	edges: Edge[] = [];
+	edges: Edge[] = []; // must be going clockwise starting from some point
 
 	constructor(edges: Edge[]) {
 		this.edges = edges;
 	}
 
-	cut(edge: LineEdge): [Region, Region] {
+	cut(edge: Edge): [Region, Region] {
 		const regions = [];
-		for(const [startVertex, endVertex] of [[edge.vertex1, edge.vertex2], [edge.vertex2, edge.vertex1]] as const) {
-			const startingEdge2 = this.edges.find(e => e.passesVertex(startVertex));
-			if(!startingEdge2) { throw new Error(`Did not find an edge passing vertex ${startVertex}`); }
-			const edges = [startingEdge2.edgeOfSameType(startVertex, startingEdge2.vertex2)];
-			for(const edge of [...iterateCyclically(this.edges, startingEdge2)].slice(1)) {
-				if(edge.passesVertex(endVertex)) {
-					edges.push(edge.edgeOfSameType(edge.vertex1, endVertex));
-					break;
-				}
-				edges.push(edge);
-			}
-			edges.push(new LineEdge(endVertex, startVertex));
-			regions.push(new Region(edges));
-		}
-		return regions as [Region, Region];
+		return [
+			new Region([
+				edge, 
+				...this.edges.filter(e => Edge.areClockwise(edge.vertex1, e.vertex1, edge.vertex2))
+			]),
+			new Region([
+				edge.reverse(), 
+				...this.edges.filter(e => !Edge.areClockwise(edge.vertex1, e.vertex1, edge.vertex2))
+			])
+		];
 	}
 	unusedVertices(numPoints: number) {
-		let vertices: number[] = [];
-		for(const edge of this.edges.filter(e => e instanceof ArcEdge)) {
-			vertices = [...vertices, ...edge.passedVertices(numPoints)];
-		}
-		return vertices;
+		const usedVertices = new Set(this.edges.map(e => e.passedVertices(numPoints)).flat(1));
+		return Utils.range(1, numPoints, "inclusive", "inclusive").filter(v => !usedVertices.has(v));
 	}
 }
 
 export class PartialCutting {
 	numPoints: number;
-	edges: LineEdge[];
+	edges: Edge[];
 	regions: Region[];
 
-	constructor(numPoints: number, edges: LineEdge[] = [], regions: Region[] = [new Region([new ArcEdge(1, numPoints)])]) {
+	constructor(numPoints: number, edges: Edge[] = [], regions: Region[] = [new Region([])]) {
 		this.numPoints = numPoints;
 		this.edges = edges;
 		this.regions = regions;
@@ -119,16 +111,10 @@ export class PartialCutting {
 			for(let vertex = 2; vertex <= this.numPoints; vertex += 2) {
 				yield new PartialCutting(
 					this.numPoints,
-					[new LineEdge(1, vertex)],
+					[new Edge(1, vertex)],
 					[
-						new Region([
-							new ArcEdge(1, vertex),
-							new LineEdge(vertex, 1)
-						]),
-						new Region([
-							new LineEdge(1, vertex),
-							new ArcEdge(vertex, 1)
-						])
+						new Region([new Edge(1, vertex)]),
+						new Region([new Edge(vertex, 1)])
 					]
 				)
 			}
@@ -156,7 +142,7 @@ export class PartialCutting {
 		return null;
 	}
 	connect(vertex1: number, vertex2: number, containingRegion: Region) {
-		const newEdge = new LineEdge(vertex1, vertex2);
+		const newEdge = new Edge(vertex1, vertex2);
 		return new PartialCutting(
 			this.numPoints,
 			[...this.edges, newEdge],
@@ -164,8 +150,8 @@ export class PartialCutting {
 		);
 	}
 	adjacentRegions(region: Region) {
-		const edges = new Set(region.edges.filter(e => e instanceof LineEdge).map(e => (e as LineEdge).toString()));
-		return this.regions.filter(r => r !== region && r.edges.some(e => e instanceof LineEdge && edges.has(e.toString())));
+		const edges = new Set(region.edges.map(e => e.toString()));
+		return this.regions.filter(r => r !== region && r.edges.some(e => edges.has(e.toString())));
 	}
 	getColoring() {
 		let visitedRegions = new Set<Region>();

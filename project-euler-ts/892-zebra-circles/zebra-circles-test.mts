@@ -1,6 +1,6 @@
 import { assert } from "chai";
 import { describe } from "mocha";
-import { ArcEdge, LineEdge, PartialCutting, Region, allCuttings, cuttingsWithColoringDifference } from "./zebra-circles.mjs";
+import { Edge, PartialCutting, Region, allCuttings, cuttingsWithColoringDifference } from "./zebra-circles.mjs";
 
 describe("allCuttings", () => {
 	it("returns the correct number of cuttings for 2 points", () => {
@@ -20,21 +20,17 @@ describe("allCuttings", () => {
 		const cuttings = [...allCuttings(4)];
 		const actual = cuttings.find(c => c.edges.some(e => e.vertex1 === 1 && e.vertex2 === 2));
 		assert.deepEqual(actual?.numPoints, 4);
-		assert.deepEqual(actual!.edges, [new LineEdge(1, 2), new LineEdge(3, 4)]);
+		assert.deepEqual(actual!.edges, [new Edge(1, 2), new Edge(3, 4)]);
 		assert.sameDeepMembers(actual!.regions, [
 			new Region([
-				new ArcEdge(1, 2),
-				new LineEdge(2, 1)
+				new Edge(2, 1),
 			]),
 			new Region([
-				new LineEdge(1, 2),
-				new ArcEdge(2, 3),
-				new LineEdge(3, 4),
-				new ArcEdge(4, 1),
+				new Edge(1, 2),
+				new Edge(3, 4),
 			]),
 			new Region([
-				new ArcEdge(3, 4),
-				new LineEdge(4, 3)
+				new Edge(4, 3)
 			])
 		]);
 	});
@@ -42,25 +38,19 @@ describe("allCuttings", () => {
 describe("Region.cut", () => {
 	it("cuts the region along the given line segment, returning the resulting two smaller regions", () => {
 		const region = new Region([
-			new LineEdge(1, 5),
-			new ArcEdge(5, 8),
-			new LineEdge(8, 12),
-			new ArcEdge(12, 1),
+			new Edge(1, 5),
+			new Edge(8, 12),
 		]);
-		const subregions = region.cut(new LineEdge(6, 15));
+		const subregions = region.cut(new Edge(6, 15));
 		const subregion1 = subregions.find(s => s.edges.some(e => e.hasVertex(8)));
 		const subregion2 = subregions.find(s => s !== subregion1);
 		assert.deepEqual(subregion1, new Region([
-			new ArcEdge(6, 8),
-			new LineEdge(8, 12),
-			new ArcEdge(12, 15),
-			new LineEdge(15, 6)
+			new Edge(8, 12),
+			new Edge(15, 6)
 		]));
 		assert.deepEqual(subregion2, new Region([
-			new ArcEdge(15, 1),
-			new LineEdge(1, 5),
-			new ArcEdge(5, 6),
-			new LineEdge(6, 15)
+			new Edge(1, 5),
+			new Edge(6, 15)
 		]));
 	});
 });
@@ -69,55 +59,45 @@ describe("PartialCutting.connect", () => {
 	it("correctly returns the cutting obtained by connecting the two given vertices", () => {
 		const cutting = new PartialCutting(
 			4,
-			[new LineEdge(1, 2)],
+			[new Edge(1, 2)],
 			[
 				new Region([
-					new ArcEdge(1, 2),
-					new LineEdge(2, 1)
+					new Edge(2, 1)
 				]),
 				new Region([
-					new LineEdge(1, 2),
-					new ArcEdge(2, 1)
+					new Edge(1, 2),
 				])
 			]
 		);
 		const result = cutting.connect(3, 4, cutting.regions[1]);
 		const expected = new PartialCutting(
 			4,
-			[new LineEdge(1, 2), new LineEdge(3, 4)],
+			[new Edge(1, 2), new Edge(3, 4)],
 			[
 				new Region([
-					new ArcEdge(1, 2),
-					new LineEdge(2, 1)
+					new Edge(2, 1)
 				]),
 				new Region([
-					new LineEdge(1, 2),
-					new ArcEdge(2, 3),
-					new LineEdge(3, 4),
-					new ArcEdge(4, 1),
+					new Edge(1, 2),
+					new Edge(3, 4),
 				]),
 				new Region([
-					new ArcEdge(3, 4),
-					new LineEdge(4, 3)
+					new Edge(4, 3)
 				])
 			]
 		);
 		assert.equal(result.numPoints, 4);
-		assert.deepEqual(result.edges, [new LineEdge(1, 2), new LineEdge(3, 4)]);
+		assert.deepEqual(result.edges, [new Edge(1, 2), new Edge(3, 4)]);
 		assert.sameDeepMembers(result.regions, [
 			new Region([
-				new ArcEdge(1, 2),
-				new LineEdge(2, 1)
+				new Edge(2, 1)
 			]),
 			new Region([
-				new LineEdge(1, 2),
-				new ArcEdge(2, 3),
-				new LineEdge(3, 4),
-				new ArcEdge(4, 1),
+				new Edge(1, 2),
+				new Edge(3, 4),
 			]),
 			new Region([
-				new ArcEdge(3, 4),
-				new LineEdge(4, 3)
+				new Edge(4, 3)
 			])
 		]);
 	});
