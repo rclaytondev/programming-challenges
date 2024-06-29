@@ -80,11 +80,11 @@ export class Region {
 		const regions = [];
 		return [
 			new Region([
-				edge, 
+				edge.reverse(), 
 				...this.edges.filter(e => Edge.areClockwise(edge.vertex1, e.vertex1, edge.vertex2))
 			]),
 			new Region([
-				edge.reverse(), 
+				edge, 
 				...this.edges.filter(e => !Edge.areClockwise(edge.vertex1, e.vertex1, edge.vertex2))
 			])
 		];
