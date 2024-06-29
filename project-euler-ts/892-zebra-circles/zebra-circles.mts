@@ -17,8 +17,8 @@ const iterateCyclically = function*<T>(items: T[], startValue: T) {
 };
 
 export class Edge {
-	vertex1: number;
-	vertex2: number;
+	readonly vertex1: number;
+	readonly vertex2: number;
 	constructor(vertex1: number, vertex2: number) {
 		this.vertex1 = vertex1;
 		this.vertex2 = vertex2;
@@ -70,10 +70,10 @@ export class Edge {
 }
 
 export class Region {
-	edges: Edge[] = []; // must be going clockwise starting from some point
+	readonly edges: readonly Edge[] = [];
 
 	constructor(edges: Edge[]) {
-		this.edges = edges;
+		this.edges = edges.sort((e1, e2) => Math.min(e1.vertex1, e1.vertex2) - Math.min(e2.vertex1, e2.vertex2));
 	}
 
 	cut(edge: Edge): [Region, Region] {
@@ -96,9 +96,9 @@ export class Region {
 }
 
 export class PartialCutting {
-	numPoints: number;
-	edges: Edge[];
-	regions: Region[];
+	readonly numPoints: number;
+	readonly edges: readonly Edge[];
+	readonly regions: readonly Region[];
 
 	constructor(numPoints: number, edges: Edge[] = [], regions: Region[] = [new Region([])]) {
 		this.numPoints = numPoints;

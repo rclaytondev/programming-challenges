@@ -21,7 +21,7 @@ describe("allCuttings", () => {
 		const actual = cuttings.find(c => c.edges.some(e => e.vertex1 === 1 && e.vertex2 === 2));
 		assert.deepEqual(actual?.numPoints, 4);
 		assert.deepEqual(actual!.edges, [new Edge(1, 2), new Edge(3, 4)]);
-		assert.sameDeepMembers(actual!.regions, [
+		assert.sameDeepMembers(actual!.regions as Region[], [
 			new Region([
 				new Edge(2, 1),
 			]),
@@ -88,7 +88,7 @@ describe("PartialCutting.connect", () => {
 		);
 		assert.equal(result.numPoints, 4);
 		assert.deepEqual(result.edges, [new Edge(1, 2), new Edge(3, 4)]);
-		assert.sameDeepMembers(result.regions, [
+		assert.sameDeepMembers(result.regions as Region[], [
 			new Region([
 				new Edge(2, 1)
 			]),
