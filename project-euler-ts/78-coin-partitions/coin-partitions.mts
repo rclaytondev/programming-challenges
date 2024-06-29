@@ -1,4 +1,11 @@
+let cachedResults: Map<string, number> = new Map();
+
 export const numPartitions = (num: number, lowerBound: number = 1) => {
+	const cachedResult = cachedResults.get(`${num},${lowerBound}`);
+	if(cachedResult != null) {
+		return cachedResult;
+	}
+
 	if(num === 0) {
 		return 1;
 	}
@@ -9,6 +16,7 @@ export const numPartitions = (num: number, lowerBound: number = 1) => {
 	for(let firstNumber = lowerBound; firstNumber <= num; firstNumber ++) {
 		result += numPartitions(num - firstNumber, firstNumber);
 	}
+	cachedResults.set(`${num},${lowerBound}`, result);
 	return result;
 };
 const solve = () => {
