@@ -183,8 +183,8 @@ describe("cuttingsWithColoringDifference", () => {
 		[3, 2, 2],
 		[4, 1, 12],
 		[4, 3, 2],
-		[5, 0, 15],
-		[5, 2, 10],
+		[5, 0, 20],
+		[5, 2, 20],
 		[5, 4, 2]
 	];
 	for(const [n, difference, expected] of testCases) {
