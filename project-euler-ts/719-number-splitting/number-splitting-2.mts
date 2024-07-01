@@ -45,7 +45,14 @@ export const isSNumber = (num: number) => {
 };
 
 const solve = (upperBound: number = UPPER_BOUND) => {
-	const sNumbers = Utils.range(1, Math.sqrt(upperBound)).map(n => n ** 2).filter(n => isSNumber(n));
+	let iterations = 0;
+	const sNumbers = Utils.range(1, Math.sqrt(upperBound)).map(n => n ** 2).filter(n => {
+		iterations ++;
+		if(iterations % 200 === 0) {
+			console.log(`finished ${iterations} iterations out of ${Math.sqrt(upperBound)} (proportion complete: ${(iterations / Math.sqrt(upperBound)).toFixed(4)})`);
+		}
+		return isSNumber(n);
+	});
 	return MathUtils.sum(sNumbers);
 };
 console.log(solve());
