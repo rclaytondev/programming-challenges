@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { Field, reals } from "../502-counting-castles/Field.mjs";
+import { Field } from "../../utils-ts/modules/math/Field.mjs";
 
 export class Polynomial<FieldElementType> {
 	field: Field<FieldElementType>;
@@ -78,7 +78,7 @@ describe("Polynomial.interpolate", () => {
 			[3, 9],
 			[5, 13]
 		] as [number, number][];
-		const polynomial = Polynomial.interpolate(points, reals);
+		const polynomial = Polynomial.interpolate(points, Field.REALS);
 		assert.sameMembers(polynomial.coefficients, [3, 2]);
 	});
 	it("correctly interpolates a parabola", () => {
@@ -87,18 +87,18 @@ describe("Polynomial.interpolate", () => {
 			[2, 4],
 			[3, 9]
 		] as [number, number][];
-		const polynomial = Polynomial.interpolate(points, reals);
+		const polynomial = Polynomial.interpolate(points, Field.REALS);
 		assert.sameMembers(polynomial.coefficients, [0, 0, 1]);
 	});
 });
 describe("Polynomial.multiply", () => {
 	it("can multiply a polynomial by a number", () => {
-		const polynomial = new Polynomial(reals, [1, 2, 3]);
+		const polynomial = new Polynomial(Field.REALS, [1, 2, 3]);
 		const result = polynomial.multiply(2);
 		assert.sameMembers(result.coefficients, [2, 4, 6]);
 	});
 	it("can multiply a polynomial by another polynomial", () => {
-		const result = new Polynomial(reals, [1, 1]).multiply(new Polynomial(reals, [1, 2]));
+		const result = new Polynomial(Field.REALS, [1, 1]).multiply(new Polynomial(Field.REALS, [1, 2]));
 		assert.sameMembers(result.coefficients, [1, 3, 2]);
 	});
 });

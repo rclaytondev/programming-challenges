@@ -1,5 +1,5 @@
 import { Polynomial } from "./PolynomialOverField.mjs";
-import { Field } from "../502-counting-castles/Field.mjs";
+import { Field } from "../../utils-ts/modules/math/Field.mjs";
 import { BigintMath } from "../../utils-ts/modules/math/BigintMath.mjs";
 
 class Rational {

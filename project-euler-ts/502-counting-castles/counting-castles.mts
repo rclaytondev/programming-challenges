@@ -1,6 +1,6 @@
 import { assert } from "chai";
-import { Matrix } from "./Matrix.mjs";
-import { integersModulo } from "./Field.mjs";
+import { Matrix } from "../../utils-ts/modules/math/Matrix.mjs";
+import { Field } from "../../utils-ts/modules/math/Field.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 
 const oppositeParity = (parity: "even" | "odd") => {
@@ -57,7 +57,7 @@ const initializeGraph = (width: number, height: number): [GraphNode[], Map<strin
 };
 const getAdjacencyMatrix = (nodes: GraphNode[], reverseNodeMap: Map<string, number>, height: number, modulo: number) : Matrix<number> => {
 	/* Returns the matrix where the entry in the ith row and the jth column is the number of paths from node i to node j. */
-	const field = integersModulo(modulo);
+	const field = Field.integersModulo(modulo);
 	const matrix = new Matrix(nodes.length, nodes.length, field);
 	for(const node of nodes) {
 		const nodeIndex = reverseNodeMap.get(node.toString())!;
