@@ -17,7 +17,7 @@ const adjacentPartitions = function*<T>(elements: T[]): Generator<T[][]> {
 	}
 };
 
-const isSNumber = (num: number) => {
+export const isSNumber = (num: number) => {
 	const digits = `${num}`.split("").map(n => Number.parseInt(n));
 	for(const partition of adjacentPartitions(digits)) {
 		const numbers = partition.map(digits => Number.parseInt(digits.join("")));
