@@ -33,4 +33,3 @@ const solve = (upperBound: number = UPPER_BOUND) => {
 	const sNumbers = Utils.range(1, Math.sqrt(upperBound)).map(n => n ** 2).filter(n => isSNumber(n));
 	return MathUtils.sum(sNumbers);
 };
-console.log(solve());

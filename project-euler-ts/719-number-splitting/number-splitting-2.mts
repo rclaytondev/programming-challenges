@@ -9,7 +9,18 @@ export const isSNumber = (num: number) => {
 
 	const digits = `${num}`.split("").map(n => Number.parseInt(n));
 	for(const partition of Tree.leaves({ size: 0, values: [] }, function*(partition: PartialPartition) {
-		if(partition.size < digits.length && MathUtils.sum(partition.values) ** 2 <= num) {
+		const largestPossibleSum = (
+			MathUtils.sum(partition.values.slice(0, partition.values.length - 1))
+			+ Number.parseInt(
+				(partition.values[partition.values.length - 1] ?? 0).toString() 
+				+ digits.slice(partition.size).join("")
+			)
+		);
+		if(
+			partition.size < digits.length && 
+			MathUtils.sum(partition.values) ** 2 <= num &&
+			largestPossibleSum ** 2 >= num
+		) {
 			const nextDigit = digits[partition.size];
 			yield {
 				size: partition.size + 1,
