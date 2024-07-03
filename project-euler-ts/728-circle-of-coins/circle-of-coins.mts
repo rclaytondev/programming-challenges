@@ -15,8 +15,8 @@ const getMovesMatrix = (numCoins: number, flipsPerMove: number) => {
 	return movesMatrix;
 };
 export const numSolvableStates = (numCoins: number, flipsPerMove: number, modulo: number = MODULO) => {
-	if(MathUtils.gcd(flipsPerMove, 2 * numCoins) === 1) {
-		return MathUtils.modularExponentiate(2, numCoins, modulo);
+	if(MathUtils.gcd(flipsPerMove, numCoins) === 1) {
+		return MathUtils.modularExponentiate(2, flipsPerMove % 2 === 0 ? numCoins - 1 : numCoins, modulo);
 	}
 	
 	const movesMatrix = getMovesMatrix(numCoins, flipsPerMove);
