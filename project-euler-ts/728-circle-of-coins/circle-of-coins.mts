@@ -15,10 +15,16 @@ const getMovesMatrix = (numCoins: number, flipsPerMove: number) => {
 	}
 	return movesMatrix;
 };
-export const getNullity = Utils.memoize((numCoins: number, flipsPerMove: number) => {
-	const movesMatrix = getMovesMatrix(numCoins, flipsPerMove);
-	return movesMatrix.nullity();
-}) as (numCoins: number, flipsPerMove: number) => number;
+export const getNullity = Utils.memoize(
+	(numCoins: number, flipsPerMove: number) => {
+		const movesMatrix = getMovesMatrix(numCoins, flipsPerMove);
+		return movesMatrix.nullity();
+	},
+	(numCoins: number, flipsPerMove: number) => {
+		numCoins = flipsPerMove + (numCoins % flipsPerMove);
+		return [numCoins, flipsPerMove] as [number, number];
+	}
+) as (numCoins: number, flipsPerMove: number) => number;
 export const numSolvableStates = (numCoins: number, flipsPerMove: number, modulo: number = MODULO) => {
 	if(MathUtils.gcd(flipsPerMove, numCoins) === 1) {
 		return MathUtils.modularExponentiate(2, flipsPerMove % 2 === 0 ? numCoins - 1 : numCoins, modulo);
