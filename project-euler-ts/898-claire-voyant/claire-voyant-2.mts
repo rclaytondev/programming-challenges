@@ -35,6 +35,10 @@ export const naiveProbabilitySum = (probabilities: Rational[], nextProbability: 
 };
 
 export const probabilitySum = (probabilities: Rational[], nextProbability: Rational): Rational => {
+	/* 
+	Note: this algorithm is completely wrong (as in, why did I ever think it would work in the first place?)
+	*/
+
 	if(probabilities.length === 1) {
 		const [probability] = probabilities;
 		return isProbable(probabilities, [probability, nextProbability]) ? probability : new Rational(1).subtract(probability);
