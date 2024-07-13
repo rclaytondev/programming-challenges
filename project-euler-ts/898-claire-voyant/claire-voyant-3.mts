@@ -59,18 +59,19 @@ export const getProductDistribution = (...distributions: DiscreteDistribution[])
 	}
 	else {
 		let extraTotalAbove = new Rational(0);
-		const maximumChange = Field.RATIONALS.product(...distributions.map(d => getMax(d.values())));
 		let result = distributions[0];
 		for(const [index, distribution] of distributions.slice(1).entries()) {
 			[result] = getProductDistribution(result, distribution);
+			const remaining = distributions.slice(index + 2);
+			const maximumChange = Field.RATIONALS.product(...remaining.map(d => getMax(d.values())));
 			for(const [value, probability] of result.entries()) {
 				if(value.isGreaterThan(maximumChange)) {
-					console.log(`deleted a value and added it to the total!`);
+					// console.log(`deleted a value and added it to the total!`);
 					result.delete(value);
 					extraTotalAbove = extraTotalAbove.add(probability);
 				}
 				else if(value.isLessThan(maximumChange.inverse())) {
-					console.log(`deleted a value!`);
+					// console.log(`deleted a value!`);
 					result.delete(value);
 				}
 			}
