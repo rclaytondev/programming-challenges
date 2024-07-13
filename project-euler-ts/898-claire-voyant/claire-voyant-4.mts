@@ -134,10 +134,28 @@ export const weightedSum = (stateDistribution: DiscreteDistribution, pointDistri
 	}
 	return result;
 };
+export const naiveWeightedSum = (stateDistribution: DiscreteDistribution, pointDistribution: DiscreteDistribution, rayDistribution: DiscreteDistribution) => {
+	let result = new BigRational(0);
+	for(const [rayStartPoint, rayWeight] of rayDistribution.entries()) {
+		for(const [value, probability] of stateDistribution.entries()) {
+			if(value.isGreaterThan(rayStartPoint)) {
+				result = result.add(probability.multiply(rayWeight));
+			}
+		}
+	}
+	for(const [point, pointWeight] of pointDistribution.entries()) {
+		for(const [value, probability] of stateDistribution.entries()) {
+			if(value.equals(point)) {
+				result = result.add(probability.multiply(pointWeight).multiply(new BigRational(1, 2)));
+			}
+		}
+	}
+	return result;
+};
 export const solve = (probabilities: BigRational[]) => {
 	probabilities = probabilities.filter(p => !p.equals(new BigRational(1, 2)));
 	probabilities = probabilities.map(p => p.isLessThan(new BigRational(1, 2)) ? new BigRational(1).subtract(p) : p);
 	const votingDistributions = getVotingDistributions(probabilities);
 	let [stateDistribution, rayDistribution, pointDistribution, result] = getFinalDistributions(votingDistributions);
-	return result.add(weightedSum(stateDistribution, pointDistribution, rayDistribution));
+	return result.add(naiveWeightedSum(stateDistribution, pointDistribution, rayDistribution));
 };
