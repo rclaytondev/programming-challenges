@@ -81,17 +81,17 @@ const getNextRayOrPointDistribution = (distribution: DiscreteDistribution, votin
 	return result;
 };
 const getFinalDistributions = (votingDistributions: DiscreteDistribution[]): [DiscreteDistribution, DiscreteDistribution, DiscreteDistribution, BigRational] => {
-	let stateDistribution = votingDistributions[0];
+	let stateDistribution = new DiscreteDistribution(new Map([[new BigRational(1), new BigRational(1)]]));
 	let rayDistribution = new DiscreteDistribution(new Map([[new BigRational(1), new BigRational(1)]]));
 	let pointDistribution = new DiscreteDistribution(new Map([[new BigRational(1), new BigRational(1)]]));
 	let extraTotalAbove = new BigRational(0);
 	let forwardIndex = 0;
-	let backwardIndex = votingDistributions.length - 1;
+	let backwardIndex = votingDistributions.length;
 
 	while(backwardIndex > forwardIndex) {
 		[stateDistribution] = getProductDistribution(stateDistribution, votingDistributions[forwardIndex]);
 		forwardIndex ++;
-		const remaining = votingDistributions.slice(forwardIndex + 1);
+		const remaining = votingDistributions.slice(forwardIndex);
 		const maximumChange = Field.BIG_RATIONALS.product(...remaining.map(d => getMax(d.values())));
 		for(const [value, probability] of stateDistribution.entries()) {
 			if(value.isGreaterThan(maximumChange)) {
@@ -105,13 +105,15 @@ const getFinalDistributions = (votingDistributions: DiscreteDistribution[]): [Di
 
 		if(backwardIndex === forwardIndex) { break; }
 
+		backwardIndex --;
 		rayDistribution = getNextRayOrPointDistribution(rayDistribution, votingDistributions[backwardIndex]);
 		pointDistribution = getNextRayOrPointDistribution(pointDistribution, votingDistributions[backwardIndex]);
-		backwardIndex --;
 	}
 	return [stateDistribution, rayDistribution, pointDistribution, extraTotalAbove];
 };
 export const solve = (probabilities: BigRational[]) => {
+	probabilities = probabilities.filter(p => !p.equals(new BigRational(1, 2)));
+	probabilities = probabilities.map(p => p.isLessThan(new BigRational(1, 2)) ? new BigRational(1).subtract(p) : p);
 	const votingDistributions = getVotingDistributions(probabilities);
 	let [stateDistribution, rayDistribution, pointDistribution, result] = getFinalDistributions(votingDistributions);
 	const sortedStateValues = stateDistribution.values().sort((a, b) => Number(b.compare(a)));
