@@ -122,12 +122,12 @@ export const weightedSum = (stateDistribution: DiscreteDistribution, pointDistri
 	for(const value of sortedStateValues) {
 		total = total.add(stateDistribution.get(value));
 		while(rayIndex < sortedRayValues.length && value.isGreaterThan(sortedRayValues[rayIndex])) {
-			result = result.add(total.multiply(rayDistribution.get(value)));
+			result = result.add(total.multiply(rayDistribution.get(sortedRayValues[rayIndex])));
 			rayIndex ++;
 		}
 		if(pointIndex < sortedPointValues.length && value.isGreaterThanOrEqualTo(sortedPointValues[pointIndex])) {
 			if(value.equals(sortedPointValues[pointIndex])) {
-				result = result.add(stateDistribution.get(value).multiply(pointDistribution.get(value)).multiply(new BigRational(1, 2)));
+				result = result.add(stateDistribution.get(value).multiply(pointDistribution.get(sortedPointValues[pointIndex])).multiply(new BigRational(1, 2)));
 			}
 			pointIndex ++;
 		}

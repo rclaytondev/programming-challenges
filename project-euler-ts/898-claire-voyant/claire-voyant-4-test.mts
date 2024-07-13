@@ -1,7 +1,8 @@
 import { assert } from "chai";
 import { describe, it } from "mocha";
-import { solve } from "./claire-voyant-4.mjs";
+import { naiveWeightedSum, solve, weightedSum } from "./claire-voyant-4.mjs";
 import { BigRational } from "../../utils-ts/modules/math/BigRational.mjs";
+import { DiscreteDistribution } from "./claire-voyant-4.mjs";
 
 describe("solve", () => {
 	it("works for the input [0.3]", () => {
@@ -22,5 +23,19 @@ describe("solve", () => {
 		];
 		const result = solve(inputs);
 		assert.deepEqual(result, new BigRational(832, 1000));
+	});
+});
+describe("weightedSum", () => {
+	it("works for a simple test case with 1 state and 1 ray", () => {
+		const stateDistribution = new DiscreteDistribution(new Map([
+			[new BigRational(3), new BigRational(1, 4)]
+		]));
+		const rayDistribution = new DiscreteDistribution(new Map([
+			[new BigRational(2), new BigRational(1, 5)]
+		]));
+		const pointDistribution = rayDistribution;
+		const expected = naiveWeightedSum(stateDistribution, pointDistribution, rayDistribution);
+		const actual = weightedSum(stateDistribution, pointDistribution, rayDistribution);
+		assert.deepEqual(actual, expected);
 	});
 });
