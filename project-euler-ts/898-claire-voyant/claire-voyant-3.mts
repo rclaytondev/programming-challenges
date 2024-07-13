@@ -50,9 +50,10 @@ export const getProductDistribution = (...distributions: DiscreteDistribution[])
 		const result = new DiscreteDistribution();
 		for(const [value1, probability1] of dist1.entries()) {
 			for(const [value2, probability2] of dist2.entries()) {
-				const previousProbability = result.get(value1.multiply(value2));
+				const product = value1.multiply(value2);
+				const previousProbability = result.get(product);
 				const newProbability = previousProbability.add(probability1.multiply(probability2));
-				result.set(value1.multiply(value2), newProbability);
+				result.set(product, newProbability);
 			}
 		}
 		return [result, new BigRational(0)];
