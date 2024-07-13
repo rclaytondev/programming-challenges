@@ -117,7 +117,6 @@ export const weightedSum = (stateDistribution: DiscreteDistribution, pointDistri
 	const sortedPointValues = pointDistribution.values().sort((a, b) => Number(b.compare(a)));
 	const sortedRayValues = rayDistribution.values().sort((a, b) => Number(b.compare(a)));
 	let total = new BigRational(0);
-	let pointIndex = 0;
 	let rayIndex = 0;
 	for(const [index, value] of sortedStateValues.entries()) {
 		const nextValue: BigRational | null = sortedStateValues[index + 1] ?? null;
@@ -129,12 +128,9 @@ export const weightedSum = (stateDistribution: DiscreteDistribution, pointDistri
 			result = result.add(total.multiply(rayDistribution.get(sortedRayValues[rayIndex])));
 			rayIndex ++;
 		}
-		if(pointIndex < sortedPointValues.length && value.isGreaterThanOrEqualTo(sortedPointValues[pointIndex])) {
-			if(value.equals(sortedPointValues[pointIndex])) {
-				result = result.add(stateDistribution.get(value).multiply(pointDistribution.get(sortedPointValues[pointIndex])).multiply(new BigRational(1, 2)));
-			}
-			pointIndex ++;
-		}
+	}
+	for(const [point, weight] of pointDistribution.entries()) {
+		result = result.add(stateDistribution.get(point).multiply(weight).divide(new BigRational(2)));
 	}
 	return result;
 };
