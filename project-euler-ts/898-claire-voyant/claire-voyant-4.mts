@@ -114,14 +114,14 @@ const getFinalDistributions = (votingDistributions: DiscreteDistribution[]): [Di
 export const solve = (probabilities: BigRational[]) => {
 	const votingDistributions = getVotingDistributions(probabilities);
 	let [stateDistribution, rayDistribution, pointDistribution, result] = getFinalDistributions(votingDistributions);
-	const sortedStateValues = stateDistribution.values().sort((a, b) => Number(a.compare(b)));
-	const sortedPointValues = pointDistribution.values().sort((a, b) => Number(a.compare(b)));
-	const sortedRayValues = rayDistribution.values().sort((a, b) => Number(a.compare(b)));
+	const sortedStateValues = stateDistribution.values().sort((a, b) => Number(b.compare(a)));
+	const sortedPointValues = pointDistribution.values().sort((a, b) => Number(b.compare(a)));
+	const sortedRayValues = rayDistribution.values().sort((a, b) => Number(b.compare(a)));
 	let total = new BigRational(0);
 	let pointIndex = 0;
 	let rayIndex = 0;
 	for(const value of sortedStateValues) {
-		total = total.add(value);
+		total = total.add(stateDistribution.get(value));
 		while(rayIndex < sortedRayValues.length && value.isGreaterThan(sortedRayValues[rayIndex])) {
 			result = result.add(total);
 			rayIndex ++;
