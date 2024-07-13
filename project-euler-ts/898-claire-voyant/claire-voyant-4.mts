@@ -75,7 +75,7 @@ const getNextRayOrPointDistribution = (distribution: DiscreteDistribution, votin
 	const result = new DiscreteDistribution();
 	for(const [value1, probability1] of distribution.entries()) {
 		for(const [value2, probability2] of votingDistribution.entries()) {
-			result.add(value1.subtract(value2), probability1.multiply(probability2));
+			result.add(value1.divide(value2), probability1.multiply(probability2));
 		}
 	}
 	return result;
@@ -125,12 +125,12 @@ export const solve = (probabilities: BigRational[]) => {
 	for(const value of sortedStateValues) {
 		total = total.add(stateDistribution.get(value));
 		while(rayIndex < sortedRayValues.length && value.isGreaterThan(sortedRayValues[rayIndex])) {
-			result = result.add(total);
+			result = result.add(total.multiply(rayDistribution.get(value)));
 			rayIndex ++;
 		}
 		if(pointIndex < sortedPointValues.length && value.isGreaterThanOrEqualTo(sortedPointValues[pointIndex])) {
 			if(value.equals(sortedPointValues[pointIndex])) {
-				result = result.add(value.multiply(new BigRational(1, 2)));
+				result = result.add(stateDistribution.get(value).multiply(pointDistribution.get(value)).multiply(new BigRational(1, 2)));
 			}
 			pointIndex ++;
 		}
