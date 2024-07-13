@@ -58,6 +58,7 @@ export const getProductDistribution = (...distributions: DiscreteDistribution[])
 		return [result, new BigRational(0)];
 	}
 	else {
+		let totalBelow = new BigRational(0); // not used in the calculations, but provides a lower bound for the answer
 		let extraTotalAbove = new BigRational(0);
 		let result = distributions[0];
 		for(const [index, distribution] of distributions.slice(1).entries()) {
@@ -73,11 +74,14 @@ export const getProductDistribution = (...distributions: DiscreteDistribution[])
 				else if(value.isLessThan(maximumChange.inverse())) {
 					// console.log(`deleted a value!`);
 					result.delete(value);
+					totalBelow = totalBelow.add(probability);
 				}
 			}
 			const numWithoutPruning = 2 ** (index + 2);
 			const numMerged = numWithoutPruning - result.size();
 			console.log(`done with ${index + 1}/${distributions.length - 1} steps; ${numMerged} of ${numWithoutPruning} states pruned (${(numMerged / numWithoutPruning * 100).toFixed(1)}% total)`);
+			console.log(`lower bound for answer: ${extraTotalAbove} = ${extraTotalAbove.toNumber()}`);
+			console.log(`upper bound for answer: ${new BigRational(1).subtract(totalBelow)} = ${new BigRational(1).subtract(totalBelow).toNumber()}`);
 		}
 		return [result, extraTotalAbove];
 		// return distributions.reduce((a, b) => getProductDistribution(a, b));
