@@ -85,14 +85,15 @@ export const getProductDistribution = (...distributions: DiscreteDistribution[])
 };
 
 const getDistributions = (probabilities: Rational[]) => {
-	probabilities = probabilities.filter(p => !p.equals(new Rational(1, 2)));
-	probabilities = probabilities.map(p => p.isLessThan(new Rational(1, 2)) ? new Rational(1).subtract(p) : p);
 	return probabilities.map(probability => new DiscreteDistribution(new Map([
 		[probability.divide(new Rational(1).subtract(probability)), probability],
 		[(new Rational(1).subtract(probability)).divide(probability), new Rational(1).subtract(probability)]
 	])));
 };
 export const solve = (probabilities: Rational[]) => {
+	probabilities = probabilities.filter(p => !p.equals(new Rational(1, 2)));
+	probabilities = probabilities.map(p => p.isLessThan(new Rational(1, 2)) ? new Rational(1).subtract(p) : p);
+	probabilities = probabilities.sort((a, b) => b.compare(a));
 	const distributions = getDistributions(probabilities);
 	const [productDistribution, extraTotalAbove] = getProductDistribution(...distributions);
 	const term1 = Field.RATIONALS.sum(...[...productDistribution.entries()]
