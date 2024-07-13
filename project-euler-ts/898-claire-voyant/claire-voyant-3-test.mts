@@ -14,7 +14,7 @@ describe("getProductDistribution", () => {
 			[new Rational(1), new Rational(1, 6)],
 			[new Rational(2), new Rational(5, 6)],
 		]));
-		const result = getProductDistribution(dist1, dist2);
+		const [result] = getProductDistribution(dist1, dist2);
 		assert.deepEqual(result, new DiscreteDistribution(new Map([
 			[new Rational(1), new Rational(1, 24)],
 			[new Rational(2), new Rational(7, 24)], // 1/4 * 5/6 + 1/2 * 1/6
@@ -35,12 +35,13 @@ describe("solve", () => {
 		assert.deepEqual(result, new Rational(80, 100));
 	});
 	it("works for the input [0.2, 0.4, 0.6, 0.8]", () => {
-		const result = solve([
+		const inputs = [
 			new Rational(20, 100),
 			new Rational(40, 100),
 			new Rational(60, 100),
 			new Rational(80, 100),
-		]);
+		];
+		const result = solve(inputs);
 		assert.deepEqual(result, new Rational(832, 1000));
 	});
 });
