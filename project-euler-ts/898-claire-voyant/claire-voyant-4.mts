@@ -119,9 +119,13 @@ export const weightedSum = (stateDistribution: DiscreteDistribution, pointDistri
 	let total = new BigRational(0);
 	let pointIndex = 0;
 	let rayIndex = 0;
-	for(const value of sortedStateValues) {
+	for(const [index, value] of sortedStateValues.entries()) {
+		const nextValue: BigRational | null = sortedStateValues[index + 1] ?? null;
 		total = total.add(stateDistribution.get(value));
-		while(rayIndex < sortedRayValues.length && value.isGreaterThan(sortedRayValues[rayIndex])) {
+		while(
+			(rayIndex < sortedRayValues.length && value.isGreaterThan(sortedRayValues[rayIndex])) &&
+			(nextValue == null || !nextValue.isGreaterThan(sortedRayValues[rayIndex]))
+		) {
 			result = result.add(total.multiply(rayDistribution.get(sortedRayValues[rayIndex])));
 			rayIndex ++;
 		}
