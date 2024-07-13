@@ -1,8 +1,8 @@
 import { Field } from "../../utils-ts/modules/math/Field.mjs";
-import { Rational } from "../../utils-ts/modules/math/Rational.mjs";
+import { BigRational } from "../../utils-ts/modules/math/BigRational.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
-const getMax = (rationals: Rational[]) => {
+const getMax = (rationals: BigRational[]) => {
 	let max = rationals[0];
 	for(const rational of rationals.slice(1)) {
 		if(rational.isGreaterThan(max)) {
@@ -13,37 +13,37 @@ const getMax = (rationals: Rational[]) => {
 };
 
 export class DiscreteDistribution {
-	private entriesMap: Map<string, Rational> = new Map();
-	constructor(entries: Map<Rational, Rational> = new Map()) {
+	private entriesMap: Map<string, BigRational> = new Map();
+	constructor(entries: Map<BigRational, BigRational> = new Map()) {
 		for(const [key, value] of entries) {
 			this.entriesMap.set(key.toString(), value);
 		}
 	}
-	get(value: Rational) {
-		return this.entriesMap.get(value.toString()) ?? new Rational(0);
+	get(value: BigRational) {
+		return this.entriesMap.get(value.toString()) ?? new BigRational(0);
 	}
-	set(value: Rational, probability: Rational) {
+	set(value: BigRational, probability: BigRational) {
 		this.entriesMap.set(value.toString(), probability);
 	}
-	delete(value: Rational) {
+	delete(value: BigRational) {
 		this.entriesMap.delete(value.toString());
 	}
-	*entries(): Generator<[Rational, Rational]> {
+	*entries(): Generator<[BigRational, BigRational]> {
 		for(const [valueString, probability] of this.entriesMap) {
-			yield [Rational.parse(valueString), probability];
+			yield [BigRational.parse(valueString), probability];
 		}
 	}
 	size() {
 		return this.entriesMap.size;
 	}
 	values() {
-		return [...this.entriesMap.keys()].map(k => Rational.parse(k));
+		return [...this.entriesMap.keys()].map(k => BigRational.parse(k));
 	}
 }
 
-export const getProductDistribution = (...distributions: DiscreteDistribution[]): [DiscreteDistribution, Rational] => {
+export const getProductDistribution = (...distributions: DiscreteDistribution[]): [DiscreteDistribution, BigRational] => {
 	if(distributions.length === 1) {
-		return [distributions[0], new Rational(0)];
+		return [distributions[0], new BigRational(0)];
 	}
 	else if(distributions.length === 2) {
 		const [dist1, dist2] = distributions;
@@ -55,15 +55,15 @@ export const getProductDistribution = (...distributions: DiscreteDistribution[])
 				result.set(value1.multiply(value2), newProbability);
 			}
 		}
-		return [result, new Rational(0)];
+		return [result, new BigRational(0)];
 	}
 	else {
-		let extraTotalAbove = new Rational(0);
+		let extraTotalAbove = new BigRational(0);
 		let result = distributions[0];
 		for(const [index, distribution] of distributions.slice(1).entries()) {
 			[result] = getProductDistribution(result, distribution);
 			const remaining = distributions.slice(index + 2);
-			const maximumChange = Field.RATIONALS.product(...remaining.map(d => getMax(d.values())));
+			const maximumChange = Field.BIG_RATIONALS.product(...remaining.map(d => getMax(d.values())));
 			for(const [value, probability] of result.entries()) {
 				if(value.isGreaterThan(maximumChange)) {
 					// console.log(`deleted a value and added it to the total!`);
@@ -84,24 +84,24 @@ export const getProductDistribution = (...distributions: DiscreteDistribution[])
 	}
 };
 
-const getDistributions = (probabilities: Rational[]) => {
+const getDistributions = (probabilities: BigRational[]) => {
 	return probabilities.map(probability => new DiscreteDistribution(new Map([
-		[probability.divide(new Rational(1).subtract(probability)), probability],
-		[(new Rational(1).subtract(probability)).divide(probability), new Rational(1).subtract(probability)]
+		[probability.divide(new BigRational(1).subtract(probability)), probability],
+		[(new BigRational(1).subtract(probability)).divide(probability), new BigRational(1).subtract(probability)]
 	])));
 };
-export const solve = (probabilities: Rational[]) => {
-	probabilities = probabilities.filter(p => !p.equals(new Rational(1, 2)));
-	probabilities = probabilities.map(p => p.isLessThan(new Rational(1, 2)) ? new Rational(1).subtract(p) : p);
-	probabilities = probabilities.sort((a, b) => b.compare(a));
+export const solve = (probabilities: BigRational[]) => {
+	probabilities = probabilities.filter(p => !p.equals(new BigRational(1, 2)));
+	probabilities = probabilities.map(p => p.isLessThan(new BigRational(1, 2)) ? new BigRational(1).subtract(p) : p);
+	probabilities = probabilities.sort((a, b) => Number(b.compare(a)));
 	const distributions = getDistributions(probabilities);
 	const [productDistribution, extraTotalAbove] = getProductDistribution(...distributions);
-	const term1 = Field.RATIONALS.sum(...[...productDistribution.entries()]
-		.filter(([value, probability]) => value.isGreaterThan(new Rational(1)))
+	const term1 = Field.BIG_RATIONALS.sum(...[...productDistribution.entries()]
+		.filter(([value, probability]) => value.isGreaterThan(new BigRational(1)))
 		.map(([value, probability]) => probability)
 	);
-	const term2 = productDistribution.get(new Rational(1)).multiply(new Rational(1, 2));
+	const term2 = productDistribution.get(new BigRational(1)).multiply(new BigRational(1, 2));
 	return extraTotalAbove.add(term1).add(term2);
 };
-const THE_PROBLEM = Utils.range(25, 75, "inclusive", "inclusive").map(n => new Rational(n, 100));
+const THE_PROBLEM = Utils.range(25, 75, "inclusive", "inclusive").map(n => new BigRational(n, 100));
 console.log(solve(THE_PROBLEM));
