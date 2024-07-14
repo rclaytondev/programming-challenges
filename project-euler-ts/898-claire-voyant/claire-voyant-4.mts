@@ -52,7 +52,7 @@ const getMax = (rationals: BigRational[]) => {
 	}
 	return max;
 };
-export const getProductDistribution = (...distributions: DiscreteDistribution[]): [DiscreteDistribution, BigRational] => {
+export const getProductDistribution = (...distributions: DiscreteDistribution[]) => {
 	const [dist1, dist2] = distributions;
 	const result = new DiscreteDistribution();
 	for(const [value1, probability1] of dist1.entries()) {
@@ -63,7 +63,7 @@ export const getProductDistribution = (...distributions: DiscreteDistribution[])
 			result.set(product, newProbability);
 		}
 	}
-	return [result, new BigRational(0)];
+	return result;
 };
 
 const getVotingDistributions = (probabilities: BigRational[]) => {
@@ -89,7 +89,7 @@ const getFinalDistributions = (votingDistributions: DiscreteDistribution[]): [Di
 	let backwardIndex = votingDistributions.length;
 
 	while(backwardIndex > forwardIndex) {
-		[stateDistribution] = getProductDistribution(stateDistribution, votingDistributions[forwardIndex]);
+		stateDistribution = getProductDistribution(stateDistribution, votingDistributions[forwardIndex]);
 		forwardIndex ++;
 		const remaining = votingDistributions.slice(forwardIndex);
 		const maximumChange = Field.BIG_RATIONALS.product(...remaining.map(d => getMax(d.values())));
