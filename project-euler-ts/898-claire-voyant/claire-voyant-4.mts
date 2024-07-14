@@ -159,6 +159,7 @@ export const naiveWeightedSum = (stateDistribution: DiscreteDistribution, rayDis
 export const solve = (probabilities: BigRational[]) => {
 	probabilities = probabilities.filter(p => !p.equals(new BigRational(1, 2)));
 	probabilities = probabilities.map(p => p.isLessThan(new BigRational(1, 2)) ? new BigRational(1).subtract(p) : p);
+	probabilities = probabilities.sort((a, b) => Number(b.compare(a)));
 	const votingDistributions = getVotingDistributions(probabilities);
 	let [stateDistribution, rayDistribution, result] = getFinalDistributions(votingDistributions);
 	return result.add(weightedSum(stateDistribution, rayDistribution));
