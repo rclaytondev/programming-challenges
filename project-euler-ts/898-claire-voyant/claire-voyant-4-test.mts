@@ -33,9 +33,8 @@ describe("weightedSum", () => {
 		const rayDistribution = new DiscreteDistribution(new Map([
 			[new BigRational(2), new BigRational(1, 5)]
 		]));
-		const pointDistribution = rayDistribution;
-		const expected = naiveWeightedSum(stateDistribution, pointDistribution, rayDistribution);
-		const actual = weightedSum(stateDistribution, pointDistribution, rayDistribution);
+		const expected = naiveWeightedSum(stateDistribution, rayDistribution);
+		const actual = weightedSum(stateDistribution, rayDistribution);
 		assert.deepEqual(actual, expected);
 	});
 	it("works for a simple test case with 2 states and 1 ray", () => {
@@ -46,9 +45,8 @@ describe("weightedSum", () => {
 		const rayDistribution = new DiscreteDistribution(new Map([
 			[new BigRational(2), new BigRational(1, 5)]
 		]));
-		const pointDistribution = rayDistribution;
-		const expected = naiveWeightedSum(stateDistribution, pointDistribution, rayDistribution);
-		const actual = weightedSum(stateDistribution, pointDistribution, rayDistribution);
+		const expected = naiveWeightedSum(stateDistribution, rayDistribution);
+		const actual = weightedSum(stateDistribution, rayDistribution);
 		assert.deepEqual(actual, expected);
 	});
 	it("works for a test case with 2 states and 2 rays", () => {
@@ -60,9 +58,8 @@ describe("weightedSum", () => {
 			[new BigRational(1), new BigRational(1, 5)],
 			[new BigRational(3), new BigRational(1, 6)]
 		]));
-		const pointDistribution = rayDistribution;
-		const expected = naiveWeightedSum(stateDistribution, pointDistribution, rayDistribution);
-		const actual = weightedSum(stateDistribution, pointDistribution, rayDistribution);
+		const expected = naiveWeightedSum(stateDistribution, rayDistribution);
+		const actual = weightedSum(stateDistribution, rayDistribution);
 		assert.deepEqual(actual, expected);
 	});
 	it("works for a test case where one state is at the endpoint of a ray", () => {
@@ -73,9 +70,8 @@ describe("weightedSum", () => {
 			[new BigRational(2), new BigRational(1, 5)],
 			[new BigRational(4), new BigRational(1, 6)]
 		]));
-		const pointDistribution = rayDistribution;
-		const expected = naiveWeightedSum(stateDistribution, pointDistribution, rayDistribution);
-		const actual = weightedSum(stateDistribution, pointDistribution, rayDistribution);
+		const expected = naiveWeightedSum(stateDistribution, rayDistribution);
+		const actual = weightedSum(stateDistribution, rayDistribution);
 		assert.deepEqual(actual, expected);
 	});
 });
