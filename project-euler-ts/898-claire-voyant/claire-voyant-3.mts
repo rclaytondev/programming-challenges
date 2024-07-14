@@ -78,11 +78,11 @@ export const getProductDistribution = (...distributions: DiscreteDistribution[])
 					totalBelow = totalBelow.add(probability);
 				}
 			}
-			const numWithoutPruning = 2 ** (index + 2);
-			const numMerged = numWithoutPruning - result.size();
-			console.log(`done with ${index + 1}/${distributions.length - 1} steps; ${numMerged} of ${numWithoutPruning} states pruned (${(numMerged / numWithoutPruning * 100).toFixed(1)}% total)`);
-			console.log(`lower bound for answer: ${extraTotalAbove} = ${extraTotalAbove.toNumber()}`);
-			console.log(`upper bound for answer: ${new BigRational(1).subtract(totalBelow)} = ${new BigRational(1).subtract(totalBelow).toNumber()}`);
+			// const numWithoutPruning = 2 ** (index + 2);
+			// const numMerged = numWithoutPruning - result.size();
+			// console.log(`done with ${index + 1}/${distributions.length - 1} steps; ${numMerged} of ${numWithoutPruning} states pruned (${(numMerged / numWithoutPruning * 100).toFixed(1)}% total)`);
+			// console.log(`lower bound for answer: ${extraTotalAbove} = ${extraTotalAbove.toNumber()}`);
+			// console.log(`upper bound for answer: ${new BigRational(1).subtract(totalBelow)} = ${new BigRational(1).subtract(totalBelow).toNumber()}`);
 		}
 		return [result, extraTotalAbove];
 		// return distributions.reduce((a, b) => getProductDistribution(a, b));
