@@ -51,4 +51,31 @@ describe("weightedSum", () => {
 		const actual = weightedSum(stateDistribution, pointDistribution, rayDistribution);
 		assert.deepEqual(actual, expected);
 	});
+	it("works for a test case with 2 states and 2 rays", () => {
+		const stateDistribution = new DiscreteDistribution(new Map([
+			[new BigRational(2), new BigRational(1, 3)],
+			[new BigRational(4), new BigRational(1, 4)]
+		]));
+		const rayDistribution = new DiscreteDistribution(new Map([
+			[new BigRational(1), new BigRational(1, 5)],
+			[new BigRational(3), new BigRational(1, 6)]
+		]));
+		const pointDistribution = rayDistribution;
+		const expected = naiveWeightedSum(stateDistribution, pointDistribution, rayDistribution);
+		const actual = weightedSum(stateDistribution, pointDistribution, rayDistribution);
+		assert.deepEqual(actual, expected);
+	});
+	it("works for a test case where one state is at the endpoint of a ray", () => {
+		const stateDistribution = new DiscreteDistribution(new Map([
+			[new BigRational(4), new BigRational(1, 4)]
+		]));
+		const rayDistribution = new DiscreteDistribution(new Map([
+			[new BigRational(2), new BigRational(1, 5)],
+			[new BigRational(4), new BigRational(1, 6)]
+		]));
+		const pointDistribution = rayDistribution;
+		const expected = naiveWeightedSum(stateDistribution, pointDistribution, rayDistribution);
+		const actual = weightedSum(stateDistribution, pointDistribution, rayDistribution);
+		assert.deepEqual(actual, expected);
+	});
 });

@@ -114,7 +114,11 @@ const getFinalDistributions = (votingDistributions: DiscreteDistribution[]): [Di
 export const weightedSum = (stateDistribution: DiscreteDistribution, pointDistribution: DiscreteDistribution, rayDistribution: DiscreteDistribution) => {
 	let result = new BigRational(0);
 	const sortedStateValues = stateDistribution.values().sort((a, b) => Number(b.compare(a)));
-	const sortedRayValues = rayDistribution.values().sort((a, b) => Number(b.compare(a)));
+	const sortedRayValues = (rayDistribution
+		.values()
+		.filter(v => sortedStateValues.length === 0 || v.isLessThan(sortedStateValues[0]))
+		.sort((a, b) => Number(b.compare(a)))
+	);
 	let total = new BigRational(0);
 	let rayIndex = 0;
 	for(const [index, value] of sortedStateValues.entries()) {
