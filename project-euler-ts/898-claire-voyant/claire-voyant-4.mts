@@ -102,13 +102,21 @@ const getFinalDistributions = (votingDistributions: DiscreteDistribution[]): [Di
 				stateDistribution.delete(value);
 			}
 		}
+		console.log("-----------------------------");
 		console.log(`finished forward iteration ${forwardIndex}`);
 
+		const numWithoutPruning = 2 ** forwardIndex;
+		const numMerged = numWithoutPruning - stateDistribution.size();
+		console.log(`${numMerged} of ${numWithoutPruning} states pruned (${(numMerged / numWithoutPruning * 100).toFixed(1)}% total)`);
+		
 		if(backwardIndex === forwardIndex) { break; }
 
 		backwardIndex --;
 		rayDistribution = getNextRayOrPointDistribution(rayDistribution, votingDistributions[backwardIndex]);
 		console.log(`finished backward iteration ${backwardIndex}`);
+		const numWithoutPruning2 = 2 ** (votingDistributions.length - backwardIndex);
+		const numMerged2 = numWithoutPruning2 - rayDistribution.size();
+		console.log(`${numMerged2} of ${numWithoutPruning2} rays pruned (${(numMerged2 / numWithoutPruning2 * 100).toFixed(1)}% total)`);
 	}
 	return [stateDistribution, rayDistribution, extraTotalAbove];
 };
@@ -165,5 +173,7 @@ export const solve = (probabilities: BigRational[]) => {
 	return result.add(weightedSum(stateDistribution, rayDistribution));
 };
 
+console.time();
 const THE_PROBLEM = Utils.range(25, 75, "inclusive", "inclusive").map(n => new BigRational(n, 100));
 console.log(solve(THE_PROBLEM));
+console.timeEnd();
