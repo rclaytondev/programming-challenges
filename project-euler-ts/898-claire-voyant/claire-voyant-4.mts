@@ -1,5 +1,6 @@
 import { BigRational } from "../../utils-ts/modules/math/BigRational.mjs";
 import { Field } from "../../utils-ts/modules/math/Field.mjs";
+import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
 /* 
 Idea behind the algorithm:
@@ -102,12 +103,14 @@ const getFinalDistributions = (votingDistributions: DiscreteDistribution[]): [Di
 				stateDistribution.delete(value);
 			}
 		}
+		console.log(`finished forward iteration ${forwardIndex}`);
 
 		if(backwardIndex === forwardIndex) { break; }
 
 		backwardIndex --;
 		rayDistribution = getNextRayOrPointDistribution(rayDistribution, votingDistributions[backwardIndex]);
 		pointDistribution = getNextRayOrPointDistribution(pointDistribution, votingDistributions[backwardIndex]);
+		console.log(`finished backward iteration ${backwardIndex}`);
 	}
 	return [stateDistribution, rayDistribution, pointDistribution, extraTotalAbove];
 };
@@ -160,5 +163,8 @@ export const solve = (probabilities: BigRational[]) => {
 	probabilities = probabilities.map(p => p.isLessThan(new BigRational(1, 2)) ? new BigRational(1).subtract(p) : p);
 	const votingDistributions = getVotingDistributions(probabilities);
 	let [stateDistribution, rayDistribution, pointDistribution, result] = getFinalDistributions(votingDistributions);
-	return result.add(naiveWeightedSum(stateDistribution, pointDistribution, rayDistribution));
+	return result.add(weightedSum(stateDistribution, pointDistribution, rayDistribution));
 };
+
+const THE_PROBLEM = Utils.range(25, 75, "inclusive", "inclusive").map(n => new BigRational(n, 100));
+console.log(solve(THE_PROBLEM));
