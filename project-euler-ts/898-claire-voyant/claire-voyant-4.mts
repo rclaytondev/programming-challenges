@@ -59,7 +59,7 @@ export const getProductDistribution = (...distributions: DiscreteDistribution[])
 		for(const [value2, probability2] of dist2.entries()) {
 			const product = value1.multiply(value2);
 			const previousProbability = result.get(product);
-			const newProbability = previousProbability.add(probability1.multiply(probability2));
+			const newProbability = previousProbability.add(probability1.multiply(probability2, false));
 			result.set(product, newProbability);
 		}
 	}
@@ -76,7 +76,7 @@ const getNextRayOrPointDistribution = (distribution: DiscreteDistribution, votin
 	const result = new DiscreteDistribution();
 	for(const [value1, probability1] of distribution.entries()) {
 		for(const [value2, probability2] of votingDistribution.entries()) {
-			result.add(value1.divide(value2), probability1.multiply(probability2));
+			result.add(value1.divide(value2), probability1.multiply(probability2, false));
 		}
 	}
 	return result;
@@ -134,7 +134,7 @@ export const weightedSum = (stateDistribution: DiscreteDistribution, rayDistribu
 		}
 	}
 	for(const [point, weight] of rayDistribution.entries()) {
-		result = result.add(stateDistribution.get(point).multiply(weight).divide(new BigRational(2)));
+		result = result.add(stateDistribution.get(point).multiply(weight, false).divide(new BigRational(2), false));
 	}
 	return result;
 };
