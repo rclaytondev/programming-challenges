@@ -173,7 +173,7 @@ export const solve = (probabilities: BigRational[]) => {
 	return result.add(weightedSum(stateDistribution, rayDistribution));
 };
 
-console.time();
-const THE_PROBLEM = Utils.range(25, 75, "inclusive", "inclusive").map(n => new BigRational(n, 100));
-console.log(solve(THE_PROBLEM));
-console.timeEnd();
+// console.time();
+// const THE_PROBLEM = Utils.range(25, 75, "inclusive", "inclusive").map(n => new BigRational(n, 100));
+// console.log(solve(THE_PROBLEM));
+// console.timeEnd();
