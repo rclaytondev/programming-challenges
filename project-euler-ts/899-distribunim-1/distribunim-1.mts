@@ -8,21 +8,27 @@ const getChildren = function*(pile1: number, pile2: number): Generator<[number, 
 		yield [pile1 - numStones, pile2 - (pile1 - numStones)];
 	}
 };
-const isLosing = Utils.memoize(
-	(pile1: number, pile2: number): boolean => [...getChildren(pile1, pile2)].every(c => !isLosing(...c)),
+const isLosing: (pile1: number, pile2: number) => boolean = Utils.memoize(
+	(pile1: number, pile2: number): boolean => {
+		if(pile1 === 1) { return (pile2 % 2 === 1); }
+		return [...getChildren(pile1, pile2)].every(c => !isLosing(...c));
+	},
 	(pile1: number, pile2: number): [number, number] => [Math.min(pile1, pile2), Math.max(pile1, pile2)]
 );
 export const numLosing = (maxPileSize: number) => {
 	let total = 0;
-	for(let pile1 = 1; pile1 <= maxPileSize; pile1 ++) {
-		for(let pile2 = 1; pile2 <= maxPileSize; pile2 ++) {
-			if(isLosing(pile1, pile2)) {
-				total ++;
+	for(let largerPile = 1; largerPile <= maxPileSize; largerPile ++) {
+		for(let smallerPile = 1; smallerPile <= largerPile; smallerPile ++) {
+			if(isLosing(smallerPile, largerPile)) {
+				total += (smallerPile === largerPile) ? 1 : 2;
 			}
+			else { continue; }
 		}
+		console.log(`done with ${largerPile}`);
 	}
 	return total;
 };
+console.log(numLosing(7 ** 17));
 
 const minimumExcludant = (nums: number[]) => {
 	let i = 0;
