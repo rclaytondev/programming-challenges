@@ -17,14 +17,10 @@ const isLosing: (pile1: number, pile2: number) => boolean = Utils.memoize(
 );
 export const numLosing = (maxPileSize: number) => {
 	let total = 0;
-	for(let largerPile = 1; largerPile <= maxPileSize; largerPile ++) {
-		for(let smallerPile = 1; smallerPile <= largerPile; smallerPile ++) {
-			if(isLosing(smallerPile, largerPile)) {
-				total += (smallerPile === largerPile) ? 1 : 2;
-			}
-			else { continue; }
-		}
-		console.log(`done with ${largerPile}`);
+	for(let powerOf2 = 2; powerOf2 - 1 <= maxPileSize; powerOf2 *= 2) {
+		const numColumns = Math.floor((maxPileSize + 1 - powerOf2) / (2 * powerOf2)) + 1;
+		console.log(numColumns);
+		total += 2 * (powerOf2 - 1) * numColumns - 1;
 	}
 	return total;
 };
