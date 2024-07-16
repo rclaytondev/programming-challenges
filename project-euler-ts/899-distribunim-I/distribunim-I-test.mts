@@ -1,5 +1,5 @@
 import { describe, it } from "mocha";
-import { numLosing } from "./distribunim-1.mjs";
+import { numLosing } from "./distribunim-I.mjs";
 import { assert } from "chai";
 
 describe("numLosing", () => {
