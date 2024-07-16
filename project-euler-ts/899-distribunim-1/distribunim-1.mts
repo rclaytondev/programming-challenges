@@ -19,13 +19,10 @@ export const numLosing = (maxPileSize: bigint) => {
 	let total = 0n;
 	for(let powerOf2 = 2n; powerOf2 - 1n <= maxPileSize; powerOf2 *= 2n) {
 		const numColumns = ((maxPileSize + 1n - powerOf2) / (2n * powerOf2)) + 1n;
-		console.log(numColumns);
 		total += 2n * (powerOf2 - 1n) * numColumns - 1n;
 	}
 	return total;
 };
-console.log(numLosing(7n ** 17n));
-debugger;
 
 const minimumExcludant = (nums: number[]) => {
 	let i = 0;
