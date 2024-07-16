@@ -15,16 +15,17 @@ const isLosing: (pile1: number, pile2: number) => boolean = Utils.memoize(
 	},
 	(pile1: number, pile2: number): [number, number] => [Math.min(pile1, pile2), Math.max(pile1, pile2)]
 );
-export const numLosing = (maxPileSize: number) => {
-	let total = 0;
-	for(let powerOf2 = 2; powerOf2 - 1 <= maxPileSize; powerOf2 *= 2) {
-		const numColumns = Math.floor((maxPileSize + 1 - powerOf2) / (2 * powerOf2)) + 1;
+export const numLosing = (maxPileSize: bigint) => {
+	let total = 0n;
+	for(let powerOf2 = 2n; powerOf2 - 1n <= maxPileSize; powerOf2 *= 2n) {
+		const numColumns = ((maxPileSize + 1n - powerOf2) / (2n * powerOf2)) + 1n;
 		console.log(numColumns);
-		total += 2 * (powerOf2 - 1) * numColumns - 1;
+		total += 2n * (powerOf2 - 1n) * numColumns - 1n;
 	}
 	return total;
 };
-console.log(numLosing(7 ** 17));
+console.log(numLosing(7n ** 17n));
+debugger;
 
 const minimumExcludant = (nums: number[]) => {
 	let i = 0;
