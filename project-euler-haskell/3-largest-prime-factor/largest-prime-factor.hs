@@ -1,30 +1,24 @@
-import Data.List (find)
+import Data.List (sort, sortBy)
 import Data.Maybe (isNothing)
 
 divides a b = b `mod` a == 0
 
-divisors num = filter isPrime [1 .. ceilSqrt num]
+-- ceilSqrt num = ceiling(sqrt(fromIntegral num))
+ceilSqrt = ceiling . sqrt . fromIntegral
+-- ceilSqrt num = 123
 
-ceilSqrt num = floor(sqrt(fromIntegral num))
+lowDivisors num = filter (`divides` num) [1 .. ceilSqrt num]
+
+divisorPair num divisor = if divisor ^ 2 == num then [divisor] else [divisor, num `div` divisor]
+
+divisors num = sort(concatMap (divisorPair num) (lowDivisors num))
 
 isPrime num = not(any (`divides` num) [2 .. num - 1])
 
-primeDivisors num = filter isPrime divisorsOfNum
-    where divisorsOfNum = divisors num
+primeFactors num = filter isPrime (divisors num)
 
-firstInList [] = Nothing
-firstInList [first:others] = Just first
-
-smallestPrimeFactor num = head(primeDivisors num)
-
-factorization :: (Integral (Maybe a), Ord a, Fractional (Maybe a)) => Maybe a -> [Maybe a]
-factorization num
-    | isNothing firstPrimeFactor = previousFactorization
-    | otherwise = firstPrimeFactor : previousFactorization
-    where 
-        firstPrimeFactor = smallestPrimeFactor num
-        previousFactorization = factorization(num / firstPrimeFactor)
+largestPrimeFactor num = last(primeFactors num)
 
 main = do
-    print 123
-    print(factorization 24)
+    -- print 123
+    print(largestPrimeFactor 600851475143)
