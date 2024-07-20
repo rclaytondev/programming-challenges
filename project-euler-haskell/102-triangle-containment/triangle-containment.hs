@@ -1,10 +1,20 @@
-import Data.Maybe (isNothing)
+import Data.Maybe (isNothing, isJust, fromJust)
+import Data.Foldable (find)
+
+class PointContainer a where
+    contains :: a -> Point -> Bool
 
 filterMaybe predicate optionalValue = case optionalValue of
     Nothing -> Nothing
     Just value -> if predicate value then Just value else Nothing
 
+count predicate array = length(filter predicate array)
+
 data Point = Point Float Float deriving (Eq, Show)
+
+plus (Point a b) (Point c d) = Point (a + c) (b + d)
+
+opposite (Point a b) = Point (-a) (-b)
 
 data Linear = Ray Point Point | Line Point Point | Segment Point Point deriving Show
 
@@ -41,12 +51,40 @@ intersection line1@(Line point1@(Point x1 y1) point2) line2@(Line point3 point4)
         y = m1 * x + b1
 intersection line ray = filterMaybe (`isInBoundingBox` ray) (intersection line (toLine ray))
 
+intersects linear1 linear2 = isJust(intersection linear1 linear2)
+
+instance PointContainer Linear where
+    line@(Line (Point x1 y1) _) `contains` (Point x3 y3)
+        | isVertical line = x1 == x3
+        | otherwise = (y3 - y1) / (x3 - x1) == slope line
+    ray@(Ray _ _) `contains` point = (toLine ray `contains` point) && (point `isInBoundingBox` ray)
+
 data Triangle = Triangle Point Point Point deriving Show
 
 edges (Triangle vertex1 vertex2 vertex3) = [ Line vertex1 vertex2, Line vertex2 vertex3, Line vertex1 vertex3 ]
 
+verticesOf (Triangle vertex1 vertex2 vertex3) = [vertex1, vertex2, vertex3]
+
+standardRays = [Ray (Point 0 0) (Point 1 0), Ray (Point 0 0) (Point 1 1),  Ray (Point 0 0) (Point 0 1), Ray(Point 0 0) (Point (-1) 1)]
+
+rayToCast triangle = fromJust(find (\ray -> not(any (ray `contains`) (verticesOf triangle))) standardRays)
+
+translate point (Triangle vertex1 vertex2 vertex3) = Triangle(vertex1 `plus` point) (vertex2 `plus` point) (vertex3 `plus` point)
+
+instance PointContainer Triangle where
+    triangle `contains` point = odd(count (`intersects` ray) (edges translatedTriangle))
+        where 
+            translatedTriangle = translate (opposite point) triangle
+            ray = rayToCast translatedTriangle
+
 main = do
-    print(intersection line1 line2)
+    print(triangle `contains` point)
     where
-        line1 = Line (Point (-1) (-1)) (Point 1 1)
-        line2 = Line (Point (-1) 1) (Point 1 (-1))
+        -- triangle = Triangle (Point (-340) 495) (Point (-153) (-910)) (Point 835 (-947))
+        triangle = Triangle (Point (-175) 41) (Point (-421) (-714)) (Point 574 (-645))
+        -- triangle = Triangle ()
+        point = Point 0 0
+    -- print(intersection line1 line2)
+    -- where
+    --     line1 = Line (Point (-1) (-1)) (Point 1 1)
+    --     line2 = Line (Point (-1) 1) (Point 1 (-1))
