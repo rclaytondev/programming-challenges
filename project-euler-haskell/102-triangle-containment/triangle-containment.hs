@@ -29,9 +29,17 @@ yIntercept(Line (Point x1 y1) point2) = -(m * x1) + y1
 
 isVertical(Line (Point x1 y1) (Point x2 y2)) = x1 == x2
 
-isBetween value bound1 bound2 = (value > min bound1 bound2) && (value < max bound1 bound2)
+isBetween value bound1 bound2 = (value >= min bound1 bound2) && (value <= max bound1 bound2)
 
-isInBoundingBox (Point x1 y1) (Ray (Point x2 y2) (Point x3 y3)) = not(isBetween x2 x1 x3) && not(isBetween y2 y1 y3)
+isStrictlyBetween value bound1 bound2 = (value > min bound1 bound2) && (value < max bound1 bound2)
+
+isInBoundingBox point1@(Point x1 y1) (Ray point2@(Point x2 y2) point3@(Point x3 y3)) = 
+    not(isStrictlyBetween x2 x1 x3) && 
+    not(isStrictlyBetween y2 y1 y3) && 
+    point1 /= point2 && point1 /= point3
+isInBoundingBox point@(Point x1 y1) (Segment endpoint1@(Point x2 y2) endpoint2@(Point x3 y3)) =
+    isBetween x1 x2 x3 && isBetween y1 y2 y3 && point /= endpoint1 && point /= endpoint2
+isInBoundingBox point@(Point _ _) line@(Line _ _) = True
 
 intersection :: Linear -> Linear -> Maybe Point
 intersection line1@(Line point1@(Point x1 y1) point2) line2@(Line point3 point4)
@@ -49,7 +57,7 @@ intersection line1@(Line point1@(Point x1 y1) point2) line2@(Line point3 point4)
         b2 = yIntercept line2
         x = (b2 - b1) / (m1 - m2)
         y = m1 * x + b1
-intersection line ray = filterMaybe (`isInBoundingBox` ray) (intersection line (toLine ray))
+intersection linear1 linear2 = filterMaybe (\v -> (v `isInBoundingBox` linear1) && (v `isInBoundingBox` linear2)) (intersection (toLine linear1) (toLine linear2))
 
 intersects linear1 linear2 = isJust(intersection linear1 linear2)
 
@@ -61,7 +69,7 @@ instance PointContainer Linear where
 
 data Triangle = Triangle Point Point Point deriving Show
 
-edges (Triangle vertex1 vertex2 vertex3) = [ Line vertex1 vertex2, Line vertex2 vertex3, Line vertex1 vertex3 ]
+edges (Triangle vertex1 vertex2 vertex3) = [ Segment vertex1 vertex2, Segment vertex2 vertex3, Segment vertex1 vertex3 ]
 
 verticesOf (Triangle vertex1 vertex2 vertex3) = [vertex1, vertex2, vertex3]
 
