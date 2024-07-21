@@ -1,6 +1,5 @@
 import Data.Maybe (isNothing, isJust, fromJust)
 import Data.Foldable (find)
--- import ProjectEulerData(triangleData)
 import System.IO (openFile, IOMode (ReadMode), hGetContents)
 import Data.Text (split, unpack, pack)
 
@@ -12,19 +11,6 @@ filterMaybe predicate optionalValue = case optionalValue of
     Just value -> if predicate value then Just value else Nothing
 
 count predicate array = length(filter predicate array)
-
--- query `startsWith` [] = True
--- [] `startsWith` string = False
--- (x:xs) `startsWith` (y:ys) = x == y && startsWith xs ys
-
--- shift 0 list = list
--- shift n [] = []
--- shift n (x:xs) = shift (n-1) xs
-
--- split separator string
---     | string `startsWith` separator = split separator (shift (length separator) string)
---     | otherwise = 123
---     where firstGroup = take 
 
 data Point = Point Float Float deriving (Eq, Show)
 
@@ -110,30 +96,6 @@ triangleFromLine = triangleFromList . parseLine
 parseTriangles fileContents = map (triangleFromLine . pack) (lines fileContents)
 
 main = do
-    -- print("foobar" `startsWith` "x")
-
     handle <- openFile "triangles.txt" ReadMode
     contents <- hGetContents handle
     print(count (`contains` Point 0 0) (parseTriangles contents))
-
-
-    -- print (head(parseTriangles contents))
-
-
-    -- print(triangle `contains` point)
-    -- print last triangleData
-    -- print ray
-    -- print(filter (`intersects` ray) (edges translatedTriangle))
-    -- where
-        -- triangle = Triangle (Point (-340) 495) (Point (-153) (-910)) (Point 835 (-947))
-        -- triangle = Triangle (Point (-175) 41) (Point (-421) (-714)) (Point 574 (-645))
-        -- triangle = Triangle ()
-        -- point = Point 0 0
-
-        
-        -- translatedTriangle = translate (opposite point) triangle
-        -- ray = rayToCast translatedTriangle
-    -- print(intersection line1 line2)
-    -- where
-    --     line1 = Line (Point (-1) (-1)) (Point 1 1)
-    --     line2 = Line (Point (-1) 1) (Point 1 (-1))
