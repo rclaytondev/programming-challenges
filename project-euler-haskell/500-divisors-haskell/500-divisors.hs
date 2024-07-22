@@ -18,7 +18,9 @@ minIndex (x:xs) = if x < xs !! min then 0 else min + 1
 replace (x:xs) 0 value = value : xs
 replace (x:xs) index value = x : replace xs (index - 1) value
 
-nextFactorization expFactorization = replace expFactorization index newExponent
+endWith array value = if last array == value then array else array ++ [value]
+
+nextFactorization expFactorization = endWith (replace expFactorization index newExponent) 0
     where
         index = minIndex (map (getLogMultiplier expFactorization) [0 .. length expFactorization - 1])
         newExponent = (expFactorization !! index) + 1
@@ -30,6 +32,6 @@ main = do
     print(getLogMultiplier [1, 0] 0 == log 4)
     print(minIndex [10, 3, 1, 5] == 2)
     print(replace [5, 4, 3, 2, 1] 2 100 == [5, 4, 100, 2, 1])
-    print(nextFactorization [1, 0] == [1, 1])
+    print(nextFactorization [1, 0] == [1, 1, 0])
     print(nextFactorization [1, 1, 0] == [2, 1, 0])
 
