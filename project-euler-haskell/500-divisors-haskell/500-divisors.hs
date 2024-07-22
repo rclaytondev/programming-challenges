@@ -30,7 +30,12 @@ solve log2OfDivisors = iterate nextFactorization [0] !! log2OfDivisors
 entries [] = []
 entries (x:xs) = (0, x) : map (\(i, v) -> (i+1, v)) (entries xs)
 
-toNumber expFactorization = product(map (\(i, v) -> (primes !! i) ^ (2 ^ v - 1)) (entries expFactorization))
+-- Note: this can be further optimized by repeated squaring.
+modularExponent base 0 modulo = 1
+modularExponent base exponent modulo = (base * modularExponent base (exponent - 1) modulo) `mod` modulo
+
+toNumber expFactorization modulo = product(map getTerm (entries expFactorization)) `mod` modulo
+    where getTerm (index, exponent) = modularExponent (primes !! index) (2 ^ exponent - 1) modulo
 
 main = do
     print(nextPrime 13 == 17)
@@ -42,4 +47,7 @@ main = do
     print(nextFactorization [1, 0] == [1, 1, 0])
     print(nextFactorization [1, 1, 0] == [2, 1, 0])
     print(solve 4 == [2, 1, 1, 0])
-    print(toNumber(solve 4) == 120)
+    print(toNumber(solve 4) 150 == 120)
+    print(toNumber(solve 4) 97 == 23)
+
+    -- print(solve 1000)
