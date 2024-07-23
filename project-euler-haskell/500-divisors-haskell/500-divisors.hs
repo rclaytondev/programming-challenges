@@ -2,6 +2,10 @@ import Data.List (find)
 import Data.Maybe (fromJust)
 import qualified Data.Set as Set
 
+-- ----------------- --
+-- Utility Functions --
+-- ----------------- --
+
 divides a b = b `mod` a == 0
 
 isPrime num = num >= 2 && not(any (`divides` num) [2 .. num - 1])
@@ -9,8 +13,6 @@ isPrime num = num >= 2 && not(any (`divides` num) [2 .. num - 1])
 nextPrime prime = fromJust(find isPrime [prime + 1 ..])
 
 primes = iterate nextPrime (2 :: Integer)
-
-getLogMultiplier expFactorization index = (2 ^ (expFactorization !! index)) * log(fromInteger(primes !! index))
 
 minEntry f [x] = (x, f x)
 minEntry f (x:xs) = if value < minOutput then (x, value) else (minValue, minOutput)
@@ -24,6 +26,12 @@ replace (x:xs) 0 value = value : xs
 replace (x:xs) index value = x : replace xs (index - 1) value
 
 endWith array value = if last array == value then array else array ++ [value]
+
+-- -------------- --
+-- Main Algorithm --
+-- -------------- --
+
+getLogMultiplier expFactorization index = (2 ^ (expFactorization !! index)) * log(fromInteger(primes !! index))
 
 nextFactorization (expFactorization, possibleIndices) = (newFactorization, newPossibleIndices)
     where
