@@ -12,13 +12,6 @@ primes = iterate nextPrime (2 :: Integer)
 
 getLogMultiplier expFactorization index = (2 ^ (expFactorization !! index)) * log(fromInteger(primes !! index))
 
-minIndex [x] = 0
-minIndex (x:xs) = if x < xs !! min then 0 else min + 1
-    where min = minIndex xs
-
--- argmin f [x] = x
--- argmin f (x:xs) = 
-
 minEntry f [x] = (x, f x)
 minEntry f (x:xs) = if value < minOutput then (x, value) else (minValue, minOutput)
     where
@@ -58,7 +51,6 @@ main = do
     print(take 5 primes == [2, 3, 5, 7, 11])
     print(getLogMultiplier [1, 1] 0 == log 4)
     print(getLogMultiplier [1, 0] 0 == log 4)
-    print(minIndex [10, 3, 1, 5] == 2)
     print(replace [5, 4, 3, 2, 1] 2 100 == [5, 4, 100, 2, 1])
     print(nextFactorization ([1, 0], Set.fromList [0, 1]) == ([1, 1, 0], Set.fromList [0, 2]))
     print(nextFactorization ([1, 1, 0], Set.fromList [0, 2]) == ([2, 1, 0], Set.fromList [0, 1, 2]))
