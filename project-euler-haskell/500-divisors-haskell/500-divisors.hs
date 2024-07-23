@@ -36,15 +36,12 @@ nextFactorization (expFactorization, possibleIndices) = (newFactorization, newPo
 
 solve log2OfDivisors = iterate nextFactorization ([0], Set.fromList [0]) !! log2OfDivisors
 
-entries [] = []
-entries (x:xs) = (0, x) : map (\(i, v) -> (i+1, v)) (entries xs)
-
 -- Note: this can be further optimized by repeated squaring.
 modularExponent base 0 modulo = 1
 modularExponent base exponent modulo = (base * modularExponent base (exponent - 1) modulo) `mod` modulo
 
-toNumber expFactorization modulo = product(map getTerm (entries expFactorization)) `mod` modulo
-    where getTerm (index, exponent) = modularExponent (primes !! index) (2 ^ exponent - 1) modulo
+toNumber expFactorization modulo = product(zipWith getTerm expFactorization [0 .. ]) `mod` modulo
+    where getTerm exponent index = modularExponent (primes !! index) (2 ^ exponent - 1) modulo
 
 main = do
     print(nextPrime 13 == 17)
