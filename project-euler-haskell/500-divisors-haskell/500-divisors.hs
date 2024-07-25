@@ -45,13 +45,38 @@ insertBefore value index (x:xs) = x : insertBefore value (index - 1) xs
 -- Main Algorithm --
 -- -------------- --
 
-data Group a = Group { size :: Integer, value :: a }
+data FactorSet = FactorSet { numFactors :: Int, expExponent :: Int } deriving (Eq, Show)
 
-newtype GroupedList a = GroupedList [Group a]
+lengthen FactorSet { numFactors = numFactors, expExponent = expExponent } = FactorSet { numFactors = numFactors + 1, expExponent = expExponent }
 
-insert value index GroupedList [] = [ Group { size = 1, value = value }]
--- insert value index GroupedList (x:xs)
+shorten FactorSet { numFactors = numFactors, expExponent = expExponent } = FactorSet { numFactors = numFactors - 1, expExponent = expExponent }
 
+isEmpty factorSet = numFactors factorSet == 0
+
+getMultiplier factorization index = prime ^ changeInExponent
+    where
+        prime = primes !! sum(map numFactors (take index factorization))
+        changeInExponent = 2 ^ expExponent (factorization !! index)
+
+increment factorization index
+    | index == 0 = FactorSet { numFactors = 1, expExponent = expExponent factorSet + 1 }
+                 : FactorSet { numFactors = numFactors factorSet - 1, expExponent = expExponent factorSet }
+                 : tail factorization
+    | index == (length factorization - 1) = pop factorization
+        ++ [FactorSet { numFactors = numFactors(last factorization) - 1, expExponent = expExponent(last factorization)}]
+        ++ [FactorSet { numFactors = 1, expExponent = 0 }]
+    | expExponent newFactorSet == expExponent previous = replaceWith (index - 1) lengthen shortened
+    | otherwise = insertBefore newFactorSet index shortened
+    where
+        factorSet = factorization !! index
+        previous = factorization !! (index - 1)
+        shortened = replaceWith index shorten factorization
+        newFactorSet = FactorSet { numFactors = 1, expExponent = expExponent factorSet + 1 }
+
+simplify = filter (not . isEmpty)
+
+nextFactorization factorization = simplify(increment factorization index)
+    where index = minIndex (map (getMultiplier factorization) [0 .. length factorization - 1])
 
 main = do
     print(nextPrime 13 == 17)
@@ -60,6 +85,20 @@ main = do
     print(getMultiplier example 0 == 2 ^ 4)
     print(getMultiplier example 1 == 11 ^ 2)
     print(getMultiplier example 2 == 19)
+    print(simplify(increment example 0) == [ FactorSet { numFactors = 1, expExponent = 3 },
+                                             FactorSet { numFactors = 3, expExponent = 2 },
+                                             FactorSet { numFactors = 3, expExponent = 1 },
+                                             FactorSet { numFactors = 1, expExponent = 0 }
+                                           ])
+    print(simplify(increment example 1) == [ FactorSet { numFactors = 5, expExponent = 2 },
+                                             FactorSet { numFactors = 2, expExponent = 1 },
+                                             FactorSet { numFactors = 1, expExponent = 0 }
+                                           ])
+    print(simplify(increment example 2) == [ FactorSet { numFactors = 4, expExponent = 2 },
+                                             FactorSet { numFactors = 4, expExponent = 1 },
+                                             FactorSet { numFactors = 0, expExponent = 0 }
+                                           ])
+    print(simplify(increment example 2))
 
     where example = [ FactorSet { numFactors = 4, expExponent = 2 },
                       FactorSet { numFactors = 3, expExponent = 1 },
