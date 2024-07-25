@@ -45,6 +45,13 @@ insertBefore value index (x:xs) = x : insertBefore value (index - 1) xs
 -- Main Algorithm --
 -- -------------- --
 
+data Group a = Group { size :: Integer, value :: a }
+
+newtype GroupedList a = GroupedList [Group a]
+
+insert value index GroupedList [] = [ Group { size = 1, value = value }]
+-- insert value index GroupedList (x:xs)
+
 
 main = do
     print(nextPrime 13 == 17)
