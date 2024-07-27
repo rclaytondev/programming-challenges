@@ -62,7 +62,7 @@ const isDivisible = (size: number, first: number) => {
 	return states.length !== 0;
 };
 
-const solve = (size: number) => {
+export const solve = (size: number) => {
 	const primeFactors = [...Sequence.PRIMES.termsBelow(size, "inclusive")];
 
 	let numFound = 0;
