@@ -69,7 +69,7 @@ const solve = (size: number) => {
 	outerLoop: for(let first = 1; first < Infinity; first ++) {
 		const range = Utils.range(first, first + size - 1);
 		let foundNondivisible = false;
-		for(let i = first + size - 1; i >= first; i ++) {
+		for(let i = first + size - 1; i >= first; i --) {
 			if(!primeFactors.some(p => i % p === 0)) {
 				if(foundNondivisible) {
 					// console.log(`skipped ${i - first + 1}`);
