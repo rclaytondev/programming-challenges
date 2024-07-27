@@ -64,6 +64,15 @@ const isDivisible = (size: number, first: number) => {
 const solve = (size: number) => {
 	let numFound = 0;
 	for(let first = 1; first < Infinity; first ++) {
+		const range = Utils.range(first, first + size - 1);
+		const nondivisibles = range.filter(n => !Utils.range(2, size).some(i => n % i === 0));
+		if(nondivisibles.length >= 2) {
+			// console.log(`skipped ${nondivisibles[nondivisibles.length - 2] - first + 1}`);
+			first = nondivisibles[nondivisibles.length - 2];
+			continue;
+		}
+		// console.log(`checking if the range is divisible...`);
+
 		if(isDivisible(size, first)) {
 			console.log(`[${first} .. ${first + size - 1}] is divisible!`);
 			numFound ++;
