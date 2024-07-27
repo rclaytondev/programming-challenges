@@ -58,6 +58,8 @@ getMultiplier factorization index = prime ^ changeInExponent
         prime = primes !! sum(map numFactors (take index factorization))
         changeInExponent = 2 ^ expExponent (factorization !! index)
 
+endWith0 factorization = if expExponent(last factorization) == 0 then factorization else factorization ++ [FactorSet { numFactors = 1, expExponent = 0 }]
+
 increment factorization index
     | index == 0 = FactorSet { numFactors = 1, expExponent = expExponent factorSet + 1 }
                  : FactorSet { numFactors = numFactors factorSet - 1, expExponent = expExponent factorSet }
@@ -96,7 +98,7 @@ main = do
                                            ])
     print(simplify(increment example 2) == [ FactorSet { numFactors = 4, expExponent = 2 },
                                              FactorSet { numFactors = 4, expExponent = 1 },
-                                             FactorSet { numFactors = 0, expExponent = 0 }
+                                             FactorSet { numFactors = 1, expExponent = 0 }
                                            ])
     print(simplify(increment example 2))
 
