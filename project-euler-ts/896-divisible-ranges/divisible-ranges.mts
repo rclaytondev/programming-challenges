@@ -54,7 +54,7 @@ const initialState = (size: number, first: number) => {
 	};
 };
 
-const isDivisible = (size: number, first: number) => {
+export const isDivisible = (size: number, first: number) => {
 	let states = [initialState(size, first)];
 	for(let i = 0; i < size; i ++) {
 		states = states.flatMap(nextStates);
