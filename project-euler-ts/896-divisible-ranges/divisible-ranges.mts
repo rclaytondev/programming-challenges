@@ -90,5 +90,5 @@ export const solve = (size: number) => {
 	throw new Error("Unreachable.");
 };
 
-console.log(solve(15));
-debugger;
+// console.log(solve(15));
+// debugger;
