@@ -66,8 +66,6 @@ const divisibleRanges = (size: number): PeriodicSequence => {
 	}
 };
 
-const solve = (size: number) => {
+export const solve = (size: number) => {
 	return divisibleRanges(size).sequenceObj.getTerm(size - 1);
 };
-console.log(solve(10));
-debugger;
