@@ -45,24 +45,30 @@ class PeriodicSequence {
 	filter(callback: (num: number) => boolean) {
 		return new PeriodicSequence(this.period, this.offsets.filter(callback));
 	}
+	streakify(streakLength: number) {
+		const newOffsets = new Set<number>();
+		for(const offset of this.offsets) {
+			for(let num = offset; num < offset + streakLength; num ++) {
+				if(!newOffsets.has(num % this.period)) {
+					newOffsets.add(num % this.period);
+				}
+			}
+		}
+		return new PeriodicSequence(this.period, [...newOffsets].sort());
+	}
 }
 
 const divisibleRanges = (size: number): PeriodicSequence => {
 	const factors = MathUtils.factors(size);
-	if(MathUtils.isPrime(size)) {
-		const period = Utils.range(1, size).reduce(MathUtils.lcm);
+	const period = Utils.range(1, size).reduce(MathUtils.lcm);
+	if(factors.length === 1) {
 		return PeriodicSequence.fromIncludes(period, r => isDivisible(size, r));
 	}
-	else if(factors.length === 1) {
-		const [factor] = factors;
-		const ranges = divisibleRanges(size / factor);
-		return ranges.multiply(factor).filter(r => isDivisible(size, r));
-	}
 	else {
-		const [factor1, factor2] = factors;
-		const ranges1 = divisibleRanges(size / factor1);
-		const ranges2 = divisibleRanges(size / factor2);
-		return ranges1.multiply(factor1).intersection(ranges2.multiply(factor2)).filter(r => isDivisible(size, r));
+		let [factor1, factor2] = factors;
+		let candidates1 = divisibleRanges(size / factor1).multiply(factor1).streakify(factor1);
+		let candidates2 = divisibleRanges(size / factor2).multiply(factor2).streakify(factor2);
+		return candidates1.intersection(candidates1).filter(r => isDivisible(size, r));
 	}
 };
 
