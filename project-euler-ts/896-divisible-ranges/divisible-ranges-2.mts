@@ -39,20 +39,17 @@ export class Wheel {
 		return new Wheel(primes, offsets);
 	}
 
-	static values(numPrimes: number) {
+	static *values(numPrimes: number) {
 		const SMALLER_WHEEL_MAX_NUM_PRIMES = 8;
 		console.time("computing wheel offsets");
 		const smallerWheel = Wheel.create(Math.min(numPrimes, SMALLER_WHEEL_MAX_NUM_PRIMES));
 		console.timeEnd("computing wheel offsets");
 		const remainingPrimes = Sequence.PRIMES.slice(smallerWheel.primes.length, numPrimes);
-		return new Sequence(function*() {
-			for(const value of smallerWheel.values()) {
-				if(remainingPrimes.every(p => value % p !== 0)) {
-					yield value;
-				}
+		for(const value of smallerWheel.values()) {
+			if(remainingPrimes.every(p => value % p !== 0)) {
+				yield value;
 			}
-			throw new Error("Unreachable.");
-		});
+		}
 	}
 }
 
