@@ -84,12 +84,13 @@ export const naiveRankPowerSum = (m: number) => {
 export const rankPowerSum = (m: number) => {
 	const permutation = permutations.pi(Number(m));
 	const powers = [...permutation.powers(MathUtils.factorial(m))];
+	const n = m * (m + 1) / 2;
 	let result = 0;
 	for(let k = 1; k <= MathUtils.factorial(m); k ++) {
 		let sum = 1;
-		for(let [i, value] of powers[k - 1].values.entries()) {
-			const remaining = powers[k - 1].values.slice(i);
-			sum += MathUtils.factorial(remaining.length - 1) * remaining.filter(n => n < value).length;
+		for(let j = 1; j <= n; j ++) {
+			const remaining = powers[k - 1].values.slice(j - 1);
+			sum += MathUtils.factorial(remaining.length - 1) * remaining.filter(n => n < powers[k-1].values[j-1]).length;
 		}
 		result += sum;
 	}
