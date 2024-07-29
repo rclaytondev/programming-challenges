@@ -8,7 +8,7 @@ const modNonzero = (num: number, modulo: number) => {
 	return (result === 0) ? modulo : result;
 };
 
-class PeriodicSequence {
+class PeriodicSet {
 	readonly period: number;
 	readonly offsets: number[]; // intended to be between 1 and `period`, inclusive.
 
@@ -18,7 +18,7 @@ class PeriodicSequence {
 	}
 
 	static fromIncludes(period: number, includes: (num: number) => boolean) {
-		return new PeriodicSequence(period, Utils.range(1, period).filter(includes));
+		return new PeriodicSet(period, Utils.range(1, period).filter(includes));
 	}
 
 	includes(num: number) {
@@ -47,7 +47,7 @@ class PeriodicSequence {
 	density() {
 		return this.offsets.length / this.period;
 	}
-	intersection(sequence: PeriodicSequence): PeriodicSequence {
+	intersection(sequence: PeriodicSet): PeriodicSet {
 		if(this.density() > sequence.density()) {
 			return sequence.intersection(this);
 		}
@@ -58,13 +58,13 @@ class PeriodicSequence {
 				offsets.push(term);
 			}
 		}
-		return new PeriodicSequence(newPeriod, offsets);
+		return new PeriodicSet(newPeriod, offsets);
 	}
 	multiply(multiplier: number) {
-		return new PeriodicSequence(this.period * multiplier, this.offsets.map(o => o * multiplier));
+		return new PeriodicSet(this.period * multiplier, this.offsets.map(o => o * multiplier));
 	}
 	filter(callback: (num: number) => boolean) {
-		return new PeriodicSequence(this.period, this.offsets.filter(callback));
+		return new PeriodicSet(this.period, this.offsets.filter(callback));
 	}
 	streakify(streakLength: number) {
 		const newOffsets = new Set<number>();
@@ -75,19 +75,19 @@ class PeriodicSequence {
 				}
 			}
 		}
-		return new PeriodicSequence(this.period, [...newOffsets].sort((a, b) => a - b));
+		return new PeriodicSet(this.period, [...newOffsets].sort((a, b) => a - b));
 	}
 }
 
-export const divisibleRanges = (size: number): PeriodicSequence => {
+export const divisibleRanges = (size: number): PeriodicSet => {
 	if(size === 1) {
-		return new PeriodicSequence(1, [0]);
+		return new PeriodicSet(1, [0]);
 	}
 
 	const factors = MathUtils.factors(size);
 	const period = Utils.range(1, size).reduce(MathUtils.lcm);
 	if(factors.length === 1) {
-		return PeriodicSequence.fromIncludes(period, r => isDivisible(size, r));
+		return PeriodicSet.fromIncludes(period, r => isDivisible(size, r));
 	}
 	else {
 		let [factor1, factor2] = factors;
@@ -95,7 +95,7 @@ export const divisibleRanges = (size: number): PeriodicSequence => {
 		let candidates2 = divisibleRanges(size / factor2).multiply(factor2).streakify(factor2);
 		const candidates = candidates1.intersection(candidates2);
 		const offsets = [...candidates.termsBelow(period)].filter(r => isDivisible(size, r));
-		return new PeriodicSequence(period, offsets);
+		return new PeriodicSet(period, offsets);
 	}
 };
 
@@ -103,7 +103,7 @@ export const solve = (size: number) => {
 	const factors = MathUtils.factors(size);
 	const period = Utils.range(1, size).reduce(MathUtils.lcm);
 	if(factors.length === 1) {
-		return PeriodicSequence.fromIncludes(period, r => isDivisible(size, r)).getTerm(size - 1);
+		return PeriodicSet.fromIncludes(period, r => isDivisible(size, r)).getTerm(size - 1);
 	}
 	let [factor1, factor2] = factors;
 	let candidates1 = divisibleRanges(size / factor1).multiply(factor1).streakify(factor1);
