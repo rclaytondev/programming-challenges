@@ -3,6 +3,11 @@ import { Sequence } from "../../utils-ts/modules/math/Sequence.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 import { isDivisible } from "./divisible-ranges.mjs";
 
+const modNonzero = (num: number, modulo: number) => {
+	const result = MathUtils.generalizedModulo(num, modulo);
+	return (result === 0) ? modulo : result;
+};
+
 class PeriodicSequence {
 	readonly period: number;
 	readonly offsets: number[]; // intended to be between 1 and `period`, inclusive.
@@ -10,7 +15,7 @@ class PeriodicSequence {
 
 	constructor(period: number, offsets: number[]) {
 		this.period = period;
-		this.offsets = offsets;
+		this.offsets = [...new Set(offsets.map(n => modNonzero(n, period)))].sort((a, b) => a - b);
 		this.sequenceObj = new Sequence(n => this.period * Math.floor(n / this.offsets.length) + this.offsets[n % this.offsets.length]);
 	}
 
@@ -19,7 +24,7 @@ class PeriodicSequence {
 	}
 
 	includes(num: number) {
-		return this.offsets.includes(num % this.period);
+		return this.offsets.includes(modNonzero(num, this.period));
 	}
 
 
@@ -48,13 +53,13 @@ class PeriodicSequence {
 	streakify(streakLength: number) {
 		const newOffsets = new Set<number>();
 		for(const offset of this.offsets) {
-			for(let num = offset; num < offset + streakLength; num ++) {
+			for(let num = offset; num > offset - streakLength; num --) {
 				if(!newOffsets.has(num % this.period)) {
 					newOffsets.add(num % this.period);
 				}
 			}
 		}
-		return new PeriodicSequence(this.period, [...newOffsets].sort());
+		return new PeriodicSequence(this.period, [...newOffsets].sort((a, b) => a - b));
 	}
 }
 
@@ -68,7 +73,9 @@ const divisibleRanges = (size: number): PeriodicSequence => {
 		let [factor1, factor2] = factors;
 		let candidates1 = divisibleRanges(size / factor1).multiply(factor1).streakify(factor1);
 		let candidates2 = divisibleRanges(size / factor2).multiply(factor2).streakify(factor2);
-		return candidates1.intersection(candidates1).filter(r => isDivisible(size, r));
+		const candidates = candidates1.intersection(candidates2);
+		const offsets = [...candidates.sequenceObj.termsBelow(period)].filter(r => isDivisible(size, r));
+		return new PeriodicSequence(period, offsets);
 	}
 };
 
