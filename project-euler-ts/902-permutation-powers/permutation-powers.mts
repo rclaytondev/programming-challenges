@@ -85,7 +85,7 @@ export const rankPowerSum = (m: number) => {
 	const permutation = permutations.pi(Number(m));
 	const n = m * (m + 1) / 2;
 	const powers = [...permutation.powers(n ** 2)];
-	let result = MathUtils.factorial(m);
+	let result = BigintMath.factorial(BigInt(m));
 	for(let j = 1; j <= n; j ++) {
 		for(let i = j + 1; i <= n; i ++) {
 			const period = MathUtils.lcm(permutation.cycleLength(i), permutation.cycleLength(j));
@@ -95,7 +95,10 @@ export const rankPowerSum = (m: number) => {
 					count ++;
 				}
 			}
-			result += MathUtils.factorial(n - j) * count * MathUtils.factorial(m) / period;
+			if(BigintMath.factorial(BigInt(m)) % BigInt(period) !== 0n) {
+				throw new Error(`Period length did not divide m!, which means you need to rewrite the algorithm with extra code to handle this case.`);
+			}
+			result += BigintMath.factorial(BigInt(n - j)) * BigInt(count) * BigintMath.factorial(BigInt(m)) / BigInt(period);
 		}
 	}
 	return result;
