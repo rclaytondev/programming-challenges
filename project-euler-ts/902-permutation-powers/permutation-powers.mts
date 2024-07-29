@@ -1,3 +1,4 @@
+import { BigintMath } from "../../utils-ts/modules/math/BigintMath.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
@@ -37,6 +38,23 @@ export class Permutation {
 		}
 		return new Permutation(values);
 	}
+
+	*powers(maxPower: number | bigint) {
+		let power: Permutation = this;
+		for(let i = 0; i < maxPower; i ++) {
+			yield power;
+			power = Permutation.compose(power, this);
+		}
+	}
+	cycleLength(input: number) {
+		let length = 0;
+		let value = input;
+		do {
+			value = this.values[value - 1];
+			length ++;
+		} while(value !== input);
+		return length;
+	}
 }
 
 const permutations = {
@@ -59,6 +77,21 @@ export const naiveRankPowerSum = (m: number) => {
 	for(let k = 1; k <= MathUtils.factorial(m); k ++) {
 		result += power.rank();
 		power = Permutation.compose(power, permutation);
+	}
+	return result;
+};
+
+export const rankPowerSum = (m: number) => {
+	const permutation = permutations.pi(Number(m));
+	const powers = [...permutation.powers(MathUtils.factorial(m))];
+	let result = 0;
+	for(let k = 1; k <= MathUtils.factorial(m); k ++) {
+		let sum = 1;
+		for(let [i, value] of powers[k - 1].values.entries()) {
+			const remaining = powers[k - 1].values.slice(i);
+			sum += MathUtils.factorial(remaining.length - 1) * remaining.filter(n => n < value).length;
+		}
+		result += sum;
 	}
 	return result;
 };

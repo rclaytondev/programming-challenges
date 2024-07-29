@@ -1,5 +1,5 @@
 import { describe, it } from "mocha";
-import { Permutation, naiveRankPowerSum } from "./permutation-powers.mjs";
+import { Permutation, naiveRankPowerSum, rankPowerSum } from "./permutation-powers.mjs";
 import { assert } from "chai";
 
 describe("Permutation.rank", () => {
@@ -54,6 +54,20 @@ describe("naiveRankPowerSum", () => {
 	});
 	it("works for 4", () => {
 		const result = naiveRankPowerSum(4);
+		assert.equal(result, 38810300);
+	});
+});
+describe("rankPowerSum", () => {
+	it("works for 2", () => {
+		const result = rankPowerSum(2);
+		assert.equal(result, 4);
+	});
+	it("works for 3", () => {
+		const result = rankPowerSum(3);
+		assert.equal(result, 780);
+	});
+	it("works for 4", () => {
+		const result = rankPowerSum(4);
 		assert.equal(result, 38810300);
 	});
 });
