@@ -1,9 +1,17 @@
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
+import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
 export class Permutation {
 	values: number[];
 	constructor(values: number[]) {
 		this.values = values;
+	}
+	static fromFunction(size: number, func: (n: number) => number) {
+		const values = [];
+		for(let i = 1; i <= size; i ++) {
+			values[i - 1] = func(i);
+		}
+		return new Permutation(values);
 	}
 
 	rank() {
@@ -30,3 +38,27 @@ export class Permutation {
 		return new Permutation(values);
 	}
 }
+
+const permutations = {
+	sigma: (m: number) => Permutation.fromFunction(m * (m + 1) / 2, (i: number) => {
+		const k = Utils.range(1, m).find(k => k * (k + 1) / 2 === i);
+		return (k != null) ? k * (k - 1) / 2 + 1 : i + 1;
+	}),
+	tau: (n: number) => Permutation.fromFunction(n, i => (((10 ** 9 + 7) * i) % n) + 1),
+	pi: (m: number) => {
+		const sigma = permutations.sigma(m);
+		const tau = permutations.tau(m * (m + 1) / 2);
+		return Permutation.compose(tau.inverse(), Permutation.compose(sigma, tau));
+	}
+};
+
+export const naiveRankPowerSum = (m: number) => {
+	const permutation = permutations.pi(m);
+	let power = permutation;
+	let result = 0;
+	for(let k = 1; k <= MathUtils.factorial(m); k ++) {
+		result += power.rank();
+		power = Permutation.compose(power, permutation);
+	}
+	return result;
+};

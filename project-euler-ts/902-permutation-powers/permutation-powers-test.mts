@@ -1,5 +1,5 @@
 import { describe, it } from "mocha";
-import { Permutation } from "./permutation-powers.mjs";
+import { Permutation, naiveRankPowerSum } from "./permutation-powers.mjs";
 import { assert } from "chai";
 
 describe("Permutation.rank", () => {
@@ -41,5 +41,19 @@ describe("Permutation.inverse", () => {
 		const permutation = new Permutation([3, 1, 4, 2, 5]);
 		const inverse = permutation.inverse();
 		assert.deepEqual(inverse, new Permutation([2, 4, 1, 3, 5]));
+	});
+});
+describe("naiveRankPowerSum", () => {
+	it("works for 2", () => {
+		const result = naiveRankPowerSum(2);
+		assert.equal(result, 4);
+	});
+	it("works for 3", () => {
+		const result = naiveRankPowerSum(3);
+		assert.equal(result, 780);
+	});
+	it("works for 4", () => {
+		const result = naiveRankPowerSum(4);
+		assert.equal(result, 38810300);
 	});
 });
