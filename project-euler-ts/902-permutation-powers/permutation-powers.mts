@@ -97,8 +97,10 @@ export const naiveRankPowerSum = (m: number) => {
 export const rankPowerSum = (m: number,  modulo = BigInt(10 ** 9 + 7)) => {
 	const permutation = permutations.pi(Number(m));
 	const n = m * (m + 1) / 2;
-	let result = BigintMath.factorial(BigInt(m));
+	const mFactorial = BigintMath.factorial(BigInt(m));
+	let result = mFactorial;
 	for(let j = 1; j <= n; j ++) {
+		let nMinusJFactorial = BigintMath.factorial(BigInt(n - j));
 		for(let i = j + 1; i <= n; i ++) {
 			const period = MathUtils.lcm(permutation.cycleLength(i), permutation.cycleLength(j));
 			let count = 0;
@@ -107,10 +109,10 @@ export const rankPowerSum = (m: number,  modulo = BigInt(10 ** 9 + 7)) => {
 					count ++;
 				}
 			}
-			if(BigintMath.factorial(BigInt(m)) % BigInt(period) !== 0n) {
+			if(mFactorial % BigInt(period) !== 0n) {
 				throw new Error(`Period length did not divide m!, which means you need to rewrite the algorithm with extra code to handle this case.`);
 			}
-			result += (BigintMath.factorial(BigInt(n - j)) * BigInt(count) * BigintMath.factorial(BigInt(m)) / BigInt(period)) % modulo;
+			result += (nMinusJFactorial * BigInt(count) * mFactorial / BigInt(period)) % modulo;
 			result %= modulo;
 		}
 	}
