@@ -86,9 +86,9 @@ export const rankPowerSum = (m: number) => {
 	const powers = [...permutation.powers(MathUtils.factorial(m))];
 	const n = m * (m + 1) / 2;
 	let result = MathUtils.factorial(m);
-	for(let k = 1; k <= MathUtils.factorial(m); k ++) {
-		for(let j = 1; j <= n; j ++) {
-			for(let i = j + 1; i <= n; i ++) {
+	for(let j = 1; j <= n; j ++) {
+		for(let i = j + 1; i <= n; i ++) {
+			for(let k = 1; k <= MathUtils.factorial(m); k ++) {
 				if(powers[k-1].values[i-1] < powers[k-1].values[j-1]) {
 					result += MathUtils.factorial(n - j);
 				}
