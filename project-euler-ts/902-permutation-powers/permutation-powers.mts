@@ -3,7 +3,7 @@ import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
 export class Permutation {
-	values: number[];
+	readonly values: number[];
 	constructor(values: number[]) {
 		this.values = values;
 	}
