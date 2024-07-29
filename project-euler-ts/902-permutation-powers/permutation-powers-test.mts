@@ -28,3 +28,11 @@ describe("Permutation.rank", () => {
 		assert.equal(permutation.rank(), 6);
 	});
 });
+describe("Permutation.compose", () => {
+	it("correctly composes the permutations", () => {
+		const p1 = new Permutation([2, 1, 3]);
+		const p2 = new Permutation([1, 3, 2]);
+		const composition = Permutation.compose(p1, p2);
+		assert.deepEqual(composition, new Permutation([2, 3, 1]));
+	});
+});

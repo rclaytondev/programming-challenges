@@ -14,4 +14,12 @@ export class Permutation {
 		}
 		return result;
 	}
+
+	static compose(p1: Permutation, p2: Permutation) {
+		const values = [];
+		for(const [index, value] of p2.values.entries()) {
+			values[index] = p1.values[value - 1];
+		}
+		return new Permutation(values);
+	}
 }
