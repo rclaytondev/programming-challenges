@@ -86,12 +86,3 @@ const divisibleRanges = (size: number) => {
 export const solve = (size: number) => {
 	return divisibleRanges(size).getTerm(size - 1);
 };
-
-try {
-	console.time("solving the problem");
-	console.log(solve(36));
-}
-catch(e) {
-	console.timeEnd("solving the problem");
-	debugger;
-}
