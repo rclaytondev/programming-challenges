@@ -87,7 +87,7 @@ export const rankPowerSum = (m: number) => {
 	const n = m * (m + 1) / 2;
 	let result = 0;
 	for(let k = 1; k <= MathUtils.factorial(m); k ++) {
-		let sum = 1;
+		result ++;
 		for(let j = 1; j <= n; j ++) {
 			let count = 0;
 			for(let i = j + 1; i <= n; i ++) {
@@ -95,9 +95,8 @@ export const rankPowerSum = (m: number) => {
 					count ++;
 				}
 			}
-			sum += MathUtils.factorial(n - j) * count;
+			result += MathUtils.factorial(n - j) * count;
 		}
-		result += sum;
 	}
 	return result;
 };
