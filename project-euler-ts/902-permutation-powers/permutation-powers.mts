@@ -4,6 +4,7 @@ import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
 export class Permutation {
 	readonly values: number[];
+	private applyPowerResults: Map<string, number> = new Map();
 	constructor(values: number[]) {
 		this.values = values;
 	}
@@ -55,11 +56,16 @@ export class Permutation {
 		} while(value !== input);
 		return length;
 	}
-	applyPower(power: number, input: number) {
-		let result = input;
-		for(let i = 0; i < power; i ++) {
-			result = this.values[result - 1];
+	applyPower(power: number, input: number): number {
+		if(power === 1) {
+			return this.values[input - 1];
 		}
+		const stringified = `${power},${input}`;
+		if(this.applyPowerResults.has(stringified)) {
+			return this.applyPowerResults.get(stringified)!;
+		}
+		const result = this.values[this.applyPower(power - 1, input) - 1];
+		this.applyPowerResults.set(stringified, result);
 		return result;
 	}
 }
