@@ -22,4 +22,11 @@ export class Permutation {
 		}
 		return new Permutation(values);
 	}
+	inverse() {
+		const values = [];
+		for(const [index, value] of this.values.entries()) {
+			values[value - 1] = index + 1;
+		}
+		return new Permutation(values);
+	}
 }

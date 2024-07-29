@@ -36,3 +36,10 @@ describe("Permutation.compose", () => {
 		assert.deepEqual(composition, new Permutation([2, 3, 1]));
 	});
 });
+describe("Permutation.inverse", () => {
+	it("correctly calculates the inverse", () => {
+		const permutation = new Permutation([3, 1, 4, 2, 5]);
+		const inverse = permutation.inverse();
+		assert.deepEqual(inverse, new Permutation([2, 4, 1, 3, 5]));
+	});
+});
