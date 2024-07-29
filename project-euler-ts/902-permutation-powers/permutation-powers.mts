@@ -55,6 +55,13 @@ export class Permutation {
 		} while(value !== input);
 		return length;
 	}
+	applyPower(power: number, input: number) {
+		let result = input;
+		for(let i = 0; i < power; i ++) {
+			result = this.values[result - 1];
+		}
+		return result;
+	}
 }
 
 const permutations = {
@@ -84,14 +91,13 @@ export const naiveRankPowerSum = (m: number) => {
 export const rankPowerSum = (m: number,  modulo = BigInt(10 ** 9 + 7)) => {
 	const permutation = permutations.pi(Number(m));
 	const n = m * (m + 1) / 2;
-	const powers = [...permutation.powers(n ** 2)];
 	let result = BigintMath.factorial(BigInt(m));
 	for(let j = 1; j <= n; j ++) {
 		for(let i = j + 1; i <= n; i ++) {
 			const period = MathUtils.lcm(permutation.cycleLength(i), permutation.cycleLength(j));
 			let count = 0;
 			for(let k = 1; k <= period; k ++) {
-				if(powers[k-1].values[i-1] < powers[k-1].values[j-1]) {
+				if(permutation.applyPower(k, i) < permutation.applyPower(k, j)) {
 					count ++;
 				}
 			}
