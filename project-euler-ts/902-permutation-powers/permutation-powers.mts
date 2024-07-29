@@ -89,8 +89,13 @@ export const rankPowerSum = (m: number) => {
 	for(let k = 1; k <= MathUtils.factorial(m); k ++) {
 		let sum = 1;
 		for(let j = 1; j <= n; j ++) {
-			const remaining = powers[k - 1].values.slice(j - 1);
-			sum += MathUtils.factorial(remaining.length - 1) * remaining.filter(n => n < powers[k-1].values[j-1]).length;
+			let count = 0;
+			for(let i = j + 1; i <= n; i ++) {
+				if(powers[k-1].values[i-1] < powers[k-1].values[j-1]) {
+					count ++;
+				}
+			}
+			sum += MathUtils.factorial(n - j) * count;
 		}
 		result += sum;
 	}
