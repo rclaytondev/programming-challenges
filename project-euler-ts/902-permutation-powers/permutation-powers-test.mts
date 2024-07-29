@@ -1,0 +1,30 @@
+import { describe, it } from "mocha";
+import { Permutation } from "./permutation-powers.mjs";
+import { assert } from "chai";
+
+describe("Permutation.rank", () => {
+	it("correctly calculates the rank of the permutation [1, 2, 3]", () => {
+		const permutation = new Permutation([1, 2, 3]);
+		assert.equal(permutation.rank(), 1);
+	});
+	it("correctly calculates the rank of the permutation [1, 3, 2]", () => {
+		const permutation = new Permutation([1, 3, 2]);
+		assert.equal(permutation.rank(), 2);
+	});
+	it("correctly calculates the rank of the permutation [2, 1, 3]", () => {
+		const permutation = new Permutation([2, 1, 3]);
+		assert.equal(permutation.rank(), 3);
+	});
+	it("correctly calculates the rank of the permutation [2, 3, 1]", () => {
+		const permutation = new Permutation([2, 3, 1]);
+		assert.equal(permutation.rank(), 4);
+	});
+	it("correctly calculates the rank of the permutation [3, 1, 2]", () => {
+		const permutation = new Permutation([3, 1, 2]);
+		assert.equal(permutation.rank(), 5);
+	});
+	it("correctly calculates the rank of the permutation [3, 2, 1]", () => {
+		const permutation = new Permutation([3, 2, 1]);
+		assert.equal(permutation.rank(), 6);
+	});
+});
