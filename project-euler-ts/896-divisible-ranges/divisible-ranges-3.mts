@@ -11,12 +11,10 @@ const modNonzero = (num: number, modulo: number) => {
 class PeriodicSequence {
 	readonly period: number;
 	readonly offsets: number[]; // intended to be between 1 and `period`, inclusive.
-	readonly sequenceObj: Sequence;
 
 	constructor(period: number, offsets: number[]) {
 		this.period = period;
 		this.offsets = [...new Set(offsets.map(n => modNonzero(n, period)))].sort((a, b) => a - b);
-		this.sequenceObj = new Sequence(n => this.period * Math.floor(n / this.offsets.length) + this.offsets[n % this.offsets.length]);
 	}
 
 	static fromIncludes(period: number, includes: (num: number) => boolean) {
@@ -25,6 +23,24 @@ class PeriodicSequence {
 
 	includes(num: number) {
 		return this.offsets.includes(modNonzero(num, this.period));
+	}
+	*values() {
+		for(let multiplier = 0; multiplier < Infinity; multiplier ++) {
+			for(const offset of this.offsets) {
+				yield multiplier * this.period + offset;
+			}
+		}
+	}
+	termsBelow(upperBound: number) {
+		const result = [];
+		for(const value of this.values()) {
+			if(value > upperBound) { break; }
+			result.push(value);
+		}
+		return result;
+	}
+	getTerm(index: number) {
+		return this.offsets[index % this.offsets.length] + this.period * Math.floor(index / this.offsets.length);
 	}
 
 
@@ -37,7 +53,7 @@ class PeriodicSequence {
 		}
 		const newPeriod = MathUtils.lcm(this.period, sequence.period);
 		const offsets = [];
-		for(const term of this.sequenceObj.termsBelow(newPeriod)) {
+		for(const term of this.termsBelow(newPeriod)) {
 			if(sequence.includes(term)) {
 				offsets.push(term);
 			}
@@ -63,7 +79,7 @@ class PeriodicSequence {
 	}
 }
 
-const divisibleRanges = (size: number): PeriodicSequence => {
+export const divisibleRanges = (size: number): PeriodicSequence => {
 	const factors = MathUtils.factors(size);
 	const period = Utils.range(1, size).reduce(MathUtils.lcm);
 	if(factors.length === 1) {
@@ -74,11 +90,11 @@ const divisibleRanges = (size: number): PeriodicSequence => {
 		let candidates1 = divisibleRanges(size / factor1).multiply(factor1).streakify(factor1);
 		let candidates2 = divisibleRanges(size / factor2).multiply(factor2).streakify(factor2);
 		const candidates = candidates1.intersection(candidates2);
-		const offsets = [...candidates.sequenceObj.termsBelow(period)].filter(r => isDivisible(size, r));
+		const offsets = [...candidates.termsBelow(period)].filter(r => isDivisible(size, r));
 		return new PeriodicSequence(period, offsets);
 	}
 };
 
 export const solve = (size: number) => {
-	return divisibleRanges(size).sequenceObj.getTerm(size - 1);
+	return divisibleRanges(size).getTerm(size - 1);
 };
