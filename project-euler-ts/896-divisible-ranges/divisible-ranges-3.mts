@@ -80,6 +80,10 @@ class PeriodicSequence {
 }
 
 export const divisibleRanges = (size: number): PeriodicSequence => {
+	if(size === 1) {
+		return new PeriodicSequence(1, [0]);
+	}
+
 	const factors = MathUtils.factors(size);
 	const period = Utils.range(1, size).reduce(MathUtils.lcm);
 	if(factors.length === 1) {
@@ -96,5 +100,22 @@ export const divisibleRanges = (size: number): PeriodicSequence => {
 };
 
 export const solve = (size: number) => {
-	return divisibleRanges(size).getTerm(size - 1);
+	const factors = MathUtils.factors(size);
+	const period = Utils.range(1, size).reduce(MathUtils.lcm);
+	if(factors.length === 1) {
+		return PeriodicSequence.fromIncludes(period, r => isDivisible(size, r)).getTerm(size - 1);
+	}
+	let [factor1, factor2] = factors;
+	let candidates1 = divisibleRanges(size / factor1).multiply(factor1).streakify(factor1);
+	let candidates2 = divisibleRanges(size / factor2).multiply(factor2).streakify(factor2);
+	let numFound = 0;
+	for(const candidate of candidates1.values()) {
+		if(candidates2.includes(candidate) && isDivisible(size, candidate)) {
+			numFound ++;
+			if(numFound === size) {
+				return candidate;
+			}
+		}
+	}
+	throw new Error("Unreachable.");
 };
