@@ -2,6 +2,16 @@ import { BigintMath } from "../../utils-ts/modules/math/BigintMath.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
+export function cycleOf<T>(func: (arg: T) => T, startValue: T) {
+	const cycle = [];
+	let value = startValue;
+	do {
+		cycle.push(value);
+		value = func(value);
+	} while(value !== startValue);
+	return cycle;
+};
+
 export class Permutation {
 	readonly values: number[];
 	private applyPowerResults: Map<string, number> = new Map();
@@ -70,13 +80,7 @@ export class Permutation {
 	}
 
 	cycleOf(input: number) {
-		const cycle = [];
-		let value = input;
-		do {
-			cycle.push(value);
-			value = this.values[value - 1];
-		} while(value !== input);
-		return cycle;
+		return cycleOf(i => this.values[i-1], input);
 	}
 	cycles() {
 		const cycles = [];
@@ -94,7 +98,7 @@ export class Permutation {
 	}
 }
 
-const permutations = {
+export const permutations = {
 	sigma: (m: number) => Permutation.fromFunction(m * (m + 1) / 2, (i: number) => {
 		const k = Utils.range(1, m).find(k => k * (k + 1) / 2 === i);
 		return (k != null) ? k * (k - 1) / 2 + 1 : i + 1;
