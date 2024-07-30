@@ -17,8 +17,8 @@ export const productCycles = function*(permutation: Permutation) {
 	}
 };
 
-export const rankPowerSum = (permutation: Permutation) => {
-	let result = 0;
+export const rankPowerSum = (permutation: Permutation, m: number) => {
+	let result = MathUtils.factorial(m);
 	for(const cycle of productCycles(permutation)) {
 		if(cycle[0][0] === cycle[0][1]) { continue; }
 		let startingPointSum = 0;
@@ -31,10 +31,10 @@ export const rankPowerSum = (permutation: Permutation) => {
 				cycleTotal ++;
 			}
 		}
-		result += startingPointSum * cycleTotal;
+		result += startingPointSum * (MathUtils.factorial(m) / cycle.length * cycleTotal);
 	}
 	return result;
 };
 export const solve = (m: number) => {
-	return rankPowerSum(permutations.pi(m));
+	return rankPowerSum(permutations.pi(m), m);
 };
