@@ -1,3 +1,4 @@
+import { BigintMath } from "../../utils-ts/modules/math/BigintMath.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { cycleOf, Permutation, permutations } from "./permutation-powers.mjs";
 
@@ -18,23 +19,27 @@ export const productCycles = function*(permutation: Permutation) {
 };
 
 export const rankPowerSum = (permutation: Permutation, m: number) => {
-	let result = MathUtils.factorial(m);
+	let result = BigintMath.factorial(BigInt(m));
 	for(const cycle of productCycles(permutation)) {
 		if(cycle[0][0] === cycle[0][1]) { continue; }
-		let startingPointSum = 0;
-		let cycleTotal = 0;
+		let startingPointSum = 0n;
+		let cycleTotal = 0n;
 		for(const [i, j] of cycle) {
 			if(j < i) {
-				startingPointSum += MathUtils.factorial(permutation.values.length - j);
+				startingPointSum += BigintMath.factorial(BigInt(permutation.values.length - j));
 			}
 			if(i < j) {
 				cycleTotal ++;
 			}
 		}
-		result += startingPointSum * (MathUtils.factorial(m) / cycle.length * cycleTotal);
+		result += startingPointSum * (BigintMath.factorial(BigInt(m)) / BigInt(cycle.length) * cycleTotal);
 	}
 	return result;
 };
 export const solve = (m: number) => {
 	return rankPowerSum(permutations.pi(m), m);
 };
+
+console.time("solving the problem");
+console.log(solve(100));
+console.timeEnd("solving the problem");

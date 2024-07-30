@@ -39,14 +39,14 @@ describe("productCycles", () => {
 describe("solve", () => {
 	it("works for 2", () => {
 		const result = solve(2);
-		assert.equal(result, 4);
+		assert.equal(result, 4n);
 	});
 	it("works for 3", () => {
 		const result = solve(3);
-		assert.equal(result, 780);
+		assert.equal(result, 780n);
 	});
 	it("works for 4", () => {
 		const result = solve(4);
-		assert.equal(result, 38810300);
+		assert.equal(result, 38810300n);
 	});
 });
