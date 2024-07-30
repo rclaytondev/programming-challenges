@@ -68,6 +68,30 @@ export class Permutation {
 		this.applyPowerResults.set(stringified, result);
 		return result;
 	}
+
+	cycleOf(input: number) {
+		const cycle = [];
+		let value = input;
+		do {
+			cycle.push(value);
+			value = this.values[value - 1];
+		} while(value !== input);
+		return cycle;
+	}
+	cycles() {
+		const cycles = [];
+		const elementsChecked = new Set();
+		for(let i = 1; i <= this.values.length; i ++) {
+			if(!elementsChecked.has(i)) {
+				const cycle = this.cycleOf(i);
+				for(const value of cycle) {
+					elementsChecked.add(value);
+				}
+				cycles.push(cycle);
+			}
+		}
+		return cycles;
+	}
 }
 
 const permutations = {

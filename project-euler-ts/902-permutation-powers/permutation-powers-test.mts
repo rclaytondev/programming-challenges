@@ -43,6 +43,13 @@ describe("Permutation.inverse", () => {
 		assert.deepEqual(inverse, new Permutation([2, 4, 1, 3, 5]));
 	});
 });
+describe("Permutation.cycles", () => {
+	it("correctly calculates the cycles of the permutation", () => {
+		const permutation = new Permutation([2, 1, 5, 3, 4]);
+		const cycles = permutation.cycles();
+		assert.deepEqual(cycles, [[1, 2], [3, 5, 4]]);
+	});
+});
 describe("naiveRankPowerSum", () => {
 	it("works for 2", () => {
 		const result = naiveRankPowerSum(2);
