@@ -2,13 +2,13 @@ import { BigintMath } from "../../utils-ts/modules/math/BigintMath.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
-export function cycleOf<T>(func: (arg: T) => T, startValue: T) {
+export function cycleOf<T extends { toString: () => string }>(func: (arg: T) => T, startValue: T) {
 	const cycle = [];
 	let value = startValue;
 	do {
 		cycle.push(value);
 		value = func(value);
-	} while(value !== startValue);
+	} while(value.toString() !== startValue.toString());
 	return cycle;
 };
 
