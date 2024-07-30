@@ -1,6 +1,6 @@
 import { describe, it } from "mocha";
 import { Permutation } from "./permutation-powers.mjs";
-import { productCycles } from "./permutation-powers-2.mjs";
+import { productCycles, solve } from "./permutation-powers-2.mjs";
 import { assert } from "chai";
 
 describe("productCycles", () => {
@@ -34,5 +34,19 @@ describe("productCycles", () => {
 			[ [3, 4], [4, 5], [5, 3] ],
 			[ [3, 5], [4, 3], [5, 4] ]
 		]);
+	});
+});
+describe("solve", () => {
+	it("works for 2", () => {
+		const result = solve(2);
+		assert.equal(result, 4);
+	});
+	it("works for 3", () => {
+		const result = solve(3);
+		assert.equal(result, 780);
+	});
+	it("works for 4", () => {
+		const result = solve(4);
+		assert.equal(result, 38810300);
 	});
 });

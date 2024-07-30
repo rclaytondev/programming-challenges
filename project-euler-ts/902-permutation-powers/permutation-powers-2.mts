@@ -9,11 +9,32 @@ export const productCycles = function*(permutation: Permutation) {
 			const period = MathUtils.lcm(cycle1.length, cycle2.length);
 			for(const startValue of cycle2.slice(0, cycle1.length * cycle2.length / period)) {
 				yield cycleOf(
-					([x, y]) => [permutation.values[x-1], permutation.values[y-1]],
-					[cycle1[0], startValue]
+					([x, y]) => [permutation.values[x-1], permutation.values[y-1]] as [number, number],
+					[cycle1[0], startValue] as [number, number]
 				);
 			}
 		}
 	}
 };
 
+export const rankPowerSum = (permutation: Permutation) => {
+	let result = 0;
+	for(const cycle of productCycles(permutation)) {
+		if(cycle[0][0] === cycle[0][1]) { continue; }
+		let startingPointSum = 0;
+		let cycleTotal = 0;
+		for(const [i, j] of cycle) {
+			if(j < i) {
+				startingPointSum += MathUtils.factorial(permutation.values.length - j);
+			}
+			if(i < j) {
+				cycleTotal ++;
+			}
+		}
+		result += startingPointSum * cycleTotal;
+	}
+	return result;
+};
+export const solve = (m: number) => {
+	return rankPowerSum(permutations.pi(m));
+};
