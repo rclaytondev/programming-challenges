@@ -99,20 +99,26 @@ export const rankPowerSum = (m: number,  modulo = BigInt(10 ** 9 + 7)) => {
 	const n = m * (m + 1) / 2;
 	const mFactorial = BigintMath.factorial(BigInt(m));
 	let result = mFactorial;
+	let cycleCounts = new Map<string, { value: number }>();
 	for(let j = 1; j <= n; j ++) {
 		let nMinusJFactorial = BigintMath.factorial(BigInt(n - j));
 		for(let i = j + 1; i <= n; i ++) {
 			const period = MathUtils.lcm(permutation.cycleLength(i), permutation.cycleLength(j));
-			let count = 0;
+			if(cycleCounts.has(`${i},${j}`)) {
+				const count = cycleCounts.get(`${i},${j}`)!;
+				(nMinusJFactorial * BigInt(count.value) * mFactorial / BigInt(period)) % modulo;
+			}
+			let count = { value: 0 };
 			for(let k = 1; k <= period; k ++) {
 				if(permutation.applyPower(k, i) < permutation.applyPower(k, j)) {
-					count ++;
+					cycleCounts.set(`${permutation.applyPower(k, i)},${permutation.applyPower(k, j)}`, count);
+					count.value ++;
 				}
 			}
 			if(mFactorial % BigInt(period) !== 0n) {
 				throw new Error(`Period length did not divide m!, which means you need to rewrite the algorithm with extra code to handle this case.`);
 			}
-			result += (nMinusJFactorial * BigInt(count) * mFactorial / BigInt(period)) % modulo;
+			result += (nMinusJFactorial * BigInt(count.value) * mFactorial / BigInt(period)) % modulo;
 			result %= modulo;
 		}
 	}
