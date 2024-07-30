@@ -94,6 +94,20 @@ export const naiveRankPowerSum = (m: number) => {
 	return result;
 };
 
+const getCycleCount = (permutation: Permutation, i: number, j: number, cycleCounts: Map<string, { value: number }>, period: number) => {
+	if(cycleCounts.has(`${i},${j}`)) {
+		return cycleCounts.get(`${i},${j}`)!.value;
+	}
+	let count = { value: 0 }; // wrapper used to pass numeric values by reference
+	for(let k = 1; k <= period; k ++) {
+		if(permutation.applyPower(k, i) < permutation.applyPower(k, j)) {
+			cycleCounts.set(`${permutation.applyPower(k, i)},${permutation.applyPower(k, j)}`, count);
+			count.value ++;
+		}
+	}
+	return count.value;
+};
+
 export const rankPowerSum = (m: number,  modulo = BigInt(10 ** 9 + 7)) => {
 	const permutation = permutations.pi(Number(m));
 	const n = m * (m + 1) / 2;
@@ -104,21 +118,11 @@ export const rankPowerSum = (m: number,  modulo = BigInt(10 ** 9 + 7)) => {
 		let nMinusJFactorial = BigintMath.factorial(BigInt(n - j));
 		for(let i = j + 1; i <= n; i ++) {
 			const period = MathUtils.lcm(permutation.cycleLength(i), permutation.cycleLength(j));
-			if(cycleCounts.has(`${i},${j}`)) {
-				const count = cycleCounts.get(`${i},${j}`)!;
-				(nMinusJFactorial * BigInt(count.value) * mFactorial / BigInt(period)) % modulo;
-			}
-			let count = { value: 0 };
-			for(let k = 1; k <= period; k ++) {
-				if(permutation.applyPower(k, i) < permutation.applyPower(k, j)) {
-					cycleCounts.set(`${permutation.applyPower(k, i)},${permutation.applyPower(k, j)}`, count);
-					count.value ++;
-				}
-			}
+			const cycleCount = getCycleCount(permutation, i, j, cycleCounts, period);
 			if(mFactorial % BigInt(period) !== 0n) {
 				throw new Error(`Period length did not divide m!, which means you need to rewrite the algorithm with extra code to handle this case.`);
 			}
-			result += (nMinusJFactorial * BigInt(count.value) * mFactorial / BigInt(period)) % modulo;
+			result += (nMinusJFactorial * BigInt(cycleCount) * mFactorial / BigInt(period)) % modulo;
 			result %= modulo;
 		}
 	}
