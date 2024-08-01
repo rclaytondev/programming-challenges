@@ -18,7 +18,7 @@ export const productCycles = function*(permutation: Permutation) {
 	}
 };
 
-export const rankPowerSum = (permutation: Permutation, m: number) => {
+export const rankPowerSum = (permutation: Permutation, m: number, modulo: bigint) => {
 	let result = BigintMath.factorial(BigInt(m));
 	for(const cycle of productCycles(permutation)) {
 		if(cycle[0][0] === cycle[0][1]) { continue; }
@@ -26,18 +26,18 @@ export const rankPowerSum = (permutation: Permutation, m: number) => {
 		let cycleTotal = 0n;
 		for(const [i, j] of cycle) {
 			if(j < i) {
-				startingPointSum += BigintMath.factorial(BigInt(permutation.values.length - j));
+				startingPointSum = (startingPointSum + BigintMath.factorial(BigInt(permutation.values.length - j))) % modulo;
 			}
 			if(i < j) {
 				cycleTotal ++;
 			}
 		}
-		result += startingPointSum * (BigintMath.factorial(BigInt(m)) / BigInt(cycle.length) * cycleTotal);
+		result = (result + startingPointSum * (BigintMath.factorial(BigInt(m)) / BigInt(cycle.length) * cycleTotal)) % modulo;
 	}
 	return result;
 };
-export const solve = (m: number) => {
-	return rankPowerSum(permutations.pi(m), m);
+export const solve = (m: number, modulo: bigint) => {
+	return rankPowerSum(permutations.pi(m), m, modulo);
 };
 
 console.time("solving the problem");
