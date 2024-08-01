@@ -80,7 +80,7 @@ export const solve = (size: number) => {
 		}
 
 		if(isDivisible(size, first)) {
-			console.log(`[${first} .. ${first + size - 1}] is divisible!`);
+			// console.log(`[${first} .. ${first + size - 1}] is divisible!`);
 			numFound ++;
 			if(numFound === size) {
 				return first;
