@@ -19,10 +19,10 @@ productMatchsticksList = iterate nextProductMatchsticks []
 productMatchsticks = map last productMatchsticksList
 
 recursivePartitions num size lowerBound
-    | size == 0 = [[]]
-    | num > lowerBound = []
+    | size == 0 = [[] | num == 0]
+    | num < lowerBound = []
     | otherwise = concatMap partitionsStartingWith [lowerBound .. num]
-    where partitionsStartingWith n = map (++ [n]) (recursivePartitions (num - n) (size - 1) n)
+    where partitionsStartingWith n = map (n :) (recursivePartitions (num - n) (size - 1) n)
 
 partitions num size = recursivePartitions num size 1
 
@@ -35,4 +35,6 @@ matchsticks n = minimum (map matchsticksFor (partitionsWithMaxSize n maxSize))
 
 main = do
     -- print (matchsticks 28)
-    print(partitions 5 1)
+    print(partitions 5 1 == [[5]])
+    print(partitions 5 2 == [[1, 4], [2, 3]])
+    print(partitions 5 3 == [[1, 1, 3], [1, 2, 2]])
