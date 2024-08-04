@@ -17,14 +17,20 @@ const productMatchsticks = Utils.memoize((num: number): number => {
 	return Math.min(matchsticksForDigits(num), ...productRepresentations);
 });
 
-const matchsticks = Utils.memoize((num: number): number => {
-	if(num <= 1) { return matchsticksForDigits(num); }
-	const sumRepresentations = Utils.range(1, num - 1).map(k => matchsticks(k) + matchsticks(num - k) + 2);
-	return Math.min(productMatchsticks(num), ...sumRepresentations);
-});
+let matchsticksList = [0, 2];
+
+const updateMatchsticksList = () => {
+	const num = matchsticksList.length;
+	const sumRepresentations = Utils.range(1, num - 1).map(k => matchsticksList[k] + matchsticksList[num - k] + 2);
+	const nextValue = Math.min(productMatchsticks(num), ...sumRepresentations);
+	matchsticksList.push(nextValue);
+};
 
 const solve = (num: number) => {
-	return MathUtils.sum(Utils.range(1, num).map(n => matchsticks(n)));
+	while(matchsticksList.length <= num) {
+		updateMatchsticksList();
+	}
+	return MathUtils.sum(matchsticksList.slice(0, num + 1));
 };
 
 console.time();
