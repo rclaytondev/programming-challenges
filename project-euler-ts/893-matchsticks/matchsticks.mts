@@ -19,7 +19,7 @@ let matchsticksList = [0, 2];
 
 const updateMatchsticksList = () => {
 	const num = matchsticksList.length;
-	const sumRepresentations = Utils.range(1, num - 1).map(k => matchsticksList[k] + matchsticksList[num - k] + 2);
+	const sumRepresentations = Utils.range(1, Math.floor(num / 2)).map(k => matchsticksList[k] + matchsticksList[num - k] + 2);
 	const nextValue = Math.min(productMatchsticks(num), ...sumRepresentations);
 	matchsticksList.push(nextValue);
 };
