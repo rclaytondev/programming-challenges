@@ -19,16 +19,20 @@ let matchsticksList = [0, 2];
 
 const updateMatchsticksList = () => {
 	const num = matchsticksList.length;
-	const sumRepresentations = Utils.range(1, Math.floor(num / 2)).map(k => matchsticksList[k] + matchsticksList[num - k] + 2);
-	const nextValue = Math.min(productMatchsticks(num), ...sumRepresentations);
-	matchsticksList.push(nextValue);
+	let min = Infinity;
+	for(let i = 1; 2 * i <= num; i ++) {
+		min = Math.min(min, matchsticksList[i] + matchsticksList[num - i] + 2);
+	}
+	matchsticksList.push(Math.min(min, productMatchsticks(num)));
 };
 
 const solve = (num: number) => {
-	while(matchsticksList.length <= num) {
+	let sum = 0;
+	while(matchsticksList.length <= num + 1) {
+		sum += matchsticksList[matchsticksList.length - 1];
 		updateMatchsticksList();
 	}
-	return MathUtils.sum(matchsticksList.slice(0, num + 1));
+	return sum;
 };
 
 console.time();
