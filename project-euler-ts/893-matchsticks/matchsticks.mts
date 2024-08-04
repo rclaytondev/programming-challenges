@@ -11,9 +11,7 @@ const digits = (num: number): number[] => {
 const matchsticksForDigits = (num: number) => MathUtils.sum(digits(num).map(d => DIGIT_MATCHSTICKS[d]));
 
 const productMatchsticks = Utils.memoize((num: number): number => {
-	const productRepresentations = MathUtils.divisors(num)
-		.filter(d => d !== 1 && d !== num)
-		.map(d => productMatchsticks(d) + productMatchsticks(num / d) + 2);
+	const productRepresentations = MathUtils.properDivisors(num).map(d => productMatchsticks(d) + productMatchsticks(num / d) + 2);
 	return Math.min(matchsticksForDigits(num), ...productRepresentations);
 });
 
