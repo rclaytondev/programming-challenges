@@ -23,7 +23,7 @@ productMatchsticks = map last (tail productMatchsticksList)
 nextMatchsticks values = values ++ [minimum(productMatchsticks !! n : representations)]
     where
         n = length values
-        representations = map (\k -> (values !! k) + (values !! (n - k)) + 2) [1 .. n `div` 2]
+        representations = zipWith (\a b -> a + b + 2) (tail values) (reverse (tail values))
 
 matchsticksList = iterate nextMatchsticks [0]
 
