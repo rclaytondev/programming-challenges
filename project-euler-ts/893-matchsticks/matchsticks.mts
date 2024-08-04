@@ -35,7 +35,7 @@ const solve = (num: number) => {
 	return sum;
 };
 
-console.time();
-console.log(solve(10000));
-console.timeEnd();
-debugger;
+// console.time();
+// console.log(solve(10000));
+// console.timeEnd();
+// debugger;
