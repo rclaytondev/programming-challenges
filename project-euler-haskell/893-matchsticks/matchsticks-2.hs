@@ -20,29 +20,19 @@ productMatchsticksList = iterate nextProductMatchsticks []
 
 productMatchsticks = map last (tail productMatchsticksList)
 
-recursivePartitions num size lowerBound
-    | size == 0 = [[] | num == 0]
-    | num < lowerBound = []
-    | otherwise = concatMap partitionsStartingWith [lowerBound .. num]
-    where partitionsStartingWith n = map (n :) (recursivePartitions (num - n) (size - 1) n)
-
-partitions num size = recursivePartitions num size 1
-
-partitionsWithMaxSize num maxSize = concatMap (partitions num) [1 .. maxSize]
-
-matchsticks n = minimum (map matchsticksFor (partitionsWithMaxSize n maxSize))
+nextMatchsticks values = values ++ [minimum(representations ++ [productMatchsticks !! n])]
     where
-        maxSize = max 1 (matchsticksForDigits n `div` 4)
-        matchsticksFor partition = 2 * (length partition - 1) + sum(map (productMatchsticks !!) partition)
+        n = length values
+        representations = map (\k -> (values !! k) + (values !! (n - k)) + 2) [1 .. n-1]
 
-matchsticksSum n = sum (map matchsticks [1 .. n])
+matchsticksList = iterate nextMatchsticks [0]
+
+matchsticks n = last (matchsticksList !! n)
+
+matchsticksSum n = sum (matchsticksList !! n)
 
 main = do
-    print(partitions 5 1 == [[5]])
-    print(partitions 5 2 == [[1, 4], [2, 3]])
-    print(partitions 5 3 == [[1, 1, 3], [1, 2, 2]])
-    print(partitions 1 1 == [[1]])
-
-    print (matchsticks 28 == 9)
+    print(productMatchsticks !! 28 == 9)
+    print(matchsticks 28 == 9)
     print (matchsticksSum 100 == 916)
-    print (matchsticksSum 1000000)
+    -- print (matchsticksSum 10000)
