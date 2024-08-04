@@ -20,10 +20,10 @@ productMatchsticksList = iterate nextProductMatchsticks []
 
 productMatchsticks = map last (tail productMatchsticksList)
 
-nextMatchsticks values = values ++ [minimum(representations ++ [productMatchsticks !! n])]
+nextMatchsticks values = values ++ [minimum(productMatchsticks !! n : representations)]
     where
         n = length values
-        representations = map (\k -> (values !! k) + (values !! (n - k)) + 2) [1 .. n-1]
+        representations = map (\k -> (values !! k) + (values !! (n - k)) + 2) [1 .. n `div` 2]
 
 matchsticksList = iterate nextMatchsticks [0]
 
