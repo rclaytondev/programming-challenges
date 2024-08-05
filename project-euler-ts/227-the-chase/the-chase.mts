@@ -26,5 +26,5 @@ const solve = (numPlayers: number) => {
 	const lastRow = values[values.length - 1];
 	return Field.BIG_RATIONALS.sum(...lastRow.slice(1));
 };
-console.log(solve(100).toNumber(11));
-debugger;
+// console.log(solve(100).toNumber(11));
+// debugger;
