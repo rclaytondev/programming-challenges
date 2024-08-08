@@ -28,5 +28,5 @@ const solve = () => {
 	}
 	return Math.min(...values);
 };
-console.log(solve());
-debugger;
+// console.log(solve());
+// debugger;
