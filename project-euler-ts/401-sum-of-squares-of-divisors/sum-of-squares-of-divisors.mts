@@ -1,9 +1,7 @@
 const sumOfSquares = (lower: number, upper: number) => {
-	let sum = 0;
-	for(let i = lower; i <= upper; i ++) {
-		sum += i ** 2;
-	}
-	return sum;
+	const upperSquareSum = 1/6 * upper * (upper + 1) * (2 * upper + 1);
+	const lowerSquareSum = 1/6 * (lower - 1) * lower * (2 * lower - 1);
+	return upperSquareSum - lowerSquareSum;
 };
 
 export const divSqSumSum = (upperBound: number) => {
