@@ -4,13 +4,14 @@ const sumOfSquares = (lower: number, upper: number) => {
 	return upperSquareSum - lowerSquareSum;
 };
 
-export const divSqSumSum = (upperBound: number) => {
+export const divSqSumSum = (upperBound: number, modulo: number = 10 ** 9) => {
 	let result = 0;
 	let intervalStart = 1;
 	while(intervalStart <= upperBound) {
 		const multiplier = Math.floor(upperBound / intervalStart);
 		const intervalEnd =  Math.floor(upperBound / multiplier);
-		result += multiplier * sumOfSquares(intervalStart, intervalEnd);
+		result += (multiplier * sumOfSquares(intervalStart, intervalEnd) % modulo);
+		result %= modulo;
 		intervalStart = intervalEnd + 1;
 	}
 	return result;
