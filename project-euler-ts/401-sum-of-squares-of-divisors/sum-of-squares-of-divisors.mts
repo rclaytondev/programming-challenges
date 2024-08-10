@@ -4,17 +4,19 @@ const sumOfSquares = (lower: bigint, upper: bigint) => {
 	return upperSquareSum - lowerSquareSum;
 };
 
-export const divSqSumSum = (upperBound: bigint, modulo: bigint = 10n ** 9n) => {
+export const divSqSumSum = (upperBound: number, modulo: bigint = 10n ** 9n) => {
 	let result = 0n;
-	let intervalStart = 1n;
+	let intervalStart = 1;
 	while(intervalStart <= upperBound) {
-		const multiplier = upperBound / intervalStart;
-		const intervalEnd =  upperBound / multiplier;
-		result += (multiplier * sumOfSquares(intervalStart, intervalEnd) % modulo);
+		const multiplier = Math.floor(upperBound / intervalStart);
+		const intervalEnd = Math.floor(upperBound / multiplier);
+		result += (BigInt(multiplier) * sumOfSquares(BigInt(intervalStart), BigInt(intervalEnd)) % modulo);
 		result %= modulo;
-		intervalStart = intervalEnd + 1n;
+		intervalStart = intervalEnd + 1;
 	}
 	return result;
 };
-// console.log(divSqSumSum(10n ** 15n));
+// console.time();
+// console.log(divSqSumSum(10 ** 15));
+// console.timeEnd();
 // debugger;
