@@ -9,7 +9,8 @@ const solve = (upperBound: number) => {
 		for(let leg2 = 1; leg2 <= leg1 && leg1 + leg2 + Math.sqrt(leg1 ** 2 + leg2 ** 2) <= upperBound; leg2 ++) {
 			const hypotenuse = Math.sqrt(leg1 ** 2 + leg2 ** 2);
 			if(hypotenuse % 1 === 0) {
-				numWays.set(leg1 + leg2 + hypotenuse, (numWays.get(hypotenuse) ?? 0) + 1);
+				const perimeter = leg1 + leg2 + hypotenuse;
+				numWays.set(perimeter, (numWays.get(perimeter) ?? 0) + 1);
 			}
 		}
 	}
