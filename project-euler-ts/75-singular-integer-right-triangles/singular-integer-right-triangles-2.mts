@@ -1,7 +1,7 @@
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
-const MAX_MODULO = 2 * 3 * 5 * 7;
+const MAX_MODULO = 1000;
 
 const getModularSquares = (modulo: number) => {
 	let squares = new Set<number>();
@@ -36,6 +36,7 @@ const solve = (upperBound: number) => {
 	console.time(`modular precomputation`);
 	const modularTriples = getBestModularTriples(MAX_MODULO);
 	console.timeEnd(`modular precomputation`);
+	console.log(`best modulo: ${modularTriples.length}, which requires checking ${(getProportionChecked(modularTriples) * 100).toFixed(2)}% of all numbers.`);
 	console.time(`solving the problem`);
 	const numTriangles = new Map<number, number>();
 	for(let leg1 = 1; leg1 * 2 < upperBound; leg1 ++) {
@@ -56,7 +57,7 @@ const solve = (upperBound: number) => {
 	console.timeEnd(`solving the problem`);
 	return [...numTriangles].filter(([k, v]) => v === 1).length;
 };
-console.log(solve(100000));
+console.log(solve(1500000));
 debugger;
 
 
