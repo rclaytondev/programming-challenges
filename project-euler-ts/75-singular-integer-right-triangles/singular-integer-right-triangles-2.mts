@@ -1,7 +1,8 @@
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
-const MAX_MODULO = 2;
+// const MAX_MODULO = 1000;
+const MAX_MODULO = 10;
 
 const getModularSquares = (modulo: number) => {
 	let squares = new Set<number>();
@@ -33,11 +34,11 @@ const getBestModularTriples = (maxModulo: number) => {
 };
 
 export const trianglesWithPerimeter = (upperBound: number) => {
-	console.time(`modular precomputation`);
+	// console.time(`modular precomputation`);
 	const modularTriples = getBestModularTriples(MAX_MODULO);
-	console.timeEnd(`modular precomputation`);
-	console.log(`best modulo: ${modularTriples.length}, which requires checking ${(getProportionChecked(modularTriples) * 100).toFixed(2)}% of all numbers.`);
-	console.time(`solving the problem`);
+	// console.timeEnd(`modular precomputation`);
+	// console.log(`best modulo: ${modularTriples.length}, which requires checking ${(getProportionChecked(modularTriples) * 100).toFixed(2)}% of all numbers.`);
+	// console.time(`solving the problem`);
 	const numTriangles = new Map<number, number>();
 	for(let leg1 = 1; leg1 * 2 < upperBound; leg1 ++) {
 		multiplierLoop: for(let multiplier = 0; true; multiplier ++) {
@@ -55,7 +56,7 @@ export const trianglesWithPerimeter = (upperBound: number) => {
 			}
 		}
 	}
-	console.timeEnd(`solving the problem`);
+	// console.timeEnd(`solving the problem`);
 	return numTriangles;
 };
 
@@ -64,4 +65,3 @@ export const solve = (upperBound: number) => {
 };
 // console.log(solve(1500000));
 // debugger;
-

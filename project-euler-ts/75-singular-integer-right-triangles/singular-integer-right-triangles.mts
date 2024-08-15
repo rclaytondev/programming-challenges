@@ -16,7 +16,7 @@ const solve = (upperBound: number) => {
 				continue loop1;
 			}
 			if(hypotenuse % 1 === 0) {
-				console.log(`${leg1},${leg2},${hypotenuse}`);
+				// console.log(`${leg1},${leg2},${hypotenuse}`);
 				numWays.set(perimeter, (numWays.get(perimeter) ?? 0) + 1);
 			}
 		}
