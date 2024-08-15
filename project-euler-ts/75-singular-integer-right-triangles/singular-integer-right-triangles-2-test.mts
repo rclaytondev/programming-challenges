@@ -7,6 +7,10 @@ describe("solve", () => {
 		const result = solve(1000);
 		assert.equal(result, 112);
 	});
+	it("gives the same result as the naive algorithm for 35", () => {
+		const result = solve(35);
+		assert.equal(result, 3);
+	});
 	it("works for an input of 11", () => {
 		const result = solve(11);
 		assert.equal(result, 0);
