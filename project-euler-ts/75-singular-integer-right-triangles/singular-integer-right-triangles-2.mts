@@ -6,7 +6,7 @@ const MAX_MODULO = 2;
 const getModularSquares = (modulo: number) => {
 	let squares = new Set<number>();
 	for(let i = 0; i < modulo; i ++) {
-		squares.add(i ** 2);
+		squares.add((i ** 2) % modulo);
 	}
 	return squares;
 };
