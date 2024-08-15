@@ -23,7 +23,7 @@ const solve = (upperBound: number) => {
 	return [...numWays].filter(([k, v]) => v === 1).length;
 };
 
-console.time();
-console.log(solve(100000));
-console.timeEnd();
-debugger;
+// console.time();
+// console.log(solve(100000));
+// console.timeEnd();
+// debugger;
