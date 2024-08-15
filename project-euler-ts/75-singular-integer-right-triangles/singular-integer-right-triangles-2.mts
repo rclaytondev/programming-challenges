@@ -12,13 +12,21 @@ const isModularSquare = (num: number, modulo: number) => {
 	}
 	return false;
 };
+const getModularSquares = (modulo: number) => {
+	let squares = new Set<number>();
+	for(let i = 0; i < modulo; i ++) {
+		squares.add(i ** 2);
+	}
+	return squares;
+};
 
 const getModularTriples = (modulo: number) => {
+	const squares = getModularSquares(modulo);
 	const results: number[][] = [];
 	for(let a = 0; a < modulo; a ++) {
 		results[a] = [];
 		for(let b = 0; b < modulo; b ++) {
-			if(isModularSquare(a ** 2 + b ** 2, modulo)) {
+			if(squares.has((a ** 2 + b ** 2) % modulo)) {
 				results[a].push(b);
 			}
 		}
