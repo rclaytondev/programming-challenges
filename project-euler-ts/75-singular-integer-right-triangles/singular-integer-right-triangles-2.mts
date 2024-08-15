@@ -32,7 +32,7 @@ const getBestModularTriples = (maxModulo: number) => {
 	return Utils.minValue(Utils.range(1, maxModulo).map(getModularTriples), getProportionChecked);
 };
 
-export const solve = (upperBound: number) => {
+export const trianglesWithPerimeter = (upperBound: number) => {
 	console.time(`modular precomputation`);
 	const modularTriples = getBestModularTriples(MAX_MODULO);
 	console.timeEnd(`modular precomputation`);
@@ -56,7 +56,11 @@ export const solve = (upperBound: number) => {
 		}
 	}
 	console.timeEnd(`solving the problem`);
-	return [...numTriangles].filter(([k, v]) => v === 1).length;
+	return numTriangles;
+};
+
+export const solve = (upperBound: number) => {
+	return [...trianglesWithPerimeter(upperBound)].filter(([k, v]) => v === 1).length;
 };
 // console.log(solve(1500000));
 // debugger;
