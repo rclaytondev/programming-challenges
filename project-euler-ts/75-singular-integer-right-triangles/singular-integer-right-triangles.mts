@@ -9,14 +9,15 @@ const solve = (upperBound: number) => {
 		loop2: for(let leg2 = 1; true; leg2 ++) {
 			const hypotenuse = Math.sqrt(leg1 ** 2 + leg2 ** 2);
 			const perimeter = leg1 + leg2 + hypotenuse;
-			if(hypotenuse % 1 === 0) {
-				numWays.set(perimeter, (numWays.get(perimeter) ?? 0) + 1);
-			}
 			if(perimeter > upperBound && leg2 === 1) {
 				break loop1;
 			}
 			else if(perimeter > upperBound || leg2 > leg1) {
 				continue loop1;
+			}
+			if(hypotenuse % 1 === 0) {
+				console.log(`${leg1},${leg2},${hypotenuse}`);
+				numWays.set(perimeter, (numWays.get(perimeter) ?? 0) + 1);
 			}
 		}
 	}
@@ -24,6 +25,6 @@ const solve = (upperBound: number) => {
 };
 
 // console.time();
-// console.log(solve(100000));
+// console.log(solve(1000));
 // console.timeEnd();
 // debugger;

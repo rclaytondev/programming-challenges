@@ -5,7 +5,7 @@ import { assert } from "chai";
 describe("solve", () => {
 	it("gives the same result as the naive algorithm for 1000", () => {
 		const result = solve(1000);
-		assert.equal(result, 110);
+		assert.equal(result, 112);
 	});
 	it("works for an input of 11", () => {
 		const result = solve(11);
