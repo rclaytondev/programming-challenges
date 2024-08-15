@@ -1,7 +1,7 @@
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
-const MAX_MODULO = 1000;
+const MAX_MODULO = 2;
 
 const getModularSquares = (modulo: number) => {
 	let squares = new Set<number>();
@@ -26,13 +26,13 @@ const getModularTriples = (modulo: number) => {
 };
 
 const getProportionChecked = (modularTriples: number[][]) => {
-	return MathUtils.sum(modularTriples.map(offsets => offsets.length + 1)) / (modularTriples.length ** 2);
+	return MathUtils.sum(modularTriples.map(offsets => offsets.length)) / (modularTriples.length ** 2);
 };
 const getBestModularTriples = (maxModulo: number) => {
 	return Utils.minValue(Utils.range(1, maxModulo).map(getModularTriples), getProportionChecked);
 };
 
-const solve = (upperBound: number) => {
+export const solve = (upperBound: number) => {
 	console.time(`modular precomputation`);
 	const modularTriples = getBestModularTriples(MAX_MODULO);
 	console.timeEnd(`modular precomputation`);
@@ -43,12 +43,13 @@ const solve = (upperBound: number) => {
 		multiplierLoop: for(let multiplier = 0; true; multiplier ++) {
 			for(const offset of modularTriples[leg1 % modularTriples.length]) {
 				const leg2 = multiplier * modularTriples.length + offset;
+				if(leg2 === 0) { continue; }
 				const hypotenuse = Math.sqrt(leg1 ** 2 + leg2 ** 2);
 				const perimeter = leg1 + leg2 + hypotenuse;
-				if(perimeter > upperBound) {
+				if(perimeter > upperBound || leg2 > leg1) {
 					break multiplierLoop;
 				}
-				if(hypotenuse % 1 === 0) {
+				else if(hypotenuse % 1 === 0) {
 					numTriangles.set(perimeter, (numTriangles.get(perimeter) ?? 0) + 1);
 				}
 			}
@@ -57,9 +58,6 @@ const solve = (upperBound: number) => {
 	console.timeEnd(`solving the problem`);
 	return [...numTriangles].filter(([k, v]) => v === 1).length;
 };
-console.log(solve(1500000));
-debugger;
-
-
-// console.log(getModularTriples(8));
+// console.log(solve(1500000));
 // debugger;
+
