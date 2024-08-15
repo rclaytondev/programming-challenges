@@ -3,15 +3,6 @@ import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
 const MAX_MODULO = 2 * 3 * 5 * 7;
 
-const isModularSquare = (num: number, modulo: number) => {
-	num %= modulo;
-	for(let k = 0; k < modulo; k ++) {
-		if(k ** 2 % modulo === num) {
-			return true;
-		}
-	}
-	return false;
-};
 const getModularSquares = (modulo: number) => {
 	let squares = new Set<number>();
 	for(let i = 0; i < modulo; i ++) {
