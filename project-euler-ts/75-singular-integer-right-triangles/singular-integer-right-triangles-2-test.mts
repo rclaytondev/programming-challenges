@@ -7,6 +7,14 @@ describe("solve", () => {
 		const result = solve(1000);
 		assert.equal(result, 110);
 	});
+	it("works for an input of 11", () => {
+		const result = solve(11);
+		assert.equal(result, 0);
+	});
+	it("works for an input of 12", () => {
+		const result = solve(12);
+		assert.equal(result, 1);
+	});
 });
 describe("trianglesWithPerimeter", () => {
 	it("works for the singular right triangles from Project Euler", () => {
