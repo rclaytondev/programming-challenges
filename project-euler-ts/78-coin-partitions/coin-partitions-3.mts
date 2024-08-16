@@ -4,12 +4,12 @@ const solve = () => {
 	const partitionsMap = new Map<string, number>();
 	partitionsMap.set(`1,1`, 1);
 	for(let num = 2; true; num ++) {
-		for(let upperBound = 1; upperBound <= num; upperBound ++) {
-			let partitions = 0;
-			for(let first = 1; first <= upperBound; first ++) {
-				partitions += partitionsMap.get(`${num - first},${Math.min(first, num - first)}`) ?? (first === num ? 1 : 0);
-				partitions %= MODULO;
-			}
+		// if(num % 50 === 0) {
+		// 	console.log(num);
+		// }
+		partitionsMap.set(`${num},1`, 1);
+		for(let upperBound = 2; upperBound <= num; upperBound ++) {
+			const partitions = partitionsMap.get(`${num},${upperBound - 1}`)! + (partitionsMap.get(`${num - upperBound},${Math.min(upperBound, num - upperBound)}`) ?? (upperBound === num ? 1 : 0));
 			// console.log(`partitions of ${num} into parts that are <=${upperBound}: answer is ${partitions}`);
 			partitionsMap.set(`${num},${upperBound}`, partitions % MODULO);
 		}
