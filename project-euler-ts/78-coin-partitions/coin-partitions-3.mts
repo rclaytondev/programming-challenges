@@ -10,6 +10,10 @@ const solve = () => {
 		partitionsMap.set(`${num},1`, 1);
 		for(let upperBound = 2; upperBound <= num; upperBound ++) {
 			const partitions = partitionsMap.get(`${num},${upperBound - 1}`)! + (partitionsMap.get(`${num - upperBound},${Math.min(upperBound, num - upperBound)}`) ?? (upperBound === num ? 1 : 0));
+			if(num - upperBound > upperBound) {
+				// console.log("deleting!");
+				partitionsMap.delete(`${num - upperBound},${Math.min(upperBound, num - upperBound)}`);
+			}
 			// console.log(`partitions of ${num} into parts that are <=${upperBound}: answer is ${partitions}`);
 			partitionsMap.set(`${num},${upperBound}`, partitions % MODULO);
 		}
