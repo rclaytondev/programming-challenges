@@ -13,4 +13,11 @@ export class CountLogger {
 			this.milestoneIndex ++;
 		}
 	}
+	countTo(num: number) {
+		this.counter = num;
+		while(this.counter >= this.milestoneSequence(this.milestoneIndex)) {
+			console.log(`counter: ${this.milestoneSequence(this.milestoneIndex)}`);
+			this.milestoneIndex ++;
+		}
+	}
 }
