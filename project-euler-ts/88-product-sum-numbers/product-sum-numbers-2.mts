@@ -2,7 +2,6 @@ import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
 type NumSet = { size: number, sum: number, product: number, next: number };
-const EMPTY_SET: NumSet = { size: 0, sum: 0, product: 1, next: 1 };
 
 const getNewSet = (set: NumSet): NumSet => ({
 	size: set.size + 1,
@@ -12,6 +11,7 @@ const getNewSet = (set: NumSet): NumSet => ({
 });
 
 export const solve = (maxSetSize: number) => {
+	const EMPTY_SET: NumSet = { size: 0, sum: 0, product: 1, next: 1 };
 	const sets = [EMPTY_SET];
 	const minimalNumbers = new Map<number, number>();
 	let upperBound = Infinity;
