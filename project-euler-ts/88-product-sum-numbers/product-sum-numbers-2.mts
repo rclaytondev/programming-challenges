@@ -1,4 +1,5 @@
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
+import { PriorityQueue } from "../../utils-ts/modules/PriorityQueue.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 import { CountLogger } from "../project-specific-utilities/CountLogger.mjs";
 
@@ -12,17 +13,19 @@ const getNewSet = (set: NumSet): NumSet => ({
 });
 
 export const solve = (maxSetSize: number) => {
-	const logger = new CountLogger(n => n, maxSetSize);
+	const logger = new CountLogger(n => 100 * n, maxSetSize);
 	const EMPTY_SET: NumSet = { size: 0, sum: 0, product: 1, next: 1 };
-	const sets = [EMPTY_SET];
+	const sets = new PriorityQueue<NumSet>();
+	sets.insert(EMPTY_SET, 1);
 	const minimalNumbers = new Map<number, number>();
 	while(minimalNumbers.size < maxSetSize - 1) {
-		const nextSet = Utils.minValue(sets, s => Math.max(s.sum + s.next, s.product * s.next));
+		const nextSet = sets.pop();
 		const newSet = getNewSet(nextSet);
 		nextSet.next ++;
 		if(newSet.size < maxSetSize) {
-			sets.push(newSet);
+			sets.insert(newSet, Math.max(newSet.sum + newSet.next, newSet.product * newSet.next));
 		}
+		sets.insert(nextSet, Math.max(nextSet.sum + nextSet.next, nextSet.product * nextSet.next));
 		if(newSet.size > 1 && newSet.size <= maxSetSize && newSet.sum === newSet.product && newSet.sum < (minimalNumbers.get(newSet.size) ?? Infinity)) {
 			/* found a product-sum number! */
 			minimalNumbers.set(newSet.size, newSet.sum);
@@ -33,6 +36,6 @@ export const solve = (maxSetSize: number) => {
 };
 
 console.time();
-console.log(solve(100));
+console.log(solve(12000));
 console.timeEnd();
 debugger;
