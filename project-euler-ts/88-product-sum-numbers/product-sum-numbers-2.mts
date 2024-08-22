@@ -20,7 +20,9 @@ export const solve = (maxSetSize: number) => {
 		const nextSet = Utils.minValue(sets, s => Math.max(s.sum + s.next, s.product * s.next));
 		const newSet = getNewSet(nextSet);
 		nextSet.next ++;
-		sets.push(newSet);
+		if(newSet.size < maxSetSize) {
+			sets.push(newSet);
+		}
 		if(newSet.size > 1 && newSet.size <= maxSetSize && newSet.sum === newSet.product && newSet.sum < (minimalNumbers.get(newSet.size) ?? Infinity)) {
 			/* found a product-sum number! */
 			minimalNumbers.set(newSet.size, newSet.sum);
