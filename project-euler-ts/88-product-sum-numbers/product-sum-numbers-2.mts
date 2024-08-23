@@ -13,13 +13,15 @@ const getNewSet = (set: NumSet): NumSet => ({
 });
 
 export const solve = (maxSetSize: number) => {
-	const logger = new CountLogger(n => 100 * n, maxSetSize);
+	const logger = new CountLogger(n => 100 * n, maxSetSize, "sets found");
+	const logger2 = new CountLogger(n => 100 * n, null, "numbers checked");
 	const EMPTY_SET: NumSet = { size: 0, sum: 0, product: 1, next: 1 };
 	const sets = new PriorityQueue<NumSet>();
 	sets.insert(EMPTY_SET, 1);
 	const minimalNumbers = new Map<number, number>();
 	while(minimalNumbers.size < maxSetSize - 1) {
 		const nextSet = sets.pop();
+		logger2.countTo(Math.max(nextSet.sum + nextSet.next, nextSet.product * nextSet.next));
 		const newSet = getNewSet(nextSet);
 		nextSet.next ++;
 		if(newSet.size < maxSetSize) {
@@ -29,13 +31,13 @@ export const solve = (maxSetSize: number) => {
 		if(newSet.size > 1 && newSet.size <= maxSetSize && newSet.sum === newSet.product && newSet.sum < (minimalNumbers.get(newSet.size) ?? Infinity)) {
 			/* found a product-sum number! */
 			minimalNumbers.set(newSet.size, newSet.sum);
-			logger.count();
+			// logger.count();
 		}
 	}
 	return MathUtils.sum([...new Set(minimalNumbers.values())]);
 };
 
 console.time();
-console.log(solve(12000));
+console.log(solve(1000));
 console.timeEnd();
 debugger;
