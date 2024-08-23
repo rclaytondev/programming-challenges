@@ -39,7 +39,7 @@ export const minimalProductSumNumber = (setSize: number) => {
 };
 
 
-const solve = (upperBound: number) => {
+export const solve = (upperBound: number) => {
 	const logger = new CountLogger(n => 100 * n, upperBound);
 	let numbers = new Set<number>();
 	for(let setSize = 2; setSize <= upperBound; setSize ++) {
@@ -49,7 +49,7 @@ const solve = (upperBound: number) => {
 	return MathUtils.sum([...numbers]);
 };
 
-console.time();
-console.log(solve(12000));
-console.timeEnd();
-debugger;
+// console.time();
+// console.log(solve(12000));
+// console.timeEnd();
+// debugger;
