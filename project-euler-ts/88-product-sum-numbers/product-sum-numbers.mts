@@ -22,19 +22,19 @@ const getUpperBound = (setSize: number) => {
 export const minimalProductSumNumber = (setSize: number) => {
 	let smallest = getUpperBound(setSize);
 	const EMPTY_SET = { size: 0, sum: 0, product: 1, max: 0 };
-	for(const set of Tree.nodes(EMPTY_SET, function*(set) {
-		if(set.size >= setSize) { return; }
+	const searchSets = (set: NumSet) => {
 		if(set.product >= 2 && set.size + (set.product - set.sum) > setSize) {
 			return;
 		}
-		for(let next = Math.max(set.max, 2); set.sum + next < smallest && set.product * next < smallest; next ++) {
-			yield addToSet(set, next);
-		}
-	})) {
 		if(set.size + (set.product - set.sum) === setSize) {
 			smallest = Math.min(smallest, set.product);
 		}
-	}
+		if(set.size >= setSize) { return; }
+		for(let next = Math.max(set.max, 2); set.sum + next < smallest && set.product * next < smallest; next ++) {
+			searchSets(addToSet(set, next));
+		}
+	};
+	searchSets(EMPTY_SET);
 	return smallest;
 };
 
@@ -50,6 +50,6 @@ const solve = (upperBound: number) => {
 };
 
 console.time();
-console.log(solve(1000));
+console.log(solve(12000));
 console.timeEnd();
 debugger;
