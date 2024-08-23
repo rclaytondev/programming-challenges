@@ -11,16 +11,8 @@ const addToSet = (set: NumSet, num: number): NumSet => ({
 	max: Math.max(set.max, num)
 });
 
-const getUpperBound = (setSize: number) => {
-	let min = 2 * setSize;
-	for(const divisor of MathUtils.properDivisors(setSize - 1)) {
-		min = Math.min(min, (divisor + 1) / divisor * (divisor + setSize - 1));
-	}
-	return min;
-};
-
 export const minimalProductSumNumber = (setSize: number) => {
-	let smallest = getUpperBound(setSize);
+	let smallest = 2 * setSize;
 	const EMPTY_SET = { size: 0, sum: 0, product: 1, max: 0 };
 	const searchSets = (set: NumSet) => {
 		if(set.product >= 2 && set.size + (set.product - set.sum) > setSize) {
@@ -49,7 +41,7 @@ export const solve = (upperBound: number) => {
 	return MathUtils.sum([...numbers]);
 };
 
-// console.time();
-// console.log(solve(12000));
-// console.timeEnd();
-// debugger;
+console.time();
+console.log(solve(12000));
+console.timeEnd();
+debugger;
