@@ -2,46 +2,46 @@ import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Tree } from "../../utils-ts/modules/math/Tree.mjs";
 import { CountLogger } from "../project-specific-utilities/CountLogger.mjs";
 
-export const isProductSumNumber = (num: number, setSize: number) => {
-	const emptyList = { size: 0, sum: 0, product: 1, max: 0 };
-	for(const result of Tree.leaves(emptyList, function*(list) {
-		if(list.size < setSize) {
-			for(let next = list.max; list.sum + next <= num && list.product * next <= num; next ++) {
-				yield {
-					size: list.size + 1,
-					sum: list.sum + next,
-					product: list.product * next,
-					max: next
-				};
-			}
+type NumSet = { size: number, sum: number, product: number, max: number };
+
+const addToSet = (set: NumSet, num: number): NumSet => ({
+	size: set.size + 1,
+	sum: set.sum + num,
+	product: set.product * num,
+	max: Math.max(set.max, num)
+});
+
+export const minimalProductSumNumber = (setSize: number) => {
+	let smallest = 2 * setSize;
+	const EMPTY_SET = { size: 0, sum: 0, product: 1, max: 0 };
+	for(const set of Tree.nodes(EMPTY_SET, function*(set) {
+		if(set.size >= setSize) { return; }
+		if(set.product >= 2 && set.size + (set.product - set.sum) > setSize) {
+			return;
+		}
+		for(let next = Math.max(set.max, 2); set.sum + next < smallest && set.product * next < smallest; next ++) {
+			yield addToSet(set, next);
 		}
 	})) {
-		if(result.size === setSize && result.sum === num && result.product === num) {
-			return true;
+		if(set.size + (set.product - set.sum) === setSize) {
+			smallest = Math.min(smallest, set.product);
 		}
 	}
-	return false;
-};
-
-const minimalProductSumNumber = (setSize: number) => {
-	for(let n = 1; n < Infinity; n ++) {
-		if(isProductSumNumber(n, setSize)) {
-			return n;
-		}
-	}
-	throw new Error("Unreachable");
+	return smallest;
 };
 
 
 const solve = (upperBound: number) => {
-	// const logger = new CountLogger(n => n, upperBound);
+	const logger = new CountLogger(n => 100 * n, upperBound);
 	let numbers = new Set<number>();
 	for(let setSize = 2; setSize <= upperBound; setSize ++) {
-		// logger.countTo(setSize);
+		logger.countTo(setSize);
 		numbers.add(minimalProductSumNumber(setSize));
 	}
 	return MathUtils.sum([...numbers]);
 };
 
-// console.log(solve(12000));
-// debugger;
+console.time();
+console.log(solve(1000));
+console.timeEnd();
+debugger;

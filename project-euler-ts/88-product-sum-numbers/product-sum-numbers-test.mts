@@ -1,14 +1,26 @@
 import { describe, it } from "mocha";
-import { isProductSumNumber } from "./product-sum-numbers.mjs";
 import { assert } from "chai";
+import { minimalProductSumNumber } from "./product-sum-numbers.mjs";
 
-describe("isProductSumNumber", () => {
-	it("returns true for 12 with a set size of 6", () => {
-		const result = isProductSumNumber(12, 6);
-		assert.equal(result, true);
+describe("minimalProductSumNumber", () => {
+	it("returns 4 = 2*2 = 2+2 for a set size of 2", () => {
+		const result = minimalProductSumNumber(2);
+		assert.equal(result, 4);
 	});
-	it("returns false for 11 with a set size of 6", () => {
-		const result = isProductSumNumber(11, 6);
-		assert.equal(result, false);
+	it("returns 6 = 1*2*3 = 1+2+3 for a set size of 3", () => {
+		const result = minimalProductSumNumber(3);
+		assert.equal(result, 6);
+	});
+	it("returns 8 = 1*1*2*4 = 1+1+2+4 for a set size of 4", () => {
+		const result = minimalProductSumNumber(4);
+		assert.equal(result, 8);
+	});
+	it("returns 8 = 1*1*2*2*2 = 1+1+2+2+2 for a set size of 5", () => {
+		const result = minimalProductSumNumber(5);
+		assert.equal(result, 8);
+	});
+	it("returns 12 = 1*1*2*6 = 1+1+1+1+2+6 for a set size of 6", () => {
+		const result = minimalProductSumNumber(6);
+		assert.equal(result, 12);
 	});
 });

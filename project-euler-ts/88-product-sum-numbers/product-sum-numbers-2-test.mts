@@ -1,5 +1,4 @@
 import { describe, it } from "mocha";
-import { isProductSumNumber } from "./product-sum-numbers.mjs";
 import { assert } from "chai";
 import { solve } from "./product-sum-numbers-2.mjs";
 

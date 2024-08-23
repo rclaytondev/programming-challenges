@@ -37,7 +37,7 @@ export const solve = (maxSetSize: number) => {
 	return MathUtils.sum([...new Set(minimalNumbers.values())]);
 };
 
-console.time();
-console.log(solve(1000));
-console.timeEnd();
-debugger;
+// console.time();
+// console.log(solve(1000));
+// console.timeEnd();
+// debugger;
