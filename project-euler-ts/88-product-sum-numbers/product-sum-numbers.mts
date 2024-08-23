@@ -11,8 +11,16 @@ const addToSet = (set: NumSet, num: number): NumSet => ({
 	max: Math.max(set.max, num)
 });
 
+const getUpperBound = (setSize: number) => {
+	let min = 2 * setSize;
+	for(const divisor of MathUtils.properDivisors(setSize - 1)) {
+		min = Math.min(min, (divisor + 1) / divisor * (divisor + setSize - 1));
+	}
+	return min;
+};
+
 export const minimalProductSumNumber = (setSize: number) => {
-	let smallest = 2 * setSize;
+	let smallest = getUpperBound(setSize);
 	const EMPTY_SET = { size: 0, sum: 0, product: 1, max: 0 };
 	for(const set of Tree.nodes(EMPTY_SET, function*(set) {
 		if(set.size >= setSize) { return; }
