@@ -1,6 +1,4 @@
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
-import { Tree } from "../../utils-ts/modules/math/Tree.mjs";
-import { CountLogger } from "../project-specific-utilities/CountLogger.mjs";
 
 type NumSet = { size: number, sum: number, product: number, max: number };
 
@@ -32,16 +30,14 @@ export const minimalProductSumNumber = (setSize: number) => {
 
 
 export const solve = (upperBound: number) => {
-	const logger = new CountLogger(n => 100 * n, upperBound);
 	let numbers = new Set<number>();
 	for(let setSize = 2; setSize <= upperBound; setSize ++) {
-		logger.countTo(setSize);
 		numbers.add(minimalProductSumNumber(setSize));
 	}
 	return MathUtils.sum([...numbers]);
 };
 
-console.time();
-console.log(solve(12000));
-console.timeEnd();
-debugger;
+// console.time();
+// console.log(solve(12000));
+// console.timeEnd();
+// debugger;
