@@ -12,7 +12,7 @@ export const subsetsOfSize = <T,>(items: T[], size: number): Set<T>[] => {
 	return result;
 };
 
-const subsetsOfMaxSize = <T,>(items: T[], maxSize: number) => {
+export const subsetsOfMaxSize = <T,>(items: T[], maxSize: number) => {
 	let result: Set<T>[] = [];
 	for(let size = 0; size <= maxSize; size ++) {
 		result = [...result, ...subsetsOfSize(items, size)];
