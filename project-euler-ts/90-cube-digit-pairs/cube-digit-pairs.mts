@@ -1,9 +1,9 @@
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 
-const subsetsOfSize = <T,>(items: T[], size: number): Set<T>[] => {
-	if(size <= 0) { return [new Set()]; }
+export const subsetsOfSize = <T,>(items: T[], size: number): Set<T>[] => {
+	if(size <= 0) { return size === 0 ? [new Set()] : []; }
 	const result = [];
-	for(const [firstIndex, firstItem] of items.slice(0, -size).entries()) {
+	for(const [firstIndex, firstItem] of items.slice(0, items.length - (size - 1)).entries()) {
 		const after = items.slice(firstIndex + 1);
 		for(const subset of subsetsOfSize(after, size - 1)) {
 			result.push(new Set([firstItem, ...subset]));
