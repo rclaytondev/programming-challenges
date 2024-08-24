@@ -39,7 +39,7 @@ const SQUARE_DIGIT_PAIRS: [number, number][] = [
 	...[4, 5, 6, 7, 8, 9].map(d => MathUtils.digits(d ** 2) as [number, number])
 ];
 
-const includesWithRotation = (nums: number[], num: number) => {
+export const includesWithRotation = (nums: number[], num: number) => {
 	return nums.includes(num) || ((num === 6 || num === 9) && (nums.includes(6) || nums.includes(9)));
 };
 const canExpress = (die1: number[], die2: number[], pair: [number, number]) => {

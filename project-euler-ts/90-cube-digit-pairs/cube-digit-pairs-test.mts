@@ -1,5 +1,5 @@
 import { describe, it } from "mocha";
-import { subsetsContaining, subsetsOfMaxSize, subsetsOfSize } from "./cube-digit-pairs.mjs";
+import { includesWithRotation, subsetsContaining, subsetsOfMaxSize, subsetsOfSize } from "./cube-digit-pairs.mjs";
 import { assert } from "chai";
 
 describe("subsetsOfSize", () => {
@@ -63,5 +63,19 @@ describe("subsetsContaining", () => {
 			new Set(["a", "b", "c", "e"]),
 			new Set(["a", "b", "d", "e"]),
 		]);
+	});
+});
+describe("includesWithRotation", () => {
+	it("returns true if the set contains the number", () => {
+		assert.isTrue(includesWithRotation([1, 2, 3], 2));
+		assert.isFalse(includesWithRotation([1, 2, 3], 4));
+	});
+	it("returns true if the number is 6 or 9 and the set contains 6 or 9", () => {
+		assert.isTrue(includesWithRotation([6], 6));
+		assert.isTrue(includesWithRotation([6], 9));
+		assert.isTrue(includesWithRotation([9], 6));
+		assert.isTrue(includesWithRotation([9], 9));
+		assert.isTrue(includesWithRotation([9, 6], 6));
+		assert.isTrue(includesWithRotation([9, 6], 9));
 	});
 });
