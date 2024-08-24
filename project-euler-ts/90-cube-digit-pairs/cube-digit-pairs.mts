@@ -42,7 +42,7 @@ const SQUARE_DIGIT_PAIRS: [number, number][] = [
 export const includesWithRotation = (nums: number[], num: number) => {
 	return nums.includes(num) || ((num === 6 || num === 9) && (nums.includes(6) || nums.includes(9)));
 };
-const canExpress = (die1: number[], die2: number[], pair: [number, number]) => {
+export const canExpress = (die1: number[], die2: number[], pair: [number, number]) => {
 	const [num1, num2] = pair;
 	return (
 		(includesWithRotation(die1, num1) && includesWithRotation(die2, num2)) ||

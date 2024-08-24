@@ -1,5 +1,5 @@
 import { describe, it } from "mocha";
-import { includesWithRotation, subsetsContaining, subsetsOfMaxSize, subsetsOfSize } from "./cube-digit-pairs.mjs";
+import { canExpress, includesWithRotation, subsetsContaining, subsetsOfMaxSize, subsetsOfSize } from "./cube-digit-pairs.mjs";
 import { assert } from "chai";
 
 describe("subsetsOfSize", () => {
@@ -77,5 +77,16 @@ describe("includesWithRotation", () => {
 		assert.isTrue(includesWithRotation([9], 9));
 		assert.isTrue(includesWithRotation([9, 6], 6));
 		assert.isTrue(includesWithRotation([9, 6], 9));
+	});
+});
+describe("canExpress", () => {
+	it("returns true if the 2-digit number can be expressed using the dice", () => {
+		assert.isTrue(canExpress([0, 5, 6, 7, 8, 9], [1, 2, 3, 4, 6, 7], [0, 1]));
+		assert.isTrue(canExpress([0, 5, 6, 7, 8, 9], [1, 2, 3, 4, 6, 7], [3, 6]));
+		assert.isTrue(canExpress([0, 5, 6, 7, 8, 9], [1, 2, 3, 4, 6, 7], [5, 9]));
+	});
+	it("returns false if the 2-digit number cannot be expressed using the dice", () => {
+		assert.isFalse(canExpress([0, 5, 6, 7, 8, 9], [1, 2, 3, 4, 6, 7], [2, 3]));
+		assert.isFalse(canExpress([0, 5, 6, 7, 8, 9], [1, 2, 3, 4, 6, 7], [5, 8]));
 	});
 });
