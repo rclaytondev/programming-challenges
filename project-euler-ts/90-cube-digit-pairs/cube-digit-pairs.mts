@@ -20,7 +20,7 @@ export const subsetsOfMaxSize = <T,>(items: T[], maxSize: number) => {
 	return result;
 };
 
-const subsetsContaining = <T,>(items: T[], maxSize: number, requiredItems: T[]) => {
+export const subsetsContaining = <T,>(items: T[], maxSize: number, requiredItems: T[]) => {
 	const optionalItems = items.filter(v => !requiredItems.includes(v));
 	const result = [];
 	for(const set of subsetsOfMaxSize(optionalItems, maxSize - requiredItems.length)) {

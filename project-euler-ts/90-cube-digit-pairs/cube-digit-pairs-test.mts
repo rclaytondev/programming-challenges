@@ -1,5 +1,5 @@
 import { describe, it } from "mocha";
-import { subsetsOfMaxSize, subsetsOfSize } from "./cube-digit-pairs.mjs";
+import { subsetsContaining, subsetsOfMaxSize, subsetsOfSize } from "./cube-digit-pairs.mjs";
 import { assert } from "chai";
 
 describe("subsetsOfSize", () => {
@@ -32,6 +32,36 @@ describe("subsetsOfMaxSize", () => {
 			new Set(["b", "c"]),
 			new Set(["b", "d"]),
 			new Set(["c", "d"]),
+		]);
+	});
+});
+describe("subsetsContaining", () => {
+	it("returns a list of subsets that contain the given elements and have size less than or equal to the given size", () => {
+		const result = subsetsContaining(["a", "b", "c", "d"], 3, ["a"]);
+		assert.sameDeepMembers(result, [
+			new Set(["a"]),
+
+			new Set(["a", "b"]),
+			new Set(["a", "c"]),
+			new Set(["a", "d"]),
+
+			new Set(["a", "b", "c"]),
+			new Set(["a", "b", "d"]),
+			new Set(["a", "c", "d"])
+		]);
+	});
+	it("works when the required set has more than 1 element", () => {
+		const result = subsetsContaining(["a", "b", "c", "d", "e"], 4, ["a", "b"]);
+		assert.sameDeepMembers(result, [
+			new Set(["a", "b"]),
+
+			new Set(["a", "b", "c"]),
+			new Set(["a", "b", "d"]),
+			new Set(["a", "b", "e"]),
+
+			new Set(["a", "b", "c", "d"]),
+			new Set(["a", "b", "c", "e"]),
+			new Set(["a", "b", "d", "e"]),
 		]);
 	});
 });
