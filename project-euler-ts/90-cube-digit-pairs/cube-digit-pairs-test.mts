@@ -1,5 +1,5 @@
 import { describe, it } from "mocha";
-import { canExpress, includesWithRotation, subsetsContaining, subsetsOfMaxSize, subsetsOfSize } from "./cube-digit-pairs.mjs";
+import { canExpress, compare, includesWithRotation, subsetsContaining, subsetsOfMaxSize, subsetsOfSize } from "./cube-digit-pairs.mjs";
 import { assert } from "chai";
 
 describe("subsetsOfSize", () => {
@@ -88,5 +88,15 @@ describe("canExpress", () => {
 	it("returns false if the 2-digit number cannot be expressed using the dice", () => {
 		assert.isFalse(canExpress([0, 5, 6, 7, 8, 9], [1, 2, 3, 4, 6, 7], [2, 3]));
 		assert.isFalse(canExpress([0, 5, 6, 7, 8, 9], [1, 2, 3, 4, 6, 7], [5, 8]));
+	});
+});
+describe("compare", () => {
+	it("compares the arrays lexicographically after sorting", () => {
+		assert.equal(compare([1, 2, 3], [4, 5, 6]), -1);
+		assert.equal(compare([4, 5, 6], [1, 2, 3]), 1);
+		assert.equal(compare([1, 2, 3], [1, 2, 300]), -1);
+		assert.equal(compare([1, 2, 300], [1, 2, 3]), 1);
+		assert.equal(compare([1, 2], [1, 2, 3]), -1);
+		assert.equal(compare([1, 2, 3], [1, 2]), 1);
 	});
 });

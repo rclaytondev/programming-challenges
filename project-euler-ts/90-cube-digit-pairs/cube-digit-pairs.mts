@@ -29,6 +29,17 @@ export const subsetsContaining = <T,>(items: T[], maxSize: number, requiredItems
 	return result;
 };
 
+export const compare = (arr1: number[], arr2: number[]) => {
+	arr1 = [...arr1].sort();
+	arr2 = [...arr2].sort();
+	for(const [i, v1] of arr1.entries()) {
+		const v2 = arr2[i];
+		if(v1 < v2) { return -1; }
+		else if(v1 > v2) { return 1; }
+	}
+	return Math.sign(arr1.length - arr2.length);
+};
+
 const DIGITS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 const REQUIRED_DIGITS = [0, 1, 2, 3, 4, 5, 8];
 const FACES_ON_DIE = 6;
@@ -59,9 +70,11 @@ const solve = () => {
 		const numWays1 = MathUtils.binomial(FACES_ON_DIE - 1, set1.size - 1);
 		const remainingRequired = REQUIRED_DIGITS.filter(d => !set1.has(d));
 		for(const set2 of subsetsContaining(DIGITS, FACES_ON_DIE, remainingRequired)) {
-			const numWays2 = MathUtils.binomial(FACES_ON_DIE - 1, set2.size - 1);
-			if(canExpressSquares([...set1], [...set2])) {
-				total += numWays1 * numWays2;
+			if(compare([...set1], [...set2]) <= 0) {
+				const numWays2 = MathUtils.binomial(FACES_ON_DIE - 1, set2.size - 1);
+				if(canExpressSquares([...set1], [...set2])) {
+					total += numWays1 * numWays2;
+				}
 			}
 		}
 	}
