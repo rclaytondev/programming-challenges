@@ -4,6 +4,7 @@
 	  "module": "es2022",
 	  "sourceMap": true,
 	  "outDir": "compiled",
+	  "lib": ["es2023", "dom"],
 	  
 
 	  // compiler options that I like:
