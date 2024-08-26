@@ -15,24 +15,22 @@ export class Range {
 	}
 }
 
-const oppositeParity = (parity: "even" | "odd") => parity === "even" ? "odd" : "even";
-
 const sieve = (divisors: bigint[]) => {
 	for(let i = 0; i < divisors.length; i ++) {
 		divisors = divisors.filter(d => d === divisors[i] || d % divisors[i] !== 0n);
 	}
 	return divisors;
 };
-const checkSubset = Utils.memoize((range: Range, setSizeParity: "even" | "odd", isEmpty: boolean, remaining: bigint[], lcm: bigint): bigint => {
+const checkSubset = Utils.memoize((range: Range, remaining: bigint[], lcm: bigint): bigint => {
 	if(lcm > range.max) { return 0n; }
-	if(!isEmpty && remaining.length === 0) {
-		return multiplesInRange([lcm], range) * (setSizeParity === "even" ? -1n : 1n);
+	if(lcm !== 1n && remaining.length === 0) {
+		return -multiplesInRange([lcm], range);
 	}
 	if(remaining.length > 0) {
 		const [next, ...others] = remaining;
 		return (
-			checkSubset(range, setSizeParity, isEmpty, others, lcm)
-			+ checkSubset(range, oppositeParity(setSizeParity), false, others, BigintMath.lcm(lcm, next))
+			checkSubset(range, others, lcm)
+			- checkSubset(range, others, BigintMath.lcm(lcm, next))
 		);
 	}
 	return 0n;
@@ -44,10 +42,13 @@ export const multiplesInRange = (divisors: bigint[], range: Range) => {
 		const highestMultiple = range.max / BigInt(divisor);
 		return highestMultiple - lowestMultiple + 1n;
 	}
+	if(divisors.includes(1n)) {
+		return range.max - range.min + 1n;
+	}
 
 
 	divisors = sieve(divisors);
-	return checkSubset(range, "even", true, divisors, 1n);
+	return checkSubset(range, divisors, 1n);
 };
 
 export const termsInTable = (width: bigint, height: bigint) => {
