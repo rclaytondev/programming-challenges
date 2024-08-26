@@ -17,6 +17,17 @@ const sieve = (divisors: bigint[]) => {
 	}
 	return divisors;
 };
+const checkSubset = (range: Range, set: bigint[], remaining: bigint[], lcm: bigint): bigint => {
+	if(lcm > range.max) { return 0n; }
+	if(set.length !== 0 && remaining.length === 0) {
+		return multiplesInRange([lcm], range) * (set.length % 2 === 0 ? -1n : 1n);
+	}
+	if(remaining.length > 0) {
+		const [next, ...others] = remaining;
+		return checkSubset(range, set, others, lcm) + checkSubset(range, [...set, next], others, BigintMath.lcm(lcm, next));
+	}
+	return 0n;
+};
 export const multiplesInRange = (divisors: bigint[], range: Range) => {
 	if(divisors.length === 1) {
 		const [divisor] = divisors;
@@ -27,21 +38,7 @@ export const multiplesInRange = (divisors: bigint[], range: Range) => {
 
 
 	divisors = sieve(divisors);
-	console.log(divisors);
-	let result = 0n;
-	const checkSubset = (set: bigint[], remaining: bigint[], lcm: bigint) => {
-		if(lcm > range.max) { return; }
-		if(set.length !== 0 && remaining.length === 0) {
-			result += multiplesInRange([lcm], range) * (set.length % 2 === 0 ? -1n : 1n);
-		}
-		if(remaining.length > 0) {
-			const [next, ...others] = remaining;
-			checkSubset(set, others, lcm);
-			checkSubset([...set, next], others, BigintMath.lcm(lcm, next));
-		}
-	};
-	checkSubset([], divisors, 1n);
-	return result;
+	return checkSubset(range, [], divisors, 1n);
 };
 
 export const termsInTable = (width: bigint, height: bigint) => {
