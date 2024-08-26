@@ -17,14 +17,14 @@ const sieve = (divisors: bigint[]) => {
 	}
 	return divisors;
 };
-const checkSubset = (range: Range, set: bigint[], remaining: bigint[], lcm: bigint): bigint => {
+const checkSubset = (range: Range, setSize: number, remaining: bigint[], lcm: bigint): bigint => {
 	if(lcm > range.max) { return 0n; }
-	if(set.length !== 0 && remaining.length === 0) {
-		return multiplesInRange([lcm], range) * (set.length % 2 === 0 ? -1n : 1n);
+	if(setSize !== 0 && remaining.length === 0) {
+		return multiplesInRange([lcm], range) * (setSize % 2 === 0 ? -1n : 1n);
 	}
 	if(remaining.length > 0) {
 		const [next, ...others] = remaining;
-		return checkSubset(range, set, others, lcm) + checkSubset(range, [...set, next], others, BigintMath.lcm(lcm, next));
+		return checkSubset(range, setSize, others, lcm) + checkSubset(range, setSize + 1, others, BigintMath.lcm(lcm, next));
 	}
 	return 0n;
 };
@@ -38,7 +38,7 @@ export const multiplesInRange = (divisors: bigint[], range: Range) => {
 
 
 	divisors = sieve(divisors);
-	return checkSubset(range, [], divisors, 1n);
+	return checkSubset(range, 0, divisors, 1n);
 };
 
 export const termsInTable = (width: bigint, height: bigint) => {
