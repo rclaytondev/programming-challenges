@@ -21,20 +21,30 @@ const sieve = (divisors: bigint[]) => {
 	}
 	return divisors;
 };
-const checkSubset = Utils.memoize((range: Range, remaining: bigint[], lcm: bigint): bigint => {
+const cachedResults = new Map<string, bigint>();
+const checkSubset = (range: Range, remaining: bigint[], lcm: bigint): bigint => {
+	const argsString = [range, remaining, lcm].join(", ");
+	const cachedResult = cachedResults.get(argsString);
+	if(typeof cachedResult === "bigint") {
+		return cachedResult;
+	}
 	if(lcm > range.max) { return 0n; }
 	if(lcm !== 1n && remaining.length === 0) {
-		return -multiplesInRange([lcm], range);
+		const result = -multiplesInRange([lcm], range);;
+		cachedResults.set(argsString, result);
+		return result;
 	}
 	if(remaining.length > 0) {
 		const [next, ...others] = remaining;
-		return (
+		const result = (
 			checkSubset(range, others, lcm)
 			- checkSubset(range, others, BigintMath.lcm(lcm, next))
 		);
+		cachedResults.set(argsString, result);
+		return result;
 	}
 	return 0n;
-});
+};
 export const multiplesInRange = (divisors: bigint[], range: Range) => {
 	if(divisors.length === 1) {
 		const [divisor] = divisors;
@@ -56,6 +66,7 @@ export const termsInTable = (width: bigint, height: bigint) => {
 	const logger = new CountLogger(n => n, Number(height), "outer loop");
 	let result = 0n;
 	for(let i = 1n; i <= height; i ++) {
+		cachedResults.clear();
 		logger.count();
 		result += multiplesInRange(Utils.range(Number(i), Number(height)).map(BigInt), new Range(width * (i - 1n) + 1n, width * i));
 	}
@@ -63,6 +74,6 @@ export const termsInTable = (width: bigint, height: bigint) => {
 };
 
 console.time();
-console.log(termsInTable(40n, 10n ** 9n));
+console.log(termsInTable(64n, 10n ** 16n));
 console.timeEnd();
 debugger;
