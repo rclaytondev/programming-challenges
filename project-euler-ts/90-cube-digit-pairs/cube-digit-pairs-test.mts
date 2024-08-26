@@ -1,5 +1,5 @@
 import { describe, it } from "mocha";
-import { canExpress, compare, includesWithRotation, subsetsContaining, subsetsOfMaxSize, subsetsOfSize } from "./cube-digit-pairs.mjs";
+import { canExpress, canExpressSquares, compare, includesWithRotation, subsetsContaining, subsetsOfMaxSize, subsetsOfSize } from "./cube-digit-pairs.mjs";
 import { assert } from "chai";
 
 describe("subsetsOfSize", () => {
@@ -88,6 +88,12 @@ describe("canExpress", () => {
 	it("returns false if the 2-digit number cannot be expressed using the dice", () => {
 		assert.isFalse(canExpress([0, 5, 6, 7, 8, 9], [1, 2, 3, 4, 6, 7], [2, 3]));
 		assert.isFalse(canExpress([0, 5, 6, 7, 8, 9], [1, 2, 3, 4, 6, 7], [5, 8]));
+	});
+});
+describe("canExpressSquares", () => {
+	it("returns if all the square numbers from 1-81 (inclusive) can be expressed using the dice", () => {
+		assert.isTrue(canExpressSquares([0, 5, 6, 7, 8, 9], [1, 2, 3, 4, 6, 7]));
+		assert.isTrue(canExpressSquares([1, 2, 3, 4, 6, 7], [0, 5, 6, 7, 8, 9]));
 	});
 });
 describe("compare", () => {

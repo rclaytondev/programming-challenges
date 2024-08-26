@@ -60,7 +60,7 @@ export const canExpress = (die1: number[], die2: number[], pair: [number, number
 		(includesWithRotation(die2, num1) && includesWithRotation(die1, num2))
 	);
 };
-const canExpressSquares = (die1: number[], die2: number[]) => {
+export const canExpressSquares = (die1: number[], die2: number[]) => {
 	return SQUARE_DIGIT_PAIRS.every(pair => canExpress(die1, die2, pair));
 };
 
