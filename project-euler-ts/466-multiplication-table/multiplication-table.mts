@@ -9,6 +9,10 @@ export class Range {
 		this.min = min;
 		this.max = max;
 	}
+
+	toString() {
+		return `[${this.min} .. ${this.max}]`;
+	}
 }
 
 const oppositeParity = (parity: "even" | "odd") => parity === "even" ? "odd" : "even";
@@ -19,7 +23,7 @@ const sieve = (divisors: bigint[]) => {
 	}
 	return divisors;
 };
-const checkSubset = (range: Range, setSizeParity: "even" | "odd", isEmpty: boolean, remaining: bigint[], lcm: bigint): bigint => {
+const checkSubset = Utils.memoize((range: Range, setSizeParity: "even" | "odd", isEmpty: boolean, remaining: bigint[], lcm: bigint): bigint => {
 	if(lcm > range.max) { return 0n; }
 	if(!isEmpty && remaining.length === 0) {
 		return multiplesInRange([lcm], range) * (setSizeParity === "even" ? -1n : 1n);
@@ -32,7 +36,7 @@ const checkSubset = (range: Range, setSizeParity: "even" | "odd", isEmpty: boole
 		);
 	}
 	return 0n;
-};
+});
 export const multiplesInRange = (divisors: bigint[], range: Range) => {
 	if(divisors.length === 1) {
 		const [divisor] = divisors;
@@ -57,7 +61,7 @@ export const termsInTable = (width: bigint, height: bigint) => {
 	return result;
 };
 
-// console.time();
-// console.log(termsInTable(64n, 10n ** 16n));
-// console.timeEnd();
-// debugger;
+console.time();
+console.log(termsInTable(40n, 10n ** 9n));
+console.timeEnd();
+debugger;
