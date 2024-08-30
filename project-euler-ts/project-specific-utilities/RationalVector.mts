@@ -9,6 +9,13 @@ export class RationalVector {
 		this.y = y;
 	}
 
+	equals(vector: RationalVector) {
+		return this.x.equals(vector.x) && this.y.equals(vector.y);
+	}
+	toString() {
+		return `(${this.x}, ${this.y})`;
+	}
+
 	multiply(scalar: Rational) {
 		return new RationalVector(this.x.multiply(scalar), this.y.multiply(scalar));
 	}

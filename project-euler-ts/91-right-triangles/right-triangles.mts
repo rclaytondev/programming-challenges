@@ -1,18 +1,21 @@
 import { Line } from "../../utils-ts/modules/geometry/Line.mjs";
 import { Vector } from "../../utils-ts/modules/geometry/Vector.mjs";
+import { Rational } from "../../utils-ts/modules/math/Rational.mjs";
+import { RationalLine } from "../project-specific-utilities/RationalLine.mjs";
+import { RationalVector } from "../project-specific-utilities/RationalVector.mjs";
 
 class Triangle {
-	vertices: [Vector, Vector, Vector];
+	vertices: [RationalVector, RationalVector, RationalVector];
 
-	constructor(vertices: [Vector, Vector, Vector]) {
+	constructor(vertices: [RationalVector, RationalVector, RationalVector]) {
 		this.vertices = vertices;
 	}
 
 	edges() {
 		return [
-			new Line(this.vertices[0], this.vertices[1]),
-			new Line(this.vertices[1], this.vertices[2]),
-			new Line(this.vertices[2], this.vertices[0]),
+			new RationalLine(this.vertices[0], this.vertices[1]),
+			new RationalLine(this.vertices[1], this.vertices[2]),
+			new RationalLine(this.vertices[2], this.vertices[0]),
 		];
 	}
 
@@ -21,7 +24,7 @@ class Triangle {
 		if(v1.equals(v2) || v1.equals(v3) || v2.equals(v3)) {
 			return true;
 		}
-		return Line.areCollinear(this.vertices);
+		return RationalLine.areCollinear(this.vertices);
 	}
 	isRight() {
 		const [e1, e2, e3] = this.edges();
@@ -32,17 +35,17 @@ class Triangle {
 const pointsInSquare = function*(maxCoordinate: number) {
 	for(let x = 0; x <= maxCoordinate; x ++) {
 		for(let y = 0; y <= maxCoordinate; y ++) {
-			yield new Vector(x, y);
+			yield new RationalVector(new Rational(x), new Rational(y));
 		}
 	}
 };
 
-const lexicographicCompare = (v1: Vector, v2: Vector) => v1.x < v2.x || (v1.x === v2.x && v1.y < v2.y);
+const lexicographicCompare = (v1: RationalVector, v2: RationalVector) => v1.x.isLessThan(v2.x) || (v1.x.equals(v2.x) && v1.y.isLessThan(v2.y));
 
 const triangles = function*(maxCoordinate: number) {
 	for(const vertex1 of pointsInSquare(maxCoordinate)) {
 		for(const vertex2 of pointsInSquare(maxCoordinate)) {
-			const triangle = new Triangle([new Vector(0, 0), vertex1, vertex2]);
+			const triangle = new Triangle([new RationalVector(new Rational(0), new Rational(0)), vertex1, vertex2]);
 			if(!triangle.isDegenerate() && lexicographicCompare(vertex1, vertex2)) {
 				yield triangle;
 			}
