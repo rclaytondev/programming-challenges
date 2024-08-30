@@ -57,7 +57,7 @@ export const numRightTriangles = (maxCoordinate: number) => {
 	let result = 0;
 	for(const triangle of triangles(maxCoordinate)) {
 		if(triangle.isRight()) {
-			console.log(triangle.vertices.join(", "));
+			// console.log(triangle.vertices.join(", "));
 			result ++;
 		}
 	}
