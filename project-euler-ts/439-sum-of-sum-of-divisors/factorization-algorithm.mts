@@ -1,23 +1,21 @@
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 
 export const factorizeAll = (upperBound: number) => {
-	const factorizations: Map<number, number>[] = [new Map()];
+	const factorizations: Map<number, number>[] = [new Map(), new Map()];
 	const primesFound = [2];
-	const search = (factorization: Map<number, number>, num: number, numPrimes: number) => {
-		factorizations[num] = factorization;
-		if(numPrimes >= primesFound.length) { return; }
-		const nextPrime = primesFound[numPrimes];
-		const firstExponent = (numPrimes === primesFound.length - 1) ? 1 : 0;
-		for(let exponent = firstExponent; num * nextPrime ** exponent <= upperBound; exponent ++) {
-			const factorizationCopy = new Map(factorization);
-			if(exponent !== 0) {
-				factorizationCopy.set(nextPrime, exponent);
+	const search = (nextPrime: number) => {
+		for(const [num, factorization] of [...factorizations].entries()) {
+			if(num === 0 || !factorization) { continue; }
+			if(num * nextPrime > upperBound) { break; }
+			for(let exponent = 1; num * nextPrime ** exponent <= upperBound; exponent ++) {
+				const newFactorization = new Map(factorization);
+				newFactorization.set(nextPrime, exponent);
+				factorizations[num * nextPrime ** exponent] = newFactorization;
 			}
-			search(factorizationCopy, num * nextPrime ** exponent, numPrimes + 1);
 		}
 	};
 	while(primesFound[primesFound.length - 1] <= upperBound) {
-		search(new Map(), 1, 0);
+		search(primesFound[primesFound.length - 1]);
 		for(let i = primesFound[primesFound.length - 1] + 1; true; i ++) {
 			if(!factorizations[i]) {
 				primesFound.push(i);
@@ -42,3 +40,8 @@ export const divisorSumSum = (upperBound: number) => {
 	}
 	return sum;
 };
+
+// console.time();
+// console.log(divisorSumSum(1000));
+// console.timeEnd();
+// debugger;
