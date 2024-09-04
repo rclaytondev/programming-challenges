@@ -41,10 +41,10 @@ export const divisorSumSum = (upperBound: number) => {
 	const factorizations = factorizeAll(upperBound ** 2);
 	let sum = 0;
 	for(let i = 1; i <= upperBound; i ++) {
-		for(let j = 1; j <= upperBound; j ++) {
+		for(let j = 1; j <= i; j ++) {
 			// console.log(`sigma(${i * j}) = ${divisorSum(factorizations.get(i * j)!)}`);
 			// debugger;
-			sum += divisorSum(factorizations.get(i * j)!);
+			sum += divisorSum(factorizations.get(i * j)!) * (j === i ? 1 : 2);
 		}
 	}
 	return sum;
