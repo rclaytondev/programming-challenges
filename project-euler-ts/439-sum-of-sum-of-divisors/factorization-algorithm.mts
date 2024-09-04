@@ -10,7 +10,6 @@ export const factorizeAll = (upperBound: number) => {
 	while(primesFound[primesFound.length - 1] <= upperBound) {
 		const nextPrime = primesFound[primesFound.length - 1];
 		let newFactorizations = new Map<number, Map<number, number>>();
-		let newFactorizedNumbers = new Set<number>();
 		for(const [num] of factorizedNumbers.entries()) {
 			const factorization = factorizations.get(num);
 			if(num * nextPrime > upperBound) { break; }
@@ -18,10 +17,9 @@ export const factorizeAll = (upperBound: number) => {
 				const newFactorization = new Map(factorization);
 				newFactorization.set(nextPrime, exponent);
 				newFactorizations.set(num * nextPrime ** exponent, newFactorization);
-				newFactorizedNumbers.add(num * nextPrime ** exponent);
 			}
 		}
-		for(const num of newFactorizedNumbers) {
+		for(const num of newFactorizations.keys()) {
 			factorizedNumbers.insert(num, num);
 			factorizations.set(num, newFactorizations.get(num)!);
 		}
