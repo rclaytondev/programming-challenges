@@ -7,7 +7,8 @@ export const factorizeAll = (upperBound: number) => {
 	factorizations.set(1, new Map());
 	factorizedNumbers.insert(1, 1);
 	const primesFound = [2];
-	const search = (nextPrime: number) => {
+	while(primesFound[primesFound.length - 1] <= upperBound) {
+		const nextPrime = primesFound[primesFound.length - 1];
 		let newFactorizations = new Map<number, Map<number, number>>();
 		let newFactorizedNumbers = new Set<number>();
 		for(const [num] of factorizedNumbers.entries()) {
@@ -24,9 +25,6 @@ export const factorizeAll = (upperBound: number) => {
 			factorizedNumbers.insert(num, num);
 			factorizations.set(num, newFactorizations.get(num)!);
 		}
-	};
-	while(primesFound[primesFound.length - 1] <= upperBound) {
-		search(primesFound[primesFound.length - 1]);
 		for(let i = primesFound[primesFound.length - 1] + 1; true; i ++) {
 			if(!factorizations.has(i)) {
 				primesFound.push(i);
@@ -55,6 +53,6 @@ export const divisorSumSum = (upperBound: number) => {
 };
 
 // console.time();
-// console.log(divisorSumSum(1000));
+// console.log(divisorSumSum(2000));
 // console.timeEnd();
 // debugger;
