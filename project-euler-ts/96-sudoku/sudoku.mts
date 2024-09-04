@@ -29,7 +29,6 @@ const deduce = (sudoku: Table<Digit | EmptyCell>): void => {
 	for(const [x, y, value] of sudoku.entries()) {
 		if(value === EMPTY_CELL) {
 			const possibleValues = getPossibleValues(sudoku, new Vector(x, y));
-			// console.log(`possible values: [${possibleValues.join(", ")}]`);
 			if(possibleValues.length === 1) {
 				const [onlyPossibleValue] = 	possibleValues;
 				sudoku.rows[y][x] = onlyPossibleValue;
@@ -40,12 +39,7 @@ const deduce = (sudoku: Table<Digit | EmptyCell>): void => {
 };
 
 const solveSudoku = (sudoku: Table<Digit | EmptyCell>): Table<Digit | EmptyCell> | null => {
-	const initial = sudoku.copy();
 	deduce(sudoku);
-	// console.log(toString(initial));
-	// console.log("-----------------------");
-	// console.log(toString(sudoku));
-	// console.log(isCorrect(initial, sudoku));
 	const nextPosition = sudoku.findPosition((v, x, y) => v === EMPTY_CELL);
 	if(!nextPosition) { return sudoku; }
 	for(const nextPossibleValue of getPossibleValues(sudoku, nextPosition)) {
@@ -58,14 +52,12 @@ const solveSudoku = (sudoku: Table<Digit | EmptyCell>): Table<Digit | EmptyCell>
 };
 
 const solve = () => {
-	const logger = new CountLogger(n => n, 50);
 	const ALL_SUDOKU = PUZZLES_DATA.map(sudoku => new Table(sudoku as (Digit | EmptyCell)[][]));
 	let sum = 0;
 	for(const sudoku of ALL_SUDOKU) {
-		// logger.count();
 		const initial = sudoku.copy();
 		const solved = solveSudoku(sudoku)!;
-		console.log(isCorrect(initial, solved) && isComplete(solved));
+		// console.log(isCorrect(initial, solved) && isComplete(solved));
 		sum += solved.rows[0][0] + solved.rows[0][1] + solved.rows[0][2];
 	}
 	return sum;
@@ -78,27 +70,23 @@ const containsDuplicates = <T, >(array: T[]) => {
 const isCorrect = (initial: Table<Digit | EmptyCell>, final: Table<Digit | EmptyCell>) => {
 	for(const row of final.rows) {
 		if(containsDuplicates(row.filter(v => v !== 0))) {
-			debugger;
 			return false;
 		}
 	}
 	for(const column of final.columns()) {
 		if(containsDuplicates(column.filter(v => v !== 0))) {
-			debugger;
 			return false;
 		}
 	}
 	for(let x = 0; x < final.width; x += 3) {
 		for(let y = 0; y < final.height; y += 3) {
 			if(containsDuplicates([...final.slice(x, y, 3, 3)].filter(v => v !== 0))) {
-				debugger;
 				return false;
 			}
 		}
 	}
 	for(let [x, y, value] of initial.entries()) {
 		if(final.rows[y][x] !== value && value !== 0) {
-			debugger;
 			return false;
 		}
 	}
@@ -111,7 +99,7 @@ const toString = (sudoku: Table<Digit | EmptyCell>) => {
 
 const isComplete = (sudoku: Table<Digit | EmptyCell>) => !sudoku.includes(EMPTY_CELL);
 
-console.time();
-console.log(solve());
-console.timeEnd();
-debugger;
+// console.time();
+// console.log(solve());
+// console.timeEnd();
+// debugger;
