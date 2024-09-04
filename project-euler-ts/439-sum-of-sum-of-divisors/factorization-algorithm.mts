@@ -1,17 +1,28 @@
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
+import { PriorityQueue } from "../../utils-ts/modules/PriorityQueue.mjs";
 
 export const factorizeAll = (upperBound: number) => {
 	const factorizations: Map<number, Map<number, number>> = new Map();
+	const factorizedNumbers = new PriorityQueue<number>();
 	factorizations.set(1, new Map());
+	factorizedNumbers.insert(1, 1);
 	const primesFound = [2];
 	const search = (nextPrime: number) => {
-		for(const [num, factorization] of new Map(factorizations)) {
+		let newFactorizations = new Map<number, Map<number, number>>();
+		let newFactorizedNumbers = new Set<number>();
+		for(const [num] of factorizedNumbers.entries()) {
+			const factorization = factorizations.get(num);
 			if(num * nextPrime > upperBound) { break; }
 			for(let exponent = 1; num * nextPrime ** exponent <= upperBound; exponent ++) {
 				const newFactorization = new Map(factorization);
 				newFactorization.set(nextPrime, exponent);
-				factorizations.set(num * nextPrime ** exponent, newFactorization);
+				newFactorizations.set(num * nextPrime ** exponent, newFactorization);
+				newFactorizedNumbers.add(num * nextPrime ** exponent);
 			}
+		}
+		for(const num of newFactorizedNumbers) {
+			factorizedNumbers.insert(num, num);
+			factorizations.set(num, newFactorizations.get(num)!);
 		}
 	};
 	while(primesFound[primesFound.length - 1] <= upperBound) {
