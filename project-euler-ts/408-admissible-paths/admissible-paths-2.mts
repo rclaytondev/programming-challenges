@@ -21,7 +21,7 @@ const inadmissiblePathsTo = (point: Vector, inadmissiblePoints: HashSet<Vector>)
 		const newInadmissibles = inadmissiblePoints.filter(p => p.x <= inadmissible.x && p.y <= inadmissible.y && !p.equals(inadmissible));
 		newInadmissibles.delete(point);
 		const paths1 = admissiblePathsTo(inadmissible, newInadmissibles);
-		const paths2 = BigintMath.binomial(BigInt(point.x - inadmissible.x), BigInt(point.y - inadmissible.y));
+		const paths2 = BigintMath.binomial(BigInt(point.x - inadmissible.x + point.y - inadmissible.y), BigInt(point.y - inadmissible.y));
 		result += paths1 * paths2;
 	}
 	return result;
