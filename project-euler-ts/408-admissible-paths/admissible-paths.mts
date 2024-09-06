@@ -21,7 +21,7 @@ export const admissiblePaths = (gridSize: number, modulo: number) => {
 	return paths.get(`${gridSize},${gridSize}`);
 };
 
-console.time();
-console.log(admissiblePaths(10000000, 1000000007));
-console.timeEnd();
-debugger;
+// console.time();
+// console.log(admissiblePaths(10000000, 1000000007));
+// console.timeEnd();
+// debugger;
