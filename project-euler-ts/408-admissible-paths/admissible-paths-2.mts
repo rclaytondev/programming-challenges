@@ -5,10 +5,10 @@ import { BigintMath } from "../../utils-ts/modules/math/BigintMath.mjs";
 const getInadmissiblePoints = (gridSize: number) => {
 	const points = new HashSet<Vector>();
 	for(let x = 1; x ** 2 <= gridSize; x ++) {
-		for(let y = 1; x ** 2 + y ** 2 <= gridSize; y ++) {
+		for(let y = 1; y ** 2 <= gridSize; y ++) {
 			const sum = x ** 2 + y ** 2;
 			if(Math.floor(Math.sqrt(sum)) ** 2 === sum) {
-				points.add(new Vector(x, y));
+				points.add(new Vector(x ** 2, y ** 2));
 			}
 		}
 	}
