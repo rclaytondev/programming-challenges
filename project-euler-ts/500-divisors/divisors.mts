@@ -12,7 +12,7 @@ export const naiveSolution = (log2OfDivisors: number) => {
 	}
 };
 
-export const leastWithDivisors = (log2OfDivisors: number) => {
+export const leastWithDivisors = (log2OfDivisors: number, modulo: number = Infinity) => {
 	const exponents = GroupedArray.fromArray([0]);
 	for(let i = 0; i < log2OfDivisors; i ++) {
 		const getMultiplier = ([index, exponent]: [number, number]) => Sequence.PRIMES.getTerm(index) ** (exponent + 1);
@@ -22,10 +22,15 @@ export const leastWithDivisors = (log2OfDivisors: number) => {
 			exponents.push(0);
 		}
 	}
-	return MathUtils.product([...exponents.entries()].map(([index, exp]) => Sequence.PRIMES.getTerm(index) ** exp));
+	let result = 1;
+	for(const [index, exp] of exponents.entries()) {
+		result *= (Sequence.PRIMES.getTerm(index) ** exp) % modulo;
+		result %= modulo;
+	}
+	return result;
 };
 
 console.time();
-console.log(leastWithDivisors(500500));
+console.log(leastWithDivisors(500500, 500500507));
 console.timeEnd();
 debugger;
