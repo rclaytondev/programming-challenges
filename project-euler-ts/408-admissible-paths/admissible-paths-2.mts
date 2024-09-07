@@ -1,7 +1,7 @@
 import { Vector } from "../../utils-ts/modules/geometry/Vector.mjs";
 import { HashSet } from "../../utils-ts/modules/HashSet.mjs";
 import { BigintMath } from "../../utils-ts/modules/math/BigintMath.mjs";
-import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
+import { Field } from "../../utils-ts/modules/math/Field.mjs";
 
 const getInadmissiblePoints = (gridSize: number) => {
 	const points = new HashSet<Vector>();
@@ -22,17 +22,17 @@ const inadmissiblePathsTo = (point: Vector, inadmissiblePoints: HashSet<Vector>,
 		const newInadmissibles = inadmissiblePoints.filter(p => p.x <= inadmissible.x && p.y <= inadmissible.y && !p.equals(inadmissible));
 		newInadmissibles.delete(point);
 		const paths1 = admissiblePathsTo(inadmissible, newInadmissibles, modulo);
-		const paths2 = BigintMath.binomial(BigInt(point.x - inadmissible.x + point.y - inadmissible.y), BigInt(point.y - inadmissible.y));
-		result += (paths1 * paths2);
+		const paths2 = modularCombination(point.x - inadmissible.x + point.y - inadmissible.y, point.y - inadmissible.y, modulo);
+		result += (paths1 * BigInt(paths2));
 		result %= BigInt(modulo);
 	}
 	return result;
 };
 
 const admissiblePathsTo = (point: Vector, inadmissiblePoints: HashSet<Vector>, modulo: number) => {
-	const totalPaths = BigintMath.binomial(BigInt(point.x + point.y), BigInt(point.x));
+	const totalPaths = modularCombination(point.x + point.y, point.x, modulo);
 	return BigintMath.generalizedModulo(
-		totalPaths - inadmissiblePathsTo(point, inadmissiblePoints, modulo),
+		BigInt(totalPaths) - inadmissiblePathsTo(point, inadmissiblePoints, modulo),
 		BigInt(modulo)
 	);
 };
@@ -44,3 +44,30 @@ export const admissiblePaths = (gridSize: number, modulo: number) => {
 		modulo
 	);
 };
+
+export const modularCombination = (n: number, k: number, modulo: number | bigint) => {
+	/* 
+	Computes (`n` choose `k`) mod `modulo`, assuming that:
+	- modulo is prime
+	-k <= modulo.
+	- n, k <= Number.MAX_SAFE_INTEGER
+	*/
+	modulo = BigInt(modulo);
+	let product = 1n;
+	for(let i = n - k + 1; i <= n; i ++) {
+		product *= BigInt(i);
+		product %= modulo;
+	}
+	const field = Field.integersModulo(Number(modulo));
+	for(let i = 1; i <= k; i ++) {
+		product *= BigInt(field.inverse(i));
+		product %= modulo;
+	}
+	// console.log(`${n} choose ${k} mod ${modulo} = ${product}`);
+	return Number(product);
+};
+
+// console.time();
+// console.log(admissiblePaths(10_000_000, 1_000_000_007));
+// console.timeEnd();
+// debugger;
