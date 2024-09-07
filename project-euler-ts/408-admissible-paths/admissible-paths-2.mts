@@ -59,12 +59,13 @@ export const modularCombination = (n: number, k: number, modulo: number | bigint
 		product %= modulo;
 	}
 	const field = Field.integersModulo(Number(modulo));
-	for(let i = 1; i <= k; i ++) {
-		product *= BigInt(field.inverse(i));
-		product %= modulo;
+	let denominator = 1n;
+	for(let i = 1n; i <= k; i ++) {
+		denominator *= i;
+		denominator %= modulo;
 	}
 	// console.log(`${n} choose ${k} mod ${modulo} = ${product}`);
-	return Number(product);
+	return Number(product * BigInt(field.inverse(Number(denominator))) % modulo);
 };
 
 // console.time();
