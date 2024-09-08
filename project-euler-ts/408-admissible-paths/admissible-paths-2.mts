@@ -61,6 +61,8 @@ const modularFactorial = (num: number, modulo: number) => {
 	return value;
 };
 
+const modularFields: Field<number>[] = [];
+
 export const modularCombination = (n: number, k: number, modulo: number) => {
 	/* 
 	Computes (`n` choose `k`) mod `modulo`, assuming that:
@@ -68,7 +70,7 @@ export const modularCombination = (n: number, k: number, modulo: number) => {
 	-k <= modulo.
 	- n, k <= Number.MAX_SAFE_INTEGER
 	*/
-	const field = Field.integersModulo(modulo);
+	const field = modularFields[modulo] ?? (modularFields[modulo] = Field.integersModulo(modulo));
 	return Number((
 		BigInt(modularFactorial(n, modulo))
 		* BigInt(field.inverse(modularFactorial(k, modulo)))
