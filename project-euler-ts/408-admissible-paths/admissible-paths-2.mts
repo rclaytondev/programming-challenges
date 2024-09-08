@@ -64,20 +64,23 @@ const modularFactorial = (num: number, modulo: number) => {
 
 const modularFields: Field<number>[] = [];
 
-export const modularCombination = Utils.memoize((n: number, k: number, modulo: number) => {
-	/* 
-	Computes (`n` choose `k`) mod `modulo`, assuming that:
-	- modulo is prime
-	-k <= modulo.
-	- n, k <= Number.MAX_SAFE_INTEGER
-	*/
-	const field = modularFields[modulo] ?? (modularFields[modulo] = Field.integersModulo(modulo));
-	return Number((
-		BigInt(modularFactorial(n, modulo))
-		* BigInt(field.inverse(modularFactorial(k, modulo)))
-		* BigInt(field.inverse(modularFactorial(n - k, modulo)))
-	) % BigInt(modulo));
-});
+export const modularCombination = Utils.memoize(
+	(n: number, k: number, modulo: number) => {
+		/* 
+		Computes (`n` choose `k`) mod `modulo`, assuming that:
+		- modulo is prime
+		-k <= modulo.
+		- n, k <= Number.MAX_SAFE_INTEGER
+		*/
+		const field = modularFields[modulo] ?? (modularFields[modulo] = Field.integersModulo(modulo));
+		return Number((
+			BigInt(modularFactorial(n, modulo))
+			* BigInt(field.inverse(modularFactorial(k, modulo)))
+			* BigInt(field.inverse(modularFactorial(n - k, modulo)))
+		) % BigInt(modulo));
+	},
+	(n: number, k: number, modulo: number): [number, number, number] => [n, Math.min(k, n-k), modulo]
+);
 
 console.time();
 console.log(admissiblePaths(10_000_000, 1_000_000_007));
