@@ -3,9 +3,10 @@ import { HashSet } from "../../utils-ts/modules/HashSet.mjs";
 import { BigintMath } from "../../utils-ts/modules/math/BigintMath.mjs";
 import { Field } from "../../utils-ts/modules/math/Field.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
+import { VectorSet } from "./VectorSet.mjs";
 
 const getInadmissiblePoints = (gridSize: number) => {
-	const points = new HashSet<Vector>();
+	const points = new VectorSet();
 	for(let x = 1; x ** 2 <= gridSize; x ++) {
 		for(let y = 1; y ** 2 <= gridSize; y ++) {
 			const sum = x ** 2 + y ** 2;
@@ -17,11 +18,11 @@ const getInadmissiblePoints = (gridSize: number) => {
 	return points;
 };
 
-const inadmissiblePathsTo = Utils.memoize((point: Vector, inadmissiblePoints: HashSet<Vector>, modulo: number) => {
+const inadmissiblePathsTo = Utils.memoize((point: Vector, inadmissiblePoints: VectorSet, modulo: number) => {
 	let result = 0n;
 	for(const inadmissible of inadmissiblePoints) {
-		const newInadmissibles = inadmissiblePoints.filter(p => p.x <= inadmissible.x && p.y <= inadmissible.y && !p.equals(inadmissible));
-		newInadmissibles.delete(point);
+		const newInadmissibles = inadmissiblePoints.slice(0, inadmissible.x, 0, inadmissible.y);
+		newInadmissibles.delete(inadmissible);
 		const paths1 = admissiblePathsTo(inadmissible, newInadmissibles, modulo);
 		const paths2 = modularCombination(point.x - inadmissible.x + point.y - inadmissible.y, point.y - inadmissible.y, modulo);
 		result += (paths1 * BigInt(paths2));
@@ -30,7 +31,7 @@ const inadmissiblePathsTo = Utils.memoize((point: Vector, inadmissiblePoints: Ha
 	return result;
 });
 
-const admissiblePathsTo = (point: Vector, inadmissiblePoints: HashSet<Vector>, modulo: number) => {
+const admissiblePathsTo = (point: Vector, inadmissiblePoints: VectorSet, modulo: number) => {
 	const totalPaths = modularCombination(point.x + point.y, point.x, modulo);
 	return BigintMath.generalizedModulo(
 		BigInt(totalPaths) - inadmissiblePathsTo(point, inadmissiblePoints, modulo),
