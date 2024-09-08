@@ -17,7 +17,7 @@ const getInadmissiblePoints = (gridSize: number) => {
 	return points;
 };
 
-const inadmissiblePathsTo = (point: Vector, inadmissiblePoints: HashSet<Vector>, modulo: number) => {
+const inadmissiblePathsTo = Utils.memoize((point: Vector, inadmissiblePoints: HashSet<Vector>, modulo: number) => {
 	let result = 0n;
 	for(const inadmissible of inadmissiblePoints) {
 		const newInadmissibles = inadmissiblePoints.filter(p => p.x <= inadmissible.x && p.y <= inadmissible.y && !p.equals(inadmissible));
@@ -28,7 +28,7 @@ const inadmissiblePathsTo = (point: Vector, inadmissiblePoints: HashSet<Vector>,
 		result %= BigInt(modulo);
 	}
 	return result;
-};
+});
 
 const admissiblePathsTo = (point: Vector, inadmissiblePoints: HashSet<Vector>, modulo: number) => {
 	const totalPaths = modularCombination(point.x + point.y, point.x, modulo);
