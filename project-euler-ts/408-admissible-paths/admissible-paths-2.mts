@@ -45,30 +45,38 @@ export const admissiblePaths = (gridSize: number, modulo: number) => {
 	);
 };
 
-export const modularCombination = (n: number, k: number, modulo: number | bigint) => {
+const modularFactorials: number[][] = [];
+const modularFactorial = (num: number, modulo: number) => {
+	modularFactorials[modulo] ??= [];
+	if(modularFactorials[modulo][num]) {
+		return modularFactorials[modulo][num];
+	}
+	modularFactorials[modulo][0] ??= 1;
+	const row = modularFactorials[modulo];
+	let value = row[row.length - 1];
+	for(let i = row.length; i <= num; i ++) {
+		value = Number(BigInt(value) * BigInt(i) % BigInt(modulo));
+		row[i] = value;
+	}
+	return value;
+};
+
+export const modularCombination = (n: number, k: number, modulo: number) => {
 	/* 
 	Computes (`n` choose `k`) mod `modulo`, assuming that:
 	- modulo is prime
 	-k <= modulo.
 	- n, k <= Number.MAX_SAFE_INTEGER
 	*/
-	modulo = BigInt(modulo);
-	let product = 1n;
-	for(let i = n - k + 1; i <= n; i ++) {
-		product *= BigInt(i);
-		product %= modulo;
-	}
-	const field = Field.integersModulo(Number(modulo));
-	let denominator = 1n;
-	for(let i = 1n; i <= k; i ++) {
-		denominator *= i;
-		denominator %= modulo;
-	}
-	// console.log(`${n} choose ${k} mod ${modulo} = ${product}`);
-	return Number(product * BigInt(field.inverse(Number(denominator))) % modulo);
+	const field = Field.integersModulo(modulo);
+	return Number((
+		BigInt(modularFactorial(n, modulo))
+		* BigInt(field.inverse(modularFactorial(k, modulo)))
+		* BigInt(field.inverse(modularFactorial(n - k, modulo)))
+	) % BigInt(modulo));
 };
 
-// console.time();
-// console.log(admissiblePaths(10_000_000, 1_000_000_007));
-// console.timeEnd();
-// debugger;
+console.time();
+console.log(admissiblePaths(10_000_000, 1_000_000_007));
+console.timeEnd();
+debugger;
