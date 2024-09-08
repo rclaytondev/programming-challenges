@@ -2,6 +2,7 @@ import { Vector } from "../../utils-ts/modules/geometry/Vector.mjs";
 import { HashSet } from "../../utils-ts/modules/HashSet.mjs";
 import { BigintMath } from "../../utils-ts/modules/math/BigintMath.mjs";
 import { Field } from "../../utils-ts/modules/math/Field.mjs";
+import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
 const getInadmissiblePoints = (gridSize: number) => {
 	const points = new HashSet<Vector>();
@@ -63,7 +64,7 @@ const modularFactorial = (num: number, modulo: number) => {
 
 const modularFields: Field<number>[] = [];
 
-export const modularCombination = (n: number, k: number, modulo: number) => {
+export const modularCombination = Utils.memoize((n: number, k: number, modulo: number) => {
 	/* 
 	Computes (`n` choose `k`) mod `modulo`, assuming that:
 	- modulo is prime
@@ -76,7 +77,7 @@ export const modularCombination = (n: number, k: number, modulo: number) => {
 		* BigInt(field.inverse(modularFactorial(k, modulo)))
 		* BigInt(field.inverse(modularFactorial(n - k, modulo)))
 	) % BigInt(modulo));
-};
+});
 
 console.time();
 console.log(admissiblePaths(10_000_000, 1_000_000_007));
