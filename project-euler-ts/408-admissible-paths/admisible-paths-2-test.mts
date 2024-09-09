@@ -1,9 +1,11 @@
 import { describe } from "mocha";
-import { admissiblePaths, modularCombination } from "./admissible-paths-2.mjs";
+import { admissiblePaths, inadmissiblePathsTo, modularCombination } from "./admissible-paths-2.mjs";
 import { admissiblePaths as naiveAlgorithm } from "./admissible-paths.mjs";
 import { assert } from "chai";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { BigintMath } from "../../utils-ts/modules/math/BigintMath.mjs";
+import { VectorSet } from "./VectorSet.mjs";
+import { Vector } from "../../utils-ts/modules/geometry/Vector.mjs";
 
 describe("admissiblePaths", () => {
 	it("can compute the number of admissible paths to (5, 5), which has no inadmissible points", () => {
@@ -28,6 +30,19 @@ describe("admissiblePaths", () => {
 		const result = admissiblePaths(144, 1_000_000_007);
 		const expected = naiveAlgorithm(144, 144, 1_000_000_007);
 		assert.equal(result, BigInt(expected));
+	});
+});
+describe("inadmissiblePathsTo", () => {
+	it("works for (10, 10) with inadmissibles (1, 2), (3, 4)", () => {
+		const modulo = 1_000_000_007;
+		const paths = (x: number, y: number) => modularCombination(x + y, x, modulo);
+		const pathsThroughFirst = paths(1, 2) * paths(8, 9);
+		const pathsThroughSecond = (paths(3, 4) - paths(1, 2) * paths(2, 2)) * paths(6, 7);
+		const expected = (pathsThroughFirst + pathsThroughSecond) % modulo;
+
+		const points = VectorSet.fromIterable([new Vector(1, 2), new Vector(3, 4)]);
+		const result = inadmissiblePathsTo(new Vector(10, 10), points, modulo);
+		assert.equal(Number(result), expected);
 	});
 });
 describe("modularCombination", () => {

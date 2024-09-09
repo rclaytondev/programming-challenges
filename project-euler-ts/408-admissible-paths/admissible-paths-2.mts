@@ -18,7 +18,7 @@ const getInadmissiblePoints = (gridSize: number) => {
 	return points;
 };
 
-const inadmissiblePathsTo = Utils.memoize((point: Vector, inadmissiblePoints: VectorSet, modulo: number) => {
+export const inadmissiblePathsTo = Utils.memoize((point: Vector, inadmissiblePoints: VectorSet, modulo: number) => {
 	let result = 0n;
 	for(const inadmissible of inadmissiblePoints) {
 		const newInadmissibles = inadmissiblePoints.slice(0, inadmissible.x, 0, inadmissible.y);
