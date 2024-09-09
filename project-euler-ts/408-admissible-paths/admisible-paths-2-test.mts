@@ -1,17 +1,33 @@
 import { describe } from "mocha";
 import { admissiblePaths, modularCombination } from "./admissible-paths-2.mjs";
+import { admissiblePaths as naiveAlgorithm } from "./admissible-paths.mjs";
 import { assert } from "chai";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { BigintMath } from "../../utils-ts/modules/math/BigintMath.mjs";
 
 describe("admissiblePaths", () => {
-	it("can compute the number of admissible paths to (5, 5)", () => {
+	it("can compute the number of admissible paths to (5, 5), which has no inadmissible points", () => {
 		const result = admissiblePaths(5, 596994449);
 		assert.equal(result, 252n);
 	});
-	it("can compute the number of admissible paths to (16, 16)", () => {
+	it("can compute the number of admissible paths to (16, 16), which has 1 pair of inadmissible points", () => {
 		const result = admissiblePaths(16, 596994449);
 		assert.equal(result, 596994440n);
+	});
+	it("gives the same result as the naive algorithm for (17, 17), which has 1 pair of inadmisible points", () => {
+		const result = admissiblePaths(17, 1_000_000_007);
+		const expected = naiveAlgorithm(17, 1_000_000_007);
+		assert.equal(result, BigInt(expected));
+	});
+	it("gives the same result as the naive algorithm for (64, 64), which has 2 pairs of inadmissible points", () => {
+		const result = admissiblePaths(36, 1_000_000_007);
+		const expected = naiveAlgorithm(36, 1_000_000_007);
+		assert.equal(result, BigInt(expected));
+	});
+	it("gives the same result as the naive algorithm for (144, 144), which has 4 pairs of inadmissible points", () => {
+		const result = admissiblePaths(144, 1_000_000_007);
+		const expected = naiveAlgorithm(144, 1_000_000_007);
+		assert.equal(result, BigInt(expected));
 	});
 });
 describe("modularCombination", () => {

@@ -83,7 +83,7 @@ export const modularCombination = Utils.memoize(
 	(n: number, k: number, modulo: number): [number, number, number] => [n, Math.min(k, n-k), modulo]
 );
 
-console.time();
-console.log(admissiblePaths(10_000_000, 1_000_000_007));
-console.timeEnd();
-debugger;
+// console.time();
+// console.log(admissiblePaths(10_000_000, 1_000_000_007));
+// console.timeEnd();
+// debugger;
