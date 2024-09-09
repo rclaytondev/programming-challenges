@@ -5,13 +5,13 @@ import { Field } from "../../utils-ts/modules/math/Field.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 import { VectorSet } from "./VectorSet.mjs";
 
-const getInadmissiblePoints = (gridSize: number) => {
-	const points = new VectorSet();
-	for(let x = 1; x ** 2 <= gridSize; x ++) {
-		for(let y = 1; y ** 2 <= gridSize; y ++) {
+const getInadmissiblePoints = (width: number, height: number) => {
+	const points = [];
+	for(let x = 1; x ** 2 <= width; x ++) {
+		for(let y = 1; y ** 2 <= height; y ++) {
 			const sum = x ** 2 + y ** 2;
 			if(Math.floor(Math.sqrt(sum)) ** 2 === sum) {
-				points.add(new Vector(x ** 2, y ** 2));
+				points.push(new Vector(x ** 2, y ** 2));
 			}
 		}
 	}
@@ -19,7 +19,7 @@ const getInadmissiblePoints = (gridSize: number) => {
 };
 
 let inadmissiblePathsCache = new Map<string, bigint>();
-export const inadmissiblePathsTo = (point: Vector, inadmissiblePoints: VectorSet, modulo: number) => {
+export const inadmissiblePathsTo = (point: Vector, modulo: number) => {
 	const argsString = `${point},${modulo}`;
 	const reversedArgsString = `${new Vector(point.y, point.x)},${modulo}`;
 	if(inadmissiblePathsCache.has(argsString)) {
@@ -29,10 +29,9 @@ export const inadmissiblePathsTo = (point: Vector, inadmissiblePoints: VectorSet
 		return inadmissiblePathsCache.get(reversedArgsString)!;
 	}
 	let result = 0n;
-	for(const inadmissible of inadmissiblePoints) {
-		const newInadmissibles = inadmissiblePoints.slice(0, inadmissible.x, 0, inadmissible.y);
-		newInadmissibles.delete(inadmissible);
-		const paths1 = admissiblePathsTo(inadmissible, newInadmissibles, modulo);
+	for(const inadmissible of getInadmissiblePoints(point.x, point.y)) {
+		if(inadmissible.x === point.x && inadmissible.y === point.y) { continue; }
+		const paths1 = admissiblePathsTo(inadmissible, modulo);
 		const paths2 = modularCombination(point.x - inadmissible.x + point.y - inadmissible.y, point.y - inadmissible.y, modulo);
 		result += (paths1 * BigInt(paths2));
 		result %= BigInt(modulo);
@@ -41,10 +40,10 @@ export const inadmissiblePathsTo = (point: Vector, inadmissiblePoints: VectorSet
 	return result;
 };
 
-const admissiblePathsTo = (point: Vector, inadmissiblePoints: VectorSet, modulo: number) => {
+const admissiblePathsTo = (point: Vector, modulo: number) => {
 	const totalPaths = modularCombination(point.x + point.y, point.x, modulo);
 	return BigintMath.generalizedModulo(
-		BigInt(totalPaths) - inadmissiblePathsTo(point, inadmissiblePoints, modulo),
+		BigInt(totalPaths) - inadmissiblePathsTo(point, modulo),
 		BigInt(modulo)
 	);
 };
@@ -52,7 +51,6 @@ const admissiblePathsTo = (point: Vector, inadmissiblePoints: VectorSet, modulo:
 export const admissiblePaths = (gridSize: number, modulo: number) => {
 	return admissiblePathsTo(
 		new Vector(gridSize, gridSize),
-		getInadmissiblePoints(gridSize),
 		modulo
 	);
 };

@@ -32,19 +32,6 @@ describe("admissiblePaths", () => {
 		assert.equal(result, BigInt(expected));
 	});
 });
-describe("inadmissiblePathsTo", () => {
-	it("works for (10, 10) with inadmissibles (1, 2), (3, 4)", () => {
-		const modulo = 1_000_000_007;
-		const paths = (x: number, y: number) => modularCombination(x + y, x, modulo);
-		const pathsThroughFirst = paths(1, 2) * paths(8, 9);
-		const pathsThroughSecond = (paths(3, 4) - paths(1, 2) * paths(2, 2)) * paths(6, 7);
-		const expected = (pathsThroughFirst + pathsThroughSecond) % modulo;
-
-		const points = VectorSet.fromIterable([new Vector(1, 2), new Vector(3, 4)]);
-		const result = inadmissiblePathsTo(new Vector(10, 10), points, modulo);
-		assert.equal(Number(result), expected);
-	});
-});
 describe("modularCombination", () => {
 	it("can compute 10 choose 5 mod 37", () => {
 		const expected = MathUtils.binomial(10, 5) % 37;
