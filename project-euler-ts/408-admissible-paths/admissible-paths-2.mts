@@ -21,8 +21,12 @@ const getInadmissiblePoints = (gridSize: number) => {
 let inadmissiblePathsCache = new Map<string, bigint>();
 export const inadmissiblePathsTo = (point: Vector, inadmissiblePoints: VectorSet, modulo: number) => {
 	const argsString = `${point},${modulo}`;
+	const reversedArgsString = `${new Vector(point.y, point.x)},${modulo}`;
 	if(inadmissiblePathsCache.has(argsString)) {
 		return inadmissiblePathsCache.get(argsString)!;
+	}
+	if(inadmissiblePathsCache.has(reversedArgsString)) {
+		return inadmissiblePathsCache.get(reversedArgsString)!;
 	}
 	let result = 0n;
 	for(const inadmissible of inadmissiblePoints) {
