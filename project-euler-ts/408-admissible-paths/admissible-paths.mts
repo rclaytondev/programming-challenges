@@ -1,10 +1,10 @@
 import { CountLogger } from "../project-specific-utilities/CountLogger.mjs";
 
 const isSquare = (n: number) => Math.floor(Math.sqrt(n)) ** 2 === n;
-export const admissiblePaths = (gridSize: number, modulo: number) => {
-	const logger = new CountLogger(n => 10000 * n, gridSize ** 2);
+export const admissiblePaths = (width: number, height: number, modulo: number) => {
+	const logger = new CountLogger(n => 10000 * n, width * height);
 	const paths = new Map<string, number>();
-	for(let sum = 1; sum <= 2 * gridSize; sum ++) {
+	for(let sum = 1; sum <= width + height; sum ++) {
 		for(let x = 1; x < sum; x ++) {
 			const y = sum - x;
 			logger.count();
@@ -18,7 +18,7 @@ export const admissiblePaths = (gridSize: number, modulo: number) => {
 			}
 		}
 	}
-	return paths.get(`${gridSize},${gridSize}`)!;
+	return paths.get(`${width},${height}`)!;
 };
 
 // console.time();

@@ -16,17 +16,17 @@ describe("admissiblePaths", () => {
 	});
 	it("gives the same result as the naive algorithm for (17, 17), which has 1 pair of inadmisible points", () => {
 		const result = admissiblePaths(17, 1_000_000_007);
-		const expected = naiveAlgorithm(17, 1_000_000_007);
+		const expected = naiveAlgorithm(17, 17, 1_000_000_007);
 		assert.equal(result, BigInt(expected));
 	});
 	it("gives the same result as the naive algorithm for (64, 64), which has 2 pairs of inadmissible points", () => {
 		const result = admissiblePaths(36, 1_000_000_007);
-		const expected = naiveAlgorithm(36, 1_000_000_007);
+		const expected = naiveAlgorithm(36, 36, 1_000_000_007);
 		assert.equal(result, BigInt(expected));
 	});
 	it("gives the same result as the naive algorithm for (144, 144), which has 4 pairs of inadmissible points", () => {
 		const result = admissiblePaths(144, 1_000_000_007);
-		const expected = naiveAlgorithm(144, 1_000_000_007);
+		const expected = naiveAlgorithm(144, 144, 1_000_000_007);
 		assert.equal(result, BigInt(expected));
 	});
 });
