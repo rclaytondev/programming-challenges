@@ -1,25 +1,16 @@
+import { Utils } from "../../utils-ts/modules/Utils.mjs";
 import { CountLogger } from "../project-specific-utilities/CountLogger.mjs";
 
 const isSquare = (n: number) => Math.floor(Math.sqrt(n)) ** 2 === n;
-export const admissiblePaths = (width: number, height: number, modulo: number) => {
-	const logger = new CountLogger(n => 10000 * n, width * height);
-	const paths = new Map<string, number>();
-	for(let sum = 1; sum <= width + height; sum ++) {
-		for(let x = 1; x < sum; x ++) {
-			const y = sum - x;
-			logger.count();
-			if(!(isSquare(x) && isSquare(y) && isSquare(sum))) {
-				const paths1 = paths.get(`${x-1},${y}`) ?? (x - 1 === 0 || y === 0 ? 1 : 0);
-				const paths2 = paths.get(`${x},${y-1}`) ?? (x === 0 || y - 1 === 0 ? 1 : 0);
-				const pathsToPoint = paths1 + paths2;
-				if(pathsToPoint % modulo !== 0) {
-					paths.set(`${x},${y}`, pathsToPoint % modulo);
-				}
-			}
-		}
+export const admissiblePaths = Utils.memoize((width: number, height: number, modulo: number): number => {
+	if(width === 0 || height === 0) {
+		return 1;
 	}
-	return paths.get(`${width},${height}`)!;
-};
+	if(isSquare(width) && isSquare(height) && isSquare(width + height)) {
+		return 0;
+	}
+	return (admissiblePaths(width - 1, height, modulo) + admissiblePaths(width, height - 1, modulo)) % modulo;
+});
 
 // console.time();
 // console.log(admissiblePaths(10000000, 1000000007));

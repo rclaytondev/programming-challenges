@@ -11,4 +11,8 @@ describe("admissiblePaths", () => {
 		const result = admissiblePaths(16, 16, 1000000000);
 		assert.equal(result, 596994440);
 	});
+	it("can compute the number of paths to (9, 16)", () => {
+		const result = admissiblePaths(9, 16, 1000000000);
+		assert.equal(result, 0);
+	});
 });
