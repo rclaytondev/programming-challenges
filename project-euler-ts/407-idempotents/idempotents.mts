@@ -10,7 +10,7 @@ const isPrime = (num: number, primesBelow: number[]) => {
 	return true;
 };
 
-const naivePrimesBelow = (upperBound: number) => {
+export const primesBelow = (upperBound: number) => {
 	let primes = [2, 3];
 	for(let i = 0; 6 * i + 1 <= upperBound; i ++) {
 		if(6 * i + 1 <= upperBound && isPrime(6 * i + 1, primes)) {
@@ -21,30 +21,6 @@ const naivePrimesBelow = (upperBound: number) => {
 		}
 	}
 	return primes;
-};
-
-export const primesBelow = (upperBound: number) => {
-	/* Implements the Sieve of Eratosthenes. */
-	const possiblePrimes = new Set();
-	for(let i = 2; i <= upperBound; i ++) {
-		possiblePrimes.add(i);
-	}
-	const primes = [];
-	let prime = 2;
-	mainLoop: while(true) {
-		possiblePrimes.delete(prime);
-		primes.push(prime);
-		for(let multiple = prime ** 2; multiple <= upperBound; multiple += prime) {
-			possiblePrimes.delete(multiple);
-		}
-		for(let i = prime + 1; i <= upperBound; i ++) {
-			if(possiblePrimes.has(i)) {
-				prime = i;
-				continue mainLoop;
-			}
-		}
-		return primes;
-	}
 };
 
 const largestIdempotent = (modulo: number) => {
@@ -73,15 +49,3 @@ const solve = (upperBound: number) => {
 // console.log(solve(100_000));
 // console.timeEnd();
 // debugger;
-
-
-const input = 10_000_000;
-
-console.time("trial division");
-naivePrimesBelow(input);
-console.timeEnd("trial division");
-
-console.time("sieve of eratosthenes");
-primesBelow(input);
-console.timeEnd("sieve of eratosthenes");
-debugger;
