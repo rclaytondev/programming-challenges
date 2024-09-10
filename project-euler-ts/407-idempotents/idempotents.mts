@@ -1,6 +1,10 @@
+import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { CountLogger } from "../project-specific-utilities/CountLogger.mjs";
 
 const largestIdempotent = (modulo: number) => {
+	if(MathUtils.isPrime(modulo)) {
+		return 1;
+	}
 	for(let i = modulo - 1; i > 1; i --) {
 		if((i ** 2) % modulo === i) {
 			return i;
