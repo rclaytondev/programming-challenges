@@ -1,6 +1,15 @@
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
 type Components = Set<Set<["left" | "right", number]>>;
+type SculptureInfo = {
+	leftColumn: Set<number>;
+	rightColumn: Set<number>;
+	symmetrical: boolean;
+	weightDifference: number;
+	blocksLeft: number;
+	maxX: number;
+	components: Components;
+};
 
 export class PartialSculpture {
 	leftColumn: Set<number>;
@@ -11,14 +20,14 @@ export class PartialSculpture {
 	maxX: number;
 	components: Components;
 
-	constructor(leftColumn: Set<number>, rightColumn: Set<number>, symmetrical: boolean, weightDifference: number, blocksLeft: number, maxX: number, components: Components) {
-		this.leftColumn = leftColumn;
-		this.rightColumn = rightColumn;
-		this.symmetrical = symmetrical;
-		this.weightDifference = weightDifference;
-		this.blocksLeft = blocksLeft;
-		this.maxX = maxX;
-		this.components = components;
+	constructor(config: SculptureInfo) {
+		this.leftColumn = config.leftColumn;
+		this.rightColumn = config.rightColumn;
+		this.symmetrical = config.symmetrical;
+		this.weightDifference = config.weightDifference;
+		this.blocksLeft = config.blocksLeft;
+		this.maxX = config.maxX;
+		this.components = config.components;
 	}
 
 	children(): PartialSculpture[] {
@@ -27,15 +36,15 @@ export class PartialSculpture {
 	}
 	getChild(leftColumn: number[], rightColumn: number[]) {
 		const nextX = this.maxX + 1;
-		return new PartialSculpture(
-			new Set(leftColumn),
-			new Set(rightColumn),
-			this.symmetrical && Utils.setEquals(leftColumn, rightColumn),
-			this.weightDifference + nextX * (rightColumn.length - leftColumn.length),
-			this.blocksLeft - (rightColumn.length + leftColumn.length),
-			nextX,
-			this.getNewComponents(leftColumn, rightColumn)
-		);
+		return new PartialSculpture({
+			leftColumn: new Set(leftColumn),
+			rightColumn: new Set(rightColumn),
+			symmetrical: this.symmetrical && Utils.setEquals(leftColumn, rightColumn),
+			weightDifference: this.weightDifference + nextX * (rightColumn.length - leftColumn.length),
+			blocksLeft: this.blocksLeft - (rightColumn.length + leftColumn.length),
+			maxX: nextX,
+			components: this.getNewComponents(leftColumn, rightColumn)
+		});
 	}
 	getNewComponents(leftColumn: number[], rightColumn: number[]) {
 		return this.components; // TODO: implement this!
