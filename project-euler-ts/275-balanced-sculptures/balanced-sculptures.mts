@@ -1,6 +1,8 @@
+import { Utils } from "../../utils-ts/modules/Utils.mjs";
+
 type Components = Set<Set<["left" | "right", number]>>;
 
-class PartialSculpture {
+export class PartialSculpture {
 	leftColumn: Set<number>;
 	rightColumn: Set<number>;
 	symmetrical: boolean;
@@ -22,6 +24,21 @@ class PartialSculpture {
 	children(): PartialSculpture[] {
 		// TODO: implement this!
 		return [];
+	}
+	getChild(leftColumn: number[], rightColumn: number[]) {
+		const nextX = this.maxX + 1;
+		return new PartialSculpture(
+			new Set(leftColumn),
+			new Set(rightColumn),
+			this.symmetrical && Utils.setEquals(leftColumn, rightColumn),
+			this.weightDifference + nextX * (rightColumn.length - leftColumn.length),
+			this.blocksLeft - (rightColumn.length + leftColumn.length),
+			nextX,
+			this.getNewComponents(leftColumn, rightColumn)
+		);
+	}
+	getNewComponents(leftColumn: number[], rightColumn: number[]) {
+		return this.components; // TODO: implement this!
 	}
 
 	completionsTimes2() {
