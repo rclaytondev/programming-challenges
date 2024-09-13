@@ -17,15 +17,19 @@ export class Partition<T> {
 		}
 	}
 	merge(value1: T, value2: T) {
-		/* Time complexity: O(1) */
+		/* Time complexity: O(h), where h is the depth of the nodes. */
 		const node1 = this.nodes.get(value1);
 		const node2 = this.nodes.get(value2);
 		if(!node1 || !node2) {
 			throw new Error("Cannot merge nodes: at least one of the two provided nodes was not in the partition.");
 		}
-		this.moveNode(node1, node2);
+		const root1 = this.getRoot(value1);
+		const root2 = this.getRoot(value2);
+		if(root1 !== root2) {
+			this.moveNode(root1, root2);
+		}
 	}
-	representative(value: T): T {
+	private getRoot(value: T) {
 		/* Time complexity: O(h), where h is the depth of the node. */
 		let node = this.nodes.get(value);
 		if(!node) {
@@ -39,7 +43,10 @@ export class Partition<T> {
 		for(const visitedNode of visitedNodes) {
 			this.moveNode(visitedNode, node);
 		}
-		return node.value;
+		return node;
+	}
+	representative(value: T) {
+		return this.getRoot(value).value;
 	}
 
 	private moveNode(node: Node<T>, newParent: Node<T>) {
