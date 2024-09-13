@@ -39,7 +39,7 @@ export class Partition<T> {
 		const node1 = this.nodes.get(value1);
 		const node2 = this.nodes.get(value2);
 		if(!node1 || !node2) {
-			throw new Error("Cannot merge nodes: at least one of the two provided nodes was not in the partition.");
+			return;
 		}
 		const root1 = this.getRoot(value1);
 		const root2 = this.getRoot(value2);
