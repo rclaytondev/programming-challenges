@@ -47,10 +47,20 @@ export class PartialSculpture {
 		});
 	}
 	static verticalSculptures(totalBlocks: number) {
-		const sculptures = [];
-		for(const blocks of Utils.subsets(Utils.range(2, totalBlocks))) {
-			sculptures.push(PartialSculpture.getVerticalSculpture([1, ...blocks], totalBlocks));
-		}
+		const sculptures: PartialSculpture[] = [];
+		const checkSubset = (blockPositions: number[]) => {
+			if(blockPositions.length <= totalBlocks) {
+				sculptures.push(PartialSculpture.getVerticalSculpture(blockPositions, totalBlocks));
+			}
+			if(blockPositions.length < totalBlocks) {
+				const last = blockPositions[blockPositions.length - 1];
+				checkSubset([...blockPositions, last + 1]);
+				for(let gap = 1; blockPositions.length + (gap + 3) <= totalBlocks; gap ++) {
+					checkSubset([...blockPositions, last + gap + 1]);
+				}
+			}
+		};
+		checkSubset([1]);
 		return sculptures;
 	}
 
