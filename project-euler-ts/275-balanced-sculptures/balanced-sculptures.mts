@@ -125,3 +125,11 @@ export class PartialSculpture {
 		return this.completionsTimes2() / 2n;
 	}
 }
+
+export const balancedSculptures = (blocks: number) => {
+	let count = 0n;
+	for(const sculpture of PartialSculpture.verticalSculptures(blocks)) {
+		count += sculpture.completions();
+	}
+	return count;
+};

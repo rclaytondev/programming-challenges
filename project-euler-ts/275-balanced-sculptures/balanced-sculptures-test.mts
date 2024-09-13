@@ -1,5 +1,5 @@
-import { it } from "mocha";
-import { PartialSculpture } from "./balanced-sculptures.mjs";
+import { describe, it } from "mocha";
+import { balancedSculptures, PartialSculpture } from "./balanced-sculptures.mjs";
 import { assert } from "chai";
 import { HashPartition } from "./HashPartition.mjs";
 import { Vector } from "../../utils-ts/modules/geometry/Vector.mjs";
@@ -44,4 +44,31 @@ describe("PartialSculpture.getChild", () => {
 		const result = sculpture.getChild([1], [1]);
 		assert.isNull(result);
 	});
+});
+describe("balancedSculptures", () => {
+	it("correctly counts the balanced sculptures of order 1", () => {
+		const result = balancedSculptures(1);
+		assert.equal(result, 1n);
+	});
+	it("correctly counts the balanced sculptures of order 2", () => {
+		const result = balancedSculptures(2);
+		assert.equal(result, 1n);
+	});
+	it("correctly counts the balanced sculptures of order 3", () => {
+		const result = balancedSculptures(3);
+		assert.equal(result, 2n); // 2 sculptures: vertical sculpture and a T-shape
+	});
+
+	// it("correctly counts the balanced sculptures of order 6", () => {
+	// 	const result = balancedSculptures(6);
+	// 	assert.equal(result, 18n);
+	// });
+	// it("correctly counts the balanced sculptures of order 10", () => {
+	// 	const result = balancedSculptures(10);
+	// 	assert.equal(result, 964n);
+	// });
+	// it("correctly counts the balanced sculptures of order 15", () => {
+	// 	const result = balancedSculptures(15);
+	// 	assert.equal(result, 360505n);
+	// });
 });
