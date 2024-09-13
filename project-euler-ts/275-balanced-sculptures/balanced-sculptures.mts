@@ -33,7 +33,18 @@ export class PartialSculpture {
 	}
 
 	children(): PartialSculpture[] {
-		// TODO: implement this!
+		const leftHeight = Math.max(...this.leftColumn) + this.blocksLeft;
+		const rightHeight = Math.max(...this.rightColumn) + this.blocksLeft;
+		const children = [];
+		for(let leftBlocks = 0; leftBlocks < Math.min(leftHeight, this.blocksLeft); leftBlocks ++) {
+			for(const leftColumn of Utils.subsets(Utils.range(1, leftHeight))) {
+				for(let rightBlocks = 0; rightBlocks < Math.min(rightHeight, this.blocksLeft - leftBlocks); rightBlocks ++) {
+					for(const rightColumn of Utils.subsets(Utils.range(1, rightHeight))) {
+						children.push(this.getChild([...leftColumn], [...rightColumn]));
+					}
+				}
+			}
+		}
 		return [];
 	}
 	getChild(leftColumn: number[], rightColumn: number[]) {
