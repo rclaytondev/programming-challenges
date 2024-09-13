@@ -70,7 +70,7 @@ export class PartialSculpture {
 				}
 			}
 		}
-		return [];
+		return children;
 	}
 	getChild(leftColumn: number[], rightColumn: number[]) {
 		const nextX = this.maxX + 1;
