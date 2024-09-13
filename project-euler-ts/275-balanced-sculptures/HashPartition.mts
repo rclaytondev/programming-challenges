@@ -50,6 +50,13 @@ export class HashPartition<T> {
 			this.hashFunction
 		);
 	}
+	values() {
+		return this.valuesMap.values();
+	}
+	sets() {
+		const sets = this.partition.sets();
+		return sets.map(set => new Set([...set].map(str => this.valuesMap.get(str) as T)));
+	}
 
 	get numSets() {
 		return this.partition.numSets;

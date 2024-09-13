@@ -71,3 +71,13 @@ describe("Partition.fromSets", () => {
 		assert.equal(partition.representative(4), 4);
 	});
 });
+describe("Partition.sets", () => {
+	it("can return all the sets in the partition", () => {
+		const partition = Partition.fromSets([[1], [2, 3], [4]]);
+		assert.sameDeepMembers(partition.sets(), [
+			new Set([1]),
+			new Set([2, 3]),
+			new Set([4]),
+		]);
+	});
+});

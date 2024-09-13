@@ -95,6 +95,27 @@ export class Partition<T> {
 		}
 		return result;
 	}
+	values() {
+		return this.nodes.keys();
+	}
+	sets() {
+		const nodesChecked = new Set<Node<T>>();
+		const sets: Set<T>[] = [];
+		const searchTree = (node: Node<T>) => {
+			nodesChecked.add(node);
+			sets[sets.length - 1].add(node.value);
+			for(const child of node.children) {
+				searchTree(child);
+			}
+		};
+		for(const node of this.nodes.values()) {
+			if(!nodesChecked.has(node)) {
+				sets.push(new Set());
+				searchTree(this.getRoot(node.value));
+			}
+		}
+		return sets;
+	}
 
 	private moveNode(node: Node<T>, newParent: Node<T>) {
 		node.parent?.children.delete(node);
