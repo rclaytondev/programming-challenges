@@ -44,3 +44,11 @@ describe("Partition", () => {
 		assert.isTrue(representative1 === 1 || representative1 === 2);
 	});
 });
+describe("Partition.fromSets", () => {
+	it("correctly constructs the partition from a set of sets", () => {
+		const partition = Partition.fromSets([[1], [2, 3], [4]]);
+		assert.equal(partition.representative(1), 1);
+		assert.equal(partition.representative(2), partition.representative(3));
+		assert.equal(partition.representative(4), 4);
+	});
+});

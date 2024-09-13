@@ -15,3 +15,11 @@ describe("HashPartition", () => {
 		assert.equal(representative1, representative2);
 	});
 });
+describe("HashPartition.fromSets", () => {
+	it("correctly constructs the partition from a set of sets", () => {
+		const partition = HashPartition.fromSets([[1], [2, 3], [4]]);
+		assert.equal(partition.representative(1), 1);
+		assert.equal(partition.representative(2), partition.representative(3));
+		assert.equal(partition.representative(4), 4);
+	});
+});

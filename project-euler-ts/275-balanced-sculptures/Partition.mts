@@ -9,6 +9,21 @@ export class Partition<T> {
 	static empty<T>() {
 		return new Partition<T>(new Map());
 	}
+	static fromSets<T>(sets: Iterable<Iterable<T>>) {
+		const result = Partition.empty<T>();
+		for(const iterable of sets) {
+			const set = new Set(iterable);
+			if(set.size !== 0) {
+				const [first, ...others] = set;
+				result.add(first);
+				for(const value of others) {
+					result.add(value);
+					result.merge(first, value);
+				}
+			}
+		}
+		return result;
+	}
 
 	add(value: T) {
 		/* Time complexity: O(1) */

@@ -13,6 +13,19 @@ export class HashPartition<T> {
 	static empty<T>(hashFunction: (value: T) => string = (x => `${x}`)) {
 		return new HashPartition(Partition.empty(), new Map(), hashFunction);
 	}
+	static fromSets<T>(sets: Iterable<Iterable<T>>, hashFunction: (value: T) => string = (x => `${x}`)) {
+		const valuesMap = new Map();
+		for(const set of sets) {
+			for(const value of set) {
+				valuesMap.set(hashFunction(value), value);
+			}
+		}
+		return new HashPartition(
+			Partition.fromSets([...sets].map(set => [...set].map(hashFunction))),
+			valuesMap,
+			hashFunction
+		);
+	}
 
 	add(value: T) {
 		const hash = this.hashFunction(value);
