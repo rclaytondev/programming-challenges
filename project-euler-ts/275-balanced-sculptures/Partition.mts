@@ -91,7 +91,9 @@ export class Partition<T> {
 		const result = Partition.empty<T>();
 		for(const value of this.nodes.keys()) {
 			result.add(value);
-			result.merge(value, this.representative(value));
+			const representative = this.representative(value);
+			result.add(representative);
+			result.merge(value, representative);
 		}
 		return result;
 	}

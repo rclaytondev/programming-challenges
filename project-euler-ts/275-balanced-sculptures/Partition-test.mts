@@ -81,3 +81,14 @@ describe("Partition.sets", () => {
 		]);
 	});
 });
+describe("Partition.copy", () => {
+	it("returns a new partition consisting of the same sets", () => {
+		const partition = Partition.fromSets([[1], [2, 3], [4]]);
+		const copy = partition.copy();
+		assert.sameDeepMembers(copy.sets(), [
+			new Set([1]),
+			new Set([2, 3]),
+			new Set([4]),
+		]);
+	});
+});
