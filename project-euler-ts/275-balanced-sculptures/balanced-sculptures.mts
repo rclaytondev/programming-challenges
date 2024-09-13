@@ -49,7 +49,22 @@ export class PartialSculpture {
 		});
 	}
 	getNewComponents(leftColumn: number[], rightColumn: number[]) {
-		return this.components; // TODO: implement this!
+		const nextX = this.maxX + 1;
+		const newComponents = this.components.copy();
+		for(const y of rightColumn) {
+			newComponents.add(new Vector(nextX, y));
+			newComponents.merge(new Vector(nextX, y), new Vector(this.maxX, y));
+			newComponents.merge(new Vector(nextX, y), new Vector(nextX, y - 1));
+		}
+		for(const y of leftColumn) {
+			newComponents.add(new Vector(-nextX, y));
+			newComponents.merge(new Vector(-nextX, y), new Vector(-this.maxX, y));
+			newComponents.merge(new Vector(-nextX, y), new Vector(-nextX, y - 1));
+		}
+		for(const vector of this.components.values()) {
+			newComponents.delete(vector);
+		}
+		return newComponents;
 	}
 
 	completionsTimes2() {

@@ -17,15 +17,14 @@ describe("PartialSculpture.getChild", () => {
 			components: HashPartition.fromSets<Vector>([[new Vector(-1, 0), new Vector(1, 1)]])
 		});
 		const result = sculpture.getChild([0], [1]);
-		const expected = new PartialSculpture({
-			leftColumn: new Set([0]),
-			rightColumn: new Set([1]),
-			symmetrical: false,
-			weightDifference: 0,
-			blocksLeft: 0,
-			maxX: 2,
-			components: HashPartition.fromSets<Vector>([[new Vector(-2, 0), new Vector(2, 1)]])
-		});
-		assert.deepEqual(result, expected);
+		assert.deepEqual(result.leftColumn, new Set([0]));
+		assert.deepEqual(result.rightColumn, new Set([1]));
+		assert.isFalse(result.symmetrical);
+		assert.equal(result.weightDifference, 0);
+		assert.equal(result.blocksLeft, 0);
+		assert.equal(result.maxX, 2);
+		assert.sameDeepMembers(result.components.sets(), [
+			new Set([new Vector(-2, 0), new Vector(2, 1)])
+		]);
 	});
 });
