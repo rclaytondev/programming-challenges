@@ -40,7 +40,10 @@ export class PartialSculpture {
 			for(const leftColumn of Utils.subsets(Utils.range(1, leftHeight))) {
 				for(let rightBlocks = 0; rightBlocks < Math.min(rightHeight, this.blocksLeft - leftBlocks); rightBlocks ++) {
 					for(const rightColumn of Utils.subsets(Utils.range(1, rightHeight))) {
-						children.push(this.getChild([...leftColumn], [...rightColumn]));
+						const child = this.getChild([...leftColumn], [...rightColumn]);
+						if(child !== null) {
+							children.push(child);
+						}
 					}
 				}
 			}
@@ -49,6 +52,8 @@ export class PartialSculpture {
 	}
 	getChild(leftColumn: number[], rightColumn: number[]) {
 		const nextX = this.maxX + 1;
+		const components = this.getNewComponents(leftColumn, rightColumn);
+		if(components === null) { return null; }
 		return new PartialSculpture({
 			leftColumn: new Set(leftColumn),
 			rightColumn: new Set(rightColumn),
@@ -56,7 +61,7 @@ export class PartialSculpture {
 			weightDifference: this.weightDifference + nextX * (rightColumn.length - leftColumn.length),
 			blocksLeft: this.blocksLeft - (rightColumn.length + leftColumn.length),
 			maxX: nextX,
-			components: this.getNewComponents(leftColumn, rightColumn)
+			components: components
 		});
 	}
 	getNewComponents(leftColumn: number[], rightColumn: number[]) {
@@ -71,6 +76,11 @@ export class PartialSculpture {
 			newComponents.add(new Vector(-nextX, y));
 			newComponents.merge(new Vector(-nextX, y), new Vector(-this.maxX, y));
 			newComponents.merge(new Vector(-nextX, y), new Vector(-nextX, y - 1));
+		}
+		for(const component of newComponents.sets()) {
+			if(![...component].some(v => v.x === nextX || v.x === -nextX)) {
+				return null;
+			}
 		}
 		for(const vector of this.components.values()) {
 			newComponents.delete(vector);
