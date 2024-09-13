@@ -31,6 +31,28 @@ export class PartialSculpture {
 		this.maxX = config.maxX;
 		this.components = config.components;
 	}
+	static getVerticalSculpture(blocks: number[], totalBlocks: number) {
+		const components = HashPartition.fromSets<Vector>(blocks.map(b => [new Vector(0, b)]));
+		for(const block of blocks) {
+			components.merge(new Vector(0, block), new Vector(0, block + 1));
+		}
+		return new PartialSculpture({
+			leftColumn: new Set(blocks),
+			rightColumn: new Set(blocks),
+			symmetrical: true,
+			weightDifference: 0,
+			blocksLeft: totalBlocks - blocks.length,
+			maxX: 0,
+			components: components
+		});
+	}
+	static verticalSculptures(totalBlocks: number) {
+		const sculptures = [];
+		for(const blocks of Utils.subsets(Utils.range(1, totalBlocks))) {
+			sculptures.push(PartialSculpture.getVerticalSculpture([...blocks], totalBlocks));
+		}
+		return sculptures;
+	}
 
 	children(): PartialSculpture[] {
 		const leftHeight = Math.max(...this.leftColumn) + this.blocksLeft;
