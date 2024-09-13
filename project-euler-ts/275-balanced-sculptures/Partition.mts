@@ -67,6 +67,26 @@ export class Partition<T> {
 	representative(value: T) {
 		return this.getRoot(value).value;
 	}
+	delete(value: T) {
+		/* Time complexity: O(w), where w is the number of children of the node. */
+		const node = this.nodes.get(value);
+		if(!node) { return; }
+
+		if(node.parent) {
+			for(const child of node.children) {
+				this.moveNode(child, node.parent);
+			}
+			node.parent.children.delete(node);
+		}
+		else if(node.children.size !== 0) {
+			const [first, ...others] = node.children;
+			for(const child of others) {
+				this.moveNode(child, first);
+			}
+			first.parent = null;
+		}
+		this.nodes.delete(value);
+	}
 
 	private moveNode(node: Node<T>, newParent: Node<T>) {
 		node.parent?.children.delete(node);

@@ -40,6 +40,9 @@ export class HashPartition<T> {
 	representative(value: T) {
 		return this.valuesMap.get(this.partition.representative(this.hashFunction(value))) as T;
 	}
+	delete(value: T) {
+		this.partition.delete(this.hashFunction(value));
+	}
 
 	get numSets() {
 		return this.partition.numSets;

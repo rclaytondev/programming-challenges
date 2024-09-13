@@ -48,6 +48,20 @@ describe("Partition", () => {
 		assert.equal(representative1, representative2);
 		assert.isTrue(representative1 === 1 || representative1 === 2);
 	});
+	it("can delete nodes from the partition", () => {
+		const partition = Partition.empty<number>();
+		partition.add(1);
+		partition.add(2);
+		partition.add(3);
+		partition.merge(1, 2);
+		partition.merge(2, 3);
+		partition.delete(3);
+		
+		const representative1 = partition.representative(1);
+		const representative2 = partition.representative(2);
+		assert.equal(representative1, representative2);
+		assert.isTrue(representative1 === 1 || representative1 === 2);
+	});
 });
 describe("Partition.fromSets", () => {
 	it("correctly constructs the partition from a set of sets", () => {
