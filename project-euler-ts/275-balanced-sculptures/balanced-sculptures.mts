@@ -115,6 +115,18 @@ export class PartialSculpture {
 			if(this.weightDifference !== 0 || this.components.numSets !== 1) { return 0n; }
 			return this.symmetrical ? 2n : 1n;
 		}
+		if(this.blocksLeft === 1) {
+			if(this.components.numSets !== 1) {
+				return 0n;
+			}
+			if(this.weightDifference === this.maxX + 1) {
+				return BigInt(this.leftColumn.size);
+			}
+			if(this.weightDifference === -(this.maxX + 1)) {
+				return BigInt(this.rightColumn.size);
+			}
+			return 0n;
+		}
 		let result = 0n;
 		for(const child of this.children()) {
 			result += child.completionsTimes2();
