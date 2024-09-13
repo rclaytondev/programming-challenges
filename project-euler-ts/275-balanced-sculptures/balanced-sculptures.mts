@@ -69,8 +69,16 @@ export class PartialSculpture {
 		const rightHeight = Math.max(...this.rightColumn) + this.blocksLeft;
 		const children = [];
 		for(let leftBlocks = 0; leftBlocks <= Math.min(leftHeight, this.blocksLeft); leftBlocks ++) {
-			for(const leftColumn of Utils.subsets(Utils.range(1, leftHeight), leftBlocks)) {
-				for(let rightBlocks = 0; rightBlocks <= Math.min(rightHeight, this.blocksLeft - leftBlocks); rightBlocks ++) {
+			const newWeightDifference = this.weightDifference - (this.maxX + 1) * leftBlocks;
+			if(this.maxWeightOnSide(this.blocksLeft - leftBlocks) < Math.abs(newWeightDifference)) {
+				continue;
+			}
+			for(let rightBlocks = 0; rightBlocks <= Math.min(rightHeight, this.blocksLeft - leftBlocks); rightBlocks ++) {
+				const newWeightDifference2 = this.weightDifference - (this.maxX + 1) * leftBlocks + (this.maxX + 1) * rightBlocks;
+				if(this.maxWeightOnSide(this.blocksLeft - leftBlocks - rightBlocks) < Math.abs(newWeightDifference2)) {
+					continue;
+				}
+				for(const leftColumn of Utils.subsets(Utils.range(1, leftHeight), leftBlocks)) {
 					for(const rightColumn of Utils.subsets(Utils.range(1, rightHeight), rightBlocks)) {
 						const child = this.getChild([...leftColumn], [...rightColumn]);
 						if(child !== null) {
@@ -118,6 +126,14 @@ export class PartialSculpture {
 			newComponents.delete(vector);
 		}
 		return newComponents;
+	}
+	maxWeightOnSide(blocksLeft: number) {
+		/* Returns the maximum possible weight difference that could be obtained after having added 1 more column to both sides, resulting in `blocksLeft` blocks remaining. */
+		let result = 0;
+		for(let i = this.maxX + 2; i <= this.maxX + blocksLeft + 1; i ++) {
+			result += i;
+		}
+		return result;
 	}
 
 	completionsTimes2() {
