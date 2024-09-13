@@ -48,19 +48,27 @@ export class PartialSculpture {
 	}
 	static verticalSculptures(totalBlocks: number) {
 		const sculptures: PartialSculpture[] = [];
-		const checkSubset = (blockPositions: number[]) => {
-			if(blockPositions.length <= totalBlocks) {
-				sculptures.push(PartialSculpture.getVerticalSculpture(blockPositions, totalBlocks));
+		const checkSubset = (blocks: number[], requiredSideBlocks: number) => {
+			if(blocks.length + requiredSideBlocks <= totalBlocks) {
+				sculptures.push(PartialSculpture.getVerticalSculpture(blocks, totalBlocks));
 			}
-			if(blockPositions.length < totalBlocks) {
-				const last = blockPositions[blockPositions.length - 1];
-				checkSubset([...blockPositions, last + 1]);
-				for(let gap = 1; blockPositions.length + (gap + 3) <= totalBlocks; gap ++) {
-					checkSubset([...blockPositions, last + gap + 1]);
+			if(blocks.length + requiredSideBlocks < totalBlocks) {
+				const last = blocks[blocks.length - 1];
+				checkSubset(
+					[...blocks, last + 1],
+					requiredSideBlocks
+				);
+				const runLengthIs1 = (blocks[blocks.length - 2]) < last - 1;
+				const extraSideBlocks = runLengthIs1 ? 1 : 2;
+				for(let gap = 1; (blocks.length + 1) + (requiredSideBlocks + gap + extraSideBlocks) <= totalBlocks; gap ++) {
+					checkSubset(
+						[...blocks, last + gap + 1],
+						requiredSideBlocks + gap + extraSideBlocks
+					);
 				}
 			}
 		};
-		checkSubset([1]);
+		checkSubset([1], 0 );
 		return sculptures;
 	}
 
