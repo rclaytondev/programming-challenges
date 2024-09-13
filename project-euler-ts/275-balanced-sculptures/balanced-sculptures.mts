@@ -48,8 +48,8 @@ export class PartialSculpture {
 	}
 	static verticalSculptures(totalBlocks: number) {
 		const sculptures = [];
-		for(const blocks of Utils.subsets(Utils.range(1, totalBlocks))) {
-			sculptures.push(PartialSculpture.getVerticalSculpture([...blocks], totalBlocks));
+		for(const blocks of Utils.subsets(Utils.range(2, totalBlocks))) {
+			sculptures.push(PartialSculpture.getVerticalSculpture([1, ...blocks], totalBlocks));
 		}
 		return sculptures;
 	}
