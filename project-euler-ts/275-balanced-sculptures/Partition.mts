@@ -87,6 +87,14 @@ export class Partition<T> {
 		}
 		this.nodes.delete(value);
 	}
+	copy() {
+		const result = Partition.empty<T>();
+		for(const value of this.nodes.keys()) {
+			result.add(value);
+			result.merge(value, this.representative(value));
+		}
+		return result;
+	}
 
 	private moveNode(node: Node<T>, newParent: Node<T>) {
 		node.parent?.children.delete(node);

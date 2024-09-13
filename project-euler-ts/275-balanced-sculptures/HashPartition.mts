@@ -43,6 +43,13 @@ export class HashPartition<T> {
 	delete(value: T) {
 		this.partition.delete(this.hashFunction(value));
 	}
+	copy() {
+		return new HashPartition(
+			this.partition.copy(),
+			new Map(this.valuesMap),
+			this.hashFunction
+		);
+	}
 
 	get numSets() {
 		return this.partition.numSets;
