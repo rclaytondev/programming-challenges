@@ -1,4 +1,6 @@
+import { Vector } from "../../utils-ts/modules/geometry/Vector.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
+import { HashPartition } from "./HashPartition.mjs";
 
 type Components = Set<Set<["left" | "right", number]>>;
 type SculptureInfo = {
@@ -8,7 +10,7 @@ type SculptureInfo = {
 	weightDifference: number;
 	blocksLeft: number;
 	maxX: number;
-	components: Components;
+	components: HashPartition<Vector>;
 };
 
 export class PartialSculpture {
@@ -18,7 +20,7 @@ export class PartialSculpture {
 	weightDifference: number; // positive value means the right side is heavier.
 	blocksLeft: number;
 	maxX: number;
-	components: Components;
+	components: HashPartition<Vector>;
 
 	constructor(config: SculptureInfo) {
 		this.leftColumn = config.leftColumn;
@@ -52,7 +54,7 @@ export class PartialSculpture {
 
 	completionsTimes2() {
 		if(this.blocksLeft === 0) {
-			if(this.weightDifference !== 0 || this.components.size !== 0) { return 0n; }
+			if(this.weightDifference !== 0 || this.components.numSets !== 0) { return 0n; }
 			return this.symmetrical ? 2n : 1n;
 		}
 		let result = 0n;
