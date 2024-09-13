@@ -2,7 +2,6 @@ import { Vector } from "../../utils-ts/modules/geometry/Vector.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 import { HashPartition } from "./HashPartition.mjs";
 
-type Components = Set<Set<["left" | "right", number]>>;
 type SculptureInfo = {
 	leftColumn: Set<number>;
 	rightColumn: Set<number>;
