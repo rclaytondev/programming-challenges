@@ -58,11 +58,20 @@ describe("balancedSculptures", () => {
 		const result = balancedSculptures(3);
 		assert.equal(result, 2n); // 2 sculptures: vertical sculpture and a T-shape
 	});
+	it("correctly counts the balanced sculptures of order 4", () => {
+		const result = balancedSculptures(4);
+		assert.equal(result, 4n);
+	});
+	it("correctly counts the balanced sculptures of order 5", () => {
+		const result = balancedSculptures(5);
+		assert.equal(result, 9n);
+	});
 
-	// it("correctly counts the balanced sculptures of order 6", () => {
-	// 	const result = balancedSculptures(6);
-	// 	assert.equal(result, 18n);
-	// });
+	// test cases from Project Euler
+	it("correctly counts the balanced sculptures of order 6", () => {
+		const result = balancedSculptures(6);
+		assert.equal(result, 18n);
+	});
 	// it("correctly counts the balanced sculptures of order 10", () => {
 	// 	const result = balancedSculptures(10);
 	// 	assert.equal(result, 964n);
