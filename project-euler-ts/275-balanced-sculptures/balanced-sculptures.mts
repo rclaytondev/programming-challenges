@@ -65,8 +65,8 @@ export class PartialSculpture {
 	}
 
 	children(): PartialSculpture[] {
-		const leftHeight = Math.max(...this.leftColumn) + this.blocksLeft;
-		const rightHeight = Math.max(...this.rightColumn) + this.blocksLeft;
+		const leftHeight = Math.max(...this.leftColumn) + this.blocksLeft - 1;
+		const rightHeight = Math.max(...this.rightColumn) + this.blocksLeft - 1;
 		const children = [];
 		for(const [leftBlocks, rightBlocks] of this.nextBlockCounts()) {
 			for(const leftColumn of Utils.subsets(Utils.range(1, leftHeight), leftBlocks)) {
@@ -126,8 +126,8 @@ export class PartialSculpture {
 		return result;
 	}
 	nextBlockCounts() {
-		const leftHeight = Math.max(...this.leftColumn) + this.blocksLeft;
-		const rightHeight = Math.max(...this.rightColumn) + this.blocksLeft;
+		const leftHeight = Math.max(...this.leftColumn) + this.blocksLeft - 1;
+		const rightHeight = Math.max(...this.rightColumn) + this.blocksLeft - 1;
 		const result: [number, number][] = [];
 		for(let leftBlocks = 0; leftBlocks <= Math.min(leftHeight, this.blocksLeft); leftBlocks ++) {
 			const newWeightDifference = this.weightDifference - (this.maxX + 1) * leftBlocks;
