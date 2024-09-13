@@ -59,9 +59,9 @@ export class PartialSculpture {
 		const rightHeight = Math.max(...this.rightColumn) + this.blocksLeft;
 		const children = [];
 		for(let leftBlocks = 0; leftBlocks < Math.min(leftHeight, this.blocksLeft); leftBlocks ++) {
-			for(const leftColumn of Utils.subsets(Utils.range(1, leftHeight))) {
+			for(const leftColumn of Utils.subsets(Utils.range(1, leftHeight), leftBlocks)) {
 				for(let rightBlocks = 0; rightBlocks < Math.min(rightHeight, this.blocksLeft - leftBlocks); rightBlocks ++) {
-					for(const rightColumn of Utils.subsets(Utils.range(1, rightHeight))) {
+					for(const rightColumn of Utils.subsets(Utils.range(1, rightHeight), rightBlocks)) {
 						const child = this.getChild([...leftColumn], [...rightColumn]);
 						if(child !== null) {
 							children.push(child);
