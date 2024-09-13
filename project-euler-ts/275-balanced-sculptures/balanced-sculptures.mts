@@ -112,7 +112,7 @@ export class PartialSculpture {
 
 	completionsTimes2() {
 		if(this.blocksLeft === 0) {
-			if(this.weightDifference !== 0 || this.components.numSets !== 0) { return 0n; }
+			if(this.weightDifference !== 0 || this.components.numSets !== 1) { return 0n; }
 			return this.symmetrical ? 2n : 1n;
 		}
 		let result = 0n;
