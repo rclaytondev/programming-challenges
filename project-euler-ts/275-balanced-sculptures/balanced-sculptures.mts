@@ -68,22 +68,12 @@ export class PartialSculpture {
 		const leftHeight = Math.max(...this.leftColumn) + this.blocksLeft;
 		const rightHeight = Math.max(...this.rightColumn) + this.blocksLeft;
 		const children = [];
-		for(let leftBlocks = 0; leftBlocks <= Math.min(leftHeight, this.blocksLeft); leftBlocks ++) {
-			const newWeightDifference = this.weightDifference - (this.maxX + 1) * leftBlocks;
-			if(this.maxWeightOnSide(this.blocksLeft - leftBlocks) < Math.abs(newWeightDifference)) {
-				continue;
-			}
-			for(let rightBlocks = 0; rightBlocks <= Math.min(rightHeight, this.blocksLeft - leftBlocks); rightBlocks ++) {
-				const newWeightDifference2 = this.weightDifference - (this.maxX + 1) * leftBlocks + (this.maxX + 1) * rightBlocks;
-				if(this.maxWeightOnSide(this.blocksLeft - leftBlocks - rightBlocks) < Math.abs(newWeightDifference2)) {
-					continue;
-				}
-				for(const leftColumn of Utils.subsets(Utils.range(1, leftHeight), leftBlocks)) {
-					for(const rightColumn of Utils.subsets(Utils.range(1, rightHeight), rightBlocks)) {
-						const child = this.getChild([...leftColumn], [...rightColumn]);
-						if(child !== null) {
-							children.push(child);
-						}
+		for(const [leftBlocks, rightBlocks] of this.nextBlockCounts()) {
+			for(const leftColumn of Utils.subsets(Utils.range(1, leftHeight), leftBlocks)) {
+				for(const rightColumn of Utils.subsets(Utils.range(1, rightHeight), rightBlocks)) {
+					const child = this.getChild([...leftColumn], [...rightColumn]);
+					if(child !== null) {
+						children.push(child);
 					}
 				}
 			}
@@ -132,6 +122,25 @@ export class PartialSculpture {
 		let result = 0;
 		for(let i = this.maxX + 2; i <= this.maxX + blocksLeft + 1; i ++) {
 			result += i;
+		}
+		return result;
+	}
+	nextBlockCounts() {
+		const leftHeight = Math.max(...this.leftColumn) + this.blocksLeft;
+		const rightHeight = Math.max(...this.rightColumn) + this.blocksLeft;
+		const result: [number, number][] = [];
+		for(let leftBlocks = 0; leftBlocks <= Math.min(leftHeight, this.blocksLeft); leftBlocks ++) {
+			const newWeightDifference = this.weightDifference - (this.maxX + 1) * leftBlocks;
+			if(this.maxWeightOnSide(this.blocksLeft - leftBlocks) < Math.abs(newWeightDifference)) {
+				continue;
+			}
+			for(let rightBlocks = 0; rightBlocks <= Math.min(rightHeight, this.blocksLeft - leftBlocks); rightBlocks ++) {
+				const newWeightDifference2 = this.weightDifference - (this.maxX + 1) * leftBlocks + (this.maxX + 1) * rightBlocks;
+				if(this.maxWeightOnSide(this.blocksLeft - leftBlocks - rightBlocks) < Math.abs(newWeightDifference2)) {
+					continue;
+				}
+				result.push([leftBlocks, rightBlocks]);
+			}
 		}
 		return result;
 	}
