@@ -3,11 +3,13 @@ type Node<T> = { value: T, parent: Node<T> | null, children: Set<Node<T>> };
 export class Partition<T> {
 	/* Implements partition operations efficiently using a disjoint-sets forest. */
 	private nodes: Map<T, Node<T>>;
-	private constructor(nodes: Map<T, Node<T>>) {
+	numSets: number;
+	private constructor(nodes: Map<T, Node<T>>, numSets: number) {
 		this.nodes = nodes;
+		this.numSets = numSets;
 	}
 	static empty<T>() {
-		return new Partition<T>(new Map());
+		return new Partition<T>(new Map(), 0);
 	}
 	static fromSets<T>(sets: Iterable<Iterable<T>>) {
 		const result = Partition.empty<T>();
@@ -28,6 +30,7 @@ export class Partition<T> {
 	add(value: T) {
 		/* Time complexity: O(1) */
 		if(!this.nodes.has(value)) {
+			this.numSets ++;
 			this.nodes.set(value, { value: value, parent: null, children: new Set() });
 		}
 	}
@@ -41,6 +44,7 @@ export class Partition<T> {
 		const root1 = this.getRoot(value1);
 		const root2 = this.getRoot(value2);
 		if(root1 !== root2) {
+			this.numSets --;
 			this.moveNode(root1, root2);
 		}
 	}

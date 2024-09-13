@@ -40,4 +40,8 @@ export class HashPartition<T> {
 	representative(value: T) {
 		return this.valuesMap.get(this.partition.representative(this.hashFunction(value))) as T;
 	}
+
+	get numSets() {
+		return this.partition.numSets;
+	}
 }
