@@ -163,30 +163,19 @@ export class PartialSculpture {
 		}
 		return newComponents;
 	}
-	maxWeightOnSide(blocksLeft: number) {
-		/* Returns the maximum possible weight difference that could be obtained after having added 1 more column to both sides, resulting in `blocksLeft` blocks remaining. */
-		let result = 0;
-		for(let i = this.maxX + 2; i <= this.maxX + blocksLeft + 1; i ++) {
-			result += i;
-		}
-		return result;
-	}
 	nextBlockCounts() {
 		const leftHeight = Math.max(...this.leftColumn) + this.blocksLeft - 1;
 		const rightHeight = Math.max(...this.rightColumn) + this.blocksLeft - 1;
 		const result: [number, number][] = [];
 		for(let leftBlocks = 0; leftBlocks === 0 || leftBlocks <= Math.min(leftHeight, this.blocksLeft); leftBlocks ++) {
 			if(this.leftColumn.size === 0 && leftBlocks > 0) { break; }
-			const newWeightDifference = this.weightDifference - (this.maxX + 1) * leftBlocks;
-			if(this.maxWeightOnSide(this.blocksLeft - leftBlocks) < Math.abs(newWeightDifference)) {
-				continue;
-			}
 			for(let rightBlocks = 0; rightBlocks === 0 || rightBlocks <= Math.min(rightHeight, this.blocksLeft - leftBlocks); rightBlocks ++) {
 				if(this.rightColumn.size === 0 && rightBlocks > 0) { break; }
-				const newWeightDifference2 = this.weightDifference - (this.maxX + 1) * leftBlocks + (this.maxX + 1) * rightBlocks;
-				if(this.maxWeightOnSide(this.blocksLeft - leftBlocks - rightBlocks) < Math.abs(newWeightDifference2)) {
-					continue;
-				}
+				if(!PartialSculpture.canBeBalanced(
+					this.weightDifference + (rightBlocks - leftBlocks) * (this.maxX + 1),
+					this.maxX + 1,
+					this.blocksLeft - (leftBlocks + rightBlocks)
+				)) { continue; }
 				result.push([leftBlocks, rightBlocks]);
 			}
 		}
