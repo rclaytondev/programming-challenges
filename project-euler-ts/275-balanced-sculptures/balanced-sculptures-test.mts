@@ -122,3 +122,12 @@ describe("PartialSculpture.children", () => {
 		]);
 	});
 });
+describe("PartialSculpture.canBeBalanced", () => {
+	it("returns true if blocks can be added make the sculpture balanced, with no empty columns in the middle", () => {
+		assert.isTrue(PartialSculpture.canBeBalanced(12, 10, 3)); // can be balanced using blocks at x=11, x=-11, and x=12
+	});
+	it("returns false if blocks cannot be added to make the sculpture balanced", () => {
+		assert.isFalse(PartialSculpture.canBeBalanced(100, 10, 3));
+		assert.isFalse(PartialSculpture.canBeBalanced(0, 10, 3));
+	});
+});

@@ -23,6 +23,24 @@ export class PartialSculpture {
 	maxX: number;
 	components: HashPartition<Vector>;
 
+	static canBeBalanced(weightDifference: number, maxX: number, blocks: number, canUseLeft: boolean = true, canUseRight: boolean = true) {
+		if(blocks === 0 || (!canUseLeft && !canUseRight)) {
+			return blocks === 0 && weightDifference === 0;
+		}
+		for(let leftBlocks = 0; leftBlocks <= blocks && (canUseLeft || leftBlocks === 0); leftBlocks ++) {
+			for(let rightBlocks = 0; leftBlocks + rightBlocks <= blocks && (canUseRight || rightBlocks === 0); rightBlocks ++) {
+				if(PartialSculpture.canBeBalanced(
+					weightDifference + (rightBlocks - leftBlocks) * (maxX + 1),
+					maxX + 1,
+					blocks - (leftBlocks + rightBlocks),
+					canUseLeft && leftBlocks !== 0,
+					canUseRight && rightBlocks !== 0
+				)) { return true; }
+			}
+		}
+		return false;
+	}
+
 	constructor(config: SculptureInfo) {
 		this.leftColumn = config.leftColumn;
 		this.rightColumn = config.rightColumn;
