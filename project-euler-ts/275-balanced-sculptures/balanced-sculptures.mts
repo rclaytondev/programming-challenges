@@ -139,11 +139,13 @@ export class PartialSculpture {
 		const rightHeight = Math.max(...this.rightColumn) + this.blocksLeft - 1;
 		const result: [number, number][] = [];
 		for(let leftBlocks = 0; leftBlocks <= Math.min(leftHeight, this.blocksLeft); leftBlocks ++) {
+			if(this.leftColumn.size === 0 && leftBlocks > 0) { break; }
 			const newWeightDifference = this.weightDifference - (this.maxX + 1) * leftBlocks;
 			if(this.maxWeightOnSide(this.blocksLeft - leftBlocks) < Math.abs(newWeightDifference)) {
 				continue;
 			}
 			for(let rightBlocks = 0; rightBlocks <= Math.min(rightHeight, this.blocksLeft - leftBlocks); rightBlocks ++) {
+				if(this.rightColumn.size === 0 && rightBlocks > 0) { break; }
 				const newWeightDifference2 = this.weightDifference - (this.maxX + 1) * leftBlocks + (this.maxX + 1) * rightBlocks;
 				if(this.maxWeightOnSide(this.blocksLeft - leftBlocks - rightBlocks) < Math.abs(newWeightDifference2)) {
 					continue;
