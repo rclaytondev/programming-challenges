@@ -12,6 +12,8 @@ type SculptureInfo = {
 	components: HashPartition<Vector>;
 };
 
+const cachedResults = new Map<string, bigint>();
+
 export class PartialSculpture {
 	leftColumn: Set<number>;
 	rightColumn: Set<number>;
@@ -169,10 +171,15 @@ export class PartialSculpture {
 			}
 			return 0n;
 		}
+		const sculptureString = this.toString();
+		if(cachedResults.has(sculptureString)) {
+			return cachedResults.get(sculptureString)!;
+		}
 		let result = 0n;
 		for(const child of this.children()) {
 			result += child.completionsTimes2();
 		}
+		cachedResults.set(sculptureString, result);
 		return result;
 	}
 	completions() {
