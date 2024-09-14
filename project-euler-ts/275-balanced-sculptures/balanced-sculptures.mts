@@ -121,8 +121,22 @@ export class PartialSculpture {
 			newComponents.merge(new Vector(-nextX, y), new Vector(-this.maxX, y));
 			newComponents.merge(new Vector(-nextX, y), new Vector(-nextX, y - 1));
 		}
-		for(const component of newComponents.sets()) {
+		const sets = newComponents.sets();
+		for(const component of sets) {
 			if(![...component].some(v => v.x === nextX || v.x === -nextX)) {
+				return null;
+			}
+		}
+		let foundLeftOnly = false;
+		let foundRightOnly = false;
+		for(const component of sets) {
+			if([...component].every(v => v.x < 0)) {
+				foundLeftOnly = true;
+			}
+			if([...component].every(v => v.x > 0)) {
+				foundRightOnly = true;
+			}
+			if(foundLeftOnly && foundRightOnly) {
 				return null;
 			}
 		}
