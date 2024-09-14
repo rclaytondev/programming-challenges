@@ -81,3 +81,44 @@ describe("balancedSculptures", () => {
 	// 	assert.equal(result, 360505n);
 	// });
 });
+describe("PartialSculpture.nextBlockCounts", () => {
+	it("works even when one of the outer columns is empty", () => {
+		// example sculpture: L-shape with 6 blocks stacked vertically, 1 tile to the left of the plinth, and 3 tiles arranged horizontally extending to the right, 1 tile above the plinth
+		const sculpture = new PartialSculpture({
+			leftColumn: new Set([]),
+			rightColumn: new Set([1]),
+			symmetrical: false,
+			weightDifference: -3,
+			blocksLeft: 1,
+			maxX: 2,
+			components: HashPartition.fromSets([[new Vector(2, 1)]])
+		});
+		const nextBlockCounts = sculpture.nextBlockCounts();
+		assert.isNotEmpty(nextBlockCounts);
+	});
+});
+describe("PartialSculpture.children", () => {
+	it("works even when one of the outer columns is empty", () => {
+		const sculpture = new PartialSculpture({
+			leftColumn: new Set([]),
+			rightColumn: new Set([1]),
+			symmetrical: false,
+			weightDifference: -3,
+			blocksLeft: 1,
+			maxX: 2,
+			components: HashPartition.fromSets([[new Vector(2, 1)]])
+		});
+		const children = sculpture.children();
+		assert.equal(children.length, 1);
+		const [child] = children;
+		assert.deepEqual(child.leftColumn, new Set([]));
+		assert.deepEqual(child.rightColumn, new Set([1]));
+		assert.deepEqual(child.symmetrical, false);
+		assert.deepEqual(child.weightDifference, 0);
+		assert.deepEqual(child.blocksLeft, 0);
+		assert.deepEqual(child.maxX, 3);
+		assert.sameDeepMembers(child.components.sets(), [
+			new Set([new Vector(3, 1)])
+		]);
+	});
+});
