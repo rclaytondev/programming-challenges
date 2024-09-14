@@ -105,7 +105,7 @@ export class PartialSculpture {
 		}
 		return children;
 	}
-	nextColumnCombinations(side: "left" | "right", numBlocks: number) {
+	nextColumnCombinations(side: "left" | "right", numBlocks: number): Iterable<Set<number>> {
 		if(numBlocks === 0) {
 			return [new Set([])];
 		}
