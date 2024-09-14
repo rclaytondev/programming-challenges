@@ -178,6 +178,10 @@ export class PartialSculpture {
 	completions() {
 		return this.completionsTimes2() / 2n;
 	}
+	toString() {
+		const componentsString = this.components.sets().map(set => `[${[...set].sort()}]`).join(", ");
+		return `${this.symmetrical}, ${this.weightDifference}, ${this.blocksLeft}, ${componentsString}`;
+	}
 }
 
 export const balancedSculptures = (blocks: number) => {
