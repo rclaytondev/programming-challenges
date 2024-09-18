@@ -16,6 +16,9 @@ export class Component {
 			...this.right.map(r => r.max)
 		);
 	}
+	toString() {
+		return `([${this.left}], [${this.right}])`;
+	}
 }
 export class Range {
 	min: number;
