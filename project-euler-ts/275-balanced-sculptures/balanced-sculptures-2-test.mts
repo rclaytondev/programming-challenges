@@ -39,4 +39,10 @@ describe("sculptures", () => {
 		const result = sculptures(3, 4, 0, 0, components);
 		assert.equal(result, 0n);
 	});
+
+	it("works when the components can be connected in exactly 1 way, using 1 block", () => {
+		const components = [new Component([new Range(0)], [new Range(0)])];
+		const result = sculptures(0, 2, 1, 1, components);
+		assert.equal(result, 1n);
+	});
 });
