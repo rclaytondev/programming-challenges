@@ -92,4 +92,14 @@ describe("sculptures", () => {
 		const result = sculptures(0, 4, 3, 1 + 2 + 3, components);
 		assert.equal(result, 1n);
 	});
+	it("works when two blocks can be connected by a horizontal bar with an extra block", () => {
+		const components = [new Component([new Range(1)], [new Range(1)])];
+		const result = sculptures(0, 3, 3, 1 + 2 + 2, components);
+		assert.equal(result, 2n);
+	});
+	it("works when two blocks can be connected by a horizontal bar with 2 extra blocks", () => {
+		const components = [new Component([new Range(1)], [new Range(1)])];
+		const result = sculptures(0, 3, 4, 1 + 2 + 1 + 2, components);
+		assert.equal(result, 4n);
+	});
 });
