@@ -78,13 +78,13 @@ const getNextComponents = (blocks: number, components: Component[]): [Component[
 					.map(c => new Component(
 						c.left,
 						ranges.filter((r, i) => connections[i] === c && ["left", "both"].includes(whichSide[i]))
-					));
+					)).concat(ranges.filter((r, i) => whichSide[i] === "right").map(r => new Component([], [r])));
 					const rightComponents = components
 					.filter(c => c.right.length !== 0)
 					.map(c => new Component(
 						ranges.filter((r, i) => connections[i] === c && ["right", "both"].includes(whichSide[i])),
 						c.right
-					));
+					)).concat(ranges.filter((r, i) => whichSide[i] === "left").map(r => new Component([r], [])));
 					result.push([leftComponents, rightComponents]);
 				}
 			}
