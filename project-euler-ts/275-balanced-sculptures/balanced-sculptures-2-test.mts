@@ -50,4 +50,9 @@ describe("sculptures", () => {
 		const result = sculptures(0, 2, 2, 2, components);
 		assert.equal(result, 2n);
 	});
+	it("works when the components can be connected in 1 way using 2 blocks", () => {
+		const components = [new Component([new Range(1)], [new Range(2)])];
+		const result = sculptures(0, 2, 2, 2, components);
+		assert.equal(result, 1n);
+	});
 });

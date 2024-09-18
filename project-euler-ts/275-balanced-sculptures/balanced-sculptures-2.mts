@@ -81,6 +81,9 @@ const getNextComponents = (blocks: number, components: Component[]): [Component[
 	for(let numMidRanges = 1; numMidRanges <= blocks; numMidRanges ++) {
 		for(const connections of Utils.combinations(components, numMidRanges, "unlimited-duplicates", "tuples")) {
 			for(const whichSide of Utils.combinations<"left" | "right" | "both">(["left", "right", "both"], numMidRanges, "unlimited-duplicates", "tuples")) {
+				if(!components.every(component => connections.some((connection, i) => connection === component && whichSide[i] === "both"))) {
+					continue;
+				}
 				for(const ranges of getRangeCombinations(numMidRanges, height + blocks - 1)) {
 					const leftComponents = components
 					.filter(c => c.left.length !== 0)
