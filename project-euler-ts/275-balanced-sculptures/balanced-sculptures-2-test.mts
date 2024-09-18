@@ -55,4 +55,29 @@ describe("sculptures", () => {
 		const result = sculptures(0, 2, 2, 2, components);
 		assert.equal(result, 1n);
 	});
+	it("works when two vertical columns can be connected in 2 ways using 1 block", () => {
+		const components = [new Component([new Range(0, 1)], [new Range(0, 1)])];
+		const result = sculptures(0, 2, 1, 1, components);
+		assert.equal(result, 2n);
+	});
+	it("works when two vertical columns can be connected in 3 ways using 1 block", () => {
+		const components = [new Component([new Range(0, 2)], [new Range(0, 2)])];
+		const result = sculptures(0, 2, 1, 1, components);
+		assert.equal(result, 3n);
+	});
+	it("works when two vertical columns can be connected in many ways by 1 block", () => {
+		const components = [new Component([new Range(0, 4)], [new Range(0, 4)])];
+		const result = sculptures(0, 2, 1, 1, components);
+		assert.equal(result, 5n);
+	});
+	it("works when two vertical columns can be connected in 4 ways with 2 blocks", () => {
+		const components = [new Component([new Range(0, 2)], [new Range(0, 2)])];
+		const result = sculptures(0, 2, 2, 2, components);
+		assert.equal(result, 3n + 1n);
+	});
+	it("works when two vertical columns can be connected in many ways with 2 blocks", () => {
+		const components = [new Component([new Range(0, 4)], [new Range(0, 4)])];
+		const result = sculptures(0, 2, 2, 2, components);
+		assert.equal(result, 5n * 4n / 2n + 1n);
+	});
 });
