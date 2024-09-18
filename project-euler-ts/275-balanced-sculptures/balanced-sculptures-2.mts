@@ -1,4 +1,7 @@
+import { HashSet } from "../../utils-ts/modules/HashSet.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
+import { HashPartition } from "./HashPartition.mjs";
+import { Partition } from "./Partition.mjs";
 
 type Component = { left: number[], right: number[] };
 
@@ -12,50 +15,56 @@ const isRange = (numbers: number[]) => {
 };
 
 const areConnectedComponents = (components: Component[]) => {
-	for(const component of components) {
-		if(!isRange(component.left)) {
-			return false;
-		}
-	}
-	const usedBlocks = new Set<number>();
+	const partition = HashPartition.empty<["left" | "right", number]>();
 	for(const component of components) {
 		for(const block of component.left) {
-			if(usedBlocks.has(block - 1) || usedBlocks.has(block + 1)) {
+			if(partition.has(["left", block-1]) || partition.has(["left", block+1]) || partition.has(["right", block])) {
 				return false;
 			}
 		}
+		for(const block of component.right) {
+			if(partition.has(["right", block-1]) || partition.has(["right", block+1]) || partition.has(["left", block])) {
+				return false;
+			}
+		}
+
 		for(const block of component.left) {
-			usedBlocks.add(block);
+			partition.add(["left", block]);
+		}
+		for(const block of component.right) {
+			partition.add(["right", block]);
+		}
+		for(const block of component.left) {
+			partition.merge(["left", block], ["right", block]);
+			partition.merge(["left", block], ["left", block + 1]);
+		}
+		for(const block of component.right) {
+			partition.merge(["right", block], ["right", block + 1]);
 		}
 	}
-	return true;
+	return partition.numSets === components.length;
 };
 
 export const sculptures = (left: number, right: number, blocks: number, weight: number, components: Component[]): bigint => {
 	/* Returns the number of partial sculptures in the region given by `left` and `right` that have the given weight and number of blocks (not including the two edge columns) and connect the given components. */
-	if(right === left) {
+	if(right <= left + 1) {
 		return blocks === 0 && weight === 0 && areConnectedComponents(components) ? 1n : 0n;
 	}
-	else if(right === left + 1) {
-		throw new Error("Unimplemented.");
-	}
-	else {
-		let result = 0n;
-		const middle = Math.floor((left + right) / 2);
-		for(const [leftComponents, rightComponents] of getNextComponents(components)) {
-			const middleBlocks = MathUtils.sum(leftComponents.map(c => c.right.length));
-			for(let leftBlocks = 0; leftBlocks <= blocks; leftBlocks ++) {
-				const rightBlocks = blocks - middleBlocks - leftBlocks;
-				for(let leftWeight = 0; leftWeight <= blocks; leftWeight ++) {
-					const rightWeight = weight - (middle * middleBlocks) - leftWeight;
-					const leftSculptures = sculptures(left, middle, leftBlocks, leftWeight, leftComponents);
-					const rightSculptures = sculptures(middle, right, rightBlocks, rightWeight, rightComponents);
-					result += leftSculptures * rightSculptures;
-				}
+	let result = 0n;
+	const middle = Math.floor((left + right) / 2);
+	for(const [leftComponents, rightComponents] of getNextComponents(components)) {
+		const middleBlocks = MathUtils.sum(leftComponents.map(c => c.right.length));
+		for(let leftBlocks = 0; leftBlocks <= blocks; leftBlocks ++) {
+			const rightBlocks = blocks - middleBlocks - leftBlocks;
+			for(let leftWeight = 0; leftWeight <= blocks; leftWeight ++) {
+				const rightWeight = weight - (middle * middleBlocks) - leftWeight;
+				const leftSculptures = sculptures(left, middle, leftBlocks, leftWeight, leftComponents);
+				const rightSculptures = sculptures(middle, right, rightBlocks, rightWeight, rightComponents);
+				result += leftSculptures * rightSculptures;
 			}
 		}
-		return result;
 	}
+	return result;
 };
 
 const getNextComponents = (components: Component[]): [Component[], Component[]][] => {
