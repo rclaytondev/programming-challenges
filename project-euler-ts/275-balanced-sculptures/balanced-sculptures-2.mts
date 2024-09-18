@@ -72,7 +72,12 @@ export const sculptures = (left: number, right: number, blocks: number, weight: 
 };
 
 const getNextComponents = (blocks: number, components: Component[]): [Component[], Component[]][] => {
-	const result: [Component[], Component[]][] = [];
+	const EMPTY: [Component[], Component[]] = [
+		components.map(c => new Component(c.left, [])),
+		components.map(c => new Component([], c.right))
+	];
+	const twoSidedComponents = components.filter(c => c.left.length !== 0 && c.right.length !== 0);
+	const result: [Component[], Component[]][] = (twoSidedComponents.length === 0) ? [EMPTY] : [];
 	const height = Math.max(...components.map(c => c.height()));
 	for(let numMidRanges = 1; numMidRanges <= blocks; numMidRanges ++) {
 		for(const connections of Utils.combinations(components, numMidRanges, "unlimited-duplicates", "tuples")) {

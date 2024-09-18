@@ -102,4 +102,10 @@ describe("sculptures", () => {
 		const result = sculptures(0, 3, 4, 1 + 2 + 1 + 2, components);
 		assert.equal(result, 4n);
 	});
+
+	it("works when one of the sides has no components", () => {
+		const components = [new Component([new Range(2)], [])];
+		const result = sculptures(0, 4, 2, 1 + 2, components);
+		assert.equal(result, 1n);
+	});
 });
