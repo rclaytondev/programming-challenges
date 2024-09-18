@@ -1,3 +1,5 @@
+import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
+
 type Component = { left: number[], right: number[] };
 
 const isRange = (numbers: number[]) => {
@@ -34,5 +36,28 @@ export const sculptures = (left: number, right: number, blocks: number, weight: 
 	if(right === left) {
 		return blocks === 0 && weight === 0 && areConnectedComponents(components) ? 1n : 0n;
 	}
+	else if(right === left + 1) {
+		throw new Error("Unimplemented.");
+	}
+	else {
+		let result = 0n;
+		const middle = Math.floor((left + right) / 2);
+		for(const [leftComponents, rightComponents] of getNextComponents(components)) {
+			const middleBlocks = MathUtils.sum(leftComponents.map(c => c.right.length));
+			for(let leftBlocks = 0; leftBlocks <= blocks; leftBlocks ++) {
+				const rightBlocks = blocks - middleBlocks - leftBlocks;
+				for(let leftWeight = 0; leftWeight <= blocks; leftWeight ++) {
+					const rightWeight = weight - (middle * middleBlocks) - leftWeight;
+					const leftSculptures = sculptures(left, middle, leftBlocks, leftWeight, leftComponents);
+					const rightSculptures = sculptures(middle, right, rightBlocks, rightWeight, rightComponents);
+					result += leftSculptures * rightSculptures;
+				}
+			}
+		}
+		return result;
+	}
+};
+
+const getNextComponents = (components: Component[]): [Component[], Component[]][] => {
 	throw new Error("Unimplemented.");
 };
