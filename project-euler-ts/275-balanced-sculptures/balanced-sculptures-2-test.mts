@@ -108,4 +108,9 @@ describe("sculptures", () => {
 		const result = sculptures(0, 4, 2, 1 + 2, components);
 		assert.equal(result, 1n);
 	});
+	it("works when the region contains columns to the left and right of x=0", () => {
+		const components = [new Component([new Range(1)], [new Range(1)])];
+		const result = sculptures(-2, 1, 4, -1 + 0 + -1 + 0, components);
+		assert.equal(result, 4n);
+	});
 });
