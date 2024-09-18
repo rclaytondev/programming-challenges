@@ -1,7 +1,5 @@
-import { HashSet } from "../../utils-ts/modules/HashSet.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { HashPartition } from "./HashPartition.mjs";
-import { Partition } from "./Partition.mjs";
 
 export class Component {
 	left: number[];
@@ -11,15 +9,6 @@ export class Component {
 		this.right = right;
 	}
 }
-
-const isRange = (numbers: number[]) => {
-	for(const [i, num] of numbers.entries()) {
-		if(i + 1 < numbers.length && numbers[i + 1] !== num + 1) {
-			return false;
-		}
-	}
-	return true;
-};
 
 export const sculptures = (left: number, right: number, blocks: number, weight: number, components: Component[]): bigint => {
 	/* Returns the number of partial sculptures in the region given by `left` and `right` that have the given weight and number of blocks (not including the two edge columns) and connect the given components. */
