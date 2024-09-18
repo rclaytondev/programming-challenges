@@ -19,6 +19,12 @@ export class Component {
 	toString() {
 		return `([${this.left}], [${this.right}])`;
 	}
+	numLeftBlocks() {
+		return MathUtils.sum(this.left.map(range => range.max - range.min + 1));
+	}
+	numRightBlocks() {
+		return MathUtils.sum(this.right.map(range => range.max - range.min + 1));
+	}
 }
 export class Range {
 	min: number;
@@ -51,7 +57,7 @@ export const sculptures = (left: number, right: number, blocks: number, weight: 
 	let result = 0n;
 	const middle = Math.floor((left + right) / 2);
 	for(const [leftComponents, rightComponents] of getNextComponents(blocks, components)) {
-		const middleBlocks = MathUtils.sum(leftComponents.map(c => c.right.length));
+		const middleBlocks = MathUtils.sum(leftComponents.map(c => c.numRightBlocks()));
 		for(let leftBlocks = 0; leftBlocks <= blocks; leftBlocks ++) {
 			const rightBlocks = blocks - middleBlocks - leftBlocks;
 			for(let leftWeight = 0; leftWeight <= blocks; leftWeight ++) {
