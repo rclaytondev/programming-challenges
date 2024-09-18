@@ -14,30 +14,10 @@ const isRange = (numbers: number[]) => {
 	return true;
 };
 
-const areConnectedComponents = <T, >(components: Iterable<Iterable<T>>, areAdjacent: (v1: T, v2: T) => boolean) => {
-	const partition = HashPartition.empty<T>();
-	for(const component of components) {
-		for(const value of component) {
-			if([...partition.values()].some(v => areAdjacent(value, v))) {
-				return false;
-			}
-		}
-		for(const value of component) {
-			partition.add(value);
-			for(const oldValue of partition.values()) {
-				if(areAdjacent(value, oldValue)) {
-					partition.merge(value, oldValue);
-				}
-			}
-		}
-	}
-	return partition.numSets === [...components].length;
-};
-
 export const sculptures = (left: number, right: number, blocks: number, weight: number, components: Component[]): bigint => {
 	/* Returns the number of partial sculptures in the region given by `left` and `right` that have the given weight and number of blocks (not including the two edge columns) and connect the given components. */
 	if(right <= left + 1) {
-		return blocks === 0 && weight === 0 && areConnectedComponents<["left" | "right", number]>(
+		return blocks === 0 && weight === 0 && HashPartition.areConnectedComponents<["left" | "right", number]>(
 			components.map(c => [...c.left.map(n => ["left", n]), ...c.right.map(n => ["right", n])] as ["left" | "right", number][]),
 			(([side1, y1], [side2, y2]) => y1 === y2 || (side1 === side2 && Math.abs(y1 - y2) <= 1))
 		) ? 1n : 0n;

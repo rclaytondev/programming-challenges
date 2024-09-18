@@ -64,4 +64,24 @@ export class HashPartition<T> {
 	get numSets() {
 		return this.partition.numSets;
 	}
+
+	static areConnectedComponents<T>(components: Iterable<Iterable<T>>, areAdjacent: (v1: T, v2: T) => boolean) {
+		const partition = HashPartition.empty<T>();
+		for(const component of components) {
+			for(const value of component) {
+				if([...partition.values()].some(v => areAdjacent(value, v))) {
+					return false;
+				}
+			}
+			for(const value of component) {
+				partition.add(value);
+				for(const oldValue of partition.values()) {
+					if(areAdjacent(value, oldValue)) {
+						partition.merge(value, oldValue);
+					}
+				}
+			}
+		}
+		return partition.numSets === [...components].length;
+	};
 }
