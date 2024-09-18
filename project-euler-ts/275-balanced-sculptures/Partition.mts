@@ -48,6 +48,9 @@ export class Partition<T> {
 			this.moveNode(root1, root2);
 		}
 	}
+	has(value: T) {
+		return this.nodes.has(value);
+	}
 	private getRoot(value: T) {
 		/* Time complexity: O(h), where h is the depth of the node. */
 		let node = this.nodes.get(value);
