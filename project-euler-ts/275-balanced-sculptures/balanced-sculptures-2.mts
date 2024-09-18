@@ -3,7 +3,14 @@ import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { HashPartition } from "./HashPartition.mjs";
 import { Partition } from "./Partition.mjs";
 
-type Component = { left: number[], right: number[] };
+export class Component {
+	left: number[];
+	right: number[];
+	constructor(left: number[], right: number[]) {
+		this.left = left;
+		this.right = right;
+	}
+}
 
 const isRange = (numbers: number[]) => {
 	for(const [i, num] of numbers.entries()) {
