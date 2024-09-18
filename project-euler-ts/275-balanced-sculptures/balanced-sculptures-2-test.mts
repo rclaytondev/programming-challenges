@@ -80,4 +80,16 @@ describe("sculptures", () => {
 		const result = sculptures(0, 2, 2, 2, components);
 		assert.equal(result, 5n * 4n / 2n + 1n);
 	});
+	it("returns 0 when the components cannot be connected because there are no blocks", () => {
+		const components = [new Component([new Range(0)], [new Range(0)])];
+		const result = sculptures(0, 2, 0, 0, components);
+		assert.equal(result, 0n);
+	});
+
+
+	it("works when two blocks can be connected by a horizontal bar in 1 way", () => {
+		const components = [new Component([new Range(0)], [new Range(0)])];
+		const result = sculptures(0, 4, 3, 1 + 2 + 3, components);
+		assert.equal(result, 1n);
+	});
 });
