@@ -1,5 +1,5 @@
 import { describe } from "mocha";
-import { Component, Range, sculptures } from "./balanced-sculptures-2.mjs";
+import { allSculptures, Component, Range, sculptures } from "./balanced-sculptures-2.mjs";
 import { assert } from "chai";
 
 describe("sculptures", () => {
@@ -112,5 +112,11 @@ describe("sculptures", () => {
 		const components = [new Component([new Range(1)], [new Range(1)])];
 		const result = sculptures(-2, 1, 4, -1 + 0 + -1 + 0, components);
 		assert.equal(result, 4n);
+	});
+});
+describe("allSculptures", () => {
+	it("returns the number of balanced sculptures, counting symmetrical pairs twice", () => {
+		const result = allSculptures(6);
+		assert.equal(result, 27n);
 	});
 });

@@ -119,3 +119,10 @@ const getRangeCombinations = (numRanges: number, maxHeight: number, minHeight: n
 	}
 	return rangeCombinations;
 };
+export const allSculptures = (blocks: number) => sculptures(
+	-(blocks + 1),
+	blocks + 1,
+	blocks,
+	0,
+	[]
+);
