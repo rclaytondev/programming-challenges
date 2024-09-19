@@ -85,6 +85,11 @@ describe("sculptures", () => {
 		const result = sculptures(0, 2, 0, 0, components);
 		assert.equal(result, 0n);
 	});
+	it("works when one of the sides has no components (TODO: WRITE A BETTER TEST NAME)", () => {
+		const component = new Component([], [new Range(0)]);
+		const result = sculptures(-2, 0, 1, -1, [component]);
+		assert.equal(result, 1n);
+	});
 
 
 	it("works when two blocks can be connected by a horizontal bar in 1 way", () => {
@@ -116,6 +121,10 @@ describe("sculptures", () => {
 	it("correctly generates the 1-wide sculptures for the first step", () => {
 		const result = sculptures(-1, 1, 3, 0, [], "initial-all");
 		assert.equal(result, 1n);
+	});
+	it("correctly generates sculptures starting with the 1-wide sculptures for a more complicated case", () => {
+		const result = sculptures(-2, 2, 3, 0, [], "initial-all");
+		assert.equal(result, 2n);
 	});
 });
 describe("allSculptures", () => {

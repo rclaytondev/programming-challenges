@@ -25,6 +25,21 @@ export class Component {
 	numRightBlocks() {
 		return MathUtils.sum(this.right.map(range => range.max - range.min + 1));
 	}
+	connectableSides(): ("left" | "right" | "both")[] {
+		if(this.left.length !== 0 && this.right.length !== 0) {
+			return ["left", "right", "both"];
+		}
+		if(this.left.length !== 0) {
+			return ["left"];
+		}
+		if(this.right.length !== 0) {
+			return ["right"];
+		}
+		throw new Error("Called connectableSides on an empty component.");
+	}
+	isEmpty() {
+		return this.left.length === 0 && this.right.length === 0;
+	}
 }
 export class Range {
 	min: number;
@@ -61,7 +76,9 @@ export const sculptures = (left: number, right: number, blocks: number, weight: 
 		const middleBlocks = MathUtils.sum(leftComponents.map(c => c.numRightBlocks()));
 		for(let leftBlocks = 0; leftBlocks <= blocks; leftBlocks ++) {
 			const rightBlocks = blocks - middleBlocks - leftBlocks;
-			for(let leftWeight = 0; leftWeight <= blocks; leftWeight ++) {
+			const minLeftWeight = (left + 1) * leftBlocks;
+			const maxLeftWeight = (middle - 1) * leftBlocks;
+			for(let leftWeight = minLeftWeight; leftWeight <= maxLeftWeight; leftWeight ++) {
 				const rightWeight = weight - (middle * middleBlocks) - leftWeight;
 				const leftSculptures = sculptures(left, middle, leftBlocks, leftWeight, leftComponents);
 				const rightSculptures = sculptures(middle, right, rightBlocks, rightWeight, rightComponents);
@@ -74,16 +91,16 @@ export const sculptures = (left: number, right: number, blocks: number, weight: 
 
 const getNextComponents = (blocks: number, components: Component[]): [Component[], Component[]][] => {
 	const EMPTY: [Component[], Component[]] = [
-		components.map(c => new Component(c.left, [])),
-		components.map(c => new Component([], c.right))
+		components.map(c => new Component(c.left, [])).filter(c => !c.isEmpty()),
+		components.map(c => new Component([], c.right)).filter(c => !c.isEmpty())
 	];
 	const twoSidedComponents = components.filter(c => c.left.length !== 0 && c.right.length !== 0);
 	const result: [Component[], Component[]][] = (twoSidedComponents.length === 0) ? [EMPTY] : [];
 	const height = Math.max(...components.map(c => c.height()));
 	for(let numMidRanges = 1; numMidRanges <= blocks; numMidRanges ++) {
 		for(const connections of Utils.combinations(components, numMidRanges, "unlimited-duplicates", "tuples")) {
-			for(const whichSide of Utils.combinations<"left" | "right" | "both">(["left", "right", "both"], numMidRanges, "unlimited-duplicates", "tuples")) {
-				if(!components.every(component => connections.some((connection, i) => connection === component && whichSide[i] === "both"))) {
+			for(const whichSide of Utils.cartesianProduct(...connections.map(c => c.connectableSides()))) {
+				if(!twoSidedComponents.every(component => connections.some((connection, i) => connection === component && whichSide[i] === "both"))) {
 					continue;
 				}
 				for(const ranges of getRangeCombinations(numMidRanges, height + blocks - 1)) {
