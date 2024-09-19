@@ -172,4 +172,8 @@ describe("balancedSculptures", () => {
 		const result = balancedSculptures(3);
 		assert.equal(result, 2n); // 2 sculptures: vertical sculpture and a T-shape
 	});
+	it("correctly counts the balanced sculptures of order 4", () => {
+		const result = balancedSculptures(4);
+		assert.equal(result, 4n);
+	});
 });
