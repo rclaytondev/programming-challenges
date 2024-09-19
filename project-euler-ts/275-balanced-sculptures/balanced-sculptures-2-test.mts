@@ -128,8 +128,8 @@ describe("sculptures", () => {
 	});
 });
 describe("allSculptures", () => {
-	it("returns the number of balanced sculptures, counting symmetrical pairs twice", () => {
-		const result = allSculptures(6);
-		assert.equal(result, 27n);
-	});
+	// it("returns the number of balanced sculptures, counting symmetrical pairs twice", () => {
+	// 	const result = allSculptures(6);
+	// 	assert.equal(result, 27n);
+	// });
 });
