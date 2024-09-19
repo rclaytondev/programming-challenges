@@ -184,16 +184,16 @@ const getRangeConnections = (ranges: Range[]): [Component[], Component[]][] => {
 	return result;
 };
 export const allSculptures = (blocks: number) => sculptures(
-	-(blocks + 1),
-	blocks + 1,
+	-Math.ceil(blocks / 2),
+	Math.ceil(blocks / 2),
 	blocks,
 	0,
 	[],
 	"initial-all"
 );
 export const symmetricalSculptures = (blocks: number) => sculptures(
-	-(blocks + 1),
-	blocks + 1,
+	-Math.ceil(blocks / 2),
+	Math.ceil(blocks / 2),
 	blocks,
 	0,
 	[],
