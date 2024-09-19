@@ -84,4 +84,7 @@ export class HashPartition<T> {
 		}
 		return partition.numSets === [...components].length;
 	};
+	static areConnected<T>(values: Iterable<T>, areAdjacent: (v1: T, v2: T) => boolean) {
+		return HashPartition.areConnectedComponents([values], areAdjacent);
+	}
 }

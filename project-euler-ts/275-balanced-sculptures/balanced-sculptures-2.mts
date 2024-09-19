@@ -46,7 +46,7 @@ export class Range {
 	}
 }
 
-export const sculptures = (left: number, right: number, blocks: number, weight: number, components: Component[]): bigint => {
+export const sculptures = (left: number, right: number, blocks: number, weight: number, components: Component[], mode: "normal" | "initial-all" = "normal"): bigint => {
 	/* Returns the number of partial sculptures in the region given by `left` and `right` that have the given weight and number of blocks (not including the two edge columns) and connect the given components. */
 	if(right <= left + 1) {
 		return blocks === 0 && weight === 0 && HashPartition.areConnectedComponents<["left" | "right", Range]>(
@@ -56,7 +56,8 @@ export const sculptures = (left: number, right: number, blocks: number, weight: 
 	}
 	let result = 0n;
 	const middle = Math.floor((left + right) / 2);
-	for(const [leftComponents, rightComponents] of getNextComponents(blocks, components)) {
+	const nextComponents = (mode === "normal") ? getNextComponents(blocks, components) : getFirstComponents(blocks);
+	for(const [leftComponents, rightComponents] of nextComponents) {
 		const middleBlocks = MathUtils.sum(leftComponents.map(c => c.numRightBlocks()));
 		for(let leftBlocks = 0; leftBlocks <= blocks; leftBlocks ++) {
 			const rightBlocks = blocks - middleBlocks - leftBlocks;
@@ -105,12 +106,13 @@ const getNextComponents = (blocks: number, components: Component[]): [Component[
 	}
 	return result;
 };
-const getRangeCombinations = (numRanges: number, maxHeight: number, minHeight: number = 0) => {
+const getRangeCombinations = (numRanges: number, maxHeight: number, minHeight: number = 0, mustInclude0 = false) => {
 	if(numRanges === 0) {
 		return [[]];
 	}
 	const rangeCombinations: Range[][] = [];
 	for(let min = minHeight; min <= maxHeight; min ++) {
+		if(min > 0 && mustInclude0) { break; }
 		for(let max = min; max <= maxHeight; max ++) {
 			for(const ranges of getRangeCombinations(numRanges - 1, maxHeight, max + 2)) {
 				rangeCombinations.push([new Range(min, max), ...ranges]);
@@ -118,6 +120,35 @@ const getRangeCombinations = (numRanges: number, maxHeight: number, minHeight: n
 		}
 	}
 	return rangeCombinations;
+};
+const getFirstComponents = (blocks: number): [Component[], Component[]][] => {
+	let result: [Component[], Component[]][] = [];
+	for(let numRanges = 0; numRanges <= blocks; numRanges ++) {
+		for(const ranges of getRangeCombinations(numRanges, blocks, 0, true)) {
+			result = result.concat(getRangeConnections(ranges));
+		}
+	}
+	return result;
+};
+const inSameSet = <T, >(v1: T, v2: T, partition: Set<Set<T>>) => (
+	[...partition].find(s => s.has(v1)) === [...partition].find(s => s.has(v2))
+);
+const getRangeConnections = (ranges: Range[]): [Component[], Component[]][] => {
+	const result = [];
+	for(const leftPartition of Utils.setPartitions(ranges)) {
+		for(const rightPartition of Utils.setPartitions(ranges)) {
+			if(HashPartition.areConnected(
+				ranges, 
+				(r1, r2) => inSameSet(r1, r2, leftPartition) || inSameSet(r1, r2, rightPartition))
+			) {
+				result.push([
+					[...leftPartition].map(set => new Component([], [...set])),
+					[...rightPartition].map(set => new Component([...set], []))
+				] as [Component[], Component[]]);
+			}
+		}
+	}
+	return result;
 };
 export const allSculptures = (blocks: number) => sculptures(
 	-(blocks + 1),

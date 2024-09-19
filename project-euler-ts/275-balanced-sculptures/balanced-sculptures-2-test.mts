@@ -113,6 +113,10 @@ describe("sculptures", () => {
 		const result = sculptures(-2, 1, 4, -1 + 0 + -1 + 0, components);
 		assert.equal(result, 4n);
 	});
+	it("correctly generates the 1-wide sculptures for the first step", () => {
+		const result = sculptures(-1, 1, 3, 0, [], "initial-all");
+		assert.equal(result, 1n);
+	});
 });
 describe("allSculptures", () => {
 	it("returns the number of balanced sculptures, counting symmetrical pairs twice", () => {
