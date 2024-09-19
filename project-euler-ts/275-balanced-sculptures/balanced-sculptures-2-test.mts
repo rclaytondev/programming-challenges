@@ -128,7 +128,15 @@ describe("sculptures", () => {
 	});
 });
 describe("allSculptures", () => {
-	// it("returns the number of balanced sculptures, counting symmetrical pairs twice", () => {
+	it("can compute the number of sculptures with 1 block, counting symmetrical pairs twice", () => {
+		const result = allSculptures(1);
+		assert.equal(result, 1n);
+	});
+	it("can compute the number of sculptures with 2 blocks, counting symmetrical pairs twice", () => {
+		const result = allSculptures(2);
+		assert.equal(result, 1n);
+	});
+	// it("can compute the number of sculptures with 6 blocks, counting symmetrical pairs twice", () => {
 	// 	const result = allSculptures(6);
 	// 	assert.equal(result, 27n);
 	// });

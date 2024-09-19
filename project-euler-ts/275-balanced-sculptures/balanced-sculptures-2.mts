@@ -172,5 +172,6 @@ export const allSculptures = (blocks: number) => sculptures(
 	blocks + 1,
 	blocks,
 	0,
-	[]
+	[],
+	"initial-all"
 );
