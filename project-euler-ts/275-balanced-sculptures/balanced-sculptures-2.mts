@@ -199,3 +199,9 @@ export const symmetricalSculptures = (blocks: number) => sculptures(
 	[],
 	"initial-symmetric"
 );
+export const balancedSculptures = (blocks: number) => {
+	const total = allSculptures(blocks);
+	const symmetrical = symmetricalSculptures(blocks);
+	const pairs = (total - symmetrical) / 2n;
+	return symmetrical + pairs;
+};
