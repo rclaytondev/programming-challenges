@@ -46,6 +46,15 @@ export class Component {
 			Utils.arrayEquals(this.right, component.left, (r1, r2) => r1.equals(r2))
 		);
 	}
+	minBlocksRequired(width: number) {
+		if(this.left.length + this.right.length <= 1) { return 0; }
+		const highest = Math.max(...[...this.left, ...this.right].map(r => r.min));
+		const lowest = Math.min(...[...this.left, ...this.right].map(r => r.max));
+		if(this.left.length !== 0 && this.right.length !== 0) {
+			return width + highest - lowest;
+		}
+		return highest - lowest + 1;
+	}
 
 	static isSymmetric(leftComponents: Component[], rightComponents: Component[]) {
 		return Utils.arrayEquals(leftComponents, rightComponents, (c1, c2) => c1.isReflectionOf(c2));
@@ -81,6 +90,9 @@ export const sculptures = (left: number, right: number, blocks: number, weight: 
 			components.map(c => [...c.left.map(r => ["left", r]), ...c.right.map(r => ["right", r])] as ["left" | "right", Range][]),
 			(([side1, r1], [side2, r2]) => r1.intersects(r2) || (side1 === side2 && r1.isAdjacentTo(r2)))
 		) ? 1n : 0n;
+	}
+	if(MathUtils.sum(components.map(c => c.minBlocksRequired(right - left - 1))) > blocks) {
+		return 0n;
 	}
 	let result = 0n;
 	const middle = Math.floor((left + right) / 2);
