@@ -136,6 +136,10 @@ describe("allSculptures", () => {
 		const result = allSculptures(2);
 		assert.equal(result, 1n);
 	});
+	it("can compute the number of sculptures with 2 blocks, counting symmetrical pairs twice", () => {
+		const result = allSculptures(3);
+		assert.equal(result, 2n);
+	});
 	// it("can compute the number of sculptures with 6 blocks, counting symmetrical pairs twice", () => {
 	// 	const result = allSculptures(6);
 	// 	assert.equal(result, 27n);
@@ -150,6 +154,10 @@ describe("symmetricalSculptures", () => {
 		const result = symmetricalSculptures(2);
 		assert.equal(result, 1n);
 	});
+	it("can compute the number of symmetrical sculptures with 3 blocks", () => {
+		const result = symmetricalSculptures(3);
+		assert.equal(result, 2n);
+	});
 });
 describe("balancedSculptures", () => {
 	it("correctly counts the balanced sculptures of order 1", () => {
@@ -159,5 +167,9 @@ describe("balancedSculptures", () => {
 	it("correctly counts the balanced sculptures of order 2", () => {
 		const result = balancedSculptures(2);
 		assert.equal(result, 1n);
+	});
+	it("correctly counts the balanced sculptures of order 3", () => {
+		const result = balancedSculptures(3);
+		assert.equal(result, 2n); // 2 sculptures: vertical sculpture and a T-shape
 	});
 });

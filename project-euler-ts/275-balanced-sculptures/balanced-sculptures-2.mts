@@ -93,7 +93,7 @@ export const sculptures = (left: number, right: number, blocks: number, weight: 
 			const maxLeftWeight = (middle - 1) * leftBlocks;
 			for(let leftWeight = minLeftWeight; leftWeight <= maxLeftWeight; leftWeight ++) {
 				const rightWeight = weight - (middle * middleBlocks) - leftWeight;
-				if(mode === "initial-symmetric" && (leftBlocks !== rightBlocks || leftWeight !== rightWeight || !Component.isSymmetric(leftComponents, rightComponents))) {
+				if(mode === "initial-symmetric" && (leftBlocks !== rightBlocks || leftWeight !== -rightWeight || !Component.isSymmetric(leftComponents, rightComponents))) {
 					continue;
 				}
 				const leftSculptures = sculptures(left, middle, leftBlocks, leftWeight, leftComponents);
