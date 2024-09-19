@@ -1,5 +1,5 @@
 import { describe } from "mocha";
-import { allSculptures, Component, Range, sculptures } from "./balanced-sculptures-2.mjs";
+import { allSculptures, Component, Range, sculptures, symmetricalSculptures } from "./balanced-sculptures-2.mjs";
 import { assert } from "chai";
 
 describe("sculptures", () => {
@@ -140,4 +140,14 @@ describe("allSculptures", () => {
 	// 	const result = allSculptures(6);
 	// 	assert.equal(result, 27n);
 	// });
+});
+describe("symmetricalSculptures", () => {
+	it("can compute the number of symmetrical sculptures with 1 block", () => {
+		const result = symmetricalSculptures(1);
+		assert.equal(result, 1n);
+	});
+	it("can compute the number of symmetrical sculptures with 2 blocks", () => {
+		const result = symmetricalSculptures(2);
+		assert.equal(result, 1n);
+	});
 });

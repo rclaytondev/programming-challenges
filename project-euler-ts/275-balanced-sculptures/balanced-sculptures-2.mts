@@ -40,6 +40,16 @@ export class Component {
 	isEmpty() {
 		return this.left.length === 0 && this.right.length === 0;
 	}
+	isReflectionOf(component: Component) {
+		return (
+			Utils.arrayEquals(this.left, component.right, (r1, r2) => r1.equals(r2)) &&
+			Utils.arrayEquals(this.right, component.left, (r1, r2) => r1.equals(r2))
+		);
+	}
+
+	static isSymmetric(leftComponents: Component[], rightComponents: Component[]) {
+		return Utils.arrayEquals(leftComponents, rightComponents, (c1, c2) => c1.isReflectionOf(c2));
+	}
 }
 export class Range {
 	min: number;
@@ -55,13 +65,16 @@ export class Range {
 	isAdjacentTo(range: Range) {
 		return range.min === this.max + 1 || this.min === range.max + 1;
 	}
+	equals(range: Range) {
+		return this.min === range.min && this.max === range.max;
+	}
 
 	toString() {
 		return `${this.min}-${this.max}`;
 	}
 }
 
-export const sculptures = (left: number, right: number, blocks: number, weight: number, components: Component[], mode: "normal" | "initial-all" = "normal"): bigint => {
+export const sculptures = (left: number, right: number, blocks: number, weight: number, components: Component[], mode: "normal" | "initial-all" | "initial-symmetric" = "normal"): bigint => {
 	/* Returns the number of partial sculptures in the region given by `left` and `right` that have the given weight and number of blocks (not including the two edge columns) and connect the given components. */
 	if(right <= left + 1) {
 		return blocks === 0 && weight === 0 && HashPartition.areConnectedComponents<["left" | "right", Range]>(
@@ -80,9 +93,12 @@ export const sculptures = (left: number, right: number, blocks: number, weight: 
 			const maxLeftWeight = (middle - 1) * leftBlocks;
 			for(let leftWeight = minLeftWeight; leftWeight <= maxLeftWeight; leftWeight ++) {
 				const rightWeight = weight - (middle * middleBlocks) - leftWeight;
+				if(mode === "initial-symmetric" && (leftBlocks !== rightBlocks || leftWeight !== rightWeight || !Component.isSymmetric(leftComponents, rightComponents))) {
+					continue;
+				}
 				const leftSculptures = sculptures(left, middle, leftBlocks, leftWeight, leftComponents);
 				const rightSculptures = sculptures(middle, right, rightBlocks, rightWeight, rightComponents);
-				result += leftSculptures * rightSculptures;
+				result += (mode === "initial-symmetric") ? leftSculptures : leftSculptures * rightSculptures;
 			}
 		}
 	}
@@ -174,4 +190,12 @@ export const allSculptures = (blocks: number) => sculptures(
 	0,
 	[],
 	"initial-all"
+);
+export const symmetricalSculptures = (blocks: number) => sculptures(
+	-(blocks + 1),
+	blocks + 1,
+	blocks,
+	0,
+	[],
+	"initial-symmetric"
 );
