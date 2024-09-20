@@ -165,13 +165,12 @@ const getNextComponents = (blocks: number, components: Component[]): [Component[
 	}
 	return result;
 };
-const getRangeCombinations = (numRanges: number, maxHeight: number, minHeight: number = 0, mustInclude0 = false) => {
+const getRangeCombinations = (numRanges: number, maxHeight: number, minHeight: number = 0) => {
 	if(numRanges === 0) {
 		return [[]];
 	}
 	const rangeCombinations: Range[][] = [];
 	for(let min = minHeight; min <= maxHeight; min ++) {
-		if(min > 0 && mustInclude0) { break; }
 		for(let max = min; max <= maxHeight; max ++) {
 			for(const ranges of getRangeCombinations(numRanges - 1, maxHeight, max + 2)) {
 				rangeCombinations.push([new Range(min, max), ...ranges]);
