@@ -177,3 +177,30 @@ describe("balancedSculptures", () => {
 		assert.equal(result, 4n);
 	});
 });
+describe("Component.minBlocksRequired", () => {
+	it("returns 0 when there is only 1 range", () => {
+		const component = new Component([new Range(3, 5)], []);
+		const blocks = component.minBlocksRequired(3);
+		assert.equal(blocks, 0);
+	});
+	it("works when there are ranges on both sides", () => {
+		const component = new Component([new Range(3, 5)], [new Range(6, 7)]);
+		const blocks = component.minBlocksRequired(3);
+		assert.equal(blocks, 4);
+	});
+	it("works when there are ranges on only 1 side, but more than 1 range total", () => {
+		const component = new Component([new Range(3, 5), new Range(6, 7)], []);
+		const blocks = component.minBlocksRequired(3);
+		assert.equal(blocks, 2);
+	});
+	it("works when there are overlapping ranges on opposite sides", () => {
+		const component = new Component([new Range(0, 4)], [new Range(2)]);
+		const blocks = component.minBlocksRequired(3);
+		assert.equal(blocks, 3);
+	});
+	it("works when there are overlapping ranges on opposite sides with a length longer than 1", () => {
+		const component = new Component([new Range(0, 4)], [new Range(2, 3)]);
+		const blocks = component.minBlocksRequired(3);
+		assert.equal(blocks, 3);
+	});
+});

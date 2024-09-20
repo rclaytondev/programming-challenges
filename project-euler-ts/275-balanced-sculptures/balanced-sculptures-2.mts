@@ -48,12 +48,16 @@ export class Component {
 	}
 	minBlocksRequired(width: number) {
 		if(this.left.length + this.right.length <= 1) { return 0; }
-		const highest = Math.max(...[...this.left, ...this.right].map(r => r.min));
-		const lowest = Math.min(...[...this.left, ...this.right].map(r => r.max));
-		if(this.left.length !== 0 && this.right.length !== 0) {
-			return width + highest - lowest;
+		if(this.left.length === 0) {
+			return this.right[this.right.length - 1].min - this.right[0].max + 1;
 		}
-		return highest - lowest + 1;
+		if(this.right.length === 0) {
+			return this.left[this.left.length - 1].min - this.left[0].max + 1;
+		}
+		return width + Math.max(
+			this.left[0].distanceTo(this.right[this.right.length - 1]),
+			this.left[this.left.length - 1].distanceTo(this.right[0]),
+		);
 	}
 
 	static isSymmetric(leftComponents: Component[], rightComponents: Component[]) {
@@ -77,7 +81,14 @@ export class Range {
 	equals(range: Range) {
 		return this.min === range.min && this.max === range.max;
 	}
-
+	distanceTo(range: Range) {
+		if(this.intersects(range)) { return 0; }
+		return Math.min(
+			Math.abs(this.min - range.max),
+			Math.abs(range.min - this.max)
+		);
+	}
+ 
 	toString() {
 		return `${this.min}-${this.max}`;
 	}
