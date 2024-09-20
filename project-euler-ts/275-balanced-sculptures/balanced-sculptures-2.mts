@@ -88,6 +88,9 @@ export class Range {
 			Math.abs(range.min - this.max)
 		);
 	}
+	size() {
+		return this.max - this.min + 1;
+	}
  
 	toString() {
 		return `${this.min}-${this.max}`;
@@ -179,9 +182,29 @@ const getRangeCombinations = (numRanges: number, maxHeight: number, minHeight: n
 };
 const getFirstComponents = (blocks: number): [Component[], Component[]][] => {
 	let result: [Component[], Component[]][] = [];
-	for(let numRanges = 0; numRanges <= blocks; numRanges ++) {
-		for(const ranges of getRangeCombinations(numRanges, blocks, 0, true)) {
-			result = result.concat(getRangeConnections(ranges));
+	for(const ranges of getFirstRangeCombinations(blocks)) {
+		result = result.concat(getRangeConnections(ranges));
+	}
+	return result;
+};
+const getFirstRangeCombinations = (blocks: number, ranges: Range[] = []): Range[][] => {
+	if(blocks < 0) { return []; }
+	if(blocks === 0) { return [ranges]; }
+	const result = ranges.length === 0 ? [] : [ranges];
+	const startY = (ranges.length === 0) ? 0 : ranges[ranges.length - 1].max + 2;
+	for(let min = startY; min <= startY + blocks; min ++) {
+		if(ranges.length === 0 && min > 0) { break; }
+		for(let max = min; max <= min + blocks; max ++) {
+			const lastRange = ranges[ranges.length - 1];
+			const sideBlocks = (
+				(ranges.length === 0) ? 0 : 
+				lastRange.size() === 1 ? min - lastRange.max + 1 :
+				min - lastRange.max
+			);
+			const nextRange = new Range(min, max);
+			for(const rangeCombination of getFirstRangeCombinations(blocks - nextRange.size() - sideBlocks, [...ranges, nextRange])) {
+				result.push(rangeCombination);
+			}
 		}
 	}
 	return result;
