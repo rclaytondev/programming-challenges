@@ -115,7 +115,7 @@ export class SculpturesCounter {
 		}
 		let result = 0n;
 		const middle = Math.floor((left + right) / 2);
-		const nextComponents = (mode === "normal") ? SculpturesCounter.getNextComponents(blocks, components) : SculpturesInitializer.getFirstComponents(blocks);
+		const nextComponents = (mode === "normal") ? SculpturesCounter.components(blocks, components) : SculpturesInitializer.components(blocks);
 		for(const [leftComponents, rightComponents] of nextComponents) {
 			const middleBlocks = MathUtils.sum(leftComponents.map(c => c.numRightBlocks()));
 			for(let leftBlocks = 0; leftBlocks <= blocks; leftBlocks ++) {
@@ -135,7 +135,7 @@ export class SculpturesCounter {
 		}
 		return result;
 	}
-	static getNextComponents(blocks: number, components: Component[]): [Component[], Component[]][] {
+	static components(blocks: number, components: Component[]): [Component[], Component[]][] {
 		const EMPTY: [Component[], Component[]] = [
 			components.map(c => new Component(c.left, [])).filter(c => !c.isEmpty()),
 			components.map(c => new Component([], c.right)).filter(c => !c.isEmpty())
@@ -149,7 +149,7 @@ export class SculpturesCounter {
 					if(!twoSidedComponents.every(component => connections.some((connection, i) => connection === component && whichSide[i] === "both"))) {
 						continue;
 					}
-					for(const ranges of SculpturesCounter.getRangeCombinations(numMidRanges, height + blocks - 1)) {
+					for(const ranges of SculpturesCounter.ranges(numMidRanges, height + blocks - 1)) {
 						const leftComponents = components
 						.filter(c => c.left.length !== 0)
 						.map(c => new Component(
@@ -169,14 +169,14 @@ export class SculpturesCounter {
 		}
 		return result;
 	}
-	static getRangeCombinations(numRanges: number, maxHeight: number, minHeight: number = 0) {
+	static ranges(numRanges: number, maxHeight: number, minHeight: number = 0) {
 		if(numRanges === 0) {
 			return [[]];
 		}
 		const rangeCombinations: Range[][] = [];
 		for(let min = minHeight; min <= maxHeight; min ++) {
 			for(let max = min; max <= maxHeight; max ++) {
-				for(const ranges of SculpturesCounter.getRangeCombinations(numRanges - 1, maxHeight, max + 2)) {
+				for(const ranges of SculpturesCounter.ranges(numRanges - 1, maxHeight, max + 2)) {
 					rangeCombinations.push([new Range(min, max), ...ranges]);
 				}
 			}
@@ -186,14 +186,14 @@ export class SculpturesCounter {
 }
 
 export class SculpturesInitializer {
-	static getFirstComponents(blocks: number): [Component[], Component[]][] {
+	static components(blocks: number): [Component[], Component[]][] {
 		let result: [Component[], Component[]][] = [];
-		for(const ranges of SculpturesInitializer.getFirstRangeCombinations(blocks)) {
-			result = result.concat(SculpturesInitializer.getRangeConnections(ranges));
+		for(const ranges of SculpturesInitializer.ranges(blocks)) {
+			result = result.concat(SculpturesInitializer.rangeConnections(ranges));
 		}
 		return result;
 	}
-	static getFirstRangeCombinations(blocks: number, ranges: Range[] = []): Range[][] {
+	static ranges(blocks: number, ranges: Range[] = []): Range[][] {
 		if(blocks < 0) { return []; }
 		if(blocks === 0) { return [ranges]; }
 		const result = ranges.length === 0 ? [] : [ranges];
@@ -208,14 +208,14 @@ export class SculpturesInitializer {
 					min - lastRange.max
 				);
 				const nextRange = new Range(min, max);
-				for(const rangeCombination of SculpturesInitializer.getFirstRangeCombinations(blocks - nextRange.size() - sideBlocks, [...ranges, nextRange])) {
+				for(const rangeCombination of SculpturesInitializer.ranges(blocks - nextRange.size() - sideBlocks, [...ranges, nextRange])) {
 					result.push(rangeCombination);
 				}
 			}
 		}
 		return result;
 	}
-	static getRangeConnections(ranges: Range[]): [Component[], Component[]][] {
+	static rangeConnections(ranges: Range[]): [Component[], Component[]][] {
 		const result = [];
 		for(const leftPartition of Utils.setPartitions(ranges)) {
 			for(const rightPartition of Utils.setPartitions(ranges)) {
