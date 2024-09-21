@@ -2,7 +2,19 @@ import { describe } from "mocha";
 import { allSculptures, balancedSculptures, Component, Range, SculpturesCounter, symmetricalSculptures } from "./balanced-sculptures-2.mjs";
 import { assert } from "chai";
 
+let storedCache = new Map<string, bigint>();
+const setupCacheHooks = () => {
+	beforeEach(() => {
+		storedCache = SculpturesCounter.cache;
+		SculpturesCounter.cache = new Map<string, bigint>();
+	});
+	afterEach(() => {
+		SculpturesCounter.cache = storedCache;
+	});
+};
+
 describe("SculpturesCounter.sculptures", () => {
+	setupCacheHooks();
 	it("returns 1 when left=right and weight=blocks=0 and everything is valid", () => {
 		const ranges = [new Range(10)];
 		const result = SculpturesCounter.sculptures(7, 7, 0, 0, [new Component(ranges, ranges)]);
@@ -128,6 +140,7 @@ describe("SculpturesCounter.sculptures", () => {
 	});
 });
 describe("allSculptures", () => {
+	setupCacheHooks();
 	it("can compute the number of sculptures with 1 block, counting symmetrical pairs twice", () => {
 		const result = allSculptures(1);
 		assert.equal(result, 1n);
@@ -146,6 +159,7 @@ describe("allSculptures", () => {
 	// });
 });
 describe("symmetricalSculptures", () => {
+	setupCacheHooks();
 	it("can compute the number of symmetrical sculptures with 1 block", () => {
 		const result = symmetricalSculptures(1);
 		assert.equal(result, 1n);
@@ -160,6 +174,7 @@ describe("symmetricalSculptures", () => {
 	});
 });
 describe("balancedSculptures", () => {
+	setupCacheHooks();
 	it("correctly counts the balanced sculptures of order 1", () => {
 		const result = balancedSculptures(1);
 		assert.equal(result, 1n);
