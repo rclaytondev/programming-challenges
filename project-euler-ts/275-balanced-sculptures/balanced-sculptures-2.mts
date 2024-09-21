@@ -128,6 +128,7 @@ export class SculpturesCounter {
 						continue;
 					}
 					const leftSculptures = SculpturesCounter.sculptures(left, middle, leftBlocks, leftWeight, leftComponents);
+					if(leftSculptures === 0n) { continue; }
 					const rightSculptures = SculpturesCounter.sculptures(middle, right, rightBlocks, rightWeight, rightComponents);
 					result += (mode === "initial-symmetric") ? leftSculptures : leftSculptures * rightSculptures;
 				}
