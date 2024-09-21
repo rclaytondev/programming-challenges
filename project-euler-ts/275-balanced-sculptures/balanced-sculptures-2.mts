@@ -204,7 +204,7 @@ export class SculpturesInitializer {
 				const lastRange = ranges[ranges.length - 1];
 				const sideBlocks = (
 					(ranges.length === 0) ? 0 : 
-					lastRange.size() === 1 ? min - lastRange.max + 1 :
+					lastRange.size() === 1 || ranges.length === 1 ? min - lastRange.max + 1 :
 					min - lastRange.max
 				);
 				const nextRange = new Range(min, max);
