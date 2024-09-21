@@ -121,7 +121,7 @@ export class SculpturesCounter {
 
 	static memoizedSculptures(left: number, right: number, blocks: number, weight: number, components: Component[], mode: "normal" | "initial-all" | "initial-symmetric" = "normal") {
 		if(mode === "normal") {
-			if(`${components}` < `${components.map(c => c.reflect())}`) {
+			if(`${components},${weight - left * blocks}` < `${components.map(c => c.reflect())},${-weight - (-right) * blocks}`) {
 				[left, right] = [-right, -left];
 				weight = -weight;
 				components = components.map(c => c.reflect());

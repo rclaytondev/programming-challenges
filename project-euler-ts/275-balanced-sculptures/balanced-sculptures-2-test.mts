@@ -182,6 +182,21 @@ describe("SculpturesCounter.memoizedSculptures", () => {
 		assert.equal(result1, 1n);
 		assert.equal(result2, 1n);
 	});
+	it("avoids duplicate combinations, and works when the components are symmetrical", () => {
+		const result1 = SculpturesCounter.memoizedSculptures(0, 4, 4, 1+2+2+3, [new Component([new Range(1)], [new Range(1)])]);
+		SculpturesCounter.sculptures = () => { throw new Error("Failed memoization: did not expect the function to be called again."); };
+		const result2 = SculpturesCounter.memoizedSculptures(-4, 0, 4, -(1+2+2+3), [new Component([new Range(1)], [new Range(1)])]);
+		assert.equal(result1, 2n);
+		assert.equal(result2, 2n);
+	});
+	it("avoids duplicate computations, and works when the components are symmetrical but the sculptures are asymmetrical due to the weight", () => {
+		const component = new Component([new Range(1)], [new Range(1)]);
+		const result1 = SculpturesCounter.memoizedSculptures(0, 3, 3, 1+2+2, [component]);
+		SculpturesCounter.sculptures = () => { throw new Error("Failed memoization: did not expect the function to be called again."); };
+		const result2 = SculpturesCounter.memoizedSculptures(0, 3, 3, 1+1+2, [component]);
+		assert.equal(result1, 2n);
+		assert.equal(result2, 2n);
+	});
 });
 describe("allSculptures", () => {
 	setupCacheHooks();
