@@ -102,6 +102,18 @@ const inSameSet = <T, >(v1: T, v2: T, partition: Set<Set<T>>) => (
 );
 
 export class SculpturesCounter {
+	static cache = new Map<string, bigint>();
+
+	static memoizedSculptures(left: number, right: number, blocks: number, weight: number, components: Component[], mode: "normal" | "initial-all" | "initial-symmetric" = "normal") {
+		const argsString = `${left},${right},${blocks},${weight},${components},${mode}`;
+		const cachedResult = SculpturesCounter.cache.get(argsString);
+		if(typeof cachedResult === "bigint") {
+			return cachedResult;
+		}
+		const result = SculpturesCounter.sculptures(left, right, blocks, weight, components, mode);
+		SculpturesCounter.cache.set(argsString, result);
+		return result;
+	}
 	static sculptures(left: number, right: number, blocks: number, weight: number, components: Component[], mode: "normal" | "initial-all" | "initial-symmetric" = "normal"): bigint {
 		/* Returns the number of partial sculptures in the region given by `left` and `right` that have the given weight and number of blocks (not including the two edge columns) and connect the given components. */
 		if(right <= left + 1) {
@@ -127,9 +139,9 @@ export class SculpturesCounter {
 					if(mode === "initial-symmetric" && (leftBlocks !== rightBlocks || leftWeight !== -rightWeight || !Component.isSymmetric(leftComponents, rightComponents))) {
 						continue;
 					}
-					const leftSculptures = SculpturesCounter.sculptures(left, middle, leftBlocks, leftWeight, leftComponents);
+					const leftSculptures = SculpturesCounter.memoizedSculptures(left, middle, leftBlocks, leftWeight, leftComponents);
 					if(leftSculptures === 0n) { continue; }
-					const rightSculptures = SculpturesCounter.sculptures(middle, right, rightBlocks, rightWeight, rightComponents);
+					const rightSculptures = SculpturesCounter.memoizedSculptures(middle, right, rightBlocks, rightWeight, rightComponents);
 					result += (mode === "initial-symmetric") ? leftSculptures : leftSculptures * rightSculptures;
 				}
 			}
@@ -234,7 +246,7 @@ export class SculpturesInitializer {
 		return result;
 	}
 }
-export const allSculptures = (blocks: number) => SculpturesCounter.sculptures(
+export const allSculptures = (blocks: number) => SculpturesCounter.memoizedSculptures(
 	-Math.ceil(blocks / 2),
 	Math.ceil(blocks / 2),
 	blocks,
@@ -242,7 +254,7 @@ export const allSculptures = (blocks: number) => SculpturesCounter.sculptures(
 	[],
 	"initial-all"
 );
-export const symmetricalSculptures = (blocks: number) => SculpturesCounter.sculptures(
+export const symmetricalSculptures = (blocks: number) => SculpturesCounter.memoizedSculptures(
 	-Math.ceil(blocks / 2),
 	Math.ceil(blocks / 2),
 	blocks,
