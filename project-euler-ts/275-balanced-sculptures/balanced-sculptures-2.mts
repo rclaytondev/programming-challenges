@@ -46,6 +46,9 @@ export class Component {
 			Utils.arrayEquals(this.right, component.left, (r1, r2) => r1.equals(r2))
 		);
 	}
+	reflect() {
+		return new Component(this.right, this.left);
+	}
 	minBlocksRequired(width: number) {
 		if(this.left.length + this.right.length <= 1) { return 0; }
 		if(this.left.length === 0) {
@@ -58,6 +61,15 @@ export class Component {
 			this.left[0].distanceTo(this.right[this.right.length - 1]),
 			this.left[this.left.length - 1].distanceTo(this.right[0]),
 		);
+	}
+	bottom() {
+		return Math.min(...[...this.left, ...this.right].map(c => c.min));
+	}
+	translateUp(amount: number) {
+		return new Component(this.left.map(r => r.translate(amount)), this.right.map(r => r.translate(amount)));
+	}
+	translateDown(amount: number) {
+		return new Component(this.left.map(r => r.translate(-amount)), this.right.map(r => r.translate(-amount)));
 	}
 
 	static isSymmetric(leftComponents: Component[], rightComponents: Component[]) {
@@ -91,6 +103,9 @@ export class Range {
 	size() {
 		return this.max - this.min + 1;
 	}
+	translate(amount: number) {
+		return new Range(this.min + amount, this.max + amount);
+	}
  
 	toString() {
 		return `${this.min}-${this.max}`;
@@ -105,6 +120,24 @@ export class SculpturesCounter {
 	static cache = new Map<string, bigint>();
 
 	static memoizedSculptures(left: number, right: number, blocks: number, weight: number, components: Component[], mode: "normal" | "initial-all" | "initial-symmetric" = "normal") {
+		if(mode === "normal") {
+			if(`${components}` < `${components.map(c => c.reflect())}`) {
+				[left, right] = [-right, -left];
+				weight = -weight;
+				components = components.map(c => c.reflect());
+			}
+			[left, right, weight] = [0, right - left, weight - left * blocks];
+
+			if(right >= left + 2) {
+				const previousBottom = Math.min(...components.map(c => c.bottom()));
+				const blocksRequired = MathUtils.sum(components.map(c => c.minBlocksRequired(right - left - 1)));
+				if(blocksRequired > blocks) { return 0n; }
+				const newBottom = Math.min(previousBottom, blocks - blocksRequired);
+				components = components.map(c => c.translateUp(newBottom - previousBottom));
+			}
+		}
+
+
 		const argsString = `${left},${right},${blocks},${weight},${components},${mode}`;
 		const cachedResult = SculpturesCounter.cache.get(argsString);
 		if(typeof cachedResult === "bigint") {
@@ -121,9 +154,6 @@ export class SculpturesCounter {
 				components.map(c => [...c.left.map(r => ["left", r]), ...c.right.map(r => ["right", r])] as ["left" | "right", Range][]),
 				(([side1, r1], [side2, r2]) => r1.intersects(r2) || (side1 === side2 && r1.isAdjacentTo(r2)))
 			) ? 1n : 0n;
-		}
-		if(MathUtils.sum(components.map(c => c.minBlocksRequired(right - left - 1))) > blocks) {
-			return 0n;
 		}
 		let result = 0n;
 		const middle = Math.floor((left + right) / 2);

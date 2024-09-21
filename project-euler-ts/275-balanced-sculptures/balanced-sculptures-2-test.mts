@@ -139,6 +139,50 @@ describe("SculpturesCounter.sculptures", () => {
 		assert.equal(result, 2n);
 	});
 });
+describe("SculpturesCounter.memoizedSculptures", () => {
+	setupCacheHooks();
+	
+	let originalSculptures = SculpturesCounter.sculptures;
+	afterEach(() => SculpturesCounter.sculptures = originalSculptures);
+
+	it("works when placing multiple blocks at the bottom of a column", () => {
+		const component = new Component([new Range(0)], [new Range(0)]);
+		const result = SculpturesCounter.memoizedSculptures(0, 2, 3, 3, [component]);
+		assert.equal(result, 1n);
+	});
+	it("works when placing multiple blocks at the bottom of a column in multiple ways", () => {
+		const component = new Component([new Range(1)], [new Range(1)]);
+		const result = SculpturesCounter.memoizedSculptures(0, 2, 3, 3, [component]);
+		assert.equal(result, 2n);
+	});
+	it("works when placing multiple blocks near the bottom of a column", () => {
+		const component = new Component([new Range(4)], [new Range(4)]);
+		const result = SculpturesCounter.memoizedSculptures(0, 2, 3, 3, [component]);
+		assert.equal(result, 3n);
+	});
+	it("works when placing multiple blocks very high in a column", () => {
+		const component = new Component([new Range(10)], [new Range(10)]);
+		const result = SculpturesCounter.memoizedSculptures(0, 2, 3, 3, [component]);
+		assert.equal(result, 3n);
+	});
+
+	it("avoids duplicate computations using invariance under some vertical translations", () => {
+		const result1 = SculpturesCounter.memoizedSculptures(0, 2, 3, 3, [new Component([new Range(4)], [new Range(4)])]);
+		SculpturesCounter.sculptures = () => { throw new Error("Failed memoization: did not expect the function to be called again."); };
+		const result2 = SculpturesCounter.memoizedSculptures(0, 2, 3, 3, [new Component([new Range(10)], [new Range(10)])]);
+		assert.equal(result1, 3n);
+		assert.equal(result2, 3n);
+	});
+	it("avoids duplicate computations using invariance under reflection and horizontal translation", () => {
+		const component = new Component([new Range(1)], [new Range(2)]);
+		const reflected = new Component([new Range(2)], [new Range(1)]);
+		const result1 = SculpturesCounter.memoizedSculptures(1, 4, 3, 2 + 2 + 3, [component]);
+		SculpturesCounter.sculptures = () => { throw new Error("Failed memoization: did not expect the function to be called again."); };
+		const result2 = SculpturesCounter.memoizedSculptures(1, 4, 3, 2 + 3 + 3, [reflected]);
+		assert.equal(result1, 1n);
+		assert.equal(result2, 1n);
+	});
+});
 describe("allSculptures", () => {
 	setupCacheHooks();
 	it("can compute the number of sculptures with 1 block, counting symmetrical pairs twice", () => {
