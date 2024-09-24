@@ -250,6 +250,14 @@ describe("balancedSculptures", () => {
 		const result = balancedSculptures(4);
 		assert.equal(result, 4n);
 	});
+	it("correctly counts the balanced sculptures of order 5", () => {
+		const result = balancedSculptures(5);
+		assert.equal(result, 9n);
+	});
+	it("correctly counts the balanced sculptures of order 6", () => {
+		const result = balancedSculptures(6);
+		assert.equal(result, 18n);
+	});
 });
 describe("Component.minBlocksRequired", () => {
 	it("returns 0 when there is only 1 range", () => {

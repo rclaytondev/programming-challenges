@@ -62,6 +62,32 @@ export class Component {
 			this.left[this.left.length - 1].distanceTo(this.right[0]),
 		);
 	}
+	static weightBound(left: number, right: number, blocks: number, components: Component[], type: "upper-bound" | "lower-bound") {
+		if(right <= left + 1) {
+			return 0;
+		}
+		if(right === left + 2) {
+			return (left + 1) * blocks;
+		}
+		let weight = 0;
+		let blocksUsed = 0;
+		const connectorBlocks = (right - left - 3);
+		let connectorWeight = 0;
+		for(let x = left + 2; x < right - 1; x ++) {
+			connectorWeight += x;
+		}
+		for(const component of components) {
+			if(component.left.length !== 0 && component.right.length !== 0) {
+				weight += (left + 1) * component.left.length + (right - 1) * component.right.length + connectorWeight;
+				blocksUsed += component.left.length + component.right.length + connectorBlocks;
+			}
+		}
+		const remainingBlocks = blocks - blocksUsed;
+		if(remainingBlocks < 0) {
+			return (type === "upper-bound") ? -Infinity : Infinity;
+		}
+		return weight + remainingBlocks * (type === "upper-bound" ? right - 1 : left + 1);
+	}
 	weightEstimate(left: number, right: number, blocks: number, type: "upper-bound" | "lower-bound") {
 		if(right <= left + 1) {
 			return 0;
@@ -191,12 +217,12 @@ export class SculpturesCounter {
 			for(let leftBlocks = minLeftBlocks; leftBlocks <= maxLeftBlocks; leftBlocks ++) {
 				const rightBlocks = blocks - middleBlocks - leftBlocks;
 				const minLeftWeight = Math.max(
-					MathUtils.sum(leftComponents.map(c => c.weightLowerBound(left, middle, leftBlocks))),
-					weight - middle * middleBlocks - MathUtils.sum(rightComponents.map(c => c.weightUpperBound(middle, right, rightBlocks)))
+					Component.weightBound(left, middle, leftBlocks, leftComponents, "lower-bound"),
+					weight - middle * middleBlocks - Component.weightBound(middle, right, rightBlocks, rightComponents, "upper-bound")
 				);
 				const maxLeftWeight = Math.min(
-					MathUtils.sum(leftComponents.map(c => c.weightUpperBound(left, middle, leftBlocks))),
-					weight - middle * middleBlocks - MathUtils.sum(rightComponents.map(c => c.weightLowerBound(middle, right, rightBlocks)))
+					Component.weightBound(left, middle, leftBlocks, leftComponents, "upper-bound"),
+					weight - middle * middleBlocks - Component.weightBound(middle, right, rightBlocks, rightComponents, "lower-bound")
 				);
 				for(let leftWeight = minLeftWeight; leftWeight <= maxLeftWeight; leftWeight ++) {
 					const rightWeight = weight - (middle * middleBlocks) - leftWeight;
