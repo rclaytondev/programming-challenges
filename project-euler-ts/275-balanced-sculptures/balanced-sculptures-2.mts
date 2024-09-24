@@ -3,8 +3,8 @@ import { Utils } from "../../utils-ts/modules/Utils.mjs";
 import { HashPartition } from "./HashPartition.mjs";
 
 export class Component {
-	left: Range[];
-	right: Range[];
+	readonly left: Range[];
+	readonly right: Range[];
 	constructor(left: Range[], right: Range[]) {
 		this.left = left.sort((a, b) => a.min - b.min);
 		this.right = right.sort((a, b) => a.min - b.min);
@@ -129,8 +129,8 @@ export class Component {
 	}
 }
 export class Range {
-	min: number;
-	max: number;
+	readonly min: number;
+	readonly max: number;
 	constructor(min: number, max: number = min) {
 		this.min = min;
 		this.max = max;
