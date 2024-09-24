@@ -142,10 +142,13 @@ const inSameSet = <T, >(v1: T, v2: T, partition: Set<Set<T>>) => (
 	[...partition].find(s => s.has(v1)) === [...partition].find(s => s.has(v2))
 );
 
+let calls = 0;
+let memoizedCalls = 0;
 export class SculpturesCounter {
 	static cache = new Map<string, bigint>();
 
 	static memoizedSculptures(left: number, right: number, blocks: number, weight: number, components: Component[], mode: "normal" | "initial-all" | "initial-symmetric" = "normal") {
+		memoizedCalls ++;
 		if(mode === "normal") {
 			if(`${components},${weight - left * blocks}` < `${components.map(c => c.reflect())},${-weight - (-right) * blocks}`) {
 				[left, right] = [-right, -left];
@@ -174,6 +177,7 @@ export class SculpturesCounter {
 		return result;
 	}
 	static sculptures(left: number, right: number, blocks: number, weight: number, components: Component[], mode: "normal" | "initial-all" | "initial-symmetric" = "normal"): bigint {
+		calls ++;
 		/* Returns the number of partial sculptures in the region given by `left` and `right` that have the given weight and number of blocks (not including the two edge columns) and connect the given components. */
 		if(right <= left + 1) {
 			return blocks === 0 && weight === 0 && HashPartition.areConnectedComponents<["left" | "right", Range]>(
@@ -337,3 +341,10 @@ export const balancedSculptures = (blocks: number) => {
 	const pairs = (total - symmetrical) / 2n;
 	return symmetrical + pairs;
 };
+
+console.time();
+console.log(balancedSculptures(10));
+console.timeEnd();
+console.log(`${calls} calls to SculpturesCounter.sculptures`);
+console.log(`${memoizedCalls} calls to SculpturesCounter.memoizedSculptures`);
+debugger;
