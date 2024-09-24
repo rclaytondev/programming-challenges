@@ -6,8 +6,8 @@ export class Component {
 	left: Range[];
 	right: Range[];
 	constructor(left: Range[], right: Range[]) {
-		this.left = left;
-		this.right = right;
+		this.left = left.sort((a, b) => a.min - b.min);
+		this.right = right.sort((a, b) => a.min - b.min);
 	}
 
 	height() {
