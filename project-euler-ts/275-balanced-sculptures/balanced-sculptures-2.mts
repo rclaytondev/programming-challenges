@@ -160,7 +160,9 @@ export class SculpturesCounter {
 		const nextComponents = (mode === "normal") ? SculpturesCounter.components(blocks, components) : SculpturesInitializer.components(blocks);
 		for(const [leftComponents, rightComponents] of nextComponents) {
 			const middleBlocks = MathUtils.sum(leftComponents.map(c => c.numRightBlocks()));
-			for(let leftBlocks = 0; leftBlocks <= blocks; leftBlocks ++) {
+			const minLeftBlocks = MathUtils.sum(leftComponents.map(c => c.minBlocksRequired(middle - left - 1)));
+			const maxLeftBlocks = blocks - middleBlocks - MathUtils.sum(rightComponents.map(c => c.minBlocksRequired(right - middle - 1)));
+			for(let leftBlocks = minLeftBlocks; leftBlocks <= maxLeftBlocks; leftBlocks ++) {
 				const rightBlocks = blocks - middleBlocks - leftBlocks;
 				const minLeftWeight = (left + 1) * leftBlocks;
 				const maxLeftWeight = (middle - 1) * leftBlocks;
