@@ -209,7 +209,7 @@ export class SculpturesCounter {
 		}
 		let result = 0n;
 		const middle = Math.floor((left + right) / 2);
-		const nextComponents = (mode === "normal") ? SculpturesCounter.components(blocks, components) : SculpturesInitializer.components(blocks);
+		const nextComponents = (mode === "normal") ? SculpturesCounter.components(left, right, blocks, components) : SculpturesInitializer.components(blocks);
 		for(const [leftComponents, rightComponents] of nextComponents) {
 			const middleBlocks = MathUtils.sum(leftComponents.map(c => c.numRightBlocks()));
 			const minLeftBlocks = MathUtils.sum(leftComponents.map(c => c.minBlocksRequired(middle - left - 1)));
@@ -238,7 +238,7 @@ export class SculpturesCounter {
 		}
 		return result;
 	}
-	static components(blocks: number, components: Component[]): [Component[], Component[]][] {
+	static components(left: number, right: number, blocks: number, components: Component[]): [Component[], Component[]][] {
 		const EMPTY: [Component[], Component[]] = [
 			components.map(c => new Component(c.left, [])).filter(c => !c.isEmpty()),
 			components.map(c => new Component([], c.right)).filter(c => !c.isEmpty())
@@ -252,7 +252,12 @@ export class SculpturesCounter {
 					if(!twoSidedComponents.every(component => connections.some((connection, i) => connection === component && whichSide[i] === "both"))) {
 						continue;
 					}
-					for(const ranges of SculpturesCounter.ranges(numMidRanges, height + blocks - 1)) {
+					const extraBlocks = blocks - MathUtils.sum(components.map(c => c.minBlocksRequired(right - left - 1)));
+					const newHeight = Math.min(
+						height + blocks - Math.floor((right - left) / 2),
+						height + extraBlocks
+					);
+					for(const ranges of SculpturesCounter.ranges(numMidRanges, newHeight)) {
 						const leftComponents = components
 						.filter(c => c.left.length !== 0)
 						.map(c => new Component(
