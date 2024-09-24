@@ -88,32 +88,6 @@ export class Component {
 		}
 		return weight + remainingBlocks * (type === "upper-bound" ? right - 1 : left + 1);
 	}
-	weightEstimate(left: number, right: number, blocks: number, type: "upper-bound" | "lower-bound") {
-		if(right <= left + 1) {
-			return 0;
-		}
-		if(right === left + 2) {
-			return (left + 1) * blocks;
-		}
-		const leftWeight = (left + 1) * this.left.length;
-		const rightWeight = (right - 1) * this.right.length;
-		let connectingWeight = 0;
-		if(this.left.length !== 0 && this.right.length !== 0) {
-			for(let x = left + 2; x < right - 1; x ++) {
-				connectingWeight += x;
-			}
-		}
-		const remainingBlocks = (this.left.length !== 0 && this.right.length !== 0) ? blocks - this.left.length - this.right.length - (right - left - 3) : blocks;
-		if(remainingBlocks < 0) { return type === "upper-bound" ? -Infinity : Infinity; }
-		const extraBlockLocations = (type === "upper-bound") ? right - 1 : left + 1;
-		return leftWeight + rightWeight + connectingWeight + extraBlockLocations * remainingBlocks;
-	}
-	weightLowerBound(left: number, right: number, blocks: number) {
-		return this.weightEstimate(left, right, blocks, "lower-bound");
-	}
-	weightUpperBound(left: number, right: number, blocks: number) {
-		return this.weightEstimate(left, right, blocks, "upper-bound");
-	}
 	bottom() {
 		return Math.min(...[...this.left, ...this.right].map(c => c.min));
 	}
