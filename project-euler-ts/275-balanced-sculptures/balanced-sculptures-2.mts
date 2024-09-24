@@ -62,6 +62,29 @@ export class Component {
 			this.left[this.left.length - 1].distanceTo(this.right[0]),
 		);
 	}
+	weightEstimate(left: number, right: number, blocks: number, extraBlockLocations: number) {
+		if(right <= left + 1) {
+			return 0;
+		}
+		if(right === left + 2) {
+			return (left + 1) * blocks;
+		}
+		const leftWeight = (left + 1) * this.left.length;
+		const rightWeight = (right - 1) * this.right.length;
+		let connectingWeight = 0;
+		for(let x = left + 2; x < right - 1; x ++) {
+			connectingWeight += x;
+		}
+		const remainingBlocks = blocks - this.left.length - this.right.length - (right - left - 3);
+		if(remainingBlocks < 0) { return Infinity; }
+		return leftWeight + rightWeight + connectingWeight + extraBlockLocations * remainingBlocks;
+	}
+	weightLowerBound(left: number, right: number, blocks: number) {
+		return this.weightEstimate(left, right, blocks, left + 1);
+	}
+	weightUpperBound(left: number, right: number, blocks: number) {
+		return this.weightEstimate(left, right, blocks, right - 1);
+	}
 	bottom() {
 		return Math.min(...[...this.left, ...this.right].map(c => c.min));
 	}
@@ -164,8 +187,14 @@ export class SculpturesCounter {
 			const maxLeftBlocks = blocks - middleBlocks - MathUtils.sum(rightComponents.map(c => c.minBlocksRequired(right - middle - 1)));
 			for(let leftBlocks = minLeftBlocks; leftBlocks <= maxLeftBlocks; leftBlocks ++) {
 				const rightBlocks = blocks - middleBlocks - leftBlocks;
-				const minLeftWeight = (left + 1) * leftBlocks;
-				const maxLeftWeight = (middle - 1) * leftBlocks;
+				const minLeftWeight = Math.max(
+					MathUtils.sum(leftComponents.map(c => c.weightLowerBound(left, middle, leftBlocks))),
+					weight - middle * middleBlocks - MathUtils.sum(rightComponents.map(c => c.weightUpperBound(middle, right, rightBlocks)))
+				);
+				const maxLeftWeight = Math.min(
+					MathUtils.sum(leftComponents.map(c => c.weightUpperBound(left, middle, leftBlocks))),
+					weight - middle * middleBlocks - MathUtils.sum(rightComponents.map(c => c.weightLowerBound(middle, right, rightBlocks)))
+				);
 				for(let leftWeight = minLeftWeight; leftWeight <= maxLeftWeight; leftWeight ++) {
 					const rightWeight = weight - (middle * middleBlocks) - leftWeight;
 					if(mode === "initial-symmetric" && (leftBlocks !== rightBlocks || leftWeight !== -rightWeight || !Component.isSymmetric(leftComponents, rightComponents))) {
