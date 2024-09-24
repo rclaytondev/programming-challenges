@@ -62,7 +62,7 @@ export class Component {
 			this.left[this.left.length - 1].distanceTo(this.right[0]),
 		);
 	}
-	weightEstimate(left: number, right: number, blocks: number, extraBlockLocations: number) {
+	weightEstimate(left: number, right: number, blocks: number, type: "upper-bound" | "lower-bound") {
 		if(right <= left + 1) {
 			return 0;
 		}
@@ -76,14 +76,15 @@ export class Component {
 			connectingWeight += x;
 		}
 		const remainingBlocks = blocks - this.left.length - this.right.length - (right - left - 3);
-		if(remainingBlocks < 0) { return Infinity; }
+		if(remainingBlocks < 0) { return type === "upper-bound" ? -Infinity : Infinity; }
+		const extraBlockLocations = (type === "upper-bound") ? right - 1 : left + 1;
 		return leftWeight + rightWeight + connectingWeight + extraBlockLocations * remainingBlocks;
 	}
 	weightLowerBound(left: number, right: number, blocks: number) {
-		return this.weightEstimate(left, right, blocks, left + 1);
+		return this.weightEstimate(left, right, blocks, "lower-bound");
 	}
 	weightUpperBound(left: number, right: number, blocks: number) {
-		return this.weightEstimate(left, right, blocks, right - 1);
+		return this.weightEstimate(left, right, blocks, "upper-bound");
 	}
 	bottom() {
 		return Math.min(...[...this.left, ...this.right].map(c => c.min));
