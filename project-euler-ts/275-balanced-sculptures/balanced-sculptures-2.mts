@@ -164,7 +164,7 @@ export class SculpturesCounter {
 		}
 
 
-		const argsString = `${left},${right},${blocks},${weight},${components},${mode}`;
+		const argsString = `${left},${right},${blocks},${weight},${components.map(c => c.toString()).sort()},${mode}`;
 		const cachedResult = SculpturesCounter.cache.get(argsString);
 		if(typeof cachedResult === "bigint") {
 			return cachedResult;
