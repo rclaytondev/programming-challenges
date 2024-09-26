@@ -17,5 +17,5 @@ export const nextSolution = (minDisks: bigint) => {
 	}
 };
 
-console.log(nextSolution(10n ** 12n));
-debugger;
+// console.log(nextSolution(10n ** 12n));
+// debugger;
