@@ -58,7 +58,7 @@ const solve = () => {
 		const initial = sudoku.copy();
 		const solved = solveSudoku(sudoku)!;
 		// console.log(isCorrect(initial, solved) && isComplete(solved));
-		sum += solved.rows[0][0] + solved.rows[0][1] + solved.rows[0][2];
+		sum += Number.parseInt(`${solved.rows[0][0]}${solved.rows[0][1]}${solved.rows[0][2]}`);
 	}
 	return sum;
 };
