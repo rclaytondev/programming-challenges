@@ -8,7 +8,17 @@ type Tuple<T, N extends number> = N extends N ? number extends N ? T[] : _TupleO
 
 
 const chineseRemainderTheorem = <VarCount extends number>(modulo1: bigint, solutions1: Tuple<bigint, VarCount>[], modulo2: bigint, solutions2: Tuple<bigint, VarCount>[]): Tuple<bigint, VarCount>[] => {
-	throw new Error("Unimplemented.");
+	const result = [];
+	for(const solution1 of solutions1) {
+		for(const solution2 of solutions2) {
+			result.push(solution1.map((value, i) => binaryCRT(modulo1, value, modulo2, solution2[i])) as Tuple<bigint, VarCount>);
+		}
+	}
+	return result;
+};
+export const binaryCRT = (modulo1: bigint, remainder1: bigint, modulo2: bigint, remainder2: bigint) => {
+	const [coef1, coef2] = MathUtils.bezoutCoefficients(Number(modulo1), Number(modulo2));
+	return remainder1 * BigInt(coef2) * modulo2 + remainder2 * BigInt(coef1) * modulo1;
 };
 
 export class DiophantineEquation<VarCount extends number> {
