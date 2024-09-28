@@ -1,7 +1,15 @@
+import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
+import { Sequence } from "../../utils-ts/modules/math/Sequence.mjs";
+import { PriorityQueue } from "../../utils-ts/modules/PriorityQueue.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
 type _TupleOf<T, N extends number, R extends unknown[]> = R["length"] extends N ? R : _TupleOf<T, N, [T, ...R]>;
 type Tuple<T, N extends number> = N extends N ? number extends N ? T[] : _TupleOf<T, N, []> : never;
+
+
+const chineseRemainderTheorem = <VarCount extends number>(modulo1: bigint, solutions1: Tuple<bigint, VarCount>[], modulo2: bigint, solutions2: Tuple<bigint, VarCount>[]): Tuple<bigint, VarCount>[] => {
+	throw new Error("Unimplemented.");
+};
 
 export class DiophantineEquation<VarCount extends number> {
 	varCount: VarCount;
@@ -15,10 +23,22 @@ export class DiophantineEquation<VarCount extends number> {
 	}
 
 	*solutions(): Generator<Tuple<bigint, VarCount>> {
-
+		let modulo = 1n;
+		let modularSolutions = [new Array(this.varCount).fill(1n)] as Tuple<bigint, VarCount>[];
+		for(const prime of Sequence.PRIMES) {
+			const solutionsModuloPrime = this.modularSolutions(BigInt(prime));
+			const newModularSolutions = chineseRemainderTheorem(modulo, modularSolutions, BigInt(prime), solutionsModuloPrime);
+			for(const solution of newModularSolutions) {
+				if(this.lhs(...solution) === this.rhs(...solution)) {
+					yield solution;
+				}
+			}
+			modularSolutions = newModularSolutions;
+			modulo *= BigInt(prime);
+		}
 	}
 
-	solutionsModPrimePower(modulo: bigint) {
+	modularSolutions(modulo: bigint) {
 		const solutions: Tuple<bigint, VarCount>[] = [];
 		const options = new Array(this.varCount).fill([]).map(_ => Utils.range(0, Number(modulo) - 1).map(BigInt));
 		for(const variables of Utils.cartesianProduct(...options) as Generator<Tuple<bigint, VarCount>>) {
