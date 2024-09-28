@@ -1,3 +1,4 @@
+import { BigintMath } from "../../utils-ts/modules/math/BigintMath.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Sequence } from "../../utils-ts/modules/math/Sequence.mjs";
 import { PriorityQueue } from "../../utils-ts/modules/PriorityQueue.mjs";
@@ -18,7 +19,7 @@ const chineseRemainderTheorem = <VarCount extends number>(modulo1: bigint, solut
 };
 export const binaryCRT = (modulo1: bigint, remainder1: bigint, modulo2: bigint, remainder2: bigint) => {
 	const [coef1, coef2] = MathUtils.bezoutCoefficients(Number(modulo1), Number(modulo2));
-	return remainder1 * BigInt(coef2) * modulo2 + remainder2 * BigInt(coef1) * modulo1;
+	return BigintMath.generalizedModulo(remainder1 * BigInt(coef2) * modulo2 + remainder2 * BigInt(coef1) * modulo1, modulo1 * modulo2);
 };
 
 export class DiophantineEquation<VarCount extends number> {
