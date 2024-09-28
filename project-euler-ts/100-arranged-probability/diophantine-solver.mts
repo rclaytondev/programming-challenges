@@ -40,7 +40,7 @@ export class DiophantineEquation<VarCount extends number> {
 			const solutionsModuloPrime = this.modularSolutions(BigInt(prime));
 			const newModularSolutions = chineseRemainderTheorem(modulo, modularSolutions, BigInt(prime), solutionsModuloPrime);
 			for(const solution of newModularSolutions) {
-				if(this.lhs(...solution) === this.rhs(...solution)) {
+				if(solution.every(v => v >= modulo) && this.lhs(...solution) === this.rhs(...solution)) {
 					yield solution;
 				}
 			}
