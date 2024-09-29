@@ -1,11 +1,10 @@
 const hasPandigitalEnds = (num: bigint) => {
-	const numString = `${num}`;
-	const first9 = numString.slice(0, 9);
-	const last9 = numString.slice(numString.length - 9);
-	return (
-		!first9.includes("0") && new Set(first9).size === 9 &&
-		!last9.includes("0") && new Set(last9).size === 9
-	);
+	const last9 = `${num % 1000_000_000n}`;
+	if(last9.includes("0") || new Set(last9).size !== 9) {
+		return false;
+	}
+	const first9 = `${num}`.slice(0, 9);
+	return !first9.includes("0") && new Set(first9).size === 9;
 };
 
 const solve = () => {
