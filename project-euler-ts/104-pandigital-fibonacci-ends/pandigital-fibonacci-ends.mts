@@ -12,9 +12,6 @@ const solve = () => {
 	let currentFib = 1n;
 	let index = 2;
 	while(true) {
-		if(index % 10000 === 0) {
-			console.log(index);
-		}
 		[previousFib, currentFib] = [currentFib, previousFib + currentFib];
 		index ++;
 		if(hasPandigitalEnds(currentFib)) {
@@ -23,7 +20,7 @@ const solve = () => {
 	}
 };
 
-console.time();
-console.log(solve());
-console.timeEnd();
-debugger;
+// console.time();
+// console.log(solve());
+// console.timeEnd();
+// debugger;
