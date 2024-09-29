@@ -21,7 +21,7 @@ const getIdempotents = (modulo: number, divisor: number, idempotentsForDivisor: 
 	return result;
 };
 
-const allIdempotents = (upperBound: number) => {
+export const allIdempotents = (upperBound: number) => {
 	const idempotents = new Map<number, number[]>();
 	for(let i = 2; i <= upperBound; i ++) {
 		const largestProperDivisor = getLargestProperDivisor(i);
