@@ -9,6 +9,16 @@ describe("idempotentSum", () => {
 		const actual = idempotentSum(1000);
 		assert.equal(actual, expected);
 	});
+	it("returns the same result as the naive algorithm for 2000", () => {
+		const expected = naiveIdempotentSum(2000);
+		const actual = idempotentSum(2000);
+		assert.equal(actual, expected);
+	});
+	it("returns the same result as the naive algorithm for 10000", () => {
+		const expected = naiveIdempotentSum(10000);
+		const actual = idempotentSum(10000);
+		assert.equal(actual, expected);
+	});
 });
 describe("allIdempotents", () => {
 	it("returns the same result as the naive algorithm for 1000", () => {
