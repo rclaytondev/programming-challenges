@@ -21,25 +21,21 @@ const getIdempotents = (modulo: number, divisor: number, idempotentsForDivisor: 
 	return result;
 };
 
-export const allIdempotents = (upperBound: number) => {
+export const idempotentSum = (upperBound: number) => {
+	let result = 1;
 	const idempotents = new Map<number, number[]>();
 	for(let i = 2; i <= upperBound; i ++) {
 		const largestProperDivisor = getLargestProperDivisor(i);
 		if(!largestProperDivisor) {
 			/* i is prime --> no nontrivial idempotents since every nonzero element is invertible. */
 			idempotents.set(i, [0, 1]);
+			result += 1;
 		}
 		else {
-			idempotents.set(i, getIdempotents(i, largestProperDivisor, idempotents.get(largestProperDivisor)!));
+			const newIdempotents = getIdempotents(i, largestProperDivisor, idempotents.get(largestProperDivisor)!);
+			idempotents.set(i, newIdempotents);
+			result += newIdempotents[newIdempotents.length - 1];
 		}
-	}
-	return idempotents;
-};
-
-export const idempotentSum = (upperBound: number) => {
-	let result = 1;
-	for(const idempotents of allIdempotents(upperBound).values()) {
-		result += Math.max(...idempotents);
 	}
 	return result;
 };
