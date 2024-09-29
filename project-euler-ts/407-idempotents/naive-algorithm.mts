@@ -14,3 +14,21 @@ export const naiveIdempotentSum = (upperBound: number) => {
 	}
 	return sum;
 };
+
+export const naiveIdempotents = (modulo: number) => {
+	const result = [];
+	for(let i = 0; i < modulo; i ++) {
+		if(i ** 2 % modulo === i) {
+			result.push(i);
+		}
+	}
+	return result;
+};
+
+export const naiveAllIdempotents = (upperBound: number) => {
+	const result = new Map<number, number[]>();
+	for(let i = 2; i <= upperBound; i ++) {
+		result.set(i, naiveIdempotents(i));
+	}
+	return result;
+};
