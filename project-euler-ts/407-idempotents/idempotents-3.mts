@@ -13,8 +13,8 @@ const getIdempotents = (modulo: number, divisor: number, idempotentsForDivisor: 
 	for(let multiple = 0; multiple < modulo; multiple += divisor) {
 		for(const offset of idempotentsForDivisor) {
 			const value = multiple + offset;
-			if(value ** 2 % modulo === value) {
-				result.push(value);
+			if(value ** 2 % modulo === value % modulo) {
+				result.push(value % modulo);
 			}
 		}
 	}
@@ -39,7 +39,7 @@ export const allIdempotents = (upperBound: number) => {
 export const idempotentSum = (upperBound: number) => {
 	let result = 1;
 	for(const idempotents of allIdempotents(upperBound).values()) {
-		result += idempotents[idempotents.length - 1];
+		result += Math.max(...idempotents);
 	}
 	return result;
 };
