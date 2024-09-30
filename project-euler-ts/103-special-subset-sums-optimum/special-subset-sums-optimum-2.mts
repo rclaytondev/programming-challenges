@@ -45,7 +45,7 @@ const specialSets = Utils.memoize((size: number, sum: number): HashSet<number[]>
 	const sets = new HashSet<number[]>();
 	const leftSize = Math.floor(size / 2);
 	const rightSize = Math.ceil(size / 2);
-	for(let leftSum = leftSize * (leftSize - 1) / 2; leftSum <= sum - (rightSize * (rightSize - 1) / 2); leftSum ++) {
+	for(let leftSum = leftSize * (leftSize + 1) / 2; leftSum <= sum - (rightSize * (rightSize + 1) / 2); leftSum ++) {
 		const rightSum = sum - leftSum;
 		const leftSets = specialSets(leftSize, leftSum);
 		const rightSets = specialSets(rightSize, rightSum);
