@@ -33,8 +33,10 @@ const specialSets = Utils.memoize((size: number, sum: number): number[][] => {
 	const rightSize = Math.ceil(size / 2);
 	for(let leftSum = leftSize * (leftSize - 1) / 2; leftSum <= sum - (rightSize * (rightSize - 1) / 2); leftSum ++) {
 		const rightSum = sum - leftSum;
-		for(const leftSet of specialSets(leftSize, leftSum)) {
-			for(const rightSet of specialSets(rightSize, rightSum)) {
+		const leftSets = specialSets(leftSize, leftSum);
+		const rightSets = specialSets(rightSize, rightSum);
+		for(const leftSet of leftSets) {
+			for(const rightSet of rightSets) {
 				if(Utils.areDisjoint(leftSet, rightSet) && isSpecial([...leftSet, ...rightSet])) {
 					sets.push([...leftSet, ...rightSet]);
 				}
