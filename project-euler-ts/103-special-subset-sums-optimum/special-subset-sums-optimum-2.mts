@@ -1,6 +1,14 @@
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
+export const subsetHasSum = Utils.memoize((set: number[], sum: number): boolean => {
+	if(set.length === 1) {
+		return sum === 0 || set[0] === sum;
+	}
+	const [first, ...others] = set;
+	return subsetHasSum(others, sum) || subsetHasSum(others, sum - first);
+});
+
 export const isSpecial = Utils.memoize((set: number[]) => {
 	for(let length = 1; length < set.length - 1; length ++) {
 		const initialSum = MathUtils.sum(set.slice(0, length + 1));
@@ -9,9 +17,9 @@ export const isSpecial = Utils.memoize((set: number[]) => {
 			return false;
 		}
 	}
-	for(const subset1 of Utils.subsets(set)) {
-		for(const subset2 of Utils.subsets(set.filter(v => !subset1.has(v)), subset1.size)) {
-			if(subset1.size !== 0 && MathUtils.sum(subset1) === MathUtils.sum(subset2)) {
+	for(let size = 1; size * 2 <= set.length; size ++) {
+		for(const subset of Utils.subsets(set, size)) {
+			if(subsetHasSum(set.filter(v => !subset.has(v)), MathUtils.sum(subset))) {
 				return false;
 			}
 		}
