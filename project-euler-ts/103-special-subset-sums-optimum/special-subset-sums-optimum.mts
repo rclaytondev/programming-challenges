@@ -3,13 +3,13 @@ import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
 const implies = (a: boolean, b: boolean) => !a || b;
 
-const isSpecialPair = (set1: number[], set2: number[]) => {
+export const isSpecialPair = (set1: Iterable<number>, set2: Iterable<number>) => {
 	const sum1 = MathUtils.sum(set1);
 	const sum2 = MathUtils.sum(set2);
 	return (
 		sum1 !== sum2 &&
-		implies(set1.length < set2.length, sum1 < sum2) &&
-		implies(set1.length > set2.length, sum1 > sum2)
+		implies([...set1].length < [...set2].length, sum1 < sum2) &&
+		implies([...set1].length > [...set2].length, sum1 > sum2)
 	);
 };
 
