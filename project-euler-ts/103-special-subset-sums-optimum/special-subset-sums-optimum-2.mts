@@ -31,7 +31,7 @@ const specialSets = Utils.memoize((size: number, sum: number): number[][] => {
 	const sets = [];
 	const leftSize = Math.floor(size / 2);
 	const rightSize = Math.ceil(size / 2);
-	for(let leftSum = 1; leftSum < sum; leftSum ++) {
+	for(let leftSum = leftSize * (leftSize - 1) / 2; leftSum <= sum - (rightSize * (rightSize - 1) / 2); leftSum ++) {
 		const rightSum = sum - leftSum;
 		for(const leftSet of specialSets(leftSize, leftSum)) {
 			for(const rightSet of specialSets(rightSize, rightSum)) {
