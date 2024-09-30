@@ -46,6 +46,7 @@ const specialSets = Utils.memoize((size: number, sum: number): number[][] => {
 
 export const optimalSpecialSet = (setSize: number) => {
 	for(let sum = setSize * (setSize - 1) / 2; true; sum ++) {
+		console.log(sum);
 		for(const set of specialSets(setSize, sum)) {
 			return set;
 		}
