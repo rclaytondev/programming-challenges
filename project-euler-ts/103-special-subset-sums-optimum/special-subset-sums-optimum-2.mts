@@ -14,7 +14,7 @@ const isSpecial = (set: number[]) => {
 	return true;
 };
 
-const specialSets = (size: number, sum: number): number[][] => {
+const specialSets = Utils.memoize((size: number, sum: number): number[][] => {
 	if(size === 1) {
 		return sum > 0 ? [[sum]] : [];
 	}
@@ -42,7 +42,7 @@ const specialSets = (size: number, sum: number): number[][] => {
 		}
 	}
 	return sets;
-};
+});
 
 export const optimalSpecialSet = (setSize: number) => {
 	for(let sum = setSize * (setSize - 1) / 2; true; sum ++) {
