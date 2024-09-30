@@ -1,18 +1,23 @@
+import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
-import { isSpecialPair } from "./special-subset-sums-optimum.mjs";
 
-const isSpecial = Utils.memoize((set: number[]) => {
+export const isSpecial = Utils.memoize((set: number[]) => {
+	for(let length = 1; length < set.length - 1; length ++) {
+		const initialSum = MathUtils.sum(set.slice(0, length + 1));
+		const finalSum = MathUtils.sum(set.slice(-length));
+		if(initialSum <= finalSum) {
+			return false;
+		}
+	}
 	for(const subset1 of Utils.subsets(set)) {
-		if(subset1.size === 0) { continue; }
-		for(const subset2 of Utils.subsets(set.filter(s => !subset1.has(s)))) {
-			if(subset2.size === 0) { continue; }
-			if(!isSpecialPair(subset1, subset2)) {
+		for(const subset2 of Utils.subsets(set.filter(v => !subset1.has(v)), subset1.size)) {
+			if(subset1.size !== 0 && MathUtils.sum(subset1) === MathUtils.sum(subset2)) {
 				return false;
 			}
 		}
 	}
 	return true;
-}, (set) => [set.sort()] as [number[]]);
+}, (set) => [set.sort((a, b) => a - b)] as [number[]]);
 
 const specialSets = Utils.memoize((size: number, sum: number): number[][] => {
 	if(size === 1) {

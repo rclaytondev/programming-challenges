@@ -1,7 +1,15 @@
 import { describe } from "mocha";
-import { optimalSpecialSet } from "./special-subset-sums-optimum-2.mjs";
+import { isSpecial, optimalSpecialSet } from "./special-subset-sums-optimum-2.mjs";
 import { assert } from "chai";
 
+describe("isSpecial", () => {
+	it("returns true for [2, 3, 4]", () => {
+		assert.isTrue(isSpecial([2, 3, 4]));
+	});
+	it("returns false for [1, 2, 3, 5]", () => {
+		assert.isFalse(isSpecial([1, 2, 3, 5]));
+	});
+});
 describe("optimalSpecialSet", () => {
 	it("can return the optimal special set of size 1", () => {
 		const set = optimalSpecialSet(1);
