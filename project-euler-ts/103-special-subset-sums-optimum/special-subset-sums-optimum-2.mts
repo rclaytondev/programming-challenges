@@ -1,3 +1,4 @@
+import { HashSet } from "../../utils-ts/modules/HashSet.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
@@ -27,21 +28,21 @@ export const isSpecial = Utils.memoize((set: number[]) => {
 	return true;
 }, (set) => [set.sort((a, b) => a - b)] as [number[]]);
 
-const specialSets = Utils.memoize((size: number, sum: number): number[][] => {
+const specialSets = Utils.memoize((size: number, sum: number): HashSet<number[]> => {
 	if(size === 1) {
-		return sum > 0 ? [[sum]] : [];
+		return sum > 0 ? new HashSet([[sum]]) : new HashSet();
 	}
 	if(size === 2) {
-		const sets = [];
+		const sets = new HashSet<number[]>();
 		for(let i = 1; i < sum; i ++) {
 			if(i !== sum - i) {
-				sets.push([i, sum - i]);
+				sets.add([i, sum - i]);
 			}
 		}
 		return sets;
 	}
 
-	const sets = [];
+	const sets = new HashSet<number[]>();
 	const leftSize = Math.floor(size / 2);
 	const rightSize = Math.ceil(size / 2);
 	for(let leftSum = leftSize * (leftSize - 1) / 2; leftSum <= sum - (rightSize * (rightSize - 1) / 2); leftSum ++) {
@@ -51,7 +52,7 @@ const specialSets = Utils.memoize((size: number, sum: number): number[][] => {
 		for(const leftSet of leftSets) {
 			for(const rightSet of rightSets) {
 				if(Utils.areDisjoint(leftSet, rightSet) && isSpecial([...leftSet, ...rightSet])) {
-					sets.push([...leftSet, ...rightSet]);
+					sets.add([...leftSet, ...rightSet].sort((a, b) => a - b));
 				}
 			}
 		}
