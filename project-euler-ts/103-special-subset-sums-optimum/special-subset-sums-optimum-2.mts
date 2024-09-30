@@ -1,7 +1,7 @@
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 import { isSpecialPair } from "./special-subset-sums-optimum.mjs";
 
-const isSpecial = (set: number[]) => {
+const isSpecial = Utils.memoize((set: number[]) => {
 	for(const subset1 of Utils.subsets(set)) {
 		if(subset1.size === 0) { continue; }
 		for(const subset2 of Utils.subsets(set.filter(s => !subset1.has(s)))) {
@@ -12,7 +12,7 @@ const isSpecial = (set: number[]) => {
 		}
 	}
 	return true;
-};
+}, (set) => [set.sort()] as [number[]]);
 
 const specialSets = Utils.memoize((size: number, sum: number): number[][] => {
 	if(size === 1) {
