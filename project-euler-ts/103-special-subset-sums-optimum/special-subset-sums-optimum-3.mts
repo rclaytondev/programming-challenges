@@ -1,6 +1,6 @@
 import { isSpecial } from "./special-subset-sums-optimum-2.mjs";
 
-const setsCache = new Map<string, number[][]>();
+const setsCache: Record<string, number[][]> = {};
 const specialSets = (size: number, sum: number): number[][] => {
 	if(size === 1) {
 		return sum > 0 ? [[sum]] : [];
@@ -15,8 +15,8 @@ const specialSets = (size: number, sum: number): number[][] => {
 		return sets;
 	}
 	const argsString = `${size},${sum}`;
-	if(setsCache.has(argsString)) {
-		return setsCache.get(argsString)!;
+	if(setsCache[argsString]) {
+		return setsCache[argsString]!;
 	}
 
 	const sets = [];
@@ -27,7 +27,7 @@ const specialSets = (size: number, sum: number): number[][] => {
 			}
 		}
 	}
-	setsCache.set(argsString, sets);
+	setsCache[argsString] = sets;
 	return sets;
 };
 
