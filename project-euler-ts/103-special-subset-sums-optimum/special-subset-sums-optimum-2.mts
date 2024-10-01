@@ -35,7 +35,7 @@ const specialSets = Utils.memoize((size: number, sum: number): HashSet<number[]>
 	if(size === 2) {
 		const sets = new HashSet<number[]>();
 		for(let i = 1; i < sum; i ++) {
-			if(i !== sum - i) {
+			if(i < sum - i) {
 				sets.add([i, sum - i]);
 			}
 		}
@@ -50,8 +50,9 @@ const specialSets = Utils.memoize((size: number, sum: number): HashSet<number[]>
 		const leftSets = specialSets(leftSize, leftSum);
 		const rightSets = specialSets(rightSize, rightSum);
 		for(const leftSet of leftSets) {
-			for(const rightSet of rightSets) {
-				if(Utils.areDisjoint(leftSet, rightSet) && isSpecial([...leftSet, ...rightSet])) {
+			const max = Math.max(...leftSet);
+			for(const rightSet of [...rightSets].filter(s => Math.min(...s) > max)) {
+				if(isSpecial([...leftSet, ...rightSet])) {
 					sets.add([...leftSet, ...rightSet].sort((a, b) => a - b));
 				}
 			}
