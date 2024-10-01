@@ -1,8 +1,8 @@
 import { HashSet } from "../../utils-ts/modules/HashSet.mjs";
-import { Utils } from "../../utils-ts/modules/Utils.mjs";
 import { isSpecial } from "./special-subset-sums-optimum-2.mjs";
 
-const specialSets = Utils.memoize((size: number, sum: number): HashSet<number[]> => {
+const setsCache = new Map<string, HashSet<number[]>>();
+const specialSets = (size: number, sum: number): HashSet<number[]> => {
 	if(size === 1) {
 		return sum > 0 ? new HashSet([[sum]]) : new HashSet();
 	}
@@ -15,6 +15,10 @@ const specialSets = Utils.memoize((size: number, sum: number): HashSet<number[]>
 		}
 		return sets;
 	}
+	const argsString = `${size},${sum}`;
+	if(setsCache.has(argsString)) {
+		return setsCache.get(argsString)!;
+	}
 
 	const sets = new HashSet<number[]>();
 	for(let first = 1; first * size + size * (size - 1) / 2 <= sum; first ++) {
@@ -24,8 +28,9 @@ const specialSets = Utils.memoize((size: number, sum: number): HashSet<number[]>
 			}
 		}
 	}
+	setsCache.set(argsString, sets);
 	return sets;
-});
+};
 
 export const optimalSpecialSet = (setSize: number) => {
 	for(let sum = setSize * (setSize - 1) / 2; true; sum ++) {
