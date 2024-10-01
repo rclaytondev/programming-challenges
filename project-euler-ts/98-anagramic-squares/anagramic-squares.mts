@@ -1,3 +1,4 @@
+import { Utils } from "../../utils-ts/modules/Utils.mjs";
 import { WORDS_DATA } from "./words-data.mjs";
 
 const getAnagramSets = (words: string[]) => {
@@ -12,22 +13,6 @@ const getAnagramSets = (words: string[]) => {
 	return [...anagramSets.values()];
 };
 
-const injections = <T, S>(domain: Iterable<T>, range: Iterable<S>): Map<T, S>[] => {
-	if([...domain].length === 0) {
-		return [new Map()];
-	}
-	const [first, ...others] = domain;
-	const result = [];
-	for(const image of range) {
-		for(const injection of injections(others, [...range].filter(v => v !== image))) {
-			const newInjection = new Map(injection);
-			newInjection.set(first, image);
-			result.push(newInjection);
-		}
-	}
-	return result;
-};
-
 const DIGITS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 const isSquare = (n: number) => (Math.floor(Math.sqrt(n)) ** 2) === n;
@@ -39,7 +24,7 @@ const solve = (words: string[]) => {
 		for(const word1 of anagrams) {
 			const letters = new Set([...word1]);
 			for(const word2 of anagrams.filter(w => w < word1)) {
-				for(const digitAssignment of injections(letters, DIGITS)) {
+				for(const digitAssignment of Utils.injections(letters, DIGITS)) {
 					if(digitAssignment.get(word1[0]) === 0 || digitAssignment.get(word2[0]) === 0) {
 						continue;
 					}
