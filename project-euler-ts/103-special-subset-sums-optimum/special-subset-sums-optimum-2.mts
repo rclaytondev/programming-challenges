@@ -22,7 +22,6 @@ export const isSpecial = (set: number[]) => {
 		const initialSum = MathUtils.sum(set.slice(0, length + 1));
 		const finalSum = MathUtils.sum(set.slice(-length));
 		if(initialSum <= finalSum) {
-			isSpecialCache[argsString] = false;
 			return false;
 		}
 	}
