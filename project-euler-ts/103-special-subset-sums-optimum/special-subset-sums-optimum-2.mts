@@ -71,7 +71,7 @@ export const optimalSpecialSet = (setSize: number) => {
 };
 
 
-console.time();
-console.log(optimalSpecialSet(7));
-console.timeEnd();
-debugger;
+// console.time();
+// console.log(optimalSpecialSet(7));
+// console.timeEnd();
+// debugger;
