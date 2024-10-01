@@ -6,6 +6,9 @@ describe("subsetHasSum", () => {
 	it("returns true for the input of ([8, 9, 13], 17)", () => {
 		assert.isTrue(subsetHasSum([8, 9, 13], 17));
 	});
+	it("returns true for the input of ([25, 26, 28, 33, 40], 51)", () => {
+		assert.isTrue(subsetHasSum([25, 26, 28, 33, 40], 51));
+	});
 });
 describe("isSpecial", () => {
 	it("returns true for [2, 3, 4]", () => {
@@ -19,6 +22,9 @@ describe("isSpecial", () => {
 	});
 	it("returns false for [7, 8, 9, 10, 13]", () => {
 		assert.isFalse(isSpecial([7, 8, 9, 10, 13]));
+	});
+	it("returns false for [24, 25, 26, 27, 28, 33, 40]", () => {
+		assert.isFalse(isSpecial([24, 25, 26, 27, 28, 33, 40])); // 24 + 27 = 25 + 26
 	});
 });
 describe("optimalSpecialSet", () => {

@@ -2,12 +2,14 @@ import { HashSet } from "../../utils-ts/modules/HashSet.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
-export const subsetHasSum = Utils.memoize((set: number[], sum: number): boolean => {
+export const subsetHasSum = Utils.memoize((set: number[], sum: number, setSum: number = MathUtils.sum(set)): boolean => {
 	if(set.length === 1) {
 		return sum === 0 || set[0] === sum;
 	}
+	if(sum < 0) { return false; }
+	if(sum > setSum) { return false; }
 	const [first, ...others] = set;
-	return subsetHasSum(others, sum) || subsetHasSum(others, sum - first);
+	return subsetHasSum(others, sum, setSum - first) || subsetHasSum(others, sum - first, setSum - first);
 });
 
 export const isSpecial = Utils.memoize((set: number[]) => {
