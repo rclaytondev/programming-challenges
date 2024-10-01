@@ -12,23 +12,31 @@ export const subsetHasSum = Utils.memoize((set: number[], sum: number, setSum: n
 	return subsetHasSum(others, sum, setSum - first) || subsetHasSum(others, sum - first, setSum - first);
 });
 
-export const isSpecial = Utils.memoize((set: number[]) => {
+const isSpecialCache: Record<string, boolean> = {};
+export const isSpecial = (set: number[]) => {
+	const argsString = set.join(",");
+	if(typeof isSpecialCache[argsString] === "boolean") {
+		return isSpecialCache[argsString];
+	}
 	for(let length = 1; length < set.length - 1; length ++) {
 		const initialSum = MathUtils.sum(set.slice(0, length + 1));
 		const finalSum = MathUtils.sum(set.slice(-length));
 		if(initialSum <= finalSum) {
+			isSpecialCache[argsString] = false;
 			return false;
 		}
 	}
 	for(let size = 1; size * 2 <= set.length; size ++) {
 		for(const subset of Utils.subsets(set, size)) {
 			if(subsetHasSum(set.filter(v => !subset.has(v)), MathUtils.sum(subset))) {
+				isSpecialCache[argsString] = false;
 				return false;
 			}
 		}
 	}
+	isSpecialCache[argsString] = true;
 	return true;
-}, (set) => [set.sort((a, b) => a - b)] as [number[]]);
+};
 
 const specialSets = Utils.memoize((size: number, sum: number): HashSet<number[]> => {
 	if(size === 1) {
