@@ -12,3 +12,8 @@ export const numSemiprimes = (upperBound: number) => {
 	}
 	return total;
 };
+
+console.time();
+console.log(numSemiprimes(10 ** 8));
+console.timeEnd();
+debugger;
