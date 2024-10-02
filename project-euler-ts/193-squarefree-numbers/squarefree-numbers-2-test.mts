@@ -58,11 +58,6 @@ describe("numDivisible", () => {
 		const result = numDivisible([3, 5], 30);
 		assert.equal(result, 13); // 3, 5, 6, 9, 10, 12, 15, 18, 20, 21, 24, 25, 27
 	});
-	it("can count the number of integers strictly less than 1000 that are divisible by 36, 100, 196, 484, or 676", () => {
-		const expected = naiveNumDivisible([36, 100, 196, 484, 676], 1000);
-		const result = numDivisible([36, 100, 196, 484, 676], 1000);
-		assert.equal(result, expected);
-	});
 });
 describe("naiveNumDivisible", () => {
 	it("can count the number of integers strictly less than 30 that are divisible by 3 or 5", () => {

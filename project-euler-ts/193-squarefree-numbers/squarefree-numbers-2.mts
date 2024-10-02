@@ -19,18 +19,17 @@ export const sizeOfUnion = <T,>(sets: Iterable<T>, getSize: (set: T) => number, 
 	return total;
 };
 
-export const numDivisible = (divisors: number[], upperBound: number) => {
-	if(divisors.length === 1) {
-		return Math.floor((upperBound - 1) / divisors[0]);
+export const numDivisible = (divisors: number[], upperBound: number, startIndex: number = 0) => {
+	if(startIndex === divisors.length - 1) {
+		return Math.floor((upperBound - 1) / divisors[divisors.length - 1]);
 	}
 
 	let total = 0;
-	for(const [i, first] of divisors.entries()) {
-		const others = divisors.slice(i + 1);
+	for(let i = startIndex; i < divisors.length; i ++) {
+		const first = divisors[i];
+		if(first >= upperBound) { break; }
 		total += Math.floor((upperBound - 1) / first);
-		const newDivisors = others.map(d => MathUtils.lcm(d, first)).filter(d => d <= upperBound);
-		if(newDivisors.length === 0 && upperBound < first) { break; }
-		total -= numDivisible(newDivisors, upperBound);
+		total -= numDivisible(divisors, Math.ceil(upperBound / first), i + 1);
 	}
 	return total;
 };
