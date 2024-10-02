@@ -18,14 +18,26 @@ export const sizeOfUnion = <T,>(sets: Iterable<T>, getSize: (set: T) => number, 
 	return total;
 };
 
+const numDivisible = (divisors: number[], upperBound: number) => {
+	if(divisors.length === 1) {
+		return Math.floor(upperBound / divisors[0]);
+	}
+
+	let total = 0;
+	for(const [i, first] of divisors.entries()) {
+		const others = divisors.slice(i + 1);
+		total += Math.floor(upperBound / first);
+		const newDivisors = others.map(d => d * first).filter(d => d <= upperBound);
+		if(newDivisors.length === 0 && upperBound < first) { break; }
+		total -= numDivisible(newDivisors, upperBound);
+	}
+	return total;
+};
+
 
 export const numSquarefree = (upperBound: number) => {
 	const primes = [...Sequence.PRIMES.termsBelow(Math.sqrt(upperBound))];
-	const notSquarefree = sizeOfUnion(
-		primes.map(p => p ** 2),
-		n => Math.floor(upperBound / n),
-		(a, b) => a * b
-	);
+	const notSquarefree = numDivisible(primes.map(p => p ** 2), upperBound);
 	return (upperBound - 1) - notSquarefree;
 };
 
