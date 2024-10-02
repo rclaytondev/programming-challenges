@@ -9,12 +9,13 @@ export const sizeOfUnion = <T,>(sets: Iterable<T>, getSize: (set: T) => number, 
 		return getSize(nonemptySets[0]);
 	}
 
-	const [first, ...others] = nonemptySets;
-	return (
-		getSize(first)
-		- sizeOfUnion(others.map(s => getIntersection(first, s)), getSize, getIntersection)
-		+ sizeOfUnion(others, getSize, getIntersection)
-	);
+	let total = 0;
+	for(const [i, first] of nonemptySets.entries()) {
+		const others = nonemptySets.slice(i + 1);
+		total += getSize(first);
+		total -= sizeOfUnion(others.map(s => getIntersection(first, s)), getSize, getIntersection);
+	}
+	return total;
 };
 
 
