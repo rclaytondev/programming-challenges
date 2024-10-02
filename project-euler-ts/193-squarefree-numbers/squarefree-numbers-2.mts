@@ -1,3 +1,4 @@
+import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Sequence } from "../../utils-ts/modules/math/Sequence.mjs";
 
 export const sizeOfUnion = <T,>(sets: Iterable<T>, getSize: (set: T) => number, getIntersection: (set1: T, set2: T) => T): number => {
@@ -20,14 +21,14 @@ export const sizeOfUnion = <T,>(sets: Iterable<T>, getSize: (set: T) => number, 
 
 export const numDivisible = (divisors: number[], upperBound: number) => {
 	if(divisors.length === 1) {
-		return Math.floor(upperBound / divisors[0]);
+		return Math.floor((upperBound - 1) / divisors[0]);
 	}
 
 	let total = 0;
 	for(const [i, first] of divisors.entries()) {
 		const others = divisors.slice(i + 1);
-		total += Math.floor(upperBound / first);
-		const newDivisors = others.map(d => d * first).filter(d => d <= upperBound);
+		total += Math.floor((upperBound - 1) / first);
+		const newDivisors = others.map(d => MathUtils.lcm(d, first)).filter(d => d <= upperBound);
 		if(newDivisors.length === 0 && upperBound < first) { break; }
 		total -= numDivisible(newDivisors, upperBound);
 	}
