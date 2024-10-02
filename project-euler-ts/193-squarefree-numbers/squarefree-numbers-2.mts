@@ -18,7 +18,7 @@ export const sizeOfUnion = <T,>(sets: Iterable<T>, getSize: (set: T) => number, 
 	return total;
 };
 
-const numDivisible = (divisors: number[], upperBound: number) => {
+export const numDivisible = (divisors: number[], upperBound: number) => {
 	if(divisors.length === 1) {
 		return Math.floor(upperBound / divisors[0]);
 	}

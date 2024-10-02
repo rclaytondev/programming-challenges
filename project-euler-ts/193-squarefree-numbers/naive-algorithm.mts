@@ -16,3 +16,13 @@ export const naiveNumSquarefree = (upperBound: number) => {
 	}
 	return count;
 };
+
+export const naiveNumDivisible = (divisors: number[], upperBound: number) => {
+	let count = 0;
+	for(let i = 1; i < upperBound; i ++) {
+		if(divisors.some(d => i % d === 0)) {
+			count ++;
+		}
+	}
+	return count;
+};
