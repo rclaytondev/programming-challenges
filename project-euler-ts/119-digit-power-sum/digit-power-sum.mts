@@ -13,6 +13,14 @@ const isPowerOf = (base: number, num: number) => {
 
 const isPowerOfDigitSum = (num: number) => isPowerOf(MathUtils.sum(MathUtils.digits(num)), num);
 
+const nextPrime = (num: number) => {
+	for(let i = num + 1; true; i ++) {
+		if(MathUtils.isPrime(i)) {
+			return i;
+		}
+	}	
+};
+
 export const powers = function*(): Generator<number, never> {
 	let largestBase = 2;
 	let lastYielded = 0;
@@ -24,7 +32,8 @@ export const powers = function*(): Generator<number, never> {
 			yield value;
 			lastYielded = value;
 		}
-		powers.insert({ base: base, exponent: exponent + 1, value: value * base }, value * base);
+		const nextExponent = nextPrime(exponent);
+		powers.insert({ base: base, exponent: nextExponent, value: base ** nextExponent }, base ** nextExponent);
 		if(base === largestBase) {
 			powers.insert({ base: largestBase + 1, exponent: 2, value: (largestBase + 1) ** 2 }, (largestBase + 1) ** 2);
 			largestBase ++;
@@ -43,6 +52,6 @@ export const solutionSequence = new Sequence(function*() {
 });
 
 console.time();
-console.log(solutionSequence.getTerm(18));
+console.log(solutionSequence.getTerm(25));
 console.timeEnd();
 debugger;
