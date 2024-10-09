@@ -22,7 +22,7 @@ const nextPrime = (num: number) => {
 };
 
 export const powers = function*(): Generator<number, never> {
-	let largestBase = 2;
+	let largestExponent = 2;
 	let lastYielded = 0;
 	const powers = new PriorityQueue<{ base: number, exponent: number, value: number }>();
 	powers.insert({ base: 2, exponent: 2, value: 4 }, 4);
@@ -32,11 +32,10 @@ export const powers = function*(): Generator<number, never> {
 			yield value;
 			lastYielded = value;
 		}
-		const nextExponent = nextPrime(exponent);
-		powers.insert({ base: base, exponent: nextExponent, value: base ** nextExponent }, base ** nextExponent);
-		if(base === largestBase) {
-			powers.insert({ base: largestBase + 1, exponent: 2, value: (largestBase + 1) ** 2 }, (largestBase + 1) ** 2);
-			largestBase ++;
+		powers.insert({ base: base + 1, exponent: exponent, value: (base + 1) ** exponent }, (base + 1) ** exponent);
+		if(exponent === largestExponent) {
+			largestExponent ++;
+			powers.insert({ base: 2, exponent: exponent + 1, value: 2 ** (exponent + 1) }, 2 ** (exponent + 1));
 		}
 	}
 }
