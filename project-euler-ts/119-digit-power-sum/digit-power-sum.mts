@@ -1,5 +1,6 @@
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Sequence } from "../../utils-ts/modules/math/Sequence.mjs";
+import { PriorityQueue } from "../../utils-ts/modules/PriorityQueue.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
 const isPowerOf = (base: number, num: number) => {
@@ -15,18 +16,17 @@ const isPowerOfDigitSum = (num: number) => isPowerOf(MathUtils.sum(MathUtils.dig
 export const powers = function*(): Generator<number, never> {
 	let largestBase = 2;
 	let lastYielded = 0;
-	const powers = [{ base: 2, exponent: 2, value: 4 }];
+	const powers = new PriorityQueue<{ base: number, exponent: number, value: number }>();
+	powers.insert({ base: 2, exponent: 2, value: 4 }, 4);
 	while(true) {
-		const minIndex = Utils.minIndex(powers, v => v.value);
-		const { base, exponent, value } = powers[minIndex];
-		powers.splice(minIndex, 1);
+		const { base, exponent, value } = powers.pop();
 		if(value !== lastYielded) {
 			yield value;
 			lastYielded = value;
 		}
-		powers.push({ base: base, exponent: exponent + 1, value: value * base });
+		powers.insert({ base: base, exponent: exponent + 1, value: value * base }, value * base);
 		if(base === largestBase) {
-			powers.push({ base: largestBase + 1, exponent: 2, value: (largestBase + 1) ** 2 });
+			powers.insert({ base: largestBase + 1, exponent: 2, value: (largestBase + 1) ** 2 }, (largestBase + 1) ** 2);
 			largestBase ++;
 		}
 	}
