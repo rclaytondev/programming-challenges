@@ -18,3 +18,18 @@ export const maxSquareRemainder = (a: number) => {
 		pairsChecked.add([power1, power2]);
 	}
 };
+
+const maxSquareRemainderSum = (upperBound: number) => {
+	let sum = 0;
+	for(let a = 3; a <= upperBound; a ++) {
+		console.log(a);
+		sum += maxSquareRemainder(a);
+	}
+	return sum;
+};
+
+
+// console.time();
+// console.log(maxSquareRemainderSum(1000));
+// console.timeEnd();
+// debugger;
