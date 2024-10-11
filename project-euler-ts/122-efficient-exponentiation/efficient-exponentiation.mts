@@ -20,7 +20,7 @@ export const numMultiplications = (exponent: number) => {
 		const nextPowers = new HashSet<number[]>();
 		for(const powers of powerCombinations) {
 			for(const newPower of [...allSums(powers)].filter(v => !powers.includes(v))) {
-				nextPowers.add([...powers, newPower]);
+				nextPowers.add([...powers, newPower].sort((a, b) => a - b));
 				if(newPower === exponent) {
 					return powers.length;
 				}
