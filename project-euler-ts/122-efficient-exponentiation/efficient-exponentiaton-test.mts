@@ -1,6 +1,6 @@
 import { assert } from "chai";
 import { describe, it } from "mocha";
-import { allNumMultiplications } from "./efficient-exponentiation.mjs";
+import { allNumMultiplications } from "./efficient-exponentiation-2.mjs";
 
 describe("allNumMultiplications", () => {
 	it("can return the number of multiplications needed to compute n^15", () => {

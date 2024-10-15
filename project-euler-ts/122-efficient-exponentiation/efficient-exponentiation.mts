@@ -35,7 +35,7 @@ export const allNumMultiplications = (upperBound: number) => {
 	return answers;
 };
 
-console.time();
-console.log(allNumMultiplications(200));
-console.timeEnd();
-debugger;
+// console.time();
+// console.log(allNumMultiplications(200));
+// console.timeEnd();
+// debugger;
