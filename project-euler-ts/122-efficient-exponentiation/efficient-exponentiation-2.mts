@@ -4,8 +4,11 @@ type State = { used: number[], unused: number[] };
 
 const stateToString = (state: State) => `[${state.used.sort((a, b) => a - b)}], [${state.unused.sort((a, b) => a - b)}]`;
 
-const nextStates = (state: State, upperBound: number) => {
+const nextStates = (state: State, upperBound: number, stepsLeft: number) => {
 	const result = new HashSet<State>([], stateToString);
+	if(state.unused.length > stepsLeft + 1) {
+		return result;
+	}
 	for(const value1 of [...state.used, ...state.unused]) {
 		for(const value2 of [...state.used, ...state.unused]) {
 			if(value1 + value2 > upperBound || [...state.used, ...state.unused].includes(value1 + value2)) {
@@ -22,9 +25,12 @@ const nextStates = (state: State, upperBound: number) => {
 };
 
 export const allNumMultiplications = (upperBound: number) => {
+	const maxSteps = 2 * Math.ceil(Math.log2(upperBound + 1)) - 2;
 	let states: State[] = [{ used: [], unused: [1] }];
+	let steps = 0;
 	const answers = new Map<number, number>();
 	while(answers.size < upperBound) {
+		steps ++;
 		for(const state of states) {
 			for(const value of [...state.used, ...state.unused]) {
 				if(!answers.has(value)) {
@@ -32,12 +38,12 @@ export const allNumMultiplications = (upperBound: number) => {
 				}
 			}
 		}
-		states = [...HashSet.union(...states.map(s => nextStates(s, upperBound)))];
+		states = [...HashSet.union(...states.map(s => nextStates(s, upperBound, maxSteps - steps)))];
 	}
 	return answers;
 };
 
 console.time();
-console.log(allNumMultiplications(5));
+console.log(allNumMultiplications(40));
 console.timeEnd();
 debugger;
