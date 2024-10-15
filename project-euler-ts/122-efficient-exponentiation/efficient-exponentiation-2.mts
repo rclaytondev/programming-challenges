@@ -2,7 +2,7 @@ import { HashSet } from "../../utils-ts/modules/HashSet.mjs";
 
 type State = { used: number[], unused: number[] };
 
-const stateToString = (state: State) => `[${state.used.sort((a, b) => a - b)}], [${state.unused.sort((a, b) => a - b)}]`;
+const stateToString = (state: State) => `[${[...state.used, ...state.unused].sort((a, b) => a - b)}]`;
 
 const nextStates = (state: State, upperBound: number, stepsLeft: number) => {
 	const result = new HashSet<State>([], stateToString);
