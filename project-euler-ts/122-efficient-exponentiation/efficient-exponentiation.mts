@@ -23,7 +23,7 @@ export const allNumMultiplications = (upperBound: number) => {
 		console.log(answers);
 		const nextPowers = new HashSet<number[]>();
 		for(const powers of powerCombinations) {
-			for(const newPower of [...allSums(powers)].filter(v => !powers.includes(v))) {
+			for(const newPower of [...allSums(powers)].filter(v => !powers.includes(v)).filter(v => v <= upperBound)) {
 				nextPowers.add([...powers, newPower].sort((a, b) => a - b));
 				if(!answers.has(newPower) && newPower >= 1 && newPower <= upperBound) {
 					answers.set(newPower, powers.length);
