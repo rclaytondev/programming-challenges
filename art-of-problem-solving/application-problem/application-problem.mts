@@ -13,18 +13,19 @@ class NumberTriangle {
 	rightSubtriangle() {
 		return new NumberTriangle(this.rows.slice(1).map(arr => arr.slice(1)));
 	}
+	subtriangle(whichSide: "L" | "R") {
+		return (whichSide === "L") ? this.leftSubtriangle() : this.rightSubtriangle();
+	}
 
 	solve(target: number): ("L" | "R")[] | null {
 		if(this.rows.length === 1) {
 			return this.rows[0][0] === target ? [] : null;
 		}
-		const leftSolution = this.leftSubtriangle().solve(target / this.rows[0][0]);
-		if(leftSolution !== null) {
-			return ["L", ...leftSolution];
-		}
-		const rightSolution = this.rightSubtriangle().solve(target / this.rows[0][0]);
-		if(rightSolution !== null) {
-			return ["R", ...rightSolution];
+		for(const whichSide of ["L", "R"] as const) {
+			const solution = this.subtriangle(whichSide).solve(target / this.rows[0][0]);
+			if(solution !== null) {
+				return [whichSide, ...solution];
+			}
 		}
 		return null;
 	}
