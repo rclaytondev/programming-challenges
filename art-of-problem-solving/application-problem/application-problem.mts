@@ -9,13 +9,13 @@ class NumberTriangle {
 		this.rows = rows;
 	}
 
-	productsAndPaths(startRow: number, startIndex: number, endRow: number): Map<number, Path> {
-		const firstEntry = this.rows[startRow][startIndex];
+	productsAndPaths(startRow: number, startColumn: number, endRow: number): Map<number, Path> {
+		const firstEntry = this.rows[startRow][startColumn];
 		if(startRow === endRow) {
 			return new Map([[ firstEntry, [] ]]);
 		}
 		const result = new Map<number, Path>([]);
-		for(const [newStartIndex, whichSide] of [[startIndex, "L"], [startIndex + 1, "R"]] as const) {
+		for(const [newStartIndex, whichSide] of [[startColumn, "L"], [startColumn + 1, "R"]] as const) {
 			for(const [product, path] of this.productsAndPaths(startRow + 1, newStartIndex, endRow)) {
 				result.set(product * firstEntry, [whichSide, ...path]);
 			}
@@ -31,9 +31,9 @@ class NumberTriangle {
 		);
 		for(const [product, path] of this.productsAndPaths(0, 0, middleRow)) {
 			const endColumn = path.filter(d => d === "R").length;
-			const pathCompletion = bottomPaths[endColumn].get(target / product * this.rows[middleRow][endColumn]);
-			if(pathCompletion) {
-				return [...path, ...pathCompletion];
+			const bottomPath = bottomPaths[endColumn].get(target / product * this.rows[middleRow][endColumn]);
+			if(bottomPath) {
+				return [...path, ...bottomPath];
 			}
 		}
 		return null;
