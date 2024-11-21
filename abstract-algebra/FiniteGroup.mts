@@ -1,10 +1,10 @@
 import { Group } from "./Group.mjs";
 
-export abstract class FiniteGroup<T> extends Group<T> {
+export class FiniteGroup<T> extends Group<T> {
 	elements: Iterable<T>;
 
-	constructor(identity: T, elements: Iterable<T>) {
-		super(identity);
+	constructor(elements: Iterable<T>, operate: (element1: T, element2: T) => T, identity: T, inverse: (element: T) => T, includes: (element: T) => boolean) {
+		super(operate, identity, inverse, includes);
 		this.elements = elements;
 	}
 }
