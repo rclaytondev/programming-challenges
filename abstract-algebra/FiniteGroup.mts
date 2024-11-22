@@ -19,4 +19,16 @@ export class FiniteGroup<T> extends Group<T> {
 		super(operate, identity, inverse, includes ?? FiniteGroup.defaultIncludes(elements, customEquality), customEquality);
 		this.elements = elements;
 	}
+
+	static fromGroup<T>(group: Group<T>, elements: Iterable<T>) {
+		return new FiniteGroup(
+			elements,
+			group.operate.bind(group),
+			group.identity,
+			group.inverse.bind(group),
+			group.includes.bind(group),
+			group.customEquality?.bind(group) ?? null
+		);
+	}
+
 }
