@@ -1,4 +1,5 @@
 import { Coset } from "./Coset.mjs";
+import { FiniteGroup } from "./FiniteGroup.mjs";
 
 export class Group<T> {
 	operate: (element1: T, element2: T) => T;
@@ -26,6 +27,28 @@ export class Group<T> {
 			(coset) => coset.inverse(normalSubgroup),
 			(coset) => coset.subgroup === normalSubgroup && this.includes(coset.representative),
 			(c1, c2) => c1.equals(c2, normalSubgroup)
+		);
+	}
+
+	subgroup(elements: Iterable<T>): FiniteGroup<T>;
+	subgroup(filter: (element: T) => boolean): Group<T>;
+	subgroup(elementsOrFilter: Iterable<T> | ((element: T) => boolean)) {
+		if(typeof elementsOrFilter === "function") {
+			return new Group(
+				this.operate.bind(this),
+				this.identity,
+				this.inverse.bind(this),
+				(v) => this.includes(v) && elementsOrFilter(v),
+				this.customEquality?.bind(this) ?? null
+			);
+		}
+		return new FiniteGroup(
+			elementsOrFilter,
+			this.operate.bind(this),
+			this.identity,
+			this.inverse.bind(this),
+			null,			
+			this.customEquality?.bind(this) ?? null
 		);
 	}
 }

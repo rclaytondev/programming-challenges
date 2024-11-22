@@ -51,4 +51,18 @@ export class FiniteGroup<T> extends Group<T> {
 			this.cosets(normalSubgroup)
 		);
 	}
+	subgroup(elementsOrFilter: Iterable<T> | ((element: T) => boolean)): FiniteGroup<T> {
+		const result = super.subgroup(elementsOrFilter as any);
+		const self = this;
+		const elements = (typeof elementsOrFilter !== "function") ? elementsOrFilter : {
+			[Symbol.iterator]: function*() {
+				for(const element of self.elements) {
+					if(elementsOrFilter(element)) {
+						yield element;
+					}
+				}
+			}
+		};
+		return FiniteGroup.fromGroup(result, elements);
+	}
 }
