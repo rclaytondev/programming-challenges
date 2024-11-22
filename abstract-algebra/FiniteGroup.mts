@@ -1,3 +1,4 @@
+import { Coset } from "./Coset.mjs";
 import { Group } from "./Group.mjs";
 
 export class FiniteGroup<T> extends Group<T> {
@@ -31,4 +32,23 @@ export class FiniteGroup<T> extends Group<T> {
 		);
 	}
 
+	cosets(subgroup: Group<T>) {
+		const cosets = [];
+		const elements = new Set(this.elements);
+		while(elements.size > 0) {
+			const [representative] = elements;
+			const coset = new Coset(representative, subgroup);
+			cosets.push(coset);
+			for(const element of coset) {
+				elements.delete(element);
+			}
+		}
+		return cosets;
+	}
+	quotient(normalSubgroup: Group<T>) {
+		return FiniteGroup.fromGroup(
+			Group.prototype.quotient.call(this, normalSubgroup),
+			this.cosets(normalSubgroup)
+		);
+	}
 }
