@@ -1,8 +1,8 @@
 import { describe } from "mocha";
-import { Group } from "../../Group.mjs";
+import { Group } from "../Group.mjs";
 import { assert } from "chai";
-import { Coset } from "../../Coset.mjs";
-import { Collection } from "../../Collection.mjs";
+import { Coset } from "../Coset.mjs";
+import { Collection } from "../Collection.mjs";
 
 describe("Group.quotient", () => {
 	it("can correctly construct the quotient group", () => {

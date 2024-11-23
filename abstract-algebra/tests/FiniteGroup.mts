@@ -1,5 +1,5 @@
 import { describe } from "mocha";
-import { CyclicGroup } from "../../specific-groups/CyclicGroup.mjs";
+import { CyclicGroup } from "../specific-groups/CyclicGroup.mjs";
 import { assert } from "chai";
 
 describe("FiniteGroup.quotient", () => {
