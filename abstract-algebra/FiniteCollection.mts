@@ -20,4 +20,16 @@ export class FiniteCollection<T> extends Collection<T> {
 	*[Symbol.iterator]() {
 		yield* this.elements;
 	}
+
+	get size() {
+		if(this.elements instanceof Set) {
+			return this.elements.size;
+		}
+		if(Array.isArray(this.elements)) {
+			return this.elements.length;
+		}
+		let count = 0;
+		for(const value of this.elements) { count ++; }
+		return count;
+	}
 }
