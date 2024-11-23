@@ -67,4 +67,22 @@ export class FiniteGroup<T> extends Group<T> {
 		const elements = [...this];
 		return this.subgroup(elements.filter(a => elements.every(b => this.commutes(a, b))));
 	}
+	nextHigherCenter(previous: Group<T>) {
+		const quotient = this.quotient(previous);
+		return this.quotientPreimage(quotient.center());
+	}
+	upperCentralSeries() {
+		let previous: FiniteGroup<T> = this;
+		let current = this.center();
+		const series = [previous, current];
+		while(previous.elements.size !== current.elements.size) {
+			[previous, current] = [current, this.nextHigherCenter(current)];
+			series.push(current);
+		}
+		return series;
+	}
+
+	quotientPreimage(subgroupOfQuotient: FiniteGroup<Coset<T>>) {
+		return this.subgroup([...subgroupOfQuotient].flatMap(coset => [...coset.elements(this)]));
+	}
 }
