@@ -35,7 +35,7 @@ export class FiniteGroup<T> extends Group<T> {
 	}
 	quotient(normalSubgroup: Group<T>) {
 		return FiniteGroup.fromGroup(
-			Group.prototype.quotient.call(this, normalSubgroup),
+			super.quotient(normalSubgroup),
 			this.cosets(normalSubgroup)
 		);
 	}
