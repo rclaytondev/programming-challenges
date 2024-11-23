@@ -1,34 +1,22 @@
+import { Collection } from "./Collection.mjs";
 import { Coset } from "./Coset.mjs";
+import { FiniteCollection } from "./FiniteCollection.mjs";
 import { Group } from "./Group.mjs";
 
 export class FiniteGroup<T> extends Group<T> {
-	elements: Iterable<T>;
+	elements: FiniteCollection<T>;
 
-	static defaultIncludes<T>(elements: Iterable<T>, customEquality: ((a: T, b: T) => boolean) | null) {
-		if(!customEquality && elements instanceof Set) {
-			return Set.prototype.has.bind(elements);
-		}
-		return (element: T) => {
-			for(const el of elements) {
-				if(customEquality?.(element, el) ?? (element === el)) { return true; }
-			}
-			return false;
-		};
-	}
-
-	constructor(elements: Iterable<T>, operate: (element1: T, element2: T) => T, identity: T, inverse: (element: T) => T, includes: ((element: T) => boolean) | null = null, customEquality: ((a: T, b: T) => boolean) | null = null) {
-		super(operate, identity, inverse, includes ?? FiniteGroup.defaultIncludes(elements, customEquality), customEquality);
+	constructor(operate: (element1: T, element2: T) => T, identity: T, inverse: (element: T) => T, elements: FiniteCollection<T>) {
+		super(operate, identity, inverse, elements);
 		this.elements = elements;
 	}
 
 	static fromGroup<T>(group: Group<T>, elements: Iterable<T>) {
 		return new FiniteGroup(
-			elements,
 			group.operate.bind(group),
 			group.identity,
 			group.inverse.bind(group),
-			group.includes.bind(group),
-			group.customEquality?.bind(group) ?? null
+			new FiniteCollection(elements, group.elements.customEquality)
 		);
 	}
 

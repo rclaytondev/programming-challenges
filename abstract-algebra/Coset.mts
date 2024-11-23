@@ -17,7 +17,7 @@ export class Coset<T> {
 		return new Coset(group.inverse(this.representative), this.subgroup);
 	}
 	equals(coset: Coset<T>, group: Group<T>) {
-		return this.subgroup.includes(group.operate(this.representative, group.inverse(coset.representative)));
+		return this.subgroup.elements.includes(group.operate(this.representative, group.inverse(coset.representative)));
 	}
 
 	*[Symbol.iterator](group: Group<T>) {
