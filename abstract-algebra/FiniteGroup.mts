@@ -81,6 +81,10 @@ export class FiniteGroup<T> extends Group<T> {
 		}
 		return series;
 	}
+	isNilpotent() {
+		const ucs = this.upperCentralSeries();
+		return ucs[ucs.length - 1].elements.size === this.elements.size;
+	}
 
 	quotientPreimage(subgroupOfQuotient: FiniteGroup<Coset<T>>) {
 		return this.subgroup([...subgroupOfQuotient].flatMap(coset => [...coset.elements(this)]));

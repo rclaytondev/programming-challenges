@@ -14,3 +14,10 @@ describe("FiniteGroup.quotient", () => {
 		assert.isTrue(elements.some(coset => coset.representative % 3 === 2));
 	});
 });
+describe("FiniteGroup.isNilpotent", () => {
+	it("returns true for a cyclic group", () => {
+		const group = new CyclicGroup(5);
+		assert.isTrue(group.isNilpotent());
+	});
+	// TODO: add more tests (e.g. a non-abelian p-group, which must be nilpotent, and a test for a non-nilpotent group)
+});
