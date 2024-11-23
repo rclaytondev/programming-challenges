@@ -57,4 +57,14 @@ export class FiniteGroup<T> extends Group<T> {
 	*[Symbol.iterator]() {
 		yield* this.elements;
 	}
+
+	commutes(element1: T, element2: T) {
+		const product1 = this.operate(element1, element2);
+		const product2 = this.operate(element2, element1);
+		return this.elements.areEqual(product1, product2);
+	}
+	center() {
+		const elements = [...this];
+		return this.subgroup(elements.filter(a => elements.every(b => this.commutes(a, b))));
+	}
 }
