@@ -16,6 +16,16 @@ export class FiniteCollection<T> extends Collection<T> {
 		this.elements = elements;
 		this.customEquality = customEquality;
 	}
+	static fromGenerator<ArgsType extends unknown[], T>(generatingFunction: (...args: ArgsType) => Iterable<T>, customEquality: ((v1: T, v2: T) => boolean) | null = null, ...args: ArgsType) {
+		return new FiniteCollection(
+			{
+				[Symbol.iterator]: function*() {
+					yield* generatingFunction(...args);
+				}
+			},
+			customEquality
+		);
+	}
 
 	*[Symbol.iterator]() {
 		yield* this.elements;
