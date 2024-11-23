@@ -27,7 +27,7 @@ export class FiniteGroup<T> extends Group<T> {
 			const [representative] = elements;
 			const coset = new Coset(representative, subgroup);
 			cosets.push(coset);
-			for(const element of coset) {
+			for(const element of coset.elements(this)) {
 				elements.delete(element);
 			}
 		}
@@ -52,5 +52,9 @@ export class FiniteGroup<T> extends Group<T> {
 			}
 		};
 		return FiniteGroup.fromGroup(result, elements);
+	}
+
+	*[Symbol.iterator]() {
+		yield* this.elements;
 	}
 }

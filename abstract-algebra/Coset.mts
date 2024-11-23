@@ -20,7 +20,7 @@ export class Coset<T> {
 		return this.subgroup.elements.includes(group.operate(this.representative, group.inverse(coset.representative)));
 	}
 
-	*[Symbol.iterator](group: Group<T>) {
+	*elements(group: Group<T>) {
 		if(!(this.subgroup instanceof FiniteGroup)) {
 			throw new Error("Cannot iterate over elements of a coset if the subgroup does not have an Iterable of elements.");
 		}
