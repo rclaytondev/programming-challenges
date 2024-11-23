@@ -27,8 +27,10 @@ export class FiniteGroup<T> extends Group<T> {
 			const [representative] = elements;
 			const coset = new Coset(representative, subgroup);
 			cosets.push(coset);
-			for(const element of coset.elements(this)) {
-				elements.delete(element);
+			for(const element of elements) {
+				if([...coset.elements(this)].some(e => this.elements.areEqual(element, e))) {
+					elements.delete(element);
+				}
 			}
 		}
 		return cosets;
