@@ -11,11 +11,15 @@ export class TauNumbers {
 	}
 
 	static tauSum(upperBound: number) {
-		let sum = 0;
-		for(let numDivisors = 1; numDivisors <= upperBound; numDivisors ++) {
-			sum += TauNumbers.minTauNumber(numDivisors, upperBound);
+		const minimalNumbers = new Map<number, number>();
+		for(let n = 1; n <= upperBound; n ++) {
+			const divisors = MathUtils.divisors(n).length;
+			if(n % divisors === 0 && !minimalNumbers.has(divisors)) {
+				debugger;
+				minimalNumbers.set(divisors, n);
+			}
 		}
-		return sum;
+		return MathUtils.sum([...minimalNumbers.keys()]);
 	}
 }
 
