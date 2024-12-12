@@ -1,4 +1,33 @@
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
+import { PriorityQueue } from "../../utils-ts/modules/PriorityQueue.mjs";
+
+export class MultiplesIterator {
+	multipliers: Set<number>;
+	current: number;
+	queue: PriorityQueue<number>;
+
+	constructor(multiples: Iterable<number>) {
+		this.multipliers = new Set(multiples);
+		this.current = Math.min(...multiples);
+		this.queue = new PriorityQueue();
+		for(const n of this.multipliers) {
+			this.queue.insert(n, n);
+		}
+	}
+
+	step() {
+		while(true) {
+			const [multiplier, multiple] = this.queue.popWithPriority();
+			if(this.multipliers.has(multiplier)) {
+				this.queue.insert(multiplier, multiplier + multiple);
+				if(multiple > this.current) {
+					this.current = multiple;
+					return;
+				}
+			}
+		}
+	}
+}
 
 export class TauNumbers {
 	static minTauNumber(numDivisors: number, upperBound: number) {
@@ -23,7 +52,7 @@ export class TauNumbers {
 }
 
 
-console.time();
-console.log(TauNumbers.tauSum(10 ** 6));
-console.timeEnd();
-debugger;
+// console.time();
+// console.log(TauNumbers.tauSum(10 ** 6));
+// console.timeEnd();
+// debugger;

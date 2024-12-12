@@ -1,6 +1,24 @@
 import { assert } from "chai";
 import { describe } from "mocha";
-import { TauNumbers } from "./tau-numbers.mjs";
+import { MultiplesIterator, TauNumbers } from "./tau-numbers.mjs";
+
+describe("MultiplesIterator", () => {
+	it("can iterate over all multiples of a set of numbers in a range, with deletion of multiples along the way", () => {
+		const iterator = new MultiplesIterator([2, 3]);
+		const results = [];
+		while(iterator.current <= 20) {
+			results.push(iterator.current);
+			iterator.step();
+			if(iterator.current === 10) {
+				iterator.multipliers.delete(3);
+			}
+		}
+		assert.sameOrderedMembers(results, [
+			2, 3, 4, 6, 8, 9, 10, // multiples of 2 or 3 below 10
+			12, 14, 16, 18, 20 // remaining multiples of 2 below 20
+		]);
+	});
+});
 
 describe("TauNumbers.minTauNumber", () => {
 	it("returns 24 when given 8", () => {
