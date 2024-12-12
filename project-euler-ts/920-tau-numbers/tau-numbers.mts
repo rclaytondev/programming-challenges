@@ -22,7 +22,7 @@ export class MultiplesIterator {
 			if(this.multipliers.has(multiplier)) {
 				this.queue.insert(multiplier, multiplier + multiple);
 			}
-		} while(multiple <= this.current);
+		} while(multiple <= this.current || !this.multipliers.has(multiplier));
 		this.current = multiple;
 	}
 }

@@ -18,6 +18,21 @@ describe("MultiplesIterator", () => {
 			12, 14, 16, 18, 20 // remaining multiples of 2 below 20
 		]);
 	});
+	it("works when the next multiple of the deleted number should not be visited", () => {
+		const iterator = new MultiplesIterator([2, 3]);
+		const results = [];
+		while(iterator.current <= 20) {
+			results.push(iterator.current);
+			iterator.step();
+			if(iterator.current === 12) {
+				iterator.multipliers.delete(3);
+			}
+		}
+		assert.sameOrderedMembers(results, [
+			2, 3, 4, 6, 8, 9, 10, 12, // multiples of 2 or 3 below 12
+			14, 16, 18, 20 // remaining multiples of 2 below 20
+		]);
+	});
 });
 
 describe("TauNumbers.minTauNumber", () => {
