@@ -16,16 +16,14 @@ export class MultiplesIterator {
 	}
 
 	step() {
-		while(true) {
-			const [multiplier, multiple] = this.queue.popWithPriority();
+		let multiplier, multiple;
+		do {
+			[multiplier, multiple] = this.queue.popWithPriority();
 			if(this.multipliers.has(multiplier)) {
 				this.queue.insert(multiplier, multiplier + multiple);
-				if(multiple > this.current) {
-					this.current = multiple;
-					return;
-				}
 			}
-		}
+		} while(multiple <= this.current);
+		this.current = multiple;
 	}
 }
 
