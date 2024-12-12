@@ -15,16 +15,15 @@ export class TauNumbers {
 		for(let n = 1; n <= upperBound; n ++) {
 			const divisors = MathUtils.divisors(n).length;
 			if(n % divisors === 0 && !minimalNumbers.has(divisors)) {
-				debugger;
 				minimalNumbers.set(divisors, n);
 			}
 		}
-		return MathUtils.sum([...minimalNumbers.keys()]);
+		return MathUtils.sum([...minimalNumbers.values()]);
 	}
 }
 
 
 console.time();
-console.log(TauNumbers.tauSum(10 ** 5));
+console.log(TauNumbers.tauSum(10 ** 6));
 console.timeEnd();
 debugger;
