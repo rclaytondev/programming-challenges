@@ -55,6 +55,16 @@ export class FiniteGroup<T> extends Group<T> {
 		};
 		return FiniteGroup.fromGroup(result, elements);
 	}
+	isNormal(subgroup: FiniteGroup<T>) {
+		for(const element of subgroup.elements) {
+			for(const conjugator of this) {
+				if(!subgroup.elements.includes(this.conjugate(element, conjugator))) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 
 	*[Symbol.iterator]() {
 		yield* this.elements;

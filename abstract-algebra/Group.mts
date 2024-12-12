@@ -49,4 +49,8 @@ export class Group<T> {
 			new FiniteCollection(elementsOrFilter, this.elements.customEquality)
 		);
 	}
+
+	conjugate(element: T, conjugator: T) {
+		return this.operate(conjugator, this.operate(element, this.inverse(conjugator)));
+	}
 }
