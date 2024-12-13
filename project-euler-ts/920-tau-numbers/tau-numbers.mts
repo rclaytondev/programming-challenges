@@ -5,26 +5,19 @@ import { Utils } from "../../utils-ts/modules/Utils.mjs";
 export class MultiplesIterator {
 	multipliers: Set<number>;
 	current: number;
-	queue: PriorityQueue<number>;
 
 	constructor(multiples: number[]) {
 		this.multipliers = new Set(multiples);
 		this.current = multiples[0];
-		this.queue = new PriorityQueue();
-		for(const n of this.multipliers) {
-			this.queue.insert(n, n);
-		}
 	}
 
 	next() {
-		let multiplier, multiple;
-		do {
-			[multiplier, multiple] = this.queue.popWithPriority();
-			if(this.multipliers.has(multiplier)) {
-				this.queue.insert(multiplier, multiplier + multiple);
-			}
-		} while(multiple <= this.current || !this.multipliers.has(multiplier));
-		return multiple;
+		let smallest = Infinity;
+		for(const multiplier of this.multipliers) {
+			smallest = Math.min(smallest, multiplier * (1 + Math.floor(this.current / multiplier)));
+			if(smallest === this.current + 1) { return smallest; }
+		}
+		return smallest;
 	}
 	step() {
 		this.current = this.next();
