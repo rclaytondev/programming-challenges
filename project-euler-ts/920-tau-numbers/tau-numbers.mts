@@ -16,7 +16,7 @@ export class MultiplesIterator {
 		}
 	}
 
-	step() {
+	next() {
 		let multiplier, multiple;
 		do {
 			[multiplier, multiple] = this.queue.popWithPriority();
@@ -24,7 +24,10 @@ export class MultiplesIterator {
 				this.queue.insert(multiplier, multiplier + multiple);
 			}
 		} while(multiple <= this.current || !this.multipliers.has(multiplier));
-		this.current = multiple;
+		return multiple;
+	}
+	step() {
+		this.current = this.next();
 	}
 }
 
