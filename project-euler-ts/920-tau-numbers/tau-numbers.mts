@@ -47,8 +47,9 @@ export class TauNumbers {
 	}
 
 	static tauSum(upperBound: number) {
-		const primes = new Set(Sequence.PRIMES.termsBelow(upperBound, "inclusive"));
-		const composites = Utils.range(1, upperBound).filter(n => !primes.has(n));
+		const maxDivisors = 2 * Math.sqrt(upperBound) - 1;
+		const primes = new Set(Sequence.PRIMES.termsBelow(maxDivisors, "inclusive"));
+		const composites = Utils.range(1, maxDivisors).filter(n => !primes.has(n));
 		const iterator = new MultiplesIterator(composites);
 		const minimalNumbers = new Map<number, number>();
 		while(iterator.current <= upperBound) {
