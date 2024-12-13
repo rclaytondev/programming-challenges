@@ -1,4 +1,5 @@
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
+import { Sequence } from "../../utils-ts/modules/math/Sequence.mjs";
 import { PriorityQueue } from "../../utils-ts/modules/PriorityQueue.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
@@ -40,20 +41,32 @@ export class TauNumbers {
 		}
 		return 0;
 	}
+	static minPrimeTauNumber(primeNumDivisors: number, upperBound: number) {
+		const result = primeNumDivisors ** (primeNumDivisors - 1);
+		return result <= upperBound ? result : 0;
+	}
 
 	static tauSum(upperBound: number) {
-		const iterator = new MultiplesIterator(Utils.range(1, upperBound));
+		const primes = new Set(Sequence.PRIMES.termsBelow(upperBound, "inclusive"));
+		const composites = Utils.range(1, upperBound).filter(n => !primes.has(n));
+		const iterator = new MultiplesIterator(composites);
 		const minimalNumbers = new Map<number, number>();
 		while(iterator.current <= upperBound) {
 			const divisors = MathUtils.divisors(iterator.current).length;
-			if(iterator.current % divisors === 0 && !minimalNumbers.has(divisors)) {
+			if(iterator.current % divisors === 0 && !minimalNumbers.has(divisors) && !primes.has(divisors)) {
 				minimalNumbers.set(divisors, iterator.current);
 				iterator.multipliers.delete(divisors);
 			}
 			if(iterator.multipliers.size === 0) { break; }
 			iterator.step();
 		}
-		return MathUtils.sum([...minimalNumbers.values()]);
+		let sum = MathUtils.sum(minimalNumbers.values());
+		for(const prime of primes) {
+			const tauNumber = TauNumbers.minPrimeTauNumber(prime, upperBound);
+			sum += tauNumber;
+			if(tauNumber === 0) { break; }
+		}
+		return sum;
 	}
 }
 
