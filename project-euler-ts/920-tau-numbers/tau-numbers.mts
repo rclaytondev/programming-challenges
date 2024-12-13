@@ -1,14 +1,15 @@
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { PriorityQueue } from "../../utils-ts/modules/PriorityQueue.mjs";
+import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
 export class MultiplesIterator {
 	multipliers: Set<number>;
 	current: number;
 	queue: PriorityQueue<number>;
 
-	constructor(multiples: Iterable<number>) {
+	constructor(multiples: number[]) {
 		this.multipliers = new Set(multiples);
-		this.current = Math.min(...multiples);
+		this.current = multiples[0];
 		this.queue = new PriorityQueue();
 		for(const n of this.multipliers) {
 			this.queue.insert(n, n);
@@ -38,19 +39,23 @@ export class TauNumbers {
 	}
 
 	static tauSum(upperBound: number) {
+		const iterator = new MultiplesIterator(Utils.range(1, upperBound));
 		const minimalNumbers = new Map<number, number>();
-		for(let n = 1; n <= upperBound; n ++) {
-			const divisors = MathUtils.divisors(n).length;
-			if(n % divisors === 0 && !minimalNumbers.has(divisors)) {
-				minimalNumbers.set(divisors, n);
+		while(iterator.current <= upperBound) {
+			const divisors = MathUtils.divisors(iterator.current).length;
+			if(iterator.current % divisors === 0 && !minimalNumbers.has(divisors)) {
+				minimalNumbers.set(divisors, iterator.current);
+				iterator.multipliers.delete(divisors);
 			}
+			if(iterator.multipliers.size === 0) { break; }
+			iterator.step();
 		}
 		return MathUtils.sum([...minimalNumbers.values()]);
 	}
 }
 
 
-// console.time();
-// console.log(TauNumbers.tauSum(10 ** 6));
-// console.timeEnd();
-// debugger;
+console.time();
+console.log(TauNumbers.tauSum(10 ** 6));
+console.timeEnd();
+debugger;
