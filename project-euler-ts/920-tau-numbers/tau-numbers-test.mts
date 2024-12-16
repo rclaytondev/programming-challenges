@@ -49,13 +49,13 @@ describe("TauNumbers.productPartitions", () => {
 
 describe("TauNumbers.minTauNumber", () => {
 	it("returns 24 when given 8", () => {
-		assert.equal(TauNumbers.minTauNumber(8, 1000), 24);
+		assert.equal(TauNumbers.minTauNumber(8), 24);
 	});
 	it("returns 60 when given 12", () => {
-		assert.equal(TauNumbers.minTauNumber(12, 1000), 60);
+		assert.equal(TauNumbers.minTauNumber(12), 60);
 	});
 	it("returns 384 when given 16", () => {
-		assert.equal(TauNumbers.minTauNumber(16, 1000), 384);
+		assert.equal(TauNumbers.minTauNumber(16), 384);
 	});
 });
 

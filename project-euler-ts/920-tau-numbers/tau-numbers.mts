@@ -70,7 +70,7 @@ export class TauNumbers {
 			return minimum;
 		}
 	}
-	static minTauNumber(numDivisors: number, upperBound: number) {
+	static minTauNumber(numDivisors: number) {
 		const factorization = MathUtils.factorize(numDivisors);
 		const primes = [...factorization.keys()];
 		return TauNumbers.minTauNumberSearch(
