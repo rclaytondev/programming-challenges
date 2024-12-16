@@ -1,36 +1,5 @@
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Sequence } from "../../utils-ts/modules/math/Sequence.mjs";
-import { PriorityQueue } from "../../utils-ts/modules/PriorityQueue.mjs";
-import { Utils } from "../../utils-ts/modules/Utils.mjs";
-
-export class MultiplesIterator {
-	multipliers: Set<number>;
-	current: number;
-	queue: PriorityQueue<number>;
-
-	constructor(multiples: number[]) {
-		this.multipliers = new Set(multiples);
-		this.current = multiples[0];
-		this.queue = new PriorityQueue();
-		for(const n of this.multipliers) {
-			this.queue.insert(n, n);
-		}
-	}
-
-	next() {
-		let multiplier, multiple;
-		do {
-			[multiplier, multiple] = this.queue.popWithPriority();
-			if(this.multipliers.has(multiplier)) {
-				this.queue.insert(multiplier, multiplier + multiple);
-			}
-		} while(multiple <= this.current || !this.multipliers.has(multiplier));
-		return multiple;
-	}
-	step() {
-		this.current = this.next();
-	}
-}
 
 export class TauNumbers {
 	static productPartitions(num: number, upperBound: number = Infinity) {
@@ -44,7 +13,6 @@ export class TauNumbers {
 		}
 		return result;
 	}
-
 
 	static minTauNumberSearch(primes: number[], minExponents: number[], exponents: number[], numDivisors: number) {
 		const divisors = MathUtils.product(exponents.map(e => e + 1));
@@ -79,10 +47,6 @@ export class TauNumbers {
 			[],
 			numDivisors
 		);
-	}
-	static minPrimeTauNumber(primeNumDivisors: number, upperBound: number) {
-		const result = primeNumDivisors ** (primeNumDivisors - 1);
-		return result <= upperBound ? result : 0;
 	}
 
 	static tauSum(upperBound: number) {
