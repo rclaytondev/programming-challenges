@@ -87,31 +87,19 @@ export class TauNumbers {
 
 	static tauSum(upperBound: number) {
 		const maxDivisors = 2 * Math.sqrt(upperBound) - 1;
-		const primes = new Set(Sequence.PRIMES.termsBelow(maxDivisors, "inclusive"));
-		const composites = Utils.range(1, maxDivisors).filter(n => !primes.has(n));
-		const iterator = new MultiplesIterator(composites);
-		const minimalNumbers = new Map<number, number>();
-		while(iterator.current <= upperBound) {
-			const divisors = MathUtils.divisors(iterator.current).length;
-			if(iterator.current % divisors === 0 && !minimalNumbers.has(divisors) && !primes.has(divisors)) {
-				minimalNumbers.set(divisors, iterator.current);
-				iterator.multipliers.delete(divisors);
+		let result = 0;
+		for(let i = 1; i <= maxDivisors; i ++) {
+			const tauNumber = TauNumbers.minTauNumber(i);
+			if(tauNumber <= upperBound) {
+				result += tauNumber;
 			}
-			if(iterator.multipliers.size === 0) { break; }
-			iterator.step();
 		}
-		let sum = MathUtils.sum(minimalNumbers.values());
-		for(const prime of primes) {
-			const tauNumber = TauNumbers.minPrimeTauNumber(prime, upperBound);
-			sum += tauNumber;
-			if(tauNumber === 0) { break; }
-		}
-		return sum;
+		return result;
 	}
 }
 
 
 console.time();
-console.log(TauNumbers.tauSum(10 ** 6));
+console.log(TauNumbers.tauSum(10 ** 8));
 console.timeEnd();
 debugger;
