@@ -23,7 +23,7 @@ export class TauNumbers {
 				const unusedPrimes = Sequence.PRIMES.filter(p => !primes.includes(p)).slice(0, partition.length);
 				minimum = Math.min(
 					minimum,
-					MathUtils.product([...primes.map((p, i) => p ** exponents[i]), ...unusedPrimes.map((q, i) => q ** (partition[i] - 1))])
+					MathUtils.unfactorize([...primes, ...unusedPrimes], [...exponents, ...partition.map(p => p - 1)])
 				);
 			}
 			return minimum;
