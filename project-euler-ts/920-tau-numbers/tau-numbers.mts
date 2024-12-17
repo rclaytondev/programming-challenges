@@ -14,19 +14,23 @@ export class TauNumbers {
 		return result;
 	}
 
+	static minWithDivisors(numDivisors: number, primesToAvoid: number[]) {
+		let minimum = Infinity;
+		for(const partition of TauNumbers.productPartitions(numDivisors)) {
+			const unusedPrimes = Sequence.PRIMES.filter(p => !primesToAvoid.includes(p)).slice(0, partition.length);
+			minimum = Math.min(
+				minimum,
+				MathUtils.unfactorize(unusedPrimes, partition.map(p => p - 1))
+			);
+		}
+		return minimum;
+	}
+
 	static minTauNumberSearch(primes: number[], minExponents: number[], exponents: number[], numDivisors: number) {
 		const divisors = MathUtils.product(exponents.map(e => e + 1));
 		const remaining = numDivisors / divisors;
 		if(exponents.length === minExponents.length) {
-			let minimum = Infinity;
-			for(const partition of TauNumbers.productPartitions(remaining)) {
-				const unusedPrimes = Sequence.PRIMES.filter(p => !primes.includes(p)).slice(0, partition.length);
-				minimum = Math.min(
-					minimum,
-					MathUtils.unfactorize([...primes, ...unusedPrimes], [...exponents, ...partition.map(p => p - 1)])
-				);
-			}
-			return minimum;
+			return MathUtils.unfactorize(primes, exponents) * TauNumbers.minWithDivisors(remaining, primes);
 		}
 		else {
 			const nextTerms = MathUtils.divisors(remaining);
