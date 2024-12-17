@@ -27,7 +27,7 @@ export class TauNumbers {
 		return minimum;
 	});
 
-	static minTauNumberSearch(primes: number[], minExponents: number[], exponents: number[], numDivisors: number) {
+	static minTauNumberSearch = Utils.memoize((primes: number[], minExponents: number[], exponents: number[], numDivisors: number) => {
 		const divisors = MathUtils.product(exponents.map(e => e + 1));
 		const remaining = numDivisors / divisors;
 		if(exponents.length === minExponents.length) {
@@ -42,7 +42,7 @@ export class TauNumbers {
 			}
 			return minimum;
 		}
-	}
+	});
 	static minTauNumber(numDivisors: number) {
 		const factorization = MathUtils.factorize(numDivisors);
 		const primes = [...factorization.keys()];
