@@ -1,5 +1,6 @@
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Sequence } from "../../utils-ts/modules/math/Sequence.mjs";
+import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
 export class TauNumbers {
 	static productPartitions(num: number, upperBound: number = Infinity) {
@@ -14,7 +15,7 @@ export class TauNumbers {
 		return result;
 	}
 
-	static minWithDivisors(numDivisors: number, primesToAvoid: number[]) {
+	static minWithDivisors = Utils.memoize((numDivisors: number, primesToAvoid: number[]) => {
 		let minimum = Infinity;
 		for(const partition of TauNumbers.productPartitions(numDivisors)) {
 			const unusedPrimes = Sequence.PRIMES.filter(p => !primesToAvoid.includes(p)).slice(0, partition.length);
@@ -24,7 +25,7 @@ export class TauNumbers {
 			);
 		}
 		return minimum;
-	}
+	});
 
 	static minTauNumberSearch(primes: number[], minExponents: number[], exponents: number[], numDivisors: number) {
 		const divisors = MathUtils.product(exponents.map(e => e + 1));
