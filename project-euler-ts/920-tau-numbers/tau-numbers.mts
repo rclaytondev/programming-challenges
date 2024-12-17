@@ -28,17 +28,17 @@ export class TauNumbers {
 	});
 
 	static minTauNumberSearch = Utils.memoize((primes: number[], minExponents: number[], exponentsChosen: number, numDivisors: number) => {
-		if(exponentsChosen === minExponents.length) {
+		if(minExponents.length === 0) {
 			return TauNumbers.minWithDivisors(numDivisors, primes);
 		}
 		else {
 			const nextTerms = MathUtils.divisors(numDivisors);
 			let minimum = Infinity;
 			for(let i = nextTerms.length - 1; i >= 0; i --) {
-				if(nextTerms[i] - 1 < minExponents[exponentsChosen]) { break; }
+				if(nextTerms[i] - 1 < minExponents[0]) { break; }
 				minimum = Math.min(
-					minimum, 
-					primes[exponentsChosen] ** (nextTerms[i] - 1) * TauNumbers.minTauNumberSearch(primes, minExponents, exponentsChosen + 1, numDivisors / nextTerms[i])
+					minimum,
+					primes[exponentsChosen] ** (nextTerms[i] - 1) * TauNumbers.minTauNumberSearch(primes, minExponents.slice(1), exponentsChosen + 1, numDivisors / nextTerms[i])
 				);
 			}
 			return minimum;
