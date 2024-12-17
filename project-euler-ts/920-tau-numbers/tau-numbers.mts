@@ -27,18 +27,19 @@ export class TauNumbers {
 		return minimum;
 	});
 
-	static minTauNumberSearch = Utils.memoize((primes: number[], minExponents: number[], exponents: number[], numDivisors: number) => {
-		const divisors = MathUtils.product(exponents.map(e => e + 1));
-		const remaining = numDivisors / divisors;
-		if(exponents.length === minExponents.length) {
-			return MathUtils.unfactorize(primes, exponents) * TauNumbers.minWithDivisors(remaining, primes);
+	static minTauNumberSearch = Utils.memoize((primes: number[], minExponents: number[], exponentsChosen: number, numDivisors: number) => {
+		if(exponentsChosen === minExponents.length) {
+			return TauNumbers.minWithDivisors(numDivisors, primes);
 		}
 		else {
-			const nextTerms = MathUtils.divisors(remaining);
+			const nextTerms = MathUtils.divisors(numDivisors);
 			let minimum = Infinity;
 			for(let i = nextTerms.length - 1; i >= 0; i --) {
-				if(nextTerms[i] - 1 < minExponents[exponents.length]) { break; }
-				minimum = Math.min(minimum, TauNumbers.minTauNumberSearch(primes, minExponents, [...exponents, nextTerms[i] - 1], numDivisors));
+				if(nextTerms[i] - 1 < minExponents[exponentsChosen]) { break; }
+				minimum = Math.min(
+					minimum, 
+					primes[exponentsChosen] ** (nextTerms[i] - 1) * TauNumbers.minTauNumberSearch(primes, minExponents, exponentsChosen + 1, numDivisors / nextTerms[i])
+				);
 			}
 			return minimum;
 		}
@@ -49,7 +50,7 @@ export class TauNumbers {
 		return TauNumbers.minTauNumberSearch(
 			primes,
 			primes.map(p => factorization.get(p)!),
-			[],
+			0,
 			numDivisors
 		);
 	}
