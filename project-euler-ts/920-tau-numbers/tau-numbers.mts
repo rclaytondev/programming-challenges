@@ -19,7 +19,7 @@ class TauNumberFactorization {
 		this.divisors = divisors;
 	}
 
-	next(requiredDivisors: number) {
+	next(requiredDivisors: number, upperBound: number) {
 		const result = [];
 		for(const divisor of MathUtils.divisors(requiredDivisors / this.divisors)) {
 			const exponent = divisor - 1;
@@ -27,7 +27,10 @@ class TauNumberFactorization {
 				this.exponents.length >= this.primes.length || 
 				exponent >= TauNumbers.getExponent(this.primes[this.exponents.length], requiredDivisors)
 			)) {
-				result.push(this.createNextFrom(exponent));
+				const next = this.createNextFrom(exponent);
+				if(next.product <= upperBound) {
+					result.push(next);
+				}
 			}
 		}
 		return result;
@@ -97,17 +100,18 @@ export class TauNumbers {
 	}
 
 	static minTauNumberSearch(queue: PriorityQueue<TauNumberFactorization>, requiredDivisors: number, upperBound: number) {
-		while(true) {
+		while(!queue.isEmpty()) {
 			const current = queue.pop();
 			// console.log(`currently checking: ${current.logMessage(requiredDivisors)}`);
 			if(current.isDone(requiredDivisors)) {
 				return current.product;
 			}
-			for(const next of current.next(requiredDivisors)) {
+			for(const next of current.next(requiredDivisors, upperBound)) {
 				// console.log(`adding to queue: ${next.logMessage(requiredDivisors)}`);
 				queue.insert(next, next.product);
 			}
 		}
+		return Infinity;
 	}
 
 	static tauSum(upperBound: number) {
@@ -126,6 +130,6 @@ export class TauNumbers {
 
 
 console.time();
-console.log(TauNumbers.tauSum(10 ** 8));
+console.log(TauNumbers.tauSum(10 ** 9));
 console.timeEnd();
 debugger;
