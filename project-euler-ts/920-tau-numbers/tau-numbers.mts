@@ -2,20 +2,6 @@ import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Sequence } from "../../utils-ts/modules/math/Sequence.mjs";
 import { PriorityQueue } from "../../utils-ts/modules/PriorityQueue.mjs";
 
-class Factorization {
-	exponents: Map<number, number>;
-	constructor(exponents: Map<number, number>) {
-		this.exponents = exponents;
-	}
-
-	static factorize(num: number) {
-		return new Factorization(MathUtils.factorize(num));
-	}
-	toNumber() {
-		return MathUtils.unfactorize(this.exponents);
-	}
-}
-
 class TauNumberFactorization {
 	product: number;
 	primes: number[];
