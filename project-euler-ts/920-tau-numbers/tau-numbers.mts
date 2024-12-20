@@ -32,6 +32,9 @@ class TauNumberFactorization {
 				if(next.product <= upperBound) {
 					result.push(next);
 				}
+				else {
+					return result;
+				}
 			}
 		}
 		return result;
@@ -131,6 +134,6 @@ export class TauNumbers {
 
 
 console.time();
-console.log(TauNumbers.tauSum(10 ** 9));
+console.log(TauNumbers.tauSum(10 ** 10));
 console.timeEnd();
 debugger;
