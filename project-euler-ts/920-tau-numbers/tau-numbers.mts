@@ -20,13 +20,13 @@ class TauNumberFactorization {
 	}
 
 	next(requiredDivisors: number, upperBound: number) {
+		const minDivisor = ((this.exponents.length >= this.primes.length) ? 1 : 
+			TauNumbers.getExponent(this.primes[this.exponents.length], requiredDivisors)
+		) + 1;
 		const result = [];
 		for(const divisor of MathUtils.divisors(requiredDivisors / this.divisors)) {
 			const exponent = divisor - 1;
-			if(exponent !== 0 && (
-				this.exponents.length >= this.primes.length || 
-				exponent >= TauNumbers.getExponent(this.primes[this.exponents.length], requiredDivisors)
-			)) {
+			if(divisor >= minDivisor) {
 				const next = this.createNextFrom(exponent);
 				if(next.product <= upperBound) {
 					result.push(next);
