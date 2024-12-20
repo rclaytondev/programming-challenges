@@ -2,15 +2,24 @@ import { assert } from "chai";
 import { describe } from "mocha";
 import { TauNumbers } from "./tau-numbers.mjs";
 
+describe("TauNumbers.getExponent", () => {
+	it("returns the exponent on the prime in the factorization of the number", () => {
+		assert.equal(TauNumbers.getExponent(2, 24), 3);
+	});
+	it("returns 0 when the prime does not divide the number", () => {
+		assert.equal(TauNumbers.getExponent(5, 24), 0);
+	});
+});
+
 describe("TauNumbers.minTauNumber", () => {
 	it("returns 24 when given 8", () => {
-		assert.equal(TauNumbers.minTauNumber(8), 24);
+		assert.equal(TauNumbers.minTauNumber(8, 1000), 24);
 	});
 	it("returns 60 when given 12", () => {
-		assert.equal(TauNumbers.minTauNumber(12), 60);
+		assert.equal(TauNumbers.minTauNumber(12, 1000), 60);
 	});
 	it("returns 384 when given 16", () => {
-		assert.equal(TauNumbers.minTauNumber(16), 384);
+		assert.equal(TauNumbers.minTauNumber(16, 1000), 384);
 	});
 });
 
