@@ -23,10 +23,11 @@ class TauNumberFactorization {
 		const minDivisor = ((this.exponents.length >= this.primes.length) ? 1 : 
 			TauNumbers.getExponent(this.primes[this.exponents.length], requiredDivisors)
 		) + 1;
+		const maxDivisor = (this.otherExponents[this.otherExponents.length - 1] ?? Infinity) + 1;
 		const result = [];
 		for(const divisor of MathUtils.divisors(requiredDivisors / this.divisors)) {
 			const exponent = divisor - 1;
-			if(divisor >= minDivisor) {
+			if(divisor >= minDivisor && divisor <= maxDivisor) {
 				const next = this.createNextFrom(exponent);
 				if(next.product <= upperBound) {
 					result.push(next);
