@@ -87,21 +87,13 @@ export class TauNumbers {
 		}
 	}
 
-	static cache: Map<number, number> = new Map();
-
 	static minTauNumber(requiredDivisors: number, upperBound: number) {
 		/* Returns the smallest multiple with that many divisors, or +Inf if it is bigger than the upper bound. */
-		const precalculated = TauNumbers.cache.get(requiredDivisors);
-		if(typeof precalculated === "number") {
-			return precalculated <= upperBound ? precalculated : Infinity;
-		}
-		else {
-			const primeDivisors = MathUtils.factors(requiredDivisors);
-			const ONE = new TauNumberFactorization(1, primeDivisors, [], [], null, 1);
-			const queue = new PriorityQueue<TauNumberFactorization>();
-			queue.insert(ONE, 1);
-			return TauNumbers.minTauNumberSearch(queue, requiredDivisors, upperBound);
-		}
+		const primeDivisors = MathUtils.factors(requiredDivisors);
+		const ONE = new TauNumberFactorization(1, primeDivisors, [], [], null, 1);
+		const queue = new PriorityQueue<TauNumberFactorization>();
+		queue.insert(ONE, 1);
+		return TauNumbers.minTauNumberSearch(queue, requiredDivisors, upperBound);
 	}
 
 	static minTauNumberSearch(queue: PriorityQueue<TauNumberFactorization>, requiredDivisors: number, upperBound: number) {
@@ -124,7 +116,7 @@ export class TauNumbers {
 		for(let i = 1; i <= maxDivisors; i ++) {
 			const smallest = TauNumbers.minTauNumber(i, upperBound);
 			if(smallest <= upperBound) {
-				console.log(`${smallest} is the smallest multiple of ${i} with ${i} divisors.`)
+				// console.log(`${smallest} is the smallest multiple of ${i} with ${i} divisors.`)
 				sum += smallest;
 			}
 		}
@@ -133,7 +125,7 @@ export class TauNumbers {
 }
 
 
-// console.time();
-// console.log(TauNumbers.tauSum(10 ** 8));
-// console.timeEnd();
-// debugger;
+console.time();
+console.log(TauNumbers.tauSum(10 ** 8));
+console.timeEnd();
+debugger;
