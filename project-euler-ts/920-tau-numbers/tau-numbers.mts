@@ -7,13 +7,15 @@ class TauNumberFactorization {
 	primes: number[];
 	exponents: number[];
 	otherExponents: number[];
+	lastOtherPrime: number | null = null;
 	divisors: number;
 
-	constructor(product: number, primes: number[], exponents: number[], otherExponents: number[], divisors: number) {
+	constructor(product: number, primes: number[], exponents: number[], otherExponents: number[], lastOtherPrime: number | null, divisors: number) {
 		this.product = product;
 		this.primes = primes;
 		this.exponents = exponents;
 		this.otherExponents = otherExponents;
+		this.lastOtherPrime = lastOtherPrime;
 		this.divisors = divisors;
 	}
 
@@ -38,19 +40,18 @@ class TauNumberFactorization {
 				this.primes,
 				[...this.exponents, nextExponent],
 				this.otherExponents,
+				null,
 				this.divisors * (nextExponent + 1)
 			);
 		}
 		else {
-			const nextPrime = TauNumbers.nextPrime(
-				this.otherExponents[this.otherExponents.length - 1] ?? 1,
-				this.primes
-			);
+			const nextPrime = TauNumbers.nextPrime(this.lastOtherPrime ?? 1, this.primes);
 			return new TauNumberFactorization(
 				this.product * (nextPrime ** nextExponent),
 				this.primes,
 				this.exponents,
 				[...this.otherExponents, nextExponent],
+				nextPrime,
 				this.divisors * (nextExponent + 1)
 			);
 		}
@@ -96,7 +97,7 @@ export class TauNumbers {
 		}
 		else {
 			const primeDivisors = MathUtils.factors(requiredDivisors);
-			const ONE = new TauNumberFactorization(1, primeDivisors, [], [], 1);
+			const ONE = new TauNumberFactorization(1, primeDivisors, [], [], null, 1);
 			const queue = new PriorityQueue<TauNumberFactorization>();
 			queue.insert(ONE, 1);
 			return TauNumbers.minTauNumberSearch(queue, requiredDivisors, upperBound);

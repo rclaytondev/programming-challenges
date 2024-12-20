@@ -21,6 +21,12 @@ describe("TauNumbers.minTauNumber", () => {
 	it("returns 384 when given 16", () => {
 		assert.equal(TauNumbers.minTauNumber(16, 1000), 384);
 	});
+	it("returns 720 when given 30", () => {
+		assert.equal(TauNumbers.minTauNumber(30, 1000), 720);
+	});
+	it("returns 1680 when given 40", () => {
+		assert.equal(TauNumbers.minTauNumber(40, 2000), 1680);
+	});
 });
 
 describe("TauNumbers.tauSum", () => {
