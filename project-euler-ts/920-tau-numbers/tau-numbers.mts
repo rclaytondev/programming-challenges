@@ -36,13 +36,13 @@ export class TauNumberFactorization {
 
 	next() {
 		const index = this.primes.indexOf(this.nextPrime);
-		const minDivisor = (this.minExponents[index] ?? 0) + 1;
+		const minDivisor = (this.minExponents[index] ?? 1) + 1;
 		const maxDivisor = this.nextMaxExponent + 1;
 		const next = [];
 		for(const divisor of MathUtils.divisors(this.remainingDivisors)) {
 			if(minDivisor <= divisor && divisor <= maxDivisor) {
 				const exponent = divisor - 1;
-				next.push(this.createNextFrom(exponent));
+				next.push([this.createNextFrom(exponent), exponent] as [TauNumberFactorization, number]);
 			}
 		}
 		return next;
@@ -85,7 +85,26 @@ export class TauNumbers {
 	}
 
 	static completion(factorization: TauNumberFactorization) {
-		
+		if(factorization.isComplete()) {
+			return 1;
+		}
+		let min = Infinity;
+		for(const [next, exponent] of factorization.next()) {
+			min = Math.min(min, TauNumbers.completion(next) * (factorization.nextPrime ** exponent));
+		}
+		return min;
+	}
+
+	static minTauNumber(divisors: number, upperBound: number) {
+		const factorization = MathUtils.factorize(divisors);
+		const primes = [...factorization.keys()];
+		return TauNumbers.completion(new TauNumberFactorization(
+			primes,
+			primes[0],
+			Infinity,
+			primes.map(p => factorization.get(p)!),
+			divisors
+		));
 	}
 
 	static tauSum(upperBound: number) {
@@ -103,7 +122,7 @@ export class TauNumbers {
 }
 
 
-// console.time();
-// console.log(TauNumbers.tauSum(10 ** 10));
-// console.timeEnd();
-// debugger;
+console.time();
+console.log(TauNumbers.tauSum(10 ** 8));
+console.timeEnd();
+debugger;
