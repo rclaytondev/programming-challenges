@@ -113,6 +113,7 @@ export class TauNumbers {
 
 		let min = Infinity;
 		for(const [next, exponent] of factorization.next()) {
+			next.upperBound = Math.min(next.upperBound, min);
 			min = Math.min(min, TauNumbers.completion(next) * (factorization.nextPrime ** exponent));
 		}
 
