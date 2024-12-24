@@ -19,122 +19,7 @@ class GeneratedIterable<T> {
 	}
 }
 
-class TauNumberFactorization {
-	product: number;
-	primes: number[];
-	exponents: number[];
-	otherExponents: number[];
-	lastOtherPrime: number | null = null;
-	divisors: number;
-
-	constructor(product: number, primes: number[], exponents: number[], otherExponents: number[], lastOtherPrime: number | null, divisors: number) {
-		this.product = product;
-		this.primes = primes;
-		this.exponents = exponents;
-		this.otherExponents = otherExponents;
-		this.lastOtherPrime = lastOtherPrime;
-		this.divisors = divisors;
-	}
-
-	next(requiredDivisors: number, upperBound: number) {
-		const minDivisor = ((this.exponents.length >= this.primes.length) ? 1 : 
-			TauNumbers.getExponent(this.primes[this.exponents.length], requiredDivisors)
-		) + 1;
-		const maxDivisor = (this.otherExponents[this.otherExponents.length - 1] ?? Infinity) + 1;
-		const result = [];
-		for(const divisor of MathUtils.divisors(requiredDivisors / this.divisors)) {
-			const exponent = divisor - 1;
-			if(divisor >= minDivisor && divisor <= maxDivisor) {
-				const next = this.createNextFrom(exponent);
-				if(next.product <= upperBound) {
-					result.push(next);
-				}
-				else {
-					return result;
-				}
-			}
-		}
-		return result;
-	}
-
-	createNextFrom(nextExponent: number) {
-		if(this.exponents.length < this.primes.length) {
-			return new TauNumberFactorization(
-				this.product * (this.primes[this.exponents.length] ** nextExponent),
-				this.primes,
-				[...this.exponents, nextExponent],
-				this.otherExponents,
-				null,
-				this.divisors * (nextExponent + 1)
-			);
-		}
-		else {
-			const nextPrime = TauNumbers.nextPrime(this.lastOtherPrime ?? 1, this.primes);
-			return new TauNumberFactorization(
-				this.product * (nextPrime ** nextExponent),
-				this.primes,
-				this.exponents,
-				[...this.otherExponents, nextExponent],
-				nextPrime,
-				this.divisors * (nextExponent + 1)
-			);
-		}
-	}
-
-	logMessage(requiredDivisors: number) {
-		const otherPrimes = Sequence.PRIMES.filter(p => !this.primes.includes(p)).slice(0, this.otherExponents.length);
-		const factorization1 = this.primes.slice(0, this.exponents.length).map((p, i) => `${p}^${this.exponents[i]}`).join(" * ");
-		const factorization2 = otherPrimes.map((p, i) => `${p}^${this.otherExponents[i]}`).join(" * ");
-		return `${this.product} = (${factorization1}) * (${factorization2}) has ${this.divisors} of the required ${requiredDivisors} divisors`;
-	}
-
-	isDone(requiredDivisors: number) {
-		return this.exponents.length >= this.primes.length && this.divisors === requiredDivisors;
-	}
-}
-
 export class TauNumbers {
-	static getExponent(prime: number, num: number) {
-		let exponent = 0;
-		while(num % prime === 0) {
-			num /= prime;
-			exponent ++;
-		}
-		return exponent;
-	}
-
-	static nextPrime(start: number, primesToSkip: number[]) {
-		for(let i = start + 1; true; i ++) {
-			if(MathUtils.isPrime(i) && !primesToSkip.includes(i)) {
-				return i;
-			}
-		}
-	}
-
-	static minTauNumber(requiredDivisors: number, upperBound: number) {
-		/* Returns the smallest multiple with that many divisors, or +Inf if it is bigger than the upper bound. */
-		const primeDivisors = MathUtils.factors(requiredDivisors);
-		const ONE = new TauNumberFactorization(1, primeDivisors, [], [], null, 1);
-		const queue = new PriorityQueue<TauNumberFactorization>();
-		queue.insert(ONE, 1);
-		return TauNumbers.minTauNumberSearch(queue, requiredDivisors, upperBound);
-	}
-
-	static minTauNumberSearch(queue: PriorityQueue<TauNumberFactorization>, requiredDivisors: number, upperBound: number) {
-		while(!queue.isEmpty()) {
-			const current = queue.pop();
-			// console.log(`currently checking: ${current.logMessage(requiredDivisors)}`);
-			if(current.isDone(requiredDivisors)) {
-				return current.product;
-			}
-			for(const next of current.next(requiredDivisors, upperBound)) {
-				// console.log(`adding to queue: ${next.logMessage(requiredDivisors)}`);
-				queue.insert(next, next.product);
-			}
-		}
-		return Infinity;
-	}
-
 	static tauSum(upperBound: number) {
 		let sum = 0;
 		const maxDivisors = 2 * (Math.sqrt(upperBound) - 1) + 1;
@@ -150,7 +35,7 @@ export class TauNumbers {
 }
 
 
-console.time();
-console.log(TauNumbers.tauSum(10 ** 10));
-console.timeEnd();
-debugger;
+// console.time();
+// console.log(TauNumbers.tauSum(10 ** 10));
+// console.timeEnd();
+// debugger;
