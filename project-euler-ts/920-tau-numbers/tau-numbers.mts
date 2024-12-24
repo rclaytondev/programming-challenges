@@ -2,6 +2,23 @@ import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Sequence } from "../../utils-ts/modules/math/Sequence.mjs";
 import { PriorityQueue } from "../../utils-ts/modules/PriorityQueue.mjs";
 
+class GeneratedIterable<T> {
+	values: T[];
+	generator: Generator<T>;
+
+	constructor(generator: Generator<T>) {
+		this.values = [];
+		this.generator = generator;
+	}
+	*[Symbol.iterator]() {
+		yield* this.values;
+		for(const value of this.generator) {
+			this.values.push(value);
+			yield value;
+		}
+	}
+}
+
 class TauNumberFactorization {
 	product: number;
 	primes: number[];
