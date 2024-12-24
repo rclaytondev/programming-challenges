@@ -78,6 +78,8 @@ export class TauNumberFactorization {
 	}
 }
 
+type Result = { answer: number } | { strictLowerBound: number };
+
 export class TauNumbers {
 	static nextPrime(start: number, primesToSkip: number[]) {
 		for(let i = start + 1; true; i ++) {
@@ -87,6 +89,11 @@ export class TauNumbers {
 		}
 	}
 
+	static cache = new Map<string, Result>();
+	static getCacheKey(factorization: TauNumberFactorization) {
+		return `${factorization.primes}; ${factorization.nextPrime}; ${factorization.nextMaxExponent}; ${factorization.remainingMinExponents}; ${factorization.remainingDivisors}`;
+	}
+
 	static completion(factorization: TauNumberFactorization) {
 		if(factorization.isComplete()) {
 			return 1;
@@ -94,9 +101,26 @@ export class TauNumbers {
 		if(factorization.upperBound < 1) {
 			return Infinity;
 		}
+
+		const cacheKey = TauNumbers.getCacheKey(factorization);
+		const result = TauNumbers.cache.get(cacheKey);
+		if(result && "answer" in result) {
+			return (result.answer <= factorization.upperBound) ? result.answer : Infinity;
+		}
+		else if(result && "strictLowerBound" in result && factorization.upperBound <= result.strictLowerBound) {
+			return Infinity;
+		}
+
 		let min = Infinity;
 		for(const [next, exponent] of factorization.next()) {
 			min = Math.min(min, TauNumbers.completion(next) * (factorization.nextPrime ** exponent));
+		}
+
+		if(min === Infinity) {
+			TauNumbers.cache.set(cacheKey, { strictLowerBound: factorization.upperBound });
+		}
+		else {
+			TauNumbers.cache.set(cacheKey, { answer: min });
 		}
 		return min;
 	}
