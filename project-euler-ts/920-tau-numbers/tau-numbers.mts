@@ -25,15 +25,13 @@ export class TauNumberFactorization {
 	nextMaxExponent: number;
 	minExponents: number[];
 	remainingDivisors: number;
-	upperBound: number;
 
-	constructor(primes: number[], nextPrime: number, nextMaxExponent: number, minExponents: number[], remainingDivisors: number, upperBound: number) {
+	constructor(primes: number[], nextPrime: number, nextMaxExponent: number, minExponents: number[], remainingDivisors: number) {
 		this.primes = primes;
 		this.nextPrime = nextPrime;
 		this.nextMaxExponent = nextMaxExponent;
 		this.minExponents = minExponents;
 		this.remainingDivisors = remainingDivisors;
-		this.upperBound = upperBound;
 	}
 
 	next() {
@@ -59,7 +57,6 @@ export class TauNumberFactorization {
 				Infinity,
 				this.minExponents,
 				this.remainingDivisors / (exponent + 1),
-				Math.floor(this.upperBound / (this.nextPrime ** exponent))
 			);
 		}
 		else {
@@ -69,7 +66,6 @@ export class TauNumberFactorization {
 				exponent,
 				this.minExponents,
 				this.remainingDivisors / (exponent + 1),
-				Math.floor(this.upperBound / (this.nextPrime ** exponent))
 			);
 		}
 	}
