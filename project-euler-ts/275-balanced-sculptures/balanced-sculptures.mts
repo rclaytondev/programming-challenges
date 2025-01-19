@@ -1,5 +1,6 @@
 import { Vector } from "../../utils-ts/modules/geometry/Vector.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
+import { INPUT } from "./balanced-sculptures-2.mjs";
 import { HashPartition } from "./HashPartition.mjs";
 
 type SculptureInfo = {
@@ -226,3 +227,8 @@ export const balancedSculptures = (blocks: number) => {
 	}
 	return count;
 };
+
+console.time();
+console.log(`1st algorithm outputs ${balancedSculptures(INPUT)}`);
+console.timeEnd();
+debugger;
