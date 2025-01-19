@@ -342,7 +342,7 @@ export const balancedSculptures = (blocks: number) => {
 	return symmetrical + pairs;
 };
 
-export const INPUT = 8;
+export const INPUT = 1;
 
 console.time();
 console.log(`2nd algorithm outputs ${balancedSculptures(INPUT)}`);

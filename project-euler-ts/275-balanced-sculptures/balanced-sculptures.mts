@@ -231,4 +231,4 @@ export const balancedSculptures = (blocks: number) => {
 console.time();
 console.log(`1st algorithm outputs ${balancedSculptures(INPUT)}`);
 console.timeEnd();
-debugger;
+// debugger;
