@@ -214,7 +214,7 @@ export class SculpturesCounter {
 				(([side1, r1], [side2, r2]) => r1.intersects(r2) || (side1 === side2 && r1.isAdjacentTo(r2)))
 			);
 			if(isValid) {
-				const sculpture = new HashSet(components.flatMap(c => c.points(left, right)));
+				const sculpture = new HashSet<Vector>([]);
 				return GeneratedIterable.fromIterable([sculpture], 1);
 			}
 			return GeneratedIterable.EMPTY<Sculpture>();
@@ -244,8 +244,9 @@ export class SculpturesCounter {
 					const leftSculptures = SculpturesCounter.memoizedSculptures(left, middle, leftBlocks, leftWeight, leftComponents);
 					if(leftSculptures.length === 0) { continue; }
 					const rightSculptures = SculpturesCounter.memoizedSculptures(middle, right, rightBlocks, rightWeight, rightComponents);
+					const middleColumn: Sculpture = new HashSet(leftComponents.flatMap(c => c.right.flatMap(c => c.values().map(y => new Vector(middle, y)))));
 					result = GeneratedIterable.concat(result, (mode === "initial-symmetric") ? leftSculptures :
-						GeneratedIterable.mapPairs(leftSculptures, rightSculptures, HashSet.union)
+						GeneratedIterable.mapPairs(leftSculptures, rightSculptures, (l, r) => HashSet.union(l, r, middleColumn))
 					);
 				}
 			}

@@ -2,6 +2,8 @@ import { describe } from "mocha";
 import { allSculptures, balancedSculptures, Component, Range, Sculpture, SculpturesCounter, symmetricalSculptures } from "./balanced-sculptures-2.mjs";
 import { assert } from "chai";
 import { GeneratedIterable } from "./GeneratedIterable.mjs";
+import { HashSet } from "../../utils-ts/modules/HashSet.mjs";
+import { Vector } from "../../utils-ts/modules/geometry/Vector.mjs";
 
 let storedCache = new Map<string, GeneratedIterable<Sculpture>>();
 const setupCacheHooks = () => {
@@ -73,10 +75,15 @@ describe("SculpturesCounter.sculptures", () => {
 		const result = SculpturesCounter.sculptures(0, 2, 1, 1, components);
 		assert.equal(result.length, 2);
 	});
-	it("works when two vertical columns can be connected in 3 ways using 1 block", () => {
+	it("works when two vertical columns can be connected in 3 ways using 1 block; and outputs the correct list of sculptures", () => {
 		const components = [new Component([new Range(0, 2)], [new Range(0, 2)])];
-		const result = SculpturesCounter.sculptures(0, 2, 1, 1, components);
-		assert.equal(result.length, 3);
+		const result = new HashSet(SculpturesCounter.sculptures(0, 2, 1, 1, components));
+		const expected = new HashSet([
+			new HashSet([new Vector(1, 0)]),
+			new HashSet([new Vector(1, 1)]),
+			new HashSet([new Vector(1, 2)]),
+		]);
+		assert.isTrue(result.equals(expected));
 	});
 	it("works when two vertical columns can be connected in many ways by 1 block", () => {
 		const components = [new Component([new Range(0, 4)], [new Range(0, 4)])];
