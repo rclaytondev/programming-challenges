@@ -1,12 +1,13 @@
 import { describe } from "mocha";
-import { allSculptures, balancedSculptures, Component, Range, SculpturesCounter, symmetricalSculptures } from "./balanced-sculptures-2.mjs";
+import { allSculptures, balancedSculptures, Component, Range, Sculpture, SculpturesCounter, symmetricalSculptures } from "./balanced-sculptures-2.mjs";
 import { assert } from "chai";
+import { GeneratedIterable } from "./GeneratedIterable.mjs";
 
-let storedCache = new Map<string, bigint>();
+let storedCache = new Map<string, GeneratedIterable<Sculpture>>();
 const setupCacheHooks = () => {
 	beforeEach(() => {
 		storedCache = SculpturesCounter.cache;
-		SculpturesCounter.cache = new Map<string, bigint>();
+		SculpturesCounter.cache = new Map<string, GeneratedIterable<Sculpture>>();
 	});
 	afterEach(() => {
 		SculpturesCounter.cache = storedCache;
@@ -18,12 +19,12 @@ describe("SculpturesCounter.sculptures", () => {
 	it("returns 1 when left=right and weight=blocks=0 and everything is valid", () => {
 		const ranges = [new Range(10)];
 		const result = SculpturesCounter.sculptures(7, 7, 0, 0, [new Component(ranges, ranges)]);
-		assert.equal(result, 1n);
+		assert.equal(result.length, 1);
 	});
 	it("returns 0 when left=right and the components are not connected", () => {
 		const ranges = [new Range(10), new Range(12)];
 		const result = SculpturesCounter.sculptures(7, 7, 0, 0, [new Component(ranges, ranges)]);
-		assert.equal(result, 0n);
+		assert.equal(result.length, 0);
 	});
 	it("returns 0 when left=right and there are different components that are connected to each other", () => {
 		const ranges1 = [new Range(10, 11)];
@@ -31,17 +32,17 @@ describe("SculpturesCounter.sculptures", () => {
 		const result = SculpturesCounter.sculptures(7, 7, 0, 0, [
 			new Component(ranges1, ranges1), new Component(ranges2, ranges2)
 		]);
-		assert.equal(result, 0n);
+		assert.equal(result.length, 0);
 	});
 	it("returns 1 when right=left+1 and weight=blocks=0 and everything is valid", () => {
 		const component = new Component([new Range(1, 2)], [new Range(2, 3)]);
 		const result = SculpturesCounter.sculptures(3, 4, 0, 0, [component]);
-		assert.equal(result, 1n);
+		assert.equal(result.length, 1);
 	});
 	it("returns 0 when right=left+1 and there are components that are not connected", () => {
 		const component = new Component([new Range(1, 2)], [new Range(3, 4)]);
 		const result = SculpturesCounter.sculptures(3, 4, 0, 0, [component]);
-		assert.equal(result, 0n);
+		assert.equal(result.length, 0);
 	});
 	it("returns 0 when right=left+1 and there are different components that are connected to each other", () => {
 		const components = [
@@ -49,94 +50,94 @@ describe("SculpturesCounter.sculptures", () => {
 			new Component([], [new Range(2, 3)])
 		];
 		const result = SculpturesCounter.sculptures(3, 4, 0, 0, components);
-		assert.equal(result, 0n);
+		assert.equal(result.length, 0);
 	});
 
 	it("works when the components can be connected in exactly 1 way, using 1 block", () => {
 		const components = [new Component([new Range(0)], [new Range(0)])];
 		const result = SculpturesCounter.sculptures(0, 2, 1, 1, components);
-		assert.equal(result, 1n);
+		assert.equal(result.length, 1);
 	});
 	it("works when the components can be connected in 2 ways, using 2 blocks", () => {
 		const components = [new Component([new Range(1)], [new Range(1)])];
 		const result = SculpturesCounter.sculptures(0, 2, 2, 2, components);
-		assert.equal(result, 2n);
+		assert.equal(result.length, 2);
 	});
 	it("works when the components can be connected in 1 way using 2 blocks", () => {
 		const components = [new Component([new Range(1)], [new Range(2)])];
 		const result = SculpturesCounter.sculptures(0, 2, 2, 2, components);
-		assert.equal(result, 1n);
+		assert.equal(result.length, 1);
 	});
 	it("works when two vertical columns can be connected in 2 ways using 1 block", () => {
 		const components = [new Component([new Range(0, 1)], [new Range(0, 1)])];
 		const result = SculpturesCounter.sculptures(0, 2, 1, 1, components);
-		assert.equal(result, 2n);
+		assert.equal(result.length, 2);
 	});
 	it("works when two vertical columns can be connected in 3 ways using 1 block", () => {
 		const components = [new Component([new Range(0, 2)], [new Range(0, 2)])];
 		const result = SculpturesCounter.sculptures(0, 2, 1, 1, components);
-		assert.equal(result, 3n);
+		assert.equal(result.length, 3);
 	});
 	it("works when two vertical columns can be connected in many ways by 1 block", () => {
 		const components = [new Component([new Range(0, 4)], [new Range(0, 4)])];
 		const result = SculpturesCounter.sculptures(0, 2, 1, 1, components);
-		assert.equal(result, 5n);
+		assert.equal(result.length, 5);
 	});
 	it("works when two vertical columns can be connected in 4 ways with 2 blocks", () => {
 		const components = [new Component([new Range(0, 2)], [new Range(0, 2)])];
 		const result = SculpturesCounter.sculptures(0, 2, 2, 2, components);
-		assert.equal(result, 3n + 1n);
+		assert.equal(result.length, 3 + 1);
 	});
 	it("works when two vertical columns can be connected in many ways with 2 blocks", () => {
 		const components = [new Component([new Range(0, 4)], [new Range(0, 4)])];
 		const result = SculpturesCounter.sculptures(0, 2, 2, 2, components);
-		assert.equal(result, 5n * 4n / 2n + 1n);
+		assert.equal(result.length, 5 * 4 / 2 + 1);
 	});
 	it("returns 0 when the components cannot be connected because there are no blocks", () => {
 		const components = [new Component([new Range(0)], [new Range(0)])];
 		const result = SculpturesCounter.sculptures(0, 2, 0, 0, components);
-		assert.equal(result, 0n);
+		assert.equal(result.length, 0);
 	});
 	it("works when one of the sides has no components (TODO: WRITE A BETTER TEST NAME)", () => {
 		const component = new Component([], [new Range(0)]);
 		const result = SculpturesCounter.sculptures(-2, 0, 1, -1, [component]);
-		assert.equal(result, 1n);
+		assert.equal(result.length, 1);
 	});
 
 
 	it("works when two blocks can be connected by a horizontal bar in 1 way", () => {
 		const components = [new Component([new Range(0)], [new Range(0)])];
 		const result = SculpturesCounter.sculptures(0, 4, 3, 1 + 2 + 3, components);
-		assert.equal(result, 1n);
+		assert.equal(result.length, 1);
 	});
 	it("works when two blocks can be connected by a horizontal bar with an extra block", () => {
 		const components = [new Component([new Range(1)], [new Range(1)])];
 		const result = SculpturesCounter.sculptures(0, 3, 3, 1 + 2 + 2, components);
-		assert.equal(result, 2n);
+		assert.equal(result.length, 2);
 	});
 	it("works when two blocks can be connected by a horizontal bar with 2 extra blocks", () => {
 		const components = [new Component([new Range(1)], [new Range(1)])];
 		const result = SculpturesCounter.sculptures(0, 3, 4, 1 + 2 + 1 + 2, components);
-		assert.equal(result, 4n);
+		assert.equal(result.length, 4);
 	});
 
 	it("works when one of the sides has no components", () => {
 		const components = [new Component([new Range(2)], [])];
 		const result = SculpturesCounter.sculptures(0, 4, 2, 1 + 2, components);
-		assert.equal(result, 1n);
+		assert.equal(result.length, 1);
 	});
 	it("works when the region contains columns to the left and right of x=0", () => {
 		const components = [new Component([new Range(1)], [new Range(1)])];
 		const result = SculpturesCounter.sculptures(-2, 1, 4, -1 + 0 + -1 + 0, components);
-		assert.equal(result, 4n);
+		assert.equal(result.length, 4);
 	});
 	it("correctly generates the 1-wide sculptures for the first step", () => {
 		const result = SculpturesCounter.sculptures(-1, 1, 3, 0, [], "initial-all");
-		assert.equal(result, 1n);
+		assert.equal(result.length, 1);
 	});
 	it("correctly generates sculptures starting with the 1-wide sculptures for a more complicated case", () => {
 		const result = SculpturesCounter.sculptures(-2, 2, 3, 0, [], "initial-all");
-		assert.equal(result, 2n);
+		assert.equal(result.length, 2);
 	});
 });
 describe("SculpturesCounter.memoizedSculptures", () => {
@@ -148,30 +149,30 @@ describe("SculpturesCounter.memoizedSculptures", () => {
 	it("works when placing multiple blocks at the bottom of a column", () => {
 		const component = new Component([new Range(0)], [new Range(0)]);
 		const result = SculpturesCounter.memoizedSculptures(0, 2, 3, 3, [component]);
-		assert.equal(result, 1n);
+		assert.equal(result.length, 1);
 	});
 	it("works when placing multiple blocks at the bottom of a column in multiple ways", () => {
 		const component = new Component([new Range(1)], [new Range(1)]);
 		const result = SculpturesCounter.memoizedSculptures(0, 2, 3, 3, [component]);
-		assert.equal(result, 2n);
+		assert.equal(result.length, 2);
 	});
 	it("works when placing multiple blocks near the bottom of a column", () => {
 		const component = new Component([new Range(4)], [new Range(4)]);
 		const result = SculpturesCounter.memoizedSculptures(0, 2, 3, 3, [component]);
-		assert.equal(result, 3n);
+		assert.equal(result.length, 3);
 	});
 	it("works when placing multiple blocks very high in a column", () => {
 		const component = new Component([new Range(10)], [new Range(10)]);
 		const result = SculpturesCounter.memoizedSculptures(0, 2, 3, 3, [component]);
-		assert.equal(result, 3n);
+		assert.equal(result.length, 3);
 	});
 
 	it("avoids duplicate computations using invariance under some vertical translations", () => {
 		const result1 = SculpturesCounter.memoizedSculptures(0, 2, 3, 3, [new Component([new Range(4)], [new Range(4)])]);
 		SculpturesCounter.sculptures = () => { throw new Error("Failed memoization: did not expect the function to be called again."); };
 		const result2 = SculpturesCounter.memoizedSculptures(0, 2, 3, 3, [new Component([new Range(10)], [new Range(10)])]);
-		assert.equal(result1, 3n);
-		assert.equal(result2, 3n);
+		assert.equal(result1.length, 3);
+		assert.equal(result2.length, 3);
 	});
 	it("avoids duplicate computations using invariance under reflection and horizontal translation", () => {
 		const component = new Component([new Range(1)], [new Range(2)]);
@@ -179,84 +180,84 @@ describe("SculpturesCounter.memoizedSculptures", () => {
 		const result1 = SculpturesCounter.memoizedSculptures(1, 4, 3, 2 + 2 + 3, [component]);
 		SculpturesCounter.sculptures = () => { throw new Error("Failed memoization: did not expect the function to be called again."); };
 		const result2 = SculpturesCounter.memoizedSculptures(1, 4, 3, 2 + 3 + 3, [reflected]);
-		assert.equal(result1, 1n);
-		assert.equal(result2, 1n);
+		assert.equal(result1.length, 1);
+		assert.equal(result2.length, 1);
 	});
 	it("avoids duplicate combinations, and works when the components are symmetrical", () => {
 		const result1 = SculpturesCounter.memoizedSculptures(0, 4, 4, 1+2+2+3, [new Component([new Range(1)], [new Range(1)])]);
 		SculpturesCounter.sculptures = () => { throw new Error("Failed memoization: did not expect the function to be called again."); };
 		const result2 = SculpturesCounter.memoizedSculptures(-4, 0, 4, -(1+2+2+3), [new Component([new Range(1)], [new Range(1)])]);
-		assert.equal(result1, 2n);
-		assert.equal(result2, 2n);
+		assert.equal(result1.length, 2);
+		assert.equal(result2.length, 2);
 	});
 	it("avoids duplicate computations, and works when the components are symmetrical but the sculptures are asymmetrical due to the weight", () => {
 		const component = new Component([new Range(1)], [new Range(1)]);
 		const result1 = SculpturesCounter.memoizedSculptures(0, 3, 3, 1+2+2, [component]);
 		SculpturesCounter.sculptures = () => { throw new Error("Failed memoization: did not expect the function to be called again."); };
 		const result2 = SculpturesCounter.memoizedSculptures(0, 3, 3, 1+1+2, [component]);
-		assert.equal(result1, 2n);
-		assert.equal(result2, 2n);
+		assert.equal(result1.length, 2);
+		assert.equal(result2.length, 2);
 	});
 });
 describe("allSculptures", () => {
 	setupCacheHooks();
 	it("can compute the number of sculptures with 1 block, counting symmetrical pairs twice", () => {
 		const result = allSculptures(1);
-		assert.equal(result, 1n);
+		assert.equal(result.length, 1);
 	});
 	it("can compute the number of sculptures with 2 blocks, counting symmetrical pairs twice", () => {
 		const result = allSculptures(2);
-		assert.equal(result, 1n);
+		assert.equal(result.length, 1);
 	});
 	it("can compute the number of sculptures with 2 blocks, counting symmetrical pairs twice", () => {
 		const result = allSculptures(3);
-		assert.equal(result, 2n);
+		assert.equal(result.length, 2);
 	});
 	// it("can compute the number of sculptures with 6 blocks, counting symmetrical pairs twice", () => {
 	// 	const result = allSculptures(6);
-	// 	assert.equal(result, 27n);
+	// 	assert.equal(result.length, 27);
 	// });
 });
 describe("symmetricalSculptures", () => {
 	setupCacheHooks();
 	it("can compute the number of symmetrical sculptures with 1 block", () => {
 		const result = symmetricalSculptures(1);
-		assert.equal(result, 1n);
+		assert.equal(result.length, 1);
 	});
 	it("can compute the number of symmetrical sculptures with 2 blocks", () => {
 		const result = symmetricalSculptures(2);
-		assert.equal(result, 1n);
+		assert.equal(result.length, 1);
 	});
 	it("can compute the number of symmetrical sculptures with 3 blocks", () => {
 		const result = symmetricalSculptures(3);
-		assert.equal(result, 2n);
+		assert.equal(result.length, 2);
 	});
 });
 describe("balancedSculptures", () => {
 	setupCacheHooks();
 	it("correctly counts the balanced sculptures of order 1", () => {
 		const result = balancedSculptures(1);
-		assert.equal(result, 1n);
+		assert.equal(result, 1);
 	});
 	it("correctly counts the balanced sculptures of order 2", () => {
 		const result = balancedSculptures(2);
-		assert.equal(result, 1n);
+		assert.equal(result, 1);
 	});
 	it("correctly counts the balanced sculptures of order 3", () => {
 		const result = balancedSculptures(3);
-		assert.equal(result, 2n); // 2 sculptures: vertical sculpture and a T-shape
+		assert.equal(result, 2); // 2 sculptures: vertical sculpture and a T-shape
 	});
 	it("correctly counts the balanced sculptures of order 4", () => {
 		const result = balancedSculptures(4);
-		assert.equal(result, 4n);
+		assert.equal(result, 4);
 	});
 	it("correctly counts the balanced sculptures of order 5", () => {
 		const result = balancedSculptures(5);
-		assert.equal(result, 9n);
+		assert.equal(result, 9);
 	});
 	it("correctly counts the balanced sculptures of order 6", () => {
 		const result = balancedSculptures(6);
-		assert.equal(result, 18n);
+		assert.equal(result, 18);
 	});
 });
 describe("Component.minBlocksRequired", () => {

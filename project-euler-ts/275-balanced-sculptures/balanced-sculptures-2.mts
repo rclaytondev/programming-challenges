@@ -2,6 +2,7 @@ import { Vector } from "../../utils-ts/modules/geometry/Vector.mjs";
 import { HashSet } from "../../utils-ts/modules/HashSet.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
+import { GeneratedIterable } from "./GeneratedIterable.mjs";
 import { HashPartition } from "./HashPartition.mjs";
 
 export class Component {
@@ -99,6 +100,12 @@ export class Component {
 	translateDown(amount: number) {
 		return new Component(this.left.map(r => r.translate(-amount)), this.right.map(r => r.translate(-amount)));
 	}
+	points(left: number, right: number) {
+		return [
+			...this.left.flatMap(range => range.values().map(y => new Vector(left, y))),
+			...this.right.flatMap(range => range.values().map(y => new Vector(right, y))),
+		];
+	}
 
 	static isSymmetric(leftComponents: Component[], rightComponents: Component[]) {
 		return Utils.arrayEquals(leftComponents, rightComponents, (c1, c2) => c1.isReflectionOf(c2));
@@ -134,6 +141,13 @@ export class Range {
 	translate(amount: number) {
 		return new Range(this.min + amount, this.max + amount);
 	}
+	values() {
+		const result = [];
+		for(let i = this.min; i <= this.max; i ++) {
+			result.push(i);
+		}
+		return result;
+	}
  
 	toString() {
 		return `${this.min}-${this.max}`;
@@ -144,7 +158,7 @@ const inSameSet = <T, >(v1: T, v2: T, partition: Set<Set<T>>) => (
 	[...partition].find(s => s.has(v1)) === [...partition].find(s => s.has(v2))
 );
 
-type Sculpture = HashSet<Vector>;
+export type Sculpture = HashSet<Vector>;
 
 const TRANSFORMATIONS = {
 	REFLECTION: (point: Vector) => new Vector(-point.x, point.y),
@@ -154,10 +168,10 @@ const TRANSFORMATIONS = {
 let calls = 0;
 let memoizedCalls = 0;
 export class SculpturesCounter {
-	static cache = new Map<string, bigint>();
+	static cache = new Map<string, GeneratedIterable<Sculpture>>();
 
 	static memoizedSculptures(left: number, right: number, blocks: number, weight: number, components: Component[], mode: "normal" | "initial-all" | "initial-symmetric" = "normal") {
-		const transformations = [];
+		const transformations: ((point: Vector) => Vector)[] = [];
 
 		memoizedCalls ++;
 		if(mode === "normal") {
@@ -165,17 +179,17 @@ export class SculpturesCounter {
 				[left, right] = [-right, -left];
 				weight = -weight;
 				components = components.map(c => c.reflect());
-				transformations.push(TRANSFORMATIONS.REFLECTION);
+				transformations.unshift(TRANSFORMATIONS.REFLECTION);
 			}
-			transformations.push(TRANSFORMATIONS.TRANSLATION(new Vector(left, 0)));
+			transformations.unshift(TRANSFORMATIONS.TRANSLATION(new Vector(left, 0)));
 			[left, right, weight] = [0, right - left, weight - left * blocks];
 
 			if(right >= left + 2) {
 				const previousBottom = Math.min(...components.map(c => c.bottom()));
 				const blocksRequired = MathUtils.sum(components.map(c => c.minBlocksRequired(right - left - 1)));
-				if(blocksRequired > blocks) { return 0n; }
+				if(blocksRequired > blocks) { return GeneratedIterable.EMPTY<Sculpture>(); }
 				const newBottom = Math.min(previousBottom, blocks - blocksRequired);
-				transformations.push(TRANSFORMATIONS.TRANSLATION(new Vector(0, previousBottom - newBottom)));
+				transformations.unshift(TRANSFORMATIONS.TRANSLATION(new Vector(0, previousBottom - newBottom)));
 				components = components.map(c => c.translateUp(newBottom - previousBottom));
 			}
 		}
@@ -183,23 +197,29 @@ export class SculpturesCounter {
 
 		const argsString = `${left},${right},${blocks},${weight},${components.map(c => c.toString()).sort()},${mode}`;
 		const cachedResult = SculpturesCounter.cache.get(argsString);
-		if(typeof cachedResult === "bigint") {
+		if(cachedResult != null) {
 			return cachedResult;
 		}
-		const result = SculpturesCounter.sculptures(left, right, blocks, weight, components, mode);
+		const result = SculpturesCounter.sculptures(left, right, blocks, weight, components, mode)
+			.map(sculpture => sculpture.map(point => transformations.reduce((p, f) => f(p), point)));
 		SculpturesCounter.cache.set(argsString, result);
 		return result;
 	}
-	static sculptures(left: number, right: number, blocks: number, weight: number, components: Component[], mode: "normal" | "initial-all" | "initial-symmetric" = "normal"): bigint {
+	static sculptures(left: number, right: number, blocks: number, weight: number, components: Component[], mode: "normal" | "initial-all" | "initial-symmetric" = "normal") {
 		calls ++;
 		/* Returns the number of partial sculptures in the region given by `left` and `right` that have the given weight and number of blocks (not including the two edge columns) and connect the given components. */
 		if(right <= left + 1) {
-			return blocks === 0 && weight === 0 && HashPartition.areConnectedComponents<["left" | "right", Range]>(
+			const isValid = blocks === 0 && weight === 0 && HashPartition.areConnectedComponents<["left" | "right", Range]>(
 				components.map(c => [...c.left.map(r => ["left", r]), ...c.right.map(r => ["right", r])] as ["left" | "right", Range][]),
 				(([side1, r1], [side2, r2]) => r1.intersects(r2) || (side1 === side2 && r1.isAdjacentTo(r2)))
-			) ? 1n : 0n;
+			);
+			if(isValid) {
+				const sculpture = new HashSet(components.flatMap(c => c.points(left, right)));
+				return GeneratedIterable.fromIterable([sculpture], 1);
+			}
+			return GeneratedIterable.EMPTY<Sculpture>();
 		}
-		let result = 0n;
+		let result = GeneratedIterable.EMPTY<Sculpture>();
 		const middle = Math.floor((left + right) / 2);
 		const nextComponents = (mode === "normal") ? SculpturesCounter.components(left, right, blocks, components) : SculpturesInitializer.components(blocks);
 		for(const [leftComponents, rightComponents] of nextComponents) {
@@ -222,9 +242,11 @@ export class SculpturesCounter {
 						continue;
 					}
 					const leftSculptures = SculpturesCounter.memoizedSculptures(left, middle, leftBlocks, leftWeight, leftComponents);
-					if(leftSculptures === 0n) { continue; }
+					if(leftSculptures.length === 0) { continue; }
 					const rightSculptures = SculpturesCounter.memoizedSculptures(middle, right, rightBlocks, rightWeight, rightComponents);
-					result += (mode === "initial-symmetric") ? leftSculptures : leftSculptures * rightSculptures;
+					result = GeneratedIterable.concat(result, (mode === "initial-symmetric") ? leftSculptures :
+						GeneratedIterable.mapPairs(leftSculptures, rightSculptures, HashSet.union)
+					);
 				}
 			}
 		}
@@ -352,15 +374,15 @@ export const symmetricalSculptures = (blocks: number) => SculpturesCounter.memoi
 export const balancedSculptures = (blocks: number) => {
 	const total = allSculptures(blocks);
 	const symmetrical = symmetricalSculptures(blocks);
-	const pairs = (total - symmetrical) / 2n;
-	return symmetrical + pairs;
+	const pairs = (total.length - symmetrical.length) / 2;
+	return symmetrical.length + pairs;
 };
 
 export const INPUT = 1;
 
-console.time();
-console.log(`2nd algorithm outputs ${balancedSculptures(INPUT)}`);
-console.timeEnd();
-console.log(`${calls} calls to SculpturesCounter.sculptures`);
-console.log(`${memoizedCalls} calls to SculpturesCounter.memoizedSculptures`);
+// console.time();
+// console.log(`2nd algorithm outputs ${balancedSculptures(INPUT)}`);
+// console.timeEnd();
+// console.log(`${calls} calls to SculpturesCounter.sculptures`);
+// console.log(`${memoizedCalls} calls to SculpturesCounter.memoizedSculptures`);
 // debugger;
