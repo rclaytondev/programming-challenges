@@ -1,3 +1,5 @@
+import { Vector } from "../../utils-ts/modules/geometry/Vector.mjs";
+import { HashSet } from "../../utils-ts/modules/HashSet.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 import { HashPartition } from "./HashPartition.mjs";
@@ -142,19 +144,30 @@ const inSameSet = <T, >(v1: T, v2: T, partition: Set<Set<T>>) => (
 	[...partition].find(s => s.has(v1)) === [...partition].find(s => s.has(v2))
 );
 
+type Sculpture = HashSet<Vector>;
+
+const TRANSFORMATIONS = {
+	REFLECTION: (point: Vector) => new Vector(-point.x, point.y),
+	TRANSLATION: (offset: Vector) => ((point: Vector) => point.add(offset))
+};
+
 let calls = 0;
 let memoizedCalls = 0;
 export class SculpturesCounter {
 	static cache = new Map<string, bigint>();
 
 	static memoizedSculptures(left: number, right: number, blocks: number, weight: number, components: Component[], mode: "normal" | "initial-all" | "initial-symmetric" = "normal") {
+		const transformations = [];
+
 		memoizedCalls ++;
 		if(mode === "normal") {
 			if(`${components},${weight - left * blocks}` < `${components.map(c => c.reflect())},${-weight - (-right) * blocks}`) {
 				[left, right] = [-right, -left];
 				weight = -weight;
 				components = components.map(c => c.reflect());
+				transformations.push(TRANSFORMATIONS.REFLECTION);
 			}
+			transformations.push(TRANSFORMATIONS.TRANSLATION(new Vector(left, 0)));
 			[left, right, weight] = [0, right - left, weight - left * blocks];
 
 			if(right >= left + 2) {
@@ -162,6 +175,7 @@ export class SculpturesCounter {
 				const blocksRequired = MathUtils.sum(components.map(c => c.minBlocksRequired(right - left - 1)));
 				if(blocksRequired > blocks) { return 0n; }
 				const newBottom = Math.min(previousBottom, blocks - blocksRequired);
+				transformations.push(TRANSFORMATIONS.TRANSLATION(new Vector(0, previousBottom - newBottom)));
 				components = components.map(c => c.translateUp(newBottom - previousBottom));
 			}
 		}
