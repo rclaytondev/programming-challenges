@@ -105,7 +105,7 @@ describe("SculpturesCounter.sculptures", () => {
 		const result = SculpturesCounter.sculptures(0, 2, 0, 0, components);
 		assert.equal(result.length, 0);
 	});
-	it("works when one of the sides has no components (TODO: WRITE A BETTER TEST NAME)", () => {
+	it("works when one of the sides has no components", () => {
 		const component = new Component([], [new Range(0)]);
 		const result = SculpturesCounter.sculptures(-2, 0, 1, -1, [component]);
 		assert.equal(result.length, 1);
@@ -128,7 +128,7 @@ describe("SculpturesCounter.sculptures", () => {
 		assert.equal(result.length, 4);
 	});
 
-	it("works when one of the sides has no components", () => {
+	it("works when one of the sides has no components and the sculpture is wider than 1 unit", () => {
 		const components = [new Component([new Range(2)], [])];
 		const result = SculpturesCounter.sculptures(0, 4, 2, 1 + 2, components);
 		assert.equal(result.length, 1);
@@ -216,7 +216,7 @@ describe("allSculptures", () => {
 		const result = allSculptures(2);
 		assert.equal(result.length, 1);
 	});
-	it("can compute the number of sculptures with 2 blocks, counting symmetrical pairs twice", () => {
+	it("can compute the number of sculptures with 3 blocks, counting symmetrical pairs twice", () => {
 		const result = allSculptures(3);
 		assert.equal(result.length, 2);
 	});
