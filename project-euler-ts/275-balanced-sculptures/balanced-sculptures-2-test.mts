@@ -238,6 +238,16 @@ describe("allSculptures", () => {
 		const T_SHAPE = new HashSet([ new Vector(0, 0), new Vector(-1, 0), new Vector(1, 0) ]);
 		assert.isTrue(new HashSet(result).equals(new HashSet([T_SHAPE, VERTICAL])));
 	});
+	it("can compute the list of all the sculptures with 4 non-plinth blocks", () => {
+		const result = new HashSet(allSculptures(4));
+		const VERTICAL = new HashSet([ new Vector(0, 0), new Vector(0, 1), new Vector(0, 2), new Vector(0, 3) ]);
+		const UPSIDE_DOWN_T = new HashSet([ new Vector(0, 0), new Vector(0, 1), new Vector(-1, 0), new Vector(1, 0) ]);
+		const Z_SHAPE_1 = new HashSet([ new Vector(0, 0), new Vector(0, 1), new Vector(-1, 0), new Vector(1, 1) ]);
+		const Z_SHAPE_2 = new HashSet([ new Vector(0, 0), new Vector(0, 1), new Vector(-1, 1), new Vector(1, 0) ]);
+		const T_SHAPE = new HashSet([ new Vector(0, 0), new Vector(0, 1), new Vector(-1, 1), new Vector(1, 1) ]);
+		const expected = new HashSet([VERTICAL, UPSIDE_DOWN_T, Z_SHAPE_1, Z_SHAPE_2, T_SHAPE]);
+		assert.isTrue(result.equals(expected));
+	});
 });
 describe("symmetricalSculptures", () => {
 	setupCacheHooks();
