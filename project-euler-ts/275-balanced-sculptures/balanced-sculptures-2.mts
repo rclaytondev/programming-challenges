@@ -198,12 +198,11 @@ export class SculpturesCounter {
 		const argsString = `${left},${right},${blocks},${weight},${components.map(c => c.toString()).sort()},${mode}`;
 		const cachedResult = SculpturesCounter.cache.get(argsString);
 		if(cachedResult != null) {
-			return cachedResult;
+			return cachedResult.map(sculpture => sculpture.map(point => transformations.reduce((p, f) => f(p), point)));
 		}
-		const result = SculpturesCounter.sculptures(left, right, blocks, weight, components, mode)
-			.map(sculpture => sculpture.map(point => transformations.reduce((p, f) => f(p), point)));
+		const result = SculpturesCounter.sculptures(left, right, blocks, weight, components, mode);
 		SculpturesCounter.cache.set(argsString, result);
-		return result;
+		return result.map(sculpture => sculpture.map(point => transformations.reduce((p, f) => f(p), point)));
 	}
 	static sculptures(left: number, right: number, blocks: number, weight: number, components: Component[], mode: "normal" | "initial-all" | "initial-symmetric" = "normal") {
 		calls ++;

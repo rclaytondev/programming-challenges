@@ -224,6 +224,20 @@ describe("allSculptures", () => {
 	// 	const result = allSculptures(6);
 	// 	assert.equal(result.length, 27);
 	// });
+
+	it("can compute the list of all the sculptures with 2 non-plinth blocks", () => {
+		const result = allSculptures(2);
+		const expected = [
+			new HashSet([ new Vector(0, 0), new Vector(0, 1) ])
+		];
+		assert.isTrue(new HashSet(result).equals(new HashSet(expected)));
+	});
+	it("can compute the list of all the sculptures with 3 non-plinth blocks", () => {
+		const result = allSculptures(3);
+		const VERTICAL = new HashSet([ new Vector(0, 0), new Vector(0, 1), new Vector(0, 2) ]);
+		const T_SHAPE = new HashSet([ new Vector(0, 0), new Vector(-1, 0), new Vector(1, 0) ]);
+		assert.isTrue(new HashSet(result).equals(new HashSet([T_SHAPE, VERTICAL])));
+	});
 });
 describe("symmetricalSculptures", () => {
 	setupCacheHooks();
