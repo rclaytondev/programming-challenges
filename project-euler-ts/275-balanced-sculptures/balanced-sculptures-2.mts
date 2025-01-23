@@ -305,6 +305,28 @@ export class SculpturesCounter {
 		}
 		return rangeCombinations;
 	}
+
+	static visualize(sculpture: Sculpture) {
+		const SQUARE = "■";
+		const left = Math.min(...[...sculpture].map(v => v.x));
+		const right = Math.max(...[...sculpture].map(v => v.x));
+		const top = Math.max(...[...sculpture].map(v => v.y));
+		const bottom = Math.min(...[...sculpture].map(v => v.y));
+		const rows = [];
+		for(let y = bottom; y <= top; y ++) {
+			let row = "";
+			for(let x = left; x <= right; x ++) {
+				row += (sculpture.has(new Vector(x, y)) ? SQUARE : " ");
+			}
+			rows.push(row);
+		}
+		return "\n" + rows.join("\n");
+	}
+	static visualizeAll(sculptures: Sculpture[]) {
+		for(const sculpture of sculptures) {
+			console.log(SculpturesCounter.visualize(sculpture));
+		}
+	}
 }
 
 export class SculpturesInitializer {
