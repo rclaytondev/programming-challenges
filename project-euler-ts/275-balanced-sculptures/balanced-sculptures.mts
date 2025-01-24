@@ -186,7 +186,7 @@ export class PartialSculpture {
 	}
 
 	completions(mode: "symmetrical" | "asymmetrical") {
-		const sideBlocks = new HashSet(this.components.values());
+		const sideBlocks = new HashSet(this.components.values()).filter(v => Math.abs(v.x) === this.maxX);
 		if(this.blocksLeft === 0) {
 			const balanced = this.weightDifference === 0;
 			const connected = this.components.numSets === 1;
