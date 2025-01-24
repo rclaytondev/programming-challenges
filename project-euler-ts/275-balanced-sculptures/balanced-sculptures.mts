@@ -185,7 +185,7 @@ export class PartialSculpture {
 		return result;
 	}
 
-	completions(mode: "symmetrical" | "asymmetrical") {
+	completions(mode: "symmetrical" | "asymmetrical"): GeneratedIterable<Sculpture> {
 		const sideBlocks = new HashSet(this.components.values()).filter(v => Math.abs(v.x) === this.maxX);
 		if(this.blocksLeft === 0) {
 			const balanced = this.weightDifference === 0;
@@ -197,10 +197,9 @@ export class PartialSculpture {
 		if(cachedResults.has(sculptureString)) {
 			return cachedResults.get(sculptureString)!;
 		}
-		let result = GeneratedIterable.EMPTY<HashSet<Vector>>();
-		for(const child of this.children()) {
-			result = GeneratedIterable.concat(result, child.completions(mode).map(c => HashSet.union(c, sideBlocks)));
-		}
+		const result = GeneratedIterable.concat(
+			...this.children().map(child => child.completions(mode).map(c => HashSet.union(c, sideBlocks)))
+		);
 		cachedResults.set(sculptureString, result);
 		return result;
 	}

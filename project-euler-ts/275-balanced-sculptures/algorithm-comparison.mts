@@ -18,4 +18,4 @@ const compare = (blocks: number) => {
 	}
 	debugger;
 };
-compare(7);
+compare(9);
