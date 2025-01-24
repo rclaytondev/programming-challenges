@@ -4,6 +4,7 @@ import { assert } from "chai";
 import { GeneratedIterable } from "./GeneratedIterable.mjs";
 import { HashSet } from "../../utils-ts/modules/HashSet.mjs";
 import { Vector } from "../../utils-ts/modules/geometry/Vector.mjs";
+import { PartialSculpture } from "./balanced-sculptures.mjs";
 
 let storedCache = new Map<string, GeneratedIterable<Sculpture>>();
 const setupCacheHooks = () => {
@@ -247,6 +248,24 @@ describe("allSculptures", () => {
 		const T_SHAPE = new HashSet([ new Vector(0, 0), new Vector(0, 1), new Vector(-1, 1), new Vector(1, 1) ]);
 		const expected = new HashSet([VERTICAL, UPSIDE_DOWN_T, Z_SHAPE_1, Z_SHAPE_2, T_SHAPE]);
 		assert.isTrue(result.equals(expected));
+	});
+	it("can compute a list of the sculptures with 5 non-plinth blocks, matching the previous algorithm and with each sculpture having the correct number of blocks", () => {
+		const result = new HashSet(allSculptures(5));
+		const oldAlgorithmResult = new HashSet(PartialSculpture.allSculptures(5));
+		assert.isTrue(result.equals(oldAlgorithmResult));
+		assert.isTrue([...result].every(s => s.size === 5));
+	});
+	it("can compute a list of the sculptures with 6 non-plinth blocks, matching the previous algorithm and with each sculpture having the correct number of blocks", () => {
+		const result = new HashSet(allSculptures(6));
+		const oldAlgorithmResult = new HashSet(PartialSculpture.allSculptures(6));
+		assert.isTrue(result.equals(oldAlgorithmResult));
+		assert.isTrue([...result].every(s => s.size === 6));
+	});
+	it("can compute a list of the sculptures with 7 non-plinth blocks, matching the previous algorithm and with each sculpture having the correct number of blocks", () => {
+		const result = new HashSet(allSculptures(7));
+		const oldAlgorithmResult = new HashSet(PartialSculpture.allSculptures(7));
+		assert.isTrue(result.equals(oldAlgorithmResult));
+		assert.isTrue([...result].every(s => s.size === 7));
 	});
 });
 describe("symmetricalSculptures", () => {
