@@ -3,6 +3,7 @@ import { balancedSculptures, PartialSculpture } from "./balanced-sculptures.mjs"
 import { assert } from "chai";
 import { HashPartition } from "./HashPartition.mjs";
 import { Vector } from "../../utils-ts/modules/geometry/Vector.mjs";
+import { HashSet } from "../../utils-ts/modules/HashSet.mjs";
 
 describe("PartialSculpture.getChild", () => {
 	it("returns the new partial sculpture with the given columns added to the left and right", () => {
@@ -65,6 +66,30 @@ describe("balancedSculptures", () => {
 	it("correctly counts the balanced sculptures of order 5", () => {
 		const result = balancedSculptures(5);
 		assert.equal(result, 9);
+	});
+
+	it("can correctly compute the list of sculptures of order 2", () => {
+		const result = new HashSet(PartialSculpture.allSculptures(2));
+		const expected = [
+			new HashSet([ new Vector(0, 0), new Vector(0, 1) ])
+		];
+		assert.isTrue(new HashSet(result).equals(new HashSet(expected)));
+	});
+	it("can compute the list of all the sculptures with 3 non-plinth blocks", () => {
+		const result = new HashSet(PartialSculpture.allSculptures(3));
+		const VERTICAL = new HashSet([ new Vector(0, 0), new Vector(0, 1), new Vector(0, 2) ]);
+		const T_SHAPE = new HashSet([ new Vector(0, 0), new Vector(-1, 0), new Vector(1, 0) ]);
+		assert.isTrue(new HashSet(result).equals(new HashSet([T_SHAPE, VERTICAL])));
+	});
+	it("can compute the list of all the sculptures with 4 non-plinth blocks", () => {
+		const result = new HashSet(PartialSculpture.allSculptures(4));
+		const VERTICAL = new HashSet([ new Vector(0, 0), new Vector(0, 1), new Vector(0, 2), new Vector(0, 3) ]);
+		const UPSIDE_DOWN_T = new HashSet([ new Vector(0, 0), new Vector(0, 1), new Vector(-1, 0), new Vector(1, 0) ]);
+		const Z_SHAPE_1 = new HashSet([ new Vector(0, 0), new Vector(0, 1), new Vector(-1, 0), new Vector(1, 1) ]);
+		const Z_SHAPE_2 = new HashSet([ new Vector(0, 0), new Vector(0, 1), new Vector(-1, 1), new Vector(1, 0) ]);
+		const T_SHAPE = new HashSet([ new Vector(0, 0), new Vector(0, 1), new Vector(-1, 1), new Vector(1, 1) ]);
+		const expected = new HashSet([VERTICAL, UPSIDE_DOWN_T, Z_SHAPE_1, Z_SHAPE_2, T_SHAPE]);
+		assert.isTrue(result.equals(expected));
 	});
 
 	// test cases from Project Euler

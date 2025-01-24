@@ -186,11 +186,12 @@ export class PartialSculpture {
 	}
 
 	completions(mode: "symmetrical" | "asymmetrical") {
+		const sideBlocks = new HashSet(this.components.values());
 		if(this.blocksLeft === 0) {
 			const balanced = this.weightDifference === 0;
 			const connected = this.components.numSets === 1;
 			const matchesMode = this.symmetrical === (mode === "symmetrical");
-			return GeneratedIterable.fromIterable((balanced && connected && matchesMode) ? [new HashSet<Vector>([])] : []);
+			return GeneratedIterable.fromIterable((balanced && connected && matchesMode) ? [sideBlocks] : []);
 		}
 		const sculptureString = `${this.toString()}, ${mode}`;
 		if(cachedResults.has(sculptureString)) {
@@ -198,7 +199,7 @@ export class PartialSculpture {
 		}
 		let result = GeneratedIterable.EMPTY<HashSet<Vector>>();
 		for(const child of this.children()) {
-			result = GeneratedIterable.concat(result, child.completions(mode));
+			result = GeneratedIterable.concat(result, child.completions(mode).map(c => HashSet.union(c, sideBlocks)));
 		}
 		cachedResults.set(sculptureString, result);
 		return result;
@@ -213,7 +214,7 @@ export class PartialSculpture {
 		for(const verticalSculpture of verticalSculptures) {
 			result = GeneratedIterable.concat(result, verticalSculpture.completions(mode));
 		}
-		return result;
+		return result.map(s => s.map(v => v.add(0, -1)));
 	}
 	static allSculptures(blocks: number) {
 		return [
