@@ -48,37 +48,37 @@ describe("PartialSculpture.getChild", () => {
 describe("balancedSculptures", () => {
 	it("correctly counts the balanced sculptures of order 1", () => {
 		const result = balancedSculptures(1);
-		assert.equal(result, 1n);
+		assert.equal(result, 1);
 	});
 	it("correctly counts the balanced sculptures of order 2", () => {
 		const result = balancedSculptures(2);
-		assert.equal(result, 1n);
+		assert.equal(result, 1);
 	});
 	it("correctly counts the balanced sculptures of order 3", () => {
 		const result = balancedSculptures(3);
-		assert.equal(result, 2n); // 2 sculptures: vertical sculpture and a T-shape
+		assert.equal(result, 2); // 2 sculptures: vertical sculpture and a T-shape
 	});
 	it("correctly counts the balanced sculptures of order 4", () => {
 		const result = balancedSculptures(4);
-		assert.equal(result, 4n);
+		assert.equal(result, 4);
 	});
 	it("correctly counts the balanced sculptures of order 5", () => {
 		const result = balancedSculptures(5);
-		assert.equal(result, 9n);
+		assert.equal(result, 9);
 	});
 
 	// test cases from Project Euler
 	it("correctly counts the balanced sculptures of order 6", () => {
 		const result = balancedSculptures(6);
-		assert.equal(result, 18n);
+		assert.equal(result, 18);
 	});
 	// it("correctly counts the balanced sculptures of order 10", () => {
 	// 	const result = balancedSculptures(10);
-	// 	assert.equal(result, 964n);
+	// 	assert.equal(result, 964);
 	// });
 	// it("correctly counts the balanced sculptures of order 15", () => {
 	// 	const result = balancedSculptures(15);
-	// 	assert.equal(result, 360505n);
+	// 	assert.equal(result, 360505);
 	// });
 });
 describe("PartialSculpture.nextBlockCounts", () => {

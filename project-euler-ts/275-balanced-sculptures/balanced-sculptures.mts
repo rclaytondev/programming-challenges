@@ -1,6 +1,8 @@
 import { Vector } from "../../utils-ts/modules/geometry/Vector.mjs";
+import { HashSet } from "../../utils-ts/modules/HashSet.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 import { INPUT } from "./balanced-sculptures-2.mjs";
+import { GeneratedIterable } from "./GeneratedIterable.mjs";
 import { HashPartition } from "./HashPartition.mjs";
 
 type SculptureInfo = {
@@ -13,7 +15,7 @@ type SculptureInfo = {
 	components: HashPartition<Vector>;
 };
 
-const cachedResults = new Map<string, bigint>();
+const cachedResults = new Map<string, GeneratedIterable<HashSet<Vector>>>();
 
 export class PartialSculpture {
 	leftColumn: Set<number>;
@@ -188,15 +190,15 @@ export class PartialSculpture {
 			const balanced = this.weightDifference === 0;
 			const connected = this.components.numSets === 1;
 			const matchesMode = this.symmetrical === (mode === "symmetrical");
-			return (balanced && connected && matchesMode) ? 1n : 0n;
+			return GeneratedIterable.fromIterable((balanced && connected && matchesMode) ? [new HashSet<Vector>([])] : []);
 		}
 		const sculptureString = `${this.toString()}, ${mode}`;
 		if(cachedResults.has(sculptureString)) {
 			return cachedResults.get(sculptureString)!;
 		}
-		let result = 0n;
+		let result = GeneratedIterable.EMPTY<HashSet<Vector>>();
 		for(const child of this.children()) {
-			result += child.completions(mode);
+			result = GeneratedIterable.concat(result, child.completions(mode));
 		}
 		cachedResults.set(sculptureString, result);
 		return result;
@@ -208,10 +210,10 @@ export class PartialSculpture {
 }
 
 export const balancedSculptures = (blocks: number) => {
-	let count = 0n;
+	let count = 0;
 	for(const sculpture of PartialSculpture.verticalSculptures(blocks)) {
-		count += sculpture.completions("symmetrical");
-		count += sculpture.completions("asymmetrical") / 2n;
+		count += sculpture.completions("symmetrical").length;
+		count += sculpture.completions("asymmetrical").length / 2;
 	}
 	return count;
 };
