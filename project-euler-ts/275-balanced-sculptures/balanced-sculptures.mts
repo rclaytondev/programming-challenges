@@ -183,36 +183,23 @@ export class PartialSculpture {
 		return result;
 	}
 
-	completionsTimes2() {
+	completions(mode: "symmetrical" | "asymmetrical") {
 		if(this.blocksLeft === 0) {
-			if(this.weightDifference !== 0 || this.components.numSets !== 1) { return 0n; }
-			return this.symmetrical ? 2n : 1n;
+			const balanced = this.weightDifference === 0;
+			const connected = this.components.numSets === 1;
+			const matchesMode = this.symmetrical === (mode === "symmetrical");
+			return (balanced && connected && matchesMode) ? 1n : 0n;
 		}
-		if(this.blocksLeft === 1) {
-			if(this.components.numSets !== 1) {
-				return 0n;
-			}
-			if(this.weightDifference === this.maxX + 1) {
-				return BigInt(this.leftColumn.size);
-			}
-			if(this.weightDifference === -(this.maxX + 1)) {
-				return BigInt(this.rightColumn.size);
-			}
-			return 0n;
-		}
-		const sculptureString = this.toString();
+		const sculptureString = `${this.toString()}, ${mode}`;
 		if(cachedResults.has(sculptureString)) {
 			return cachedResults.get(sculptureString)!;
 		}
 		let result = 0n;
 		for(const child of this.children()) {
-			result += child.completionsTimes2();
+			result += child.completions(mode);
 		}
 		cachedResults.set(sculptureString, result);
 		return result;
-	}
-	completions() {
-		return this.completionsTimes2() / 2n;
 	}
 	toString() {
 		const componentsString = this.components.sets().map(set => `[${[...set].sort()}]`).join(", ");
@@ -223,12 +210,13 @@ export class PartialSculpture {
 export const balancedSculptures = (blocks: number) => {
 	let count = 0n;
 	for(const sculpture of PartialSculpture.verticalSculptures(blocks)) {
-		count += sculpture.completions();
+		count += sculpture.completions("symmetrical");
+		count += sculpture.completions("asymmetrical") / 2n;
 	}
 	return count;
 };
 
-console.time();
-console.log(`1st algorithm outputs ${balancedSculptures(INPUT)}`);
-console.timeEnd();
+// console.time();
+// console.log(`1st algorithm outputs ${balancedSculptures(INPUT)}`);
+// console.timeEnd();
 // debugger;
