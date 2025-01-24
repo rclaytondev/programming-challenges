@@ -1,7 +1,7 @@
 import { Vector } from "../../utils-ts/modules/geometry/Vector.mjs";
 import { HashSet } from "../../utils-ts/modules/HashSet.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
-import { INPUT } from "./balanced-sculptures-2.mjs";
+import { INPUT, Sculpture, SculpturesCounter } from "./balanced-sculptures-2.mjs";
 import { GeneratedIterable } from "./GeneratedIterable.mjs";
 import { HashPartition } from "./HashPartition.mjs";
 
@@ -207,15 +207,27 @@ export class PartialSculpture {
 		const componentsString = this.components.sets().map(set => `[${[...set].sort()}]`).join(", ");
 		return `${this.symmetrical}, ${this.weightDifference}, ${this.blocksLeft}, ${componentsString}`;
 	}
+
+	static sculptures(blocks: number, mode: "symmetrical" | "asymmetrical", verticalSculptures: PartialSculpture[] = PartialSculpture.verticalSculptures(blocks)) {
+		let result = GeneratedIterable.EMPTY<Sculpture>();
+		for(const verticalSculpture of verticalSculptures) {
+			result = GeneratedIterable.concat(result, verticalSculpture.completions(mode));
+		}
+		return result;
+	}
+	static allSculptures(blocks: number) {
+		return [
+			...PartialSculpture.sculptures(blocks, "symmetrical"),
+			...PartialSculpture.sculptures(blocks, "asymmetrical"),
+		];
+	}
 }
 
 export const balancedSculptures = (blocks: number) => {
-	let count = 0;
-	for(const sculpture of PartialSculpture.verticalSculptures(blocks)) {
-		count += sculpture.completions("symmetrical").length;
-		count += sculpture.completions("asymmetrical").length / 2;
-	}
-	return count;
+	const verticalSculptures = PartialSculpture.verticalSculptures(blocks);
+	const symmetrical = PartialSculpture.sculptures(blocks, "symmetrical", verticalSculptures).length;
+	const asymmetrical = PartialSculpture.sculptures(blocks, "asymmetrical", verticalSculptures).length;
+	return symmetrical + (asymmetrical / 2);
 };
 
 // console.time();
