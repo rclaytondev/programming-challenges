@@ -244,7 +244,8 @@ export class SculpturesCounter {
 					if(leftSculptures.length === 0) { continue; }
 					const rightSculptures = SculpturesCounter.memoizedSculptures(middle, right, rightBlocks, rightWeight, rightComponents);
 					const middleColumn: Sculpture = new HashSet(leftComponents.flatMap(c => c.right.flatMap(c => c.values().map(y => new Vector(middle, y)))));
-					result = GeneratedIterable.concat(result, (mode === "initial-symmetric") ? leftSculptures :
+					result = GeneratedIterable.concat(result, (mode === "initial-symmetric") ? 
+						leftSculptures.map(s => HashSet.union(s, middleColumn, s.map(point => new Vector(-point.x, point.y)))) :
 						GeneratedIterable.mapPairs(leftSculptures, rightSculptures, (l, r) => HashSet.union(l, r, middleColumn))
 					);
 				}

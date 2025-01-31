@@ -282,6 +282,14 @@ describe("symmetricalSculptures", () => {
 		const result = symmetricalSculptures(3);
 		assert.equal(result.length, 2);
 	});
+
+	it("can compute the list of symmetrical sculptures with 4 blocks", () => {
+		const T_SHAPE = new HashSet([ new Vector(0, 0), new Vector(0, 1), new Vector(-1, 1), new Vector(1, 1) ]);
+		const UPSIDE_DOWN_T = new HashSet([ new Vector(0, 0), new Vector(0, 1), new Vector(-1, 0), new Vector(1, 0) ]);
+		const VERTICAL = new HashSet([ new Vector(0, 0), new Vector(0, 1), new Vector(0, 2), new Vector(0, 3) ]);
+		const sculptures = symmetricalSculptures(4);
+		assert.isTrue(new HashSet(sculptures).equals(new HashSet([T_SHAPE, UPSIDE_DOWN_T, VERTICAL])));
+	});
 });
 describe("balancedSculptures", () => {
 	setupCacheHooks();
