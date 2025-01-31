@@ -1,0 +1,35 @@
+number of symmetrical sculptures found: 103 (old) vs 103 (new)
+symmetrical sculptures match!
+number of all sculptures found: 1825 (old) vs 1819 (new)
+all sculptures found by the first algorithm but not by the second algorithm:
+
+■■■■■■
+   ■  
+   ■■■
+
+
+   ■■■
+■■■■  
+   ■■■
+
+
+   ■■■
+   ■  
+■■■■■■
+
+
+■■■■■■
+  ■   
+■■■   
+
+
+■■■   
+  ■■■■
+■■■   
+
+
+■■■   
+  ■   
+■■■■■■
+
+all sculptures found by the second algorithm but not by the first algorithm:
