@@ -118,4 +118,8 @@ describe("cardsRequired", () => {
 		const result = cardsRequired(6, 3);
 		assert.equal(result, 123);
 	});
+	it("works for 4 cards and 6 rooms", () => {
+		const result = cardsRequired(6, 4);
+		assert.equal(result, 23);
+	});
 });
