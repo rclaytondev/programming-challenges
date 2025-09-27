@@ -1,6 +1,7 @@
 import { assert } from "chai";
 import { HashSet } from "../../utils-ts/modules/HashSet.mjs";
 import { describe, it } from "mocha";
+import { HashMap } from "./HashMap.mjs";
 
 class RoomsState {
 	readonly rooms: number;
@@ -67,23 +68,29 @@ class RoomsState {
 	}
 }
 
-const nextStates = (states: HashSet<RoomsState>) => {
+const nextStates = (states: HashSet<RoomsState>, mostEfficientWays: HashMap<RoomsState, number>) => {
 	const result = new HashSet<RoomsState>();
 	for(const state of states) {
 		for(const next of state.nextStates()) {
-			result.add(next);
+			if(next.cardsUsed < (mostEfficientWays.get(next) ?? Infinity)) {
+				result.add(next);
+				mostEfficientWays.set(next, next.cardsUsed);
+			}
 		}
 	}
 	return result;
 };
 
 const cardsRequired = (rooms: number, carryableCards: number) => {
-	let states = new HashSet<RoomsState>([RoomsState.startState(rooms, carryableCards)]);
+	const startState = RoomsState.startState(rooms, carryableCards);
+	const mostEfficientWays = new HashMap<RoomsState, number>([], state => `[${state.cardCounts}], ${state.position}`);
+	mostEfficientWays.set(startState, 0);
+	let states = new HashSet<RoomsState>([startState]);
 	let bestSolution = Infinity;
 	let done = false;
 	let iterations = 0;
 	while(!done) {
-		states = nextStates(states);
+		states = nextStates(states, mostEfficientWays);
 		iterations ++;
 		let minimum = Infinity;
 		for(const state of states) {
@@ -107,7 +114,7 @@ describe("cardsRequired", () => {
 		const result = cardsRequired(3, 3);
 		assert.equal(result, 6);
 	});
-	it.only("works for 3 cards and 6 rooms", () => {
+	it("works for 3 cards and 6 rooms", () => {
 		const result = cardsRequired(6, 3);
 		assert.equal(result, 123);
 	});
