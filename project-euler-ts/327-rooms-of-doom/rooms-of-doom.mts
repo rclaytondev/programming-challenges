@@ -3,11 +3,11 @@ import { HashSet } from "../../utils-ts/modules/HashSet.mjs";
 import { describe, it } from "mocha";
 
 class RoomsState {
-	rooms: number;
-	carryableCards: number;
-	cardsUsed: number;
-	cardCounts: number[];
-	position: number;
+	readonly rooms: number;
+	readonly carryableCards: number;
+	readonly cardsUsed: number;
+	readonly cardCounts: readonly number[];
+	readonly position: number;
 
 	constructor(rooms: number, carryableCards: number, cardsUsed: number, cardCounts: number[], position: number) {
 		this.rooms = rooms;
