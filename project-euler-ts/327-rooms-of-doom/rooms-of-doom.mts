@@ -1,6 +1,4 @@
-import { assert } from "chai";
 import { HashSet } from "../../utils-ts/modules/HashSet.mjs";
-import { describe, it } from "mocha";
 import { HashMap } from "./HashMap.mjs";
 
 class RoomsState {
@@ -81,7 +79,7 @@ const nextStates = (states: HashSet<RoomsState>, mostEfficientWays: HashMap<Room
 	return result;
 };
 
-const cardsRequired = (rooms: number, carryableCards: number) => {
+export const cardsRequired = (rooms: number, carryableCards: number) => {
 	const startState = RoomsState.startState(rooms, carryableCards);
 	const mostEfficientWays = new HashMap<RoomsState, number>([], state => `[${state.cardCounts}], ${state.position}`);
 	mostEfficientWays.set(startState, 0);
@@ -104,22 +102,3 @@ const cardsRequired = (rooms: number, carryableCards: number) => {
 	}
 	return bestSolution;
 };
-
-describe("cardsRequired", () => {
-	it("works for 2 rooms and 3 cards", () => {
-		const result = cardsRequired(2, 3);
-		assert.equal(result, 3);
-	});
-	it("works for 3 rooms and 3 cards", () => {
-		const result = cardsRequired(3, 3);
-		assert.equal(result, 6);
-	});
-	it("works for 3 cards and 6 rooms", () => {
-		const result = cardsRequired(6, 3);
-		assert.equal(result, 123);
-	});
-	it("works for 4 cards and 6 rooms", () => {
-		const result = cardsRequired(6, 4);
-		assert.equal(result, 23);
-	});
-});
