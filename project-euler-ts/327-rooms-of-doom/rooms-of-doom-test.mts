@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { cardsRequired } from "./rooms-of-doom.mjs";
+import { cardsRequired } from "./rooms-of-doom-2.mjs";
 import { describe, it } from "mocha";
 
 
