@@ -13,7 +13,3 @@ export const cardsRequired = (rooms: number, carryableCards: number): number => 
 const solve = () => {
 	return MathUtils.sum(Utils.range(3, 40).map(cards => cardsRequired(30, cards)));
 };
-console.time();
-console.log(solve());
-console.timeEnd();
-debugger;

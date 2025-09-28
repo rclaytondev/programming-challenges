@@ -97,7 +97,7 @@ export const cardsRequired = (rooms: number, carryableCards: number) => {
 			}
 			minimum = Math.min(minimum, state.cardsUsed);
 		}
-		console.log(`depth ${iterations}: ${states.size} states with a minimum cardsUsed of ${minimum} (best solution so far: ${bestSolution})`);
+		// console.log(`depth ${iterations}: ${states.size} states with a minimum cardsUsed of ${minimum} (best solution so far: ${bestSolution})`);
 		if(minimum >= bestSolution) { done = true; }
 	}
 	return bestSolution;
