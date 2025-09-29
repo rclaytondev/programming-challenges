@@ -1,16 +1,17 @@
 const minSolution = (D: number) => {
-	for(let x = 2; x < Infinity; x ++) {
-		if(Math.sqrt((x ** 2 - 1) / D) % 1 === 0) {
+	for(let y = 1; true; y ++) {
+		const x = Math.sqrt(1 + D * y ** 2);
+		if(x % 1 === 0) {
+			console.log(`for D=${D}, the minimal solution has x=${x}`);
 			return x;
 		}
 	}
-	throw new Error("Reached end of infinite loop.");
 };
 
 export const solve = () => {
 	let highestD = 0;
 	let highestMinSolution = -Infinity;
-	for(let D = 1; D <= 50; D ++) {
+	for(let D = 1; D <= 1000; D ++) {
 		if(Math.sqrt(D) % 1 === 0) { continue; }
 		const solution =  minSolution(D);
 		// console.log(`For D=${D}, the minimal solution has x=${solution}`);
@@ -21,4 +22,7 @@ export const solve = () => {
 	}
 	return highestD;
 };
-// console.log(solve());
+console.time();
+console.log(solve());
+console.timeEnd();
+debugger;
