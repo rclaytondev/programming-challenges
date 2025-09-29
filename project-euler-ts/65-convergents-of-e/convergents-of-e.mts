@@ -1,7 +1,6 @@
 import { describe } from "mocha";
 import { BigRational } from "../../utils-ts/modules/math/BigRational.mjs";
 import { assert } from "chai";
-import { BigintMath } from "../../utils-ts/modules/math/BigintMath.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 
 const getConvergent = (index: number, partialNumerators: (n: number) => number) => {
@@ -33,7 +32,3 @@ const solve = () => {
 	};
 	return MathUtils.sum(bigintDigits(getConvergent(100, partialNumerators).numerator));
 };
-console.time();
-console.log(solve());
-console.timeEnd();
-debugger;
