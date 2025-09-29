@@ -1,9 +1,11 @@
+import { BigintMath } from "../../utils-ts/modules/math/BigintMath.mjs";
+
 const minSolution = (D: number) => {
-	for(let y = 1; true; y ++) {
-		const x = Math.sqrt(1 + D * y ** 2);
-		if(x % 1 === 0) {
+	for(let y = 1n; true; y ++) {
+		const x = BigintMath.floorSqrt(1n + BigInt(D) * y ** 2n);
+		if(x ** 2n === 1n + BigInt(D) * y ** 2n) {
 			console.log(`for D=${D}, the minimal solution has x=${x}`);
-			return x;
+			return Number(x);
 		}
 	}
 };
