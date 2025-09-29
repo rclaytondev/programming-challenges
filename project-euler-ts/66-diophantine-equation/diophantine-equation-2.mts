@@ -1,13 +1,15 @@
 import { assert } from "chai";
 import { Sequence } from "../../utils-ts/modules/math/Sequence.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
+import { BigintMath } from "../../utils-ts/modules/math/BigintMath.mjs";
+import { CountLogger } from "../project-specific-utilities/CountLogger.mjs";
 
 const solutionsModuloPrime = (D: number, prime: number) => {
 	let solutions = [];
-	for(let x = 0; x < prime; x ++) {
-		for(let y = 0; y < prime; y ++) {
+	for(let y = 0; y < prime; y ++) {
+		for(let x = 0; x < prime; x ++) {
 			if(MathUtils.generalizedModulo((x ** 2 - (D * y ** 2)), prime) === 1) {
-				solutions.push(x);
+				solutions.push(y);
 				break;
 			}
 		}
@@ -15,7 +17,7 @@ const solutionsModuloPrime = (D: number, prime: number) => {
 	return solutions;
 };
 const minSolution = (D: number) => {
-	const PRIMES = Sequence.PRIMES.slice(0, 2);
+	const PRIMES = Sequence.PRIMES.slice(0, 6);
 	const product = PRIMES.reduce((a, b) => a * b, 1);
 	const solutionsModuloPrimes = PRIMES.map(p => solutionsModuloPrime(D, p));
 	const offsets = [];
@@ -28,16 +30,22 @@ const minSolution = (D: number) => {
 		}
 	}
 	// console.log(`Sieve size: ${product}; proportion checked: ${offsets.length / product}`);
+	// const countLogger = new CountLogger(n => 10000 * n, null, `D=${D}`);
 	for(let step = product; step < Infinity; step += product) {
 		for(const offset of offsets) {
-			const potentialSolution = step + offset;
-			if(potentialSolution !== 1 && Math.sqrt((potentialSolution ** 2 - 1) / D) % 1 === 0) {
-				return potentialSolution;
+			const potentialSolutionY = step + offset;
+			// countLogger.countTo(potentialSolutionY);
+			const x = BigintMath.floorSqrt(1n + BigInt(D) * BigInt(potentialSolutionY) ** 2n);
+			if(x ** 2n === 1n + BigInt(D) * BigInt(potentialSolutionY) ** 2n) {
+				debugger;
+				return Number(x);
 			}
 		}
 	}
 	throw new Error("Reached end of infinite loop.");
 };
+
+// console.log(minSolution(61));
 
 describe("minSolution", () => {
 	const testCases = [

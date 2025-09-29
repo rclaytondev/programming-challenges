@@ -24,7 +24,7 @@ export const solve = () => {
 	}
 	return highestD;
 };
-console.time();
-console.log(solve());
-console.timeEnd();
-debugger;
+// console.time();
+// console.log(solve());
+// console.timeEnd();
+// debugger;
