@@ -78,7 +78,6 @@ class SqrtPlusRational {
 }
 
 const sqrtContinuedFractionPeriod = (numberInSqrt: number) => {
-	console.log(numberInSqrt);
 	const start = new SqrtPlusRational(numberInSqrt, 1, 0, 1);
 	const results = [start];
 	while(true) {
@@ -117,7 +116,3 @@ describe("sqrtContinuedFractionPeriod", () => {
 const isSquare = (n: number) => Math.floor(Math.sqrt(n)) ** 2 === n;
 
 const solve = () => Utils.range(2, 10000).filter(n => !isSquare(n) && sqrtContinuedFractionPeriod(n) % 2 === 1).length;
-console.time();
-console.log(solve());
-console.timeEnd();
-debugger;
