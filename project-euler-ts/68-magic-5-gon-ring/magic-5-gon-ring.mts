@@ -119,14 +119,3 @@ const largestEncoding = (partialSolution: PartialSolution, encodingLength: numbe
 	}
 	return BigintMath.max(...encodings);
 };
-
-const VALID_SOLUTION = new PartialSolution(3, 6, [
-	[2, 3, 4],
-	[1, 2, 6],
-	[3, 1, 5]
-]);
-
-console.time();
-console.log(largestEncoding(PartialSolution.empty(5, 10), 16));
-console.timeEnd();
-debugger;
