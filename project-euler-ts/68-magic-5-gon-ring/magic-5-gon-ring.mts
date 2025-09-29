@@ -1,3 +1,4 @@
+import { BigintMath } from "../../utils-ts/modules/math/BigintMath.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Table } from "../../utils-ts/modules/Table.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
@@ -99,7 +100,7 @@ export class PartialSolution {
 			result += `${this.values[index][2]}${this.values[index][1]}${this.values[index][0]}`;
 			index = this.nextIndex(index);
 		}
-		return Number.parseInt(result);
+		return BigInt(result);
 	}
 
 	isSubsolutionOf(solution: PartialSolution) {
@@ -107,11 +108,15 @@ export class PartialSolution {
 	}
 }
 
-const largestEncoding = (partialSolution: PartialSolution): number => {
+const largestEncoding = (partialSolution: PartialSolution): bigint | null => {
 	if(partialSolution.isComplete() && partialSolution.isValid()) {
 		return partialSolution.encoding();
 	}
-	return Math.max(...partialSolution.nextSteps().map(s => largestEncoding(s)));
+	const encodings = partialSolution.nextSteps().map(s => largestEncoding(s)).filter(e => e != null);
+	if(encodings.length === 0) {
+		return null;
+	}
+	return BigintMath.max(...encodings);
 };
 
 const VALID_SOLUTION = new PartialSolution(3, 6, [
