@@ -1,3 +1,5 @@
+import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
+import { Table } from "../../utils-ts/modules/Table.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
 type ValuesType = [number, number, number][];
@@ -52,7 +54,7 @@ export class PartialSolution {
 	sum(index: number) {
 		const values = this.values[index];
 		if(values.includes(0)) { return 0; }
-		return values;
+		return MathUtils.sum(values);
 	}
 	isValid() {
 		const sums = new Set(this.values.map((_, i) => this.sum(i)).filter(s => s !== 0));
@@ -94,24 +96,31 @@ export class PartialSolution {
 		let index = startIndex;
 		let result = "";
 		for(let i = 0; i < this.numSides; i ++) {
-			result += this.values[index][2] + this.values[index][1] + this.values[index][0];;
+			result += `${this.values[index][2]}${this.values[index][1]}${this.values[index][0]}`;
 			index = this.nextIndex(index);
 		}
 		return Number.parseInt(result);
 	}
+
+	isSubsolutionOf(solution: PartialSolution) {
+		return new Table(this.values).every((value, x, y) => (value === 0) || solution.values[y][x] === value);
+	}
 }
 
 const largestEncoding = (partialSolution: PartialSolution): number => {
-	// console.log(partialSolution.values);
-	// debugger;
 	if(partialSolution.isComplete() && partialSolution.isValid()) {
-		debugger;
 		return partialSolution.encoding();
 	}
 	return Math.max(...partialSolution.nextSteps().map(s => largestEncoding(s)));
 };
 
+const VALID_SOLUTION = new PartialSolution(3, 6, [
+	[2, 3, 4],
+	[1, 2, 6],
+	[3, 1, 5]
+]);
+
 console.time();
-console.log(largestEncoding(PartialSolution.empty(3, 6)));
+console.log(largestEncoding(PartialSolution.empty(5, 10)));
 console.timeEnd();
 debugger;
