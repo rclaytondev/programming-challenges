@@ -108,11 +108,12 @@ export class PartialSolution {
 	}
 }
 
-const largestEncoding = (partialSolution: PartialSolution): bigint | null => {
+const largestEncoding = (partialSolution: PartialSolution, encodingLength: number): bigint | null => {
 	if(partialSolution.isComplete() && partialSolution.isValid()) {
-		return partialSolution.encoding();
+		const encoding = partialSolution.encoding();
+		return `${encoding}`.length === encodingLength ? encoding : null;
 	}
-	const encodings = partialSolution.nextSteps().map(s => largestEncoding(s)).filter(e => e != null);
+	const encodings = partialSolution.nextSteps().map(s => largestEncoding(s, encodingLength)).filter(e => e != null);
 	if(encodings.length === 0) {
 		return null;
 	}
@@ -126,6 +127,6 @@ const VALID_SOLUTION = new PartialSolution(3, 6, [
 ]);
 
 console.time();
-console.log(largestEncoding(PartialSolution.empty(5, 10)));
+console.log(largestEncoding(PartialSolution.empty(5, 10), 16));
 console.timeEnd();
 debugger;
