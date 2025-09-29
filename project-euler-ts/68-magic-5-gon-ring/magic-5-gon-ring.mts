@@ -1,37 +1,29 @@
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
-type ValuesType = [
-	[number, number, number],
-	[number, number, number],
-	[number, number, number],
-	[number, number, number],
-	[number, number, number],
-];
+type ValuesType = [number, number, number][];
 
 export class PartialSolution {
 	values: ValuesType;
+	numSides: number;
+	maxValue: number;
 
-	constructor(values: ValuesType) {
+	constructor(numSides: number, maxValue: number, values: ValuesType) {
+		this.numSides = numSides;
+		this.maxValue = maxValue;
 		this.values = values;
 	}
-	static empty() {
-		return new PartialSolution([
-			[0, 0, 0],
-			[0, 0, 0],
-			[0, 0, 0],
-			[0, 0, 0],
-			[0, 0, 0],
-		]);
+	static empty(numSides: number, maxValue: number) {
+		return new PartialSolution(numSides, maxValue, new Array(numSides).fill(0).map(_ => [0, 0, 0]));
 	}
 
 	copy() {
-		return new PartialSolution(this.values.map(a => [...a]) as ValuesType);
+		return new PartialSolution(this.numSides, this.maxValue, this.values.map(a => [...a]) as ValuesType);
 	}
 	nextIndex(index: number) {
-		return (index + 1) % 5;
+		return (index + 1) % this.numSides;
 	}
 	previousIndex(index: number) {
-		return (index === 0) ? 4 : (index - 1);
+		return (index === 0) ? (this.numSides - 1) : (index - 1);
 	}
 	setOuter(index: number, value: number) {
 		this.values[index][2] = value;
@@ -86,7 +78,7 @@ export class PartialSolution {
 	}
 	nextSteps() {
 		if(!this.isValid()) { return []; }
-		const unused = Utils.range(1, 10).filter(n => !this.values.flat(1).includes(n));
+		const unused = Utils.range(1, this.maxValue).filter(n => !this.values.flat(1).includes(n));
 		const firstUnusedSpot = this.firstUnusedSpot();
 		if(firstUnusedSpot === null) { return []; }
 		const [index, which] = firstUnusedSpot;
@@ -101,7 +93,7 @@ export class PartialSolution {
 		const startIndex = Utils.minIndex(this.values, values => values[2]);
 		let index = startIndex;
 		let result = "";
-		for(let i = 0; i < 5; i ++) {
+		for(let i = 0; i < this.numSides; i ++) {
 			result += this.values[index][2] + this.values[index][1] + this.values[index][0];;
 			index = this.nextIndex(index);
 		}
@@ -120,6 +112,6 @@ const largestEncoding = (partialSolution: PartialSolution): number => {
 };
 
 console.time();
-console.log(largestEncoding(PartialSolution.empty()));
+console.log(largestEncoding(PartialSolution.empty(3, 6)));
 console.timeEnd();
 debugger;
