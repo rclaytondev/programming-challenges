@@ -18,7 +18,7 @@ const ZERO = new Table([
 	[0, 0, 0]
 ]);
 
-const idempotents = (maxEntry: number) => {
+export const idempotents = (maxEntry: number) => {
 	const logger = new CountLogger(n => 10000 * n, (2 * maxEntry + 1) ** 3);
 	const matrices = new HashSet<Table<number>>([], tableToString);
 
@@ -50,18 +50,7 @@ const idempotents = (maxEntry: number) => {
 	return matrices.size;
 };
 
-describe("idempotents", () => {
-	it("returns the correct answer for -1 <= (entries) <= 1", () => {
-		const result = idempotents(1);
-		assert.equal(result, 164);
-	});
-	it("returns the correct answer for -2 <= (entries) <= 2", () => {
-		const result = idempotents(2);
-		assert.equal(result, 848);
-	});
-});
-
-console.time();
-console.log(idempotents(50));
-console.timeEnd();
-debugger;
+// console.time();
+// console.log(idempotents(50));
+// console.timeEnd();
+// debugger;
