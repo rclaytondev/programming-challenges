@@ -1,9 +1,6 @@
-import { describe, it } from "mocha";
 import { HashSet } from "../../utils-ts/modules/HashSet.mjs";
 import { Table } from "../../utils-ts/modules/Table.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
-import { assert } from "chai";
-import { CountLogger } from "../project-specific-utilities/CountLogger.mjs";
 
 const tableToString = (table: Table<number>) => `[${table.rows.map(r => `[${r.join(", ")}]`).join(", ")}]`;
 
@@ -19,11 +16,9 @@ const ZERO = new Table([
 ]);
 
 export const idempotents = (maxEntry: number) => {
-	const logger = new CountLogger(n => 10000 * n, (2 * maxEntry + 1) ** 3);
 	const matrices = new HashSet<Table<number>>([], tableToString);
 
 	for(const [b0, b1, b2] of Utils.cartesianPower(Utils.range(-maxEntry, maxEntry + 1), 3)) {
-		logger.count();
 		const rowMax = Math.max(Math.abs(b0), Math.abs(b1), Math.abs(b2));
 		if(rowMax === 0) { continue; }
 		const maximum = Math.floor((maxEntry + 1) / rowMax);
