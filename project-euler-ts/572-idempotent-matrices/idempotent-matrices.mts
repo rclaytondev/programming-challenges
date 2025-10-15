@@ -48,6 +48,9 @@ export const idempotents = (maxEntry: number, mode: "rank-1" | "rank-2" | "all" 
 	return matrices.size;
 };
 
+export const rank1Idempotents = (maxEntry: number) => idempotents(maxEntry, "rank-1");
+export const rank2Idempotents = (maxEntry: number) => idempotents(maxEntry, "rank-2");
+
 // console.time();
 // console.log(idempotents(50));
 // console.timeEnd();
