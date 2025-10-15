@@ -15,7 +15,7 @@ const ZERO = new Table([
 	[0, 0, 0]
 ]);
 
-export const idempotents = (maxEntry: number) => {
+export const idempotents = (maxEntry: number, mode: "rank-1" | "rank-2" | "all" = "all") => {
 	const matrices = new HashSet<Table<number>>([], tableToString);
 
 	for(const [b0, b1, b2] of Utils.cartesianPower(Utils.range(-maxEntry, maxEntry + 1), 3)) {
@@ -32,16 +32,19 @@ export const idempotents = (maxEntry: number) => {
 					[b0 * a2, b1 * a2, b2 * a2],
 				]);
 				const rank2Matrix = rank1Matrix.map((v, i, j) => (i === j ? 1 : 0) - v);
-				for(const matrix of [rank1Matrix, rank2Matrix]) {
-					if(matrix.every(v => Math.abs(v) <= maxEntry)) {
-						matrices.add(matrix);
-					}
+				if((mode === "rank-1" || mode === "all") && rank1Matrix.every(v => Math.abs(v) <= maxEntry)) {
+					matrices.add(rank1Matrix);
+				}
+				if((mode === "rank-2" || mode === "all") && rank2Matrix.every(v => Math.abs(v) <= maxEntry)) {
+					matrices.add(rank2Matrix);
 				}
 			}
 		}
 	}
-	matrices.add(IDENTITY);
-	matrices.add(ZERO);
+	if(mode === "all") {
+		matrices.add(IDENTITY);
+		matrices.add(ZERO);
+	}
 	return matrices.size;
 };
 
