@@ -1,6 +1,6 @@
 import { HashSet } from "../../utils-ts/modules/HashSet.mjs";
 import { Table } from "../../utils-ts/modules/Table.mjs";
-import { Utils } from "../../utils-ts/modules/Utils.mjs";
+import { Tuple, Utils } from "../../utils-ts/modules/Utils.mjs";
 
 export const idempotents = (maxEntry: number, mode: "rank-1" | "rank-2" | "all" = "all") => {
 	let result = 0;
@@ -12,7 +12,13 @@ export const idempotents = (maxEntry: number, mode: "rank-1" | "rank-2" | "all" 
 	return result + 2;
 };
 
-const idempotentsWithImage = (maxEntry: number, b0: number, b1: number, b2: number, mode: "rank-1" | "rank-2" | "all") => {
+const standardize = (maxEntry: number, b0: number, b1: number, b2: number, mode: "rank-1" | "rank-2" | "all") => [
+	maxEntry,
+	...[b0, b1, b2].sort((x, y) => x - y) as Tuple<number, 3>,
+	mode
+] as [number, number, number, number, "rank-1" | "rank-2" | "all"];
+
+const idempotentsWithImage = Utils.memoize((maxEntry: number, b0: number, b1: number, b2: number, mode: "rank-1" | "rank-2" | "all") => {
 	let result = 0;
 	const rowMax = Math.max(Math.abs(b0), Math.abs(b1), Math.abs(b2));
 	const maximum = Math.floor((maxEntry + 1) / rowMax);
@@ -35,12 +41,12 @@ const idempotentsWithImage = (maxEntry: number, b0: number, b1: number, b2: numb
 		}
 	}
 	return result;
-};
+}, standardize);
 
 export const rank1Idempotents = (maxEntry: number) => idempotents(maxEntry, "rank-1");
 export const rank2Idempotents = (maxEntry: number) => idempotents(maxEntry, "rank-2");
 
 console.time();
-console.log(idempotents(50));
+console.log(idempotents(200));
 console.timeEnd();
 debugger;
