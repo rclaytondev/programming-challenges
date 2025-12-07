@@ -1,5 +1,7 @@
+import { SetUtils } from "../../utils-ts/modules/core-extensions/SetUtils.mjs";
 import { HashSet } from "../../utils-ts/modules/HashSet.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
+import { GenUtils } from "../../utils-ts/modules/core-extensions/GenUtils.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
 export const subsetHasSum = Utils.memoize((set: number[], sum: number, setSum: number = MathUtils.sum(set)): boolean => {
@@ -26,7 +28,7 @@ export const isSpecial = (set: number[]) => {
 		}
 	}
 	for(let size = 1; size * 2 <= set.length; size ++) {
-		for(const subset of Utils.subsets(set, size)) {
+		for(const subset of GenUtils.subsets(set, size)) {
 			if(subsetHasSum(set.filter(v => !subset.has(v)), MathUtils.sum(subset))) {
 				isSpecialCache[argsString] = false;
 				return false;

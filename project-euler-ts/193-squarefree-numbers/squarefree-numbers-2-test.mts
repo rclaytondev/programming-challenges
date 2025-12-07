@@ -1,14 +1,14 @@
 import { assert } from "chai";
-import { Utils } from "../../utils-ts/modules/Utils.mjs";
 import { numDivisible, numSquarefree, sizeOfUnion } from "./squarefree-numbers-2.mjs";
 import { naiveNumDivisible, naiveNumSquarefree } from "./naive-algorithm.mjs";
+import { SetUtils } from "../../utils-ts/modules/core-extensions/SetUtils.mjs";
 
 describe("sizeOfUnion", () => {
 	it("can use the inclusion-exclusion principle to find the size of a union of set-like objects", () => {
 		const result = sizeOfUnion(
 			[new Set([1, 2]), new Set([3]), new Set([1, 4]), new Set([2, 3]), new Set([3, 5])],
 			s => s.size,
-			Utils.intersection
+			SetUtils.intersection
 		);
 		assert.equal(result, 5);
 	});
@@ -16,7 +16,7 @@ describe("sizeOfUnion", () => {
 		const result = sizeOfUnion(
 			[new Set([1, 2]), new Set([2, 3])],
 			s => s.size,
-			Utils.intersection
+			SetUtils.intersection
 		);
 		assert.equal(result, 3);
 	});

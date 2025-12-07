@@ -108,5 +108,5 @@ export const solve = (probabilities: BigRational[]) => {
 	const term2 = productDistribution.get(new BigRational(1)).multiply(new BigRational(1, 2));
 	return extraTotalAbove.add(term1).add(term2);
 };
-// const THE_PROBLEM = Utils.range(25, 75, "inclusive", "inclusive").map(n => new BigRational(n, 100));
+// const THE_PROBLEM = ArrayUtils.range(25, 75, "inclusive", "inclusive").map(n => new BigRational(n, 100));
 // console.log(solve(THE_PROBLEM));

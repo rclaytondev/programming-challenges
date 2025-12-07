@@ -1,7 +1,7 @@
 import { Field } from "../../utils-ts/modules/math/Field.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Rational } from "../../utils-ts/modules/math/Rational.mjs";
-import { Utils } from "../../utils-ts/modules/Utils.mjs";
+import { GenUtils } from "../../utils-ts/modules/core-extensions/GenUtils.mjs";
 
 const isProbable = (probabilities: Rational[], combination: Rational[]) => {
 	const product = Field.RATIONALS.product(...combination);
@@ -19,7 +19,7 @@ const informationCombination = (p: Rational, q: Rational) => {
 
 export const naiveProbabilitySum = (probabilities: Rational[], nextProbability: Rational) => {
 	let result = new Rational(0, 1);
-	for(const combination of [...Utils.cartesianProduct(
+	for(const combination of [...GenUtils.cartesianProduct(
 		...probabilities
 		.filter(p => !p.equals(new Rational(1, 2)))
 		.map((probability, i) => (i === 0) ? [probability] : [probability, new Rational(1).subtract(probability)])

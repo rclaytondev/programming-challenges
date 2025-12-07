@@ -1,3 +1,6 @@
+import { ArrayUtils } from "../../utils-ts/modules/core-extensions/ArrayUtils.mjs";
+import { SetUtils } from "../../utils-ts/modules/core-extensions/SetUtils.mjs";
+import { GenUtils } from "../../utils-ts/modules/core-extensions/GenUtils.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
 const mustBeChecked = (set1: number[], set2: number[]) => {
@@ -19,9 +22,9 @@ const mustBeChecked = (set1: number[], set2: number[]) => {
 
 export const requiredSubsetPairs = (size: number) => {
 	let required = 0;
-	const set = Utils.range(1, size);
-	for(const subset1 of Utils.subsets(set)) {
-		for(const subset2 of Utils.subsets(set.filter(s => !subset1.has(s)), subset1.size)){
+	const set = ArrayUtils.range(1, size);
+	for(const subset1 of GenUtils.subsets(set)) {
+		for(const subset2 of GenUtils.subsets(set.filter(s => !subset1.has(s)), subset1.size)){
 			if(mustBeChecked([...subset1], [...subset2])) {
 				required ++;
 			}

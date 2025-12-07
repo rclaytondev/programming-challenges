@@ -1,7 +1,7 @@
 import { describe, it } from "mocha";
 import { solve, Wheel } from "./divisible-ranges-2.mjs";
 import { assert } from "chai";
-import { Utils } from "../../utils-ts/modules/Utils.mjs";
+import { ArrayUtils } from "../../utils-ts/modules/core-extensions/ArrayUtils.mjs";
 
 describe("Wheel.create", () => {
 	it("can create a 2-prime wheel", () => {
@@ -18,7 +18,7 @@ describe("Wheel.create", () => {
 	});
 	it("can create a 4-prime wheel", () => {
 		const wheel = Wheel.create(4);
-		const expectedOffsets = Utils.range(1, 210).filter(n => n % 2 !== 0 && n % 3 !== 0 && n % 5 !== 0 && n % 7 !== 0);
+		const expectedOffsets = ArrayUtils.range(1, 210).filter(n => n % 2 !== 0 && n % 3 !== 0 && n % 5 !== 0 && n % 7 !== 0);
 		assert.deepEqual(wheel.primes, [2, 3, 5, 7]);
 		assert.deepEqual(wheel.offsets, expectedOffsets);
 		assert.equal(wheel.size, 210);

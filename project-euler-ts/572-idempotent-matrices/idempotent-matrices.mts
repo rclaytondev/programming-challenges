@@ -1,9 +1,11 @@
+import { ArrayUtils } from "../../utils-ts/modules/core-extensions/ArrayUtils.mjs";
 import { Table } from "../../utils-ts/modules/Table.mjs";
+import { GenUtils } from "../../utils-ts/modules/core-extensions/GenUtils.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
 export const idempotents = (maxEntry: number) => {
 	let result = 0;
-	for(const [b0, b1, b2] of Utils.cartesianPower(Utils.range(-maxEntry, maxEntry + 1), 3)) {
+	for(const [b0, b1, b2] of GenUtils.cartesianPower(ArrayUtils.range(-maxEntry, maxEntry + 1), 3)) {
 		const firstNonzero = [b0, b1, b2].find(k => k !== 0);
 		if(firstNonzero === undefined || firstNonzero < 0) { continue; }
 		result += idempotentsWithImage(maxEntry, b0, b1, b2);
@@ -20,9 +22,9 @@ const idempotentsWithImage = Utils.memoize((maxEntry: number, b0: number, b1: nu
 	let result = 0;
 	const rowMax = Math.max(Math.abs(b0), Math.abs(b1), Math.abs(b2));
 	const maximum = Math.floor((maxEntry + 1) / rowMax);
-	for(const [a0, a1] of Utils.cartesianPower(Utils.range(-maximum, maximum), 2)) {
+	for(const [a0, a1] of GenUtils.cartesianPower(ArrayUtils.range(-maximum, maximum), 2)) {
 		if(b2 === 0 && b0 * a0 + b1 * a1 !== 1) { continue; }
-		for(const a2 of (b2 === 0) ? Utils.range(-maximum, maximum) : [(1 - a0 * b0 - a1 * b1) / b2]) {
+		for(const a2 of (b2 === 0) ? ArrayUtils.range(-maximum, maximum) : [(1 - a0 * b0 - a1 * b1) / b2]) {
 			if(Math.floor(a2) !== a2) { continue; }
 			const rank1Matrix = new Table([
 				[b0 * a0, b1 * a0, b2 * a0],

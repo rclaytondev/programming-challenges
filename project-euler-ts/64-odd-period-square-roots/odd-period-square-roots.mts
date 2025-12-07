@@ -1,7 +1,7 @@
 import { assert } from "chai";
 import { Rational } from "../../utils-ts/modules/math/Rational.mjs";
-import { Utils } from "../../utils-ts/modules/Utils.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
+import { ArrayUtils } from "../../utils-ts/modules/core-extensions/ArrayUtils.mjs";
 
 class SqrtPlusRational {
 	readonly numberInSqrt: number;
@@ -115,4 +115,4 @@ describe("sqrtContinuedFractionPeriod", () => {
 
 const isSquare = (n: number) => Math.floor(Math.sqrt(n)) ** 2 === n;
 
-const solve = () => Utils.range(2, 10000).filter(n => !isSquare(n) && sqrtContinuedFractionPeriod(n) % 2 === 1).length;
+const solve = () => ArrayUtils.range(2, 10000).filter(n => !isSquare(n) && sqrtContinuedFractionPeriod(n) % 2 === 1).length;

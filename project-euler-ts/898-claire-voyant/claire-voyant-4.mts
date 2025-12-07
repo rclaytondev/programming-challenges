@@ -174,6 +174,6 @@ export const solve = (probabilities: BigRational[]) => {
 };
 
 // console.time();
-// const THE_PROBLEM = Utils.range(25, 75, "inclusive", "inclusive").map(n => new BigRational(n, 100));
+// const THE_PROBLEM = ArrayUtils.range(25, 75, "inclusive", "inclusive").map(n => new BigRational(n, 100));
 // console.log(solve(THE_PROBLEM));
 // console.timeEnd();

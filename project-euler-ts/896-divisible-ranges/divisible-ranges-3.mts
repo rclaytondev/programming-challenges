@@ -1,6 +1,6 @@
+import { ArrayUtils } from "../../utils-ts/modules/core-extensions/ArrayUtils.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Sequence } from "../../utils-ts/modules/math/Sequence.mjs";
-import { Utils } from "../../utils-ts/modules/Utils.mjs";
 import { PeriodicSet } from "../project-specific-utilities/PeriodicSet.mjs";
 import { isDivisible } from "./divisible-ranges.mjs";
 
@@ -22,7 +22,7 @@ export const divisibleRanges = (size: number): PeriodicSet => {
 	}
 
 	const factors = MathUtils.factors(size);
-	const period = Utils.range(1, size).reduce(MathUtils.lcm);
+	const period = ArrayUtils.range(1, size).reduce(MathUtils.lcm);
 	if(factors.length === 1) {
 		return PeriodicSet.fromIncludes(period, r => isDivisible(size, r));
 	}
@@ -38,7 +38,7 @@ export const divisibleRanges = (size: number): PeriodicSet => {
 
 export const solve = (size: number) => {
 	const factors = MathUtils.factors(size);
-	const period = Utils.range(1, size).reduce(MathUtils.lcm);
+	const period = ArrayUtils.range(1, size).reduce(MathUtils.lcm);
 	if(factors.length === 1) {
 		return PeriodicSet.fromIncludes(period, r => isDivisible(size, r)).getTerm(size - 1);
 	}

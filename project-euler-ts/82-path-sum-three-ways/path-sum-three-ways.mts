@@ -1,3 +1,4 @@
+import { ArrayUtils } from "../../utils-ts/modules/core-extensions/ArrayUtils.mjs";
 import { Field } from "../../utils-ts/modules/math/Field.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Matrix } from "../../utils-ts/modules/math/Matrix.mjs";
@@ -9,7 +10,7 @@ const MATRIX = new Matrix(80, 80, Field.REALS, MATRIX_DATA);
 // const MATRIX = new Matrix(5, 5, Field.REALS, TEST_MATRIX_DATA);
 
 const columnSumBetween = (column: number, startRow: number, endRow: number) => 
-	MathUtils.sum(Utils.range(startRow, endRow).map(row => MATRIX.get(row, column)));
+	MathUtils.sum(ArrayUtils.range(startRow, endRow).map(row => MATRIX.get(row, column)));
 
 const pathSum = Utils.memoize((row: number, column: number): number => {
 	if(column === MATRIX.width - 1) {

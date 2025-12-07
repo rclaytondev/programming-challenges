@@ -1,5 +1,5 @@
+import { ArrayUtils } from "../../utils-ts/modules/core-extensions/ArrayUtils.mjs";
 import { Sequence } from "../../utils-ts/modules/math/Sequence.mjs";
-import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
 type State = {
 	indexPossibilities: Map<number, number[]>,
@@ -46,8 +46,8 @@ const nextStates = (state: State) => {
 };
 
 const initialState = (size: number, first: number) => {
-	const range = Utils.range(first, first + size - 1);
-	const indices = Utils.range(1, size);
+	const range = ArrayUtils.range(first, first + size - 1);
+	const indices = ArrayUtils.range(1, size);
 	return {
 		indexPossibilities: new Map(indices.map(i => [i, range.filter(v => v % i === 0)] as const)),
 		valuePossibilities: new Map(range.map(v => [v, indices.filter(i => v % i === 0)] as const)),

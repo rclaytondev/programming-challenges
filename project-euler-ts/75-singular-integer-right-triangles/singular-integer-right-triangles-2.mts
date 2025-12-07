@@ -1,5 +1,5 @@
+import { ArrayUtils } from "../../utils-ts/modules/core-extensions/ArrayUtils.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
-import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
 // const MAX_MODULO = 1000;
 const MAX_MODULO = 10;
@@ -30,7 +30,7 @@ const getProportionChecked = (modularTriples: number[][]) => {
 	return MathUtils.sum(modularTriples.map(offsets => offsets.length)) / (modularTriples.length ** 2);
 };
 const getBestModularTriples = (maxModulo: number) => {
-	return Utils.minValue(Utils.range(1, maxModulo).map(getModularTriples), getProportionChecked);
+	return ArrayUtils.minValue(ArrayUtils.range(1, maxModulo).map(getModularTriples), getProportionChecked);
 };
 
 export const trianglesWithPerimeter = (upperBound: number) => {

@@ -1,5 +1,6 @@
+import { ArrayUtils } from "../../utils-ts/modules/core-extensions/ArrayUtils.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
-import { Utils } from "../../utils-ts/modules/Utils.mjs";
+import { GenUtils } from "../../utils-ts/modules/core-extensions/GenUtils.mjs";
 
 export const constructNumber = (digit: number, positions: Set<number>, otherDigits: number[]) => {
 	const resultDigits = [];
@@ -23,8 +24,8 @@ export const primeSumMaxDigits = (numDigits: number, digit: number) => {
 	const otherDigits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].filter(d => d !== digit);
 	for(let occurrences = numDigits; occurrences >= 0; occurrences --) {
 		const primes = [];
-		for(const positions of Utils.subsets(Utils.range(0, numDigits - 1), occurrences)) {
-			for(const digitCombination of Utils.cartesianPower(otherDigits, numDigits - occurrences)) {
+		for(const positions of GenUtils.subsets(ArrayUtils.range(0, numDigits - 1), occurrences)) {
+			for(const digitCombination of GenUtils.cartesianPower(otherDigits, numDigits - occurrences)) {
 				const possiblePrime = constructNumber(digit, positions, digitCombination);
 				if(possiblePrime !== null && MathUtils.isPrime(possiblePrime)) {
 					primes.push(possiblePrime);

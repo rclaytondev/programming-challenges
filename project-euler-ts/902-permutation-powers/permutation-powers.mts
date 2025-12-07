@@ -1,3 +1,4 @@
+import { ArrayUtils } from "../../utils-ts/modules/core-extensions/ArrayUtils.mjs";
 import { BigintMath } from "../../utils-ts/modules/math/BigintMath.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
@@ -100,7 +101,7 @@ export class Permutation {
 
 export const permutations = {
 	sigma: (m: number) => Permutation.fromFunction(m * (m + 1) / 2, (i: number) => {
-		const k = Utils.range(1, m).find(k => k * (k + 1) / 2 === i);
+		const k = ArrayUtils.range(1, m).find(k => k * (k + 1) / 2 === i);
 		return (k != null) ? k * (k - 1) / 2 + 1 : i + 1;
 	}),
 	tau: (n: number) => Permutation.fromFunction(n, i => (((10 ** 9 + 7) * i) % n) + 1),

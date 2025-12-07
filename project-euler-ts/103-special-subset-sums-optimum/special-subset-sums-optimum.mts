@@ -1,4 +1,6 @@
+import { SetUtils } from "../../utils-ts/modules/core-extensions/SetUtils.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
+import { GenUtils } from "../../utils-ts/modules/core-extensions/GenUtils.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
 const implies = (a: boolean, b: boolean) => !a || b;
@@ -14,9 +16,9 @@ export const isSpecialPair = (set1: Iterable<number>, set2: Iterable<number>) =>
 };
 
 const isNewSetSpecial = (specialSet: number[], newNumber: number) => {
-	for(const subset1 of Utils.subsets(specialSet)) {
+	for(const subset1 of GenUtils.subsets(specialSet)) {
 		if(subset1.size === 0) { continue; }
-		for(const subset2 of Utils.subsets(specialSet.filter(v => !subset1.has(v)))) {
+		for(const subset2 of GenUtils.subsets(specialSet.filter(v => !subset1.has(v)))) {
 			if(subset2.size === 0) { continue; }
 			if(!isSpecialPair([...subset1], [...subset2, newNumber])) {
 				return false;

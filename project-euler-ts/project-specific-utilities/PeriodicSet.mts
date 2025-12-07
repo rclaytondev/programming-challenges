@@ -1,3 +1,4 @@
+import { ArrayUtils } from "../../utils-ts/modules/core-extensions/ArrayUtils.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
@@ -21,7 +22,7 @@ export class PeriodicSet {
 	}
 
 	static fromIncludes(period: number, includes: (num: number) => boolean) {
-		return new PeriodicSet(period, Utils.range(1, period).filter(includes));
+		return new PeriodicSet(period, ArrayUtils.range(1, period).filter(includes));
 	}
 
 	includes(num: number) {
@@ -73,7 +74,7 @@ export class PeriodicSet {
 		const offsets = new Set(this.offsets);
 		return new PeriodicSet(
 			this.period,
-			Utils.range(1, this.period).filter(n => !offsets.has(n))
+			ArrayUtils.range(1, this.period).filter(n => !offsets.has(n))
 		);
 	}
 	multiply(multiplier: number) {

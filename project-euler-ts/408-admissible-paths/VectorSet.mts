@@ -1,5 +1,5 @@
+import { ArrayUtils } from "../../utils-ts/modules/core-extensions/ArrayUtils.mjs";
 import { Vector } from "../../utils-ts/modules/geometry/Vector.mjs";
-import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
 const sortedInsertUnique = (value: number, array: number[]) => {
 	for(let i = 0; i < array.length; i ++) {
@@ -74,13 +74,13 @@ export class VectorSet {
 	slice(left: number, right: number, top: number, bottom: number): VectorSet {
 		const resultRows = new Map<number, number[]>();
 		const resultRowIndices = [];
-		const rowStartIndexIndex = Utils.binaryIndexOf(top, this.nonemptyRowIndices, "last");
+		const rowStartIndexIndex = ArrayUtils.binaryIndexOf(top, this.nonemptyRowIndices, "last");
 		for(let i = rowStartIndexIndex; i < this.nonemptyRowIndices.length && this.nonemptyRowIndices[i] <= bottom; i ++) {
 			const y = this.nonemptyRowIndices[i];
 			const newRow = [];
 			resultRowIndices.push(y);
 			const row = this.rows.get(y)!;
-			const startIndex = Utils.binaryIndexOf(left, row, "last");
+			const startIndex = ArrayUtils.binaryIndexOf(left, row, "last");
 			for(let xIndex = startIndex; xIndex < row.length && row[xIndex] <= right; xIndex ++) {
 				newRow.push(row[xIndex]);
 			}

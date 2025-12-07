@@ -1,5 +1,5 @@
+import { ArrayUtils } from "../../utils-ts/modules/core-extensions/ArrayUtils.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
-import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
 export const cardsRequired = (rooms: number, carryableCards: number): number => {
 	if(rooms + 1 <= carryableCards) {
@@ -11,5 +11,5 @@ export const cardsRequired = (rooms: number, carryableCards: number): number => 
 };
 
 const solve = () => {
-	return MathUtils.sum(Utils.range(3, 40).map(cards => cardsRequired(30, cards)));
+	return MathUtils.sum(ArrayUtils.range(3, 40).map(cards => cardsRequired(30, cards)));
 };

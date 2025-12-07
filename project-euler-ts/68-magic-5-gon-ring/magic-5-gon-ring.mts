@@ -1,7 +1,7 @@
+import { ArrayUtils } from "../../utils-ts/modules/core-extensions/ArrayUtils.mjs";
 import { BigintMath } from "../../utils-ts/modules/math/BigintMath.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Table } from "../../utils-ts/modules/Table.mjs";
-import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
 type ValuesType = [number, number, number][];
 
@@ -81,7 +81,7 @@ export class PartialSolution {
 	}
 	nextSteps() {
 		if(!this.isValid()) { return []; }
-		const unused = Utils.range(1, this.maxValue).filter(n => !this.values.flat(1).includes(n));
+		const unused = ArrayUtils.range(1, this.maxValue).filter(n => !this.values.flat(1).includes(n));
 		const firstUnusedSpot = this.firstUnusedSpot();
 		if(firstUnusedSpot === null) { return []; }
 		const [index, which] = firstUnusedSpot;
@@ -93,7 +93,7 @@ export class PartialSolution {
 	}
 
 	encoding() {
-		const startIndex = Utils.minIndex(this.values, values => values[2]);
+		const startIndex = ArrayUtils.minIndex(this.values, values => values[2]);
 		let index = startIndex;
 		let result = "";
 		for(let i = 0; i < this.numSides; i ++) {

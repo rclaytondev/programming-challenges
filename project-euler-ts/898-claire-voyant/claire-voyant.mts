@@ -1,9 +1,9 @@
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
-import { Utils } from "../../utils-ts/modules/Utils.mjs";
+import { GenUtils } from "../../utils-ts/modules/core-extensions/GenUtils.mjs";
 
 export const solve = (lyingProbabilities: number[]) => {
 	debugger;
-	return MathUtils.sum([...Utils.cartesianProduct(
+	return MathUtils.sum([...GenUtils.cartesianProduct(
 		...lyingProbabilities
 		.filter(p => p !== 0.5)
 		.map((probability, i) => (i === 0) ? [probability] : [probability, 1 - probability])

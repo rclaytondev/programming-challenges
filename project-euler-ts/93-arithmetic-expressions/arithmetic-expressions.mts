@@ -1,4 +1,6 @@
-import { Utils } from "../../utils-ts/modules/Utils.mjs";
+import { ArrayUtils } from "../../utils-ts/modules/core-extensions/ArrayUtils.mjs";
+import { SetUtils } from "../../utils-ts/modules/core-extensions/SetUtils.mjs";
+import { GenUtils } from "../../utils-ts/modules/core-extensions/GenUtils.mjs";
 
 const OPERATIONS = [
 	(a: number, b: number) => a + b,
@@ -13,7 +15,7 @@ const arithmeticCombinations = (nums: number[]) => {
 	}
 
 	const results = new Set<number>();
-	for(const subset of Utils.subsets(nums)) {
+	for(const subset of GenUtils.subsets(nums)) {
 		if(subset.size === 0 || subset.size === nums.length) { continue; }
 		const others = nums.filter(n => !subset.has(n));
 		const combinations1 = arithmeticCombinations([...subset]);
@@ -41,8 +43,8 @@ const streakLength = (nums: Set<number>) => {
 };
 
 const solve = () => {
-	return Utils.maxEntry(
-		[...Utils.subsets(Utils.range(1, MAX_DIGIT), NUM_DIGITS)],
+	return ArrayUtils.maxEntry(
+		[...GenUtils.subsets(ArrayUtils.range(1, MAX_DIGIT), NUM_DIGITS)],
 		s => streakLength(arithmeticCombinations([...s]))
 	);
 };

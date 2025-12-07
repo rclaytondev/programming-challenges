@@ -1,6 +1,5 @@
+import { ArrayUtils } from "../../utils-ts/modules/core-extensions/ArrayUtils.mjs";
 import { BigintMath } from "../../utils-ts/modules/math/BigintMath.mjs";
-import { Utils } from "../../utils-ts/modules/Utils.mjs";
-import { CountLogger } from "../project-specific-utilities/CountLogger.mjs";
 
 export class Range {
 	min: bigint;
@@ -68,7 +67,7 @@ export const termsInTable = (width: bigint, height: bigint) => {
 	for(let i = 1n; i <= height; i ++) {
 		cachedResults.clear();
 		// logger.count();
-		result += multiplesInRange(Utils.range(Number(i), Number(height)).map(BigInt), new Range(width * (i - 1n) + 1n, width * i));
+		result += multiplesInRange(ArrayUtils.range(Number(i), Number(height)).map(BigInt), new Range(width * (i - 1n) + 1n, width * i));
 	}
 	return result;
 };
