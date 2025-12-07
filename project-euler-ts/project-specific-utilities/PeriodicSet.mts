@@ -8,9 +8,15 @@ const modNonzero = (num: number, modulo: number) => {
 
 export class PeriodicSet {
 	readonly period: number;
-	readonly offsets: number[]; // intended to be between 1 and `period`, inclusive.
+	readonly offsets: readonly number[]; // intended to be between 1 and `period`, inclusive.
 	constructor(period: number, offsets: number[]) {
+		if(period <= 0 || period !== Math.floor(period)) {
+			throw new Error(`Cannot construct PeriodicSet: expected a positive integer period, but got ${period}.`);
+		}
 		this.period = period;
+		if(offsets.some(o => o !== Math.floor(o))) {
+			throw new Error(`Cannot construct PeriodicSet: expected integer offsets, but instead got ${offsets}.`);
+		}
 		this.offsets = [...new Set(offsets.map(n => modNonzero(n, period)))].sort((a, b) => a - b);
 	}
 
