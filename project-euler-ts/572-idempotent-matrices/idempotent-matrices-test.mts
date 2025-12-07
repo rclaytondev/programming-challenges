@@ -1,6 +1,7 @@
 import { assert } from "chai";
-import { idempotents, rank1Idempotents, rank2Idempotents } from "./idempotent-matrices.mjs";
+import { idempotents, rank2Idempotents } from "./idempotent-matrices.mjs";
 import { describe, it } from "mocha";
+import { rank1Idempotents } from "./idempotent-matrices-2.mjs";
 
 describe("idempotents", () => {
 	it("returns the correct answer for -1 <= (entries) <= 1", () => {
