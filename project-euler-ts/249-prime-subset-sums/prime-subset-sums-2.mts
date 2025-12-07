@@ -4,27 +4,25 @@ import { CountLogger } from "../project-specific-utilities/CountLogger.mjs";
 
 export const primeSubsetSums = (upperBound: number, modulo: number = 10 ** 16) => {
 	const primes = [...Sequence.PRIMES.termsBelow(upperBound, "exclusive")];
-	const numSetsWithSums = [new Map([[0, 1]])]; // of the first 0 primes, 1 set has a sum of 0
+	let numSetsWithSums = new Map([[0, 1]]); // of the first 0 primes, 1 set has a sum of 0
 	const logger = new CountLogger(n => 100 * n, upperBound);
 	for(const prime of primes) {
 		logger.countTo(prime);
-		const currentSums = numSetsWithSums[numSetsWithSums.length - 1];
 		const nextSums = new Map<number, number>();
-		for(const [sum, numSets] of currentSums) {
+		for(const [sum, numSets] of numSetsWithSums) {
 			nextSums.set(sum, ((nextSums.get(sum) ?? 0) + numSets) % modulo);
 			nextSums.set(sum + prime, ((nextSums.get(sum + prime) ?? 0) + numSets) % modulo);
 		}
-		numSetsWithSums.push(nextSums);
+		numSetsWithSums = nextSums;
 	}
-	const setsWithSums = numSetsWithSums[numSetsWithSums.length - 1];
 	return MathUtils.sum(
-		[...setsWithSums.keys()]
+		[...numSetsWithSums.keys()]
 		.filter(MathUtils.isPrime)
-		.map(k => setsWithSums.get(k)!)
+		.map(k => numSetsWithSums.get(k)!)
 	) % modulo;
 };
 
-console.time();
+// console.time();
 // console.log(primeSubsetSums(5000));
-console.timeEnd();
-debugger;
+// console.timeEnd();
+// debugger;
