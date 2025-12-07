@@ -1,5 +1,5 @@
 import { describe, it } from "mocha";
-import { primeSubsetSums } from "./prime-subset-sums.mjs";
+import { primeSubsetSums } from "./prime-subset-sums-2.mjs";
 import { assert } from "chai";
 
 describe("primeSubsetSums", () => {
