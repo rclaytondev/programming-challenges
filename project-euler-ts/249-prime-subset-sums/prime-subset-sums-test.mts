@@ -4,7 +4,7 @@ import { assert } from "chai";
 
 describe("primeSubsetSums", () => {
 	it("can compute the number of sets of primes less than 10 with a prime sum", () => {
-		const result = Number(primeSubsetSums(10));
+		const result = primeSubsetSums(10);
 		assert.equal(result, 7);
 		/*
 		4 singletons: {2}, {3}, {5}, {7}
@@ -14,7 +14,7 @@ describe("primeSubsetSums", () => {
 		*/
 	});
 	it("can compute the number of sets of primes less than 30 with a prime sum", () => {
-		const result = Number(primeSubsetSums(30));
+		const result = primeSubsetSums(30);
 		assert.equal(result, 237); // computed using the naive algorithm
 	});
 });
