@@ -1,9 +1,11 @@
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
-import { Utils } from "../../utils-ts/modules/Utils.mjs";
+import { Tuple, Utils } from "../../utils-ts/modules/Utils.mjs";
 
 // export const idempotents = (entryUpperBound: number) => {
 // 	return rank1Idempotents(entryUpperBound) + rank2Idempotents(entryUpperBound) + 2;
 // };
+
+export type NonemptyRange = Range & { data: { readonly min: number, readonly max: number }};
 
 export class Range {	
 	readonly data: "empty" | { readonly min: number, readonly max: number };
@@ -41,6 +43,9 @@ export class Range {
 		if(shrunk.data === "empty") { return 0; }
 		return shrunk.data.max - shrunk.data.min + 1;
 	}
+	isNonempty(): this is NonemptyRange {
+		return this.data !== "empty";
+	}
 
 	static intersection(...ranges: Range[]) {
 		const min = Math.max(...ranges.map(r => r.data === "empty" ? Infinity : r.data.min));
@@ -69,7 +74,28 @@ const linearPreimage = (slope: number, yIntercept: number, range: Range) => {
 	}
 };
 
-export const rank1Idempotents = (entryUpperBound: number) => {
+const standardizeArgs = (a0: number, range0: Range, a1: number, range1: Range, a2: number, range2: Range) => (
+	([[a0, range0], [a1, range1], [a2, range2]] as [number, NonemptyRange][])
+	.sort(([n], [m]) => Math.abs(m) - Math.abs(n))
+	.flat(1) as [number, NonemptyRange, number, NonemptyRange, number, NonemptyRange]
+);
+
+export const numBezoutCoefficients = Utils.memoize((a0: number, range0: Range, a1: number, range1: Range, a2: number, range2: Range) => {
+	/* Precondition (due to standardization: |a0| <= |a1| <= |a2| */
+	if(a2 === 0) {
+		/* a0 = a1 = a2 = 0, so no solutions */
+		return 0;
+	}
+	if(a1 === 0) {
+		/* a0 = a1 = 0, so solutions are of the form (b0, b1, b2) where b2 = 1/a2 */
+		return range2.includes(1 / a2) ? range0.numIntegers() * range1.numIntegers() : 0;
+	}
+	if(a0 === 0) {
+		const [b1, b2] = MathUtils.bezoutCoefficients()
+	}
+}, standardizeArgs);
+
+export const idempotents = (entryUpperBound: number) => {
 	const ENTRY_RANGE = new Range({ min: -entryUpperBound, max: entryUpperBound });
 	
 	let result = 0;
