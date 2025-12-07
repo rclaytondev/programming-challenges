@@ -8,7 +8,7 @@ const modNonzero = (num: number, modulo: number) => {
 	return (result === 0) ? modulo : result;
 };
 
-class PeriodicSet {
+export class PeriodicSet {
 	readonly period: number;
 	readonly offsets: number[]; // intended to be between 1 and `period`, inclusive.
 
@@ -39,6 +39,12 @@ class PeriodicSet {
 		}
 		return result;
 	}
+	numTermsBelow(upperBound: number) {
+		if(upperBound <= 0) { return 0; }
+		let count = this.offsets.length * Math.floor(upperBound / this.period);
+		upperBound %= this.period;
+		return count + this.offsets.filter(n => n <= upperBound).length; // can be optimized
+	}
 	getTerm(index: number) {
 		return this.offsets[index % this.offsets.length] + this.period * Math.floor(index / this.offsets.length);
 	}
@@ -59,6 +65,13 @@ class PeriodicSet {
 			}
 		}
 		return new PeriodicSet(newPeriod, offsets);
+	}
+	complement() {
+		const offsets = new Set(this.offsets);
+		return new PeriodicSet(
+			this.period,
+			Utils.range(1, this.period).filter(n => !offsets.has(n))
+		);
 	}
 	multiply(multiplier: number) {
 		return new PeriodicSet(this.period * multiplier, this.offsets.map(o => o * multiplier));
