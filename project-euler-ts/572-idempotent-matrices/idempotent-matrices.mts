@@ -5,30 +5,36 @@ import { Utils } from "../../utils-ts/modules/Utils.mjs";
 export const idempotents = (maxEntry: number, mode: "rank-1" | "rank-2" | "all" = "all") => {
 	let result = 0;
 	for(const [b0, b1, b2] of Utils.cartesianPower(Utils.range(-maxEntry, maxEntry + 1), 3)) {
-		if([b0, b1, b2].find(k => k !== 0)! < 0) { continue; }
-		const rowMax = Math.max(Math.abs(b0), Math.abs(b1), Math.abs(b2));
-		if(rowMax === 0) { continue; }
-		const maximum = Math.floor((maxEntry + 1) / rowMax);
-		for(const [a0, a1] of Utils.cartesianPower(Utils.range(-maximum, maximum), 2)) {
-			if(b2 === 0 && b0 * a0 + b1 * a1 !== 1) { continue; }
-			for(const a2 of (b2 === 0) ? Utils.range(-maximum, maximum) : [(1 - a0 * b0 - a1 * b1) / b2]) {
-				if(Math.floor(a2) !== a2) { continue; }
-				const rank1Matrix = new Table([
-					[b0 * a0, b1 * a0, b2 * a0],
-					[b0 * a1, b1 * a1, b2 * a1],
-					[b0 * a2, b1 * a2, b2 * a2],
-				]);
-				const rank2Matrix = rank1Matrix.map((v, i, j) => (i === j ? 1 : 0) - v);
-				if((mode === "rank-1" || mode === "all") && rank1Matrix.every(v => Math.abs(v) <= maxEntry)) {
-					result ++;
-				}
-				if((mode === "rank-2" || mode === "all") && rank2Matrix.every(v => Math.abs(v) <= maxEntry)) {
-					result ++;
-				}
+		const firstNonzero = [b0, b1, b2].find(k => k !== 0);
+		if(firstNonzero === undefined || firstNonzero < 0) { continue; }
+		result += idempotentsWithImage(maxEntry, b0, b1, b2, mode);
+	}
+	return result + 2;
+};
+
+const idempotentsWithImage = (maxEntry: number, b0: number, b1: number, b2: number, mode: "rank-1" | "rank-2" | "all") => {
+	let result = 0;
+	const rowMax = Math.max(Math.abs(b0), Math.abs(b1), Math.abs(b2));
+	const maximum = Math.floor((maxEntry + 1) / rowMax);
+	for(const [a0, a1] of Utils.cartesianPower(Utils.range(-maximum, maximum), 2)) {
+		if(b2 === 0 && b0 * a0 + b1 * a1 !== 1) { continue; }
+		for(const a2 of (b2 === 0) ? Utils.range(-maximum, maximum) : [(1 - a0 * b0 - a1 * b1) / b2]) {
+			if(Math.floor(a2) !== a2) { continue; }
+			const rank1Matrix = new Table([
+				[b0 * a0, b1 * a0, b2 * a0],
+				[b0 * a1, b1 * a1, b2 * a1],
+				[b0 * a2, b1 * a2, b2 * a2],
+			]);
+			const rank2Matrix = rank1Matrix.map((v, i, j) => (i === j ? 1 : 0) - v);
+			if((mode === "rank-1" || mode === "all") && rank1Matrix.every(v => Math.abs(v) <= maxEntry)) {
+				result ++;
+			}
+			if((mode === "rank-2" || mode === "all") && rank2Matrix.every(v => Math.abs(v) <= maxEntry)) {
+				result ++;
 			}
 		}
 	}
-	return result + 2;
+	return result;
 };
 
 export const rank1Idempotents = (maxEntry: number) => idempotents(maxEntry, "rank-1");
