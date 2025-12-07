@@ -1,10 +1,13 @@
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Sequence } from "../../utils-ts/modules/math/Sequence.mjs";
+import { CountLogger } from "../project-specific-utilities/CountLogger.mjs";
 
 export const primeSubsetSums = (upperBound: number, modulo: number = 10 ** 16) => {
 	const primes = [...Sequence.PRIMES.termsBelow(upperBound, "exclusive")];
 	const numSetsWithSums = [new Map([[0, 1]])]; // of the first 0 primes, 1 set has a sum of 0
+	const logger = new CountLogger(n => 100 * n, upperBound);
 	for(const prime of primes) {
+		logger.countTo(prime);
 		const currentSums = numSetsWithSums[numSetsWithSums.length - 1];
 		const nextSums = new Map<number, number>();
 		for(const [sum, numSets] of currentSums) {
