@@ -1,6 +1,6 @@
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
-import { PeriodicSet } from "../896-divisible-ranges/divisible-ranges-3.mjs";
+import { PeriodicSet } from "../project-specific-utilities/PeriodicSet.mjs";
 
 export const numWithStreaks = (streakLength: number, maximum: number): number => {
 	const divisibilityConditions = (Utils.range(1, streakLength).map(n => new PeriodicSet(n, [1])));
