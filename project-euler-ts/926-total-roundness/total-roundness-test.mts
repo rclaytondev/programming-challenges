@@ -1,5 +1,5 @@
 import { describe, it } from "mocha";
-import { roundness } from "./total-roundness.mjs";
+import { roundness } from "./total-roundness-2.mjs";
 import { assert } from "chai";
 
 describe("roundness", () => {
