@@ -6,7 +6,7 @@ import { assert } from "chai";
 
 export const grundyValue = Utils.memoize((length: number): number => {
 	if(length <= 1) { return 0; }
-	const options = ArrayUtils.range(0, length - 2).map(
+	const options = ArrayUtils.range(0, Math.ceil((length - 2) / 2)).map(
 		n => grundyValue(n) ^ grundyValue(length - 2 - n)
 	);
 	return minimumExcludant(options);
