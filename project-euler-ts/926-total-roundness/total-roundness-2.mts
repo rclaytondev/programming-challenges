@@ -1,7 +1,8 @@
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Sequence } from "../../utils-ts/modules/math/Sequence.mjs";
+import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
-const valuationSum = (maximum: number, remainingExponents: number[]): number => {
+const valuationSum = Utils.memoize((maximum: number, remainingExponents: number[]): number => {
 	if(remainingExponents.length === 0) {
 		return (maximum === Infinity) ? 0 : maximum;
 	}
@@ -14,7 +15,7 @@ const valuationSum = (maximum: number, remainingExponents: number[]): number => 
 		);
 	}
 	return result;
-};
+});
 
 export const roundness = (num: number) => {
 	const exponents = [...MathUtils.factorize(num).values()];
@@ -35,6 +36,6 @@ export const factorialRoundness = (num: number) => {
 
 
 console.time();
-console.log(factorialRoundness(40));
+console.log(factorialRoundness(2000));
 console.timeEnd();
 debugger;
