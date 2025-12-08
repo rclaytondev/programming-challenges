@@ -4,9 +4,9 @@ export const factorialRoundness = (num: number, modulo: number = Infinity) => {
 	const exponents = factorialExponents(num);
 	let sum = 0;
 	for(let i = 1; i <= exponents[0]; i ++) {
-		const divisorExponents = exponents.map(e => Math.floor(e / i));
 		let product = 1;
-		for(const divisorExponent of divisorExponents) {
+		for(const exponent of exponents) {
+			const divisorExponent = Math.floor(exponent / i);
 			if(divisorExponent === 0) { break; }
 			product *= (divisorExponent + 1);
 			product %= modulo;
@@ -18,6 +18,6 @@ export const factorialRoundness = (num: number, modulo: number = Infinity) => {
 };
 
 console.time();
-console.log(factorialRoundness(80000, 10 ** 9 + 7));
+console.log(factorialRoundness(10000000, 10 ** 9 + 7));
 console.timeEnd();
 debugger;
