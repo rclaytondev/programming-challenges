@@ -1,5 +1,6 @@
 import { describe, it } from "mocha";
-import { factorialRoundness, roundness } from "./total-roundness-2.mjs";
+import { roundness } from "./total-roundness-2.mjs";
+import { factorialRoundness } from "./total-roundness-3.mjs";
 import { assert } from "chai";
 
 describe("roundness", () => {

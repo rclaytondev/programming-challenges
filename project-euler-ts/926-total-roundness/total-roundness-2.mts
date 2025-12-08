@@ -41,7 +41,7 @@ export const factorialRoundness = (num: number) => {
 };
 
 
-console.time();
-console.log(factorialRoundness(2000));
-console.timeEnd();
-debugger;
+// console.time();
+// console.log(factorialRoundness(2000));
+// console.timeEnd();
+// debugger;
