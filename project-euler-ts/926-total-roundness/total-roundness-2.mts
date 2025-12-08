@@ -3,6 +3,9 @@ import { Sequence } from "../../utils-ts/modules/math/Sequence.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
 const valuationSum = Utils.memoize((maximum: number, remainingExponents: number[]): number => {
+	if(maximum === 1) {
+		return MathUtils.product(remainingExponents.map(e => e + 1));
+	}
 	if(remainingExponents.length === 0) {
 		return (maximum === Infinity) ? 0 : maximum;
 	}
