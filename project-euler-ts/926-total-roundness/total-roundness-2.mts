@@ -1,4 +1,5 @@
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
+import { Sequence } from "../../utils-ts/modules/math/Sequence.mjs";
 
 const valuationSum = (maximum: number, remainingExponents: number[]): number => {
 	if(remainingExponents.length === 0) {
@@ -8,7 +9,7 @@ const valuationSum = (maximum: number, remainingExponents: number[]): number => 
 	const nextExponents = remainingExponents.slice(1);
 	for(let i = 0; i <= remainingExponents[0]; i ++) {
 		result += valuationSum(
-			Math.min(maximum, remainingExponents[0] / i),
+			Math.min(maximum, Math.floor(remainingExponents[0] / i)),
 			nextExponents
 		);
 	}
@@ -19,3 +20,21 @@ export const roundness = (num: number) => {
 	const exponents = [...MathUtils.factorize(num).values()];
 	return valuationSum(Infinity, exponents);
 };
+
+export const factorialRoundness = (num: number) => {
+	const primes = [...Sequence.PRIMES.termsBelow(num)];
+	const exponents = primes.map(p => {
+		let exponent = 0;
+		for(let k = 1; p ** k <= num; k ++) {
+			exponent += Math.floor(num / (p ** k));
+		}
+		return exponent;
+	});
+	return valuationSum(Infinity, exponents);
+};
+
+
+console.time();
+console.log(factorialRoundness(40));
+console.timeEnd();
+debugger;
