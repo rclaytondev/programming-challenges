@@ -24,7 +24,7 @@ export const numLosing = (maxPileSize: bigint) => {
 	return total;
 };
 
-const minimumExcludant = (nums: number[]) => {
+export const minimumExcludant = (nums: number[]) => {
 	let i = 0;
 	while(true) {
 		if(!nums.includes(i)) { return i; }
