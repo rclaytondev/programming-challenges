@@ -17,7 +17,7 @@ export const factorialRoundness = (num: number, modulo: number = Infinity) => {
 	return sum % modulo;
 };
 
-console.time();
-console.log(factorialRoundness(10000000, 10 ** 9 + 7));
-console.timeEnd();
-debugger;
+// console.time();
+// console.log(factorialRoundness(10000000, 10 ** 9 + 7));
+// console.timeEnd();
+// debugger;
