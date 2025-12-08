@@ -25,16 +25,19 @@ export const roundness = (num: number) => {
 	return valuationSum(Infinity, exponents);
 };
 
-export const factorialRoundness = (num: number) => {
+export const factorialExponents = (num: number) => {
 	const primes = [...Sequence.PRIMES.termsBelow(num)];
-	const exponents = primes.map(p => {
+	return primes.map(p => {
 		let exponent = 0;
 		for(let k = 1; p ** k <= num; k ++) {
 			exponent += Math.floor(num / (p ** k));
 		}
 		return exponent;
 	});
-	return valuationSum(Infinity, exponents);
+};
+
+export const factorialRoundness = (num: number) => {
+	return valuationSum(Infinity, factorialExponents(num));
 };
 
 
