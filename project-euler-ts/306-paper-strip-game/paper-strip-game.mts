@@ -1,14 +1,14 @@
 import { describe } from "mocha";
-import { ArrayUtils } from "../../utils-ts/modules/core-extensions/ArrayUtils.mjs";
 import { minimumExcludant } from "../899-distribunim-I/distribunim-I.mjs";
 import { assert } from "chai";
 
 export const solve = (upperBound: number) => {
 	const grundyValues = [0, 0];
 	while(grundyValues.length <= upperBound) {
-		const options = ArrayUtils.range(0, Math.ceil((grundyValues.length - 2) / 2)).map(
-			n => grundyValues[n] ^ grundyValues[grundyValues.length - 2 - n]
-		);
+		const options = [];
+		for(let i = 0; i <= (grundyValues.length - 2) / 2; i ++) {
+			options.push(grundyValues[i] ^ grundyValues[grundyValues.length - 2 - i]);
+		}
 		grundyValues.push(minimumExcludant(options));
 	}
 	return grundyValues.filter(n => n !== 0).length;
@@ -22,7 +22,7 @@ describe("solve", () => {
 });
 
 console.time();
-console.log(solve(5000));
+console.log(solve(40000));
 // console.log(solve(1000000));
 console.timeEnd();
 debugger;
