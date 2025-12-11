@@ -35,7 +35,17 @@ export const getSqrtsOf1 = (upperBound: number) => {
 	return sqrtsOf1;
 };
 
+const solve = (upperBound: number) => {
+	const sqrtsOf1 = getSqrtsOf1(upperBound);
+	let sum = 0;
+	for(let i = 3; i <= upperBound; i ++) {
+		const largest = sqrtsOf1.get(i)!.offsets.findLast(n => n < i-1 && MathUtils.gcd(n, upperBound) === 1)!;
+		sum += largest;
+	}
+	return sum;
+};
+
 console.time();
-console.log(getSqrtsOf1(10000));
+console.log(solve(2 * 10 ** 5));
 console.timeEnd();
 debugger;
