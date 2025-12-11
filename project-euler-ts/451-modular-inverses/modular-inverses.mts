@@ -17,7 +17,7 @@ export const getSqrtsOf1 = (upperBound: number) => {
 			const [[prime, exponent]] = factorization.entries();
 			const isSqrtOf1 = (n: number) => (n ** 2) % modulo === 1;
 			if(exponent === 1) {
-				sqrtsOf1.set(modulo, PeriodicSet.fromIncludes(modulo, isSqrtOf1));
+				sqrtsOf1.set(modulo, new PeriodicSet(modulo, [1, modulo - 1]));
 			}
 			else {
 				const sqrts = sqrtsOf1.get(modulo / prime)!;
