@@ -7,7 +7,7 @@ const isSemiprime = (num: number) => {
 
 export const naiveNumSemiprimes = (upperBound: number) => {
 	let count = 0;
-	for(let i = 0; i < upperBound; i ++) {
+	for(let i = 1; i < upperBound; i ++) {
 		if(isSemiprime(i)) { count ++; }
 	}
 	return count;
