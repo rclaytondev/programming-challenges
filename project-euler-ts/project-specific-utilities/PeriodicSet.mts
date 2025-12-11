@@ -22,7 +22,11 @@ export class PeriodicSet {
 	}
 
 	static fromIncludes(period: number, includes: (num: number) => boolean) {
-		return new PeriodicSet(period, ArrayUtils.range(1, period).filter(includes));
+		const offsets = [];
+		for(let i = 1; i <= period; i ++) {
+			if(includes(i)) { offsets.push(i); }
+		}
+		return new PeriodicSet(period, offsets);
 	}
 
 	includes(num: number) {
