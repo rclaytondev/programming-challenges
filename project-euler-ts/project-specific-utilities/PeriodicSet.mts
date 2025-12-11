@@ -83,4 +83,8 @@ export class PeriodicSet {
 	filter(callback: (num: number) => boolean) {
 		return new PeriodicSet(this.period, this.offsets.filter(callback));
 	}
+
+	toString() {
+		return `PeriodicSet(${this.period}, [${this.offsets}])`;
+	}
 }
