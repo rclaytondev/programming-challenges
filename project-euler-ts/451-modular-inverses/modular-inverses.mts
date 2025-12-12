@@ -46,6 +46,6 @@ const solve = (upperBound: number) => {
 };
 
 console.time();
-console.log(solve(10 ** 5));
+console.log(solve(3 * 10 ** 5));
 console.timeEnd();
 debugger;

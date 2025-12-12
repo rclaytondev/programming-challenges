@@ -1,4 +1,5 @@
 import { ArrayUtils } from "../../utils-ts/modules/core-extensions/ArrayUtils.mjs";
+import { MapUtils } from "../../utils-ts/modules/core-extensions/MapUtils.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
@@ -62,17 +63,26 @@ export class PeriodicSet {
 		return this.offsets.length / this.period;
 	}
 	intersection(sequence: PeriodicSet): PeriodicSet {
-		if(this.density() > sequence.density()) {
-			return sequence.intersection(this);
-		}
-		const newPeriod = MathUtils.lcm(this.period, sequence.period);
-		const offsets = [];
-		for(const term of this.termsBelow(newPeriod)) {
-			if(sequence.includes(term)) {
-				offsets.push(term);
+		const gcd = MathUtils.gcd(this.period, sequence.period);
+
+		const result = [];
+		const groups1 = MapUtils.groupBy(this.offsets, n => n % gcd);
+		const groups2 = MapUtils.groupBy(sequence.offsets, n => n % gcd);
+		const [coef1] = MathUtils.bezoutCoefficients(this.period / gcd, sequence.period / gcd);
+		for(const remainder of (groups1.size < groups2.size ? groups1.keys() : groups2.keys())) {
+			const group1 = groups1.get(remainder);
+			const group2 = groups2.get(remainder);
+			if(!group1 || group1.length === 0 || !group2 || group2.length === 0) {
+				continue;
+			}
+			for(const i of group1) {
+				for(const j of group2) {
+					result.push(i + (j - i) / gcd * this.period * coef1);
+				}
 			}
 		}
-		return new PeriodicSet(newPeriod, offsets);
+		const lcm = this.period * sequence.period / gcd;
+		return new PeriodicSet(lcm, result);
 	}
 	complement() {
 		const offsets = new Set(this.offsets);
