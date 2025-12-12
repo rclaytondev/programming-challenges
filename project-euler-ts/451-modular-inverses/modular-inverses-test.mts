@@ -9,8 +9,8 @@ describe("getSqrtsOf1", () => {
 		const actual = getSqrtsOf1(20);
 		for(let i = 2; i <= 20; i ++) {
 			assert.deepEqual(
-				actual.get(i)!, expected.get(i)!,
-				`For n=${i}, expected ${expected.get(i)!} but got ${actual.get(i)})`
+				actual[i], expected.get(i)!,
+				`For n=${i}, expected ${expected.get(i)!} but got ${actual[i]})`
 			);
 		}
 	});
