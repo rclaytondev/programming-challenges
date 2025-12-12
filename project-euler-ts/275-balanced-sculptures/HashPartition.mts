@@ -1,3 +1,4 @@
+import { HashSet } from "../../utils-ts/modules/HashSet.mjs";
 import { Partition } from "./Partition.mjs";
 
 export class HashPartition<T> {
@@ -58,7 +59,10 @@ export class HashPartition<T> {
 	}
 	sets() {
 		const sets = this.partition.sets();
-		return sets.map(set => new Set([...set].map(str => this.valuesMap.get(str) as T)));
+		return new HashSet(sets.map(set => new HashSet(
+			[...set].map(hash => this.valuesMap.get(hash) as T),
+			this.hashFunction
+		)));
 	}
 
 	get numSets() {
