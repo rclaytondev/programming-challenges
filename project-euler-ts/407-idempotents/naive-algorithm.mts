@@ -1,4 +1,5 @@
-const largestIdempotent = (modulo: number) => {
+export const largestIdempotent = (modulo: number) => {
+	if(modulo === 1) { return 0; }
 	for(let i = modulo - 1; i > 1; i --) {
 		if((i ** 2) % modulo === i) {
 			return i;
