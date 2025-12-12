@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { idempotentSum } from "./idempotents-4.mjs";
+import { idempotentSum } from "./idempotents.mjs";
 import { naiveIdempotentSum } from "./naive-algorithm.mjs";
 
 describe("idempotentSum", () => {
