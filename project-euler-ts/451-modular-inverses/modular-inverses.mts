@@ -1,3 +1,4 @@
+import { ArrayUtils } from "../../utils-ts/modules/core-extensions/ArrayUtils.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { CountLogger } from "../project-specific-utilities/CountLogger.mjs";
 import { PeriodicSet } from "../project-specific-utilities/PeriodicSet.mjs";
@@ -10,8 +11,12 @@ export const naiveSqrtsOf1 = (upperBound: number) => {
 	return sqrtsOf1;
 };
 
-export const getSqrtsOf1 = (upperBound: number) => {
-	const sqrtsOf1 = [
+export const modularRoots = (
+	upperBound: number,
+	polynomial: (x: number) => number,
+	solutionsForPrimes?: (prime: number) => number[]
+) => {
+	const solutions = [
 		new PeriodicSet(1, [1]),
 		new PeriodicSet(1, [1])
 	];
@@ -21,25 +26,34 @@ export const getSqrtsOf1 = (upperBound: number) => {
 		const factorization = MathUtils.factorize(modulo);
 		if(factorization.size === 1) {
 			const [[prime, exponent]] = factorization.entries();
-			const isSqrtOf1 = (n: number) => (n ** 2) % modulo === 1;
+			const isSolution = (n: number) => MathUtils.generalizedModulo(polynomial(n), modulo) === 0;
 			if(exponent === 1) {
-				sqrtsOf1.push(new PeriodicSet(modulo, [1, modulo - 1]));
+				solutions.push(new PeriodicSet(
+					modulo,
+					solutionsForPrimes?.(prime) ?? ArrayUtils.range(1, prime).filter(isSolution))
+				);
 			}
 			else {
-				const sqrts = sqrtsOf1[modulo / prime];
-				sqrtsOf1.push(new PeriodicSet(modulo, sqrts.termsBelow(modulo).filter(isSqrtOf1)));
+				const sqrts = solutions[modulo / prime];
+				solutions.push(new PeriodicSet(modulo, sqrts.termsBelow(modulo).filter(isSolution)));
 			}
 		}
 		else {
-			sqrtsOf1.push(
+			solutions.push(
 				[...factorization.entries()]
-				.map(([prime, exponent]) => sqrtsOf1[prime ** exponent])
+				.map(([prime, exponent]) => solutions[prime ** exponent])
 				.reduce((a, b) => a.intersection(b))
 			);
 		}
 	}
-	return sqrtsOf1;
+	return solutions;
 };
+
+export const getSqrtsOf1 = (upperBound: number) => modularRoots(
+	upperBound,
+	x => x ** 2 - 1,
+	p => [1, p - 1]
+);
 
 const solve = (upperBound: number) => {
 	const sqrtsOf1 = getSqrtsOf1(upperBound);
