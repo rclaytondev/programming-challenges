@@ -61,10 +61,10 @@ export class PartialSculpture {
 		const rightRanges = this.components.flatMap(c => c.right);
 		for(let centralRanges = 0; centralRanges <= this.blocks; centralRanges ++) {
 			const indices = ArrayUtils.range(0, centralRanges - 1);
-			const leftOptions = GenUtils.subsets(GenUtils.cartesianPower([...indices, ...leftRanges], 2));
-			const rightOptions = GenUtils.subsets(GenUtils.cartesianPower([...indices, ...rightRanges], 2));
-			for(const leftConnections of leftOptions) {
-				for(const rightConnections of rightOptions) {
+			const allLeftConnections = GenUtils.cartesianPower([...indices, ...leftRanges], 2);
+			const allRightConnections = GenUtils.cartesianPower([...indices, ...rightRanges], 2);
+			for(const leftConnections of GenUtils.subsets(allLeftConnections)) {
+				for(const rightConnections of GenUtils.subsets(allRightConnections)) {
 
 				}
 			}
