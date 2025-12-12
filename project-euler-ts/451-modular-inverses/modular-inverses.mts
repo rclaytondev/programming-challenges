@@ -1,4 +1,5 @@
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
+import { CountLogger } from "../project-specific-utilities/CountLogger.mjs";
 import { PeriodicSet } from "../project-specific-utilities/PeriodicSet.mjs";
 
 export const naiveSqrtsOf1 = (upperBound: number) => {
@@ -11,7 +12,9 @@ export const naiveSqrtsOf1 = (upperBound: number) => {
 
 export const getSqrtsOf1 = (upperBound: number) => {
 	const sqrtsOf1 = new Map<number, PeriodicSet>();
+	const logger = new CountLogger(n => 10000 * n, upperBound);
 	for(let modulo = 2; modulo <= upperBound; modulo ++) {
+		logger.countTo(modulo);
 		const factorization = MathUtils.factorize(modulo);
 		if(factorization.size === 1) {
 			const [[prime, exponent]] = factorization.entries();
