@@ -1,5 +1,6 @@
 import { ArrayUtils } from "../../utils-ts/modules/core-extensions/ArrayUtils.mjs";
 import { GenUtils } from "../../utils-ts/modules/core-extensions/GenUtils.mjs";
+import { HashPartition } from "./HashPartition.mjs";
 
 export class IntRange {
 	/* 
@@ -18,6 +19,19 @@ export class IntRange {
 
 	toString() {
 		return `[${this.min} .. ${this.max}]`;
+	}
+}
+
+export class SidedRange {
+	readonly side: "left" | "right";
+	readonly range: IntRange;
+	constructor(side: "left" | "right", range: IntRange) {
+		this.side = side;
+		this.range = range;
+	}
+
+	toString() {
+		return `${this.range} on the ${this.side}`;
 	}
 }
 
@@ -57,21 +71,24 @@ export class PartialSculpture {
 
 	abstractNextComponents() {
 		const result: AbstractComponent[] = [];
-		const leftRanges = this.components.flatMap(c => c.left);
-		const rightRanges = this.components.flatMap(c => c.right);
+		const leftRanges = this.components.flatMap(c => c.left.map(r => new SidedRange("left", r)));
+		const rightRanges = this.components.flatMap(c => c.right.map(r => new SidedRange("right",  r)));
 		for(let centralRanges = 0; centralRanges <= this.blocks; centralRanges ++) {
 			const indices = ArrayUtils.range(0, centralRanges - 1);
 			const allLeftConnections = GenUtils.cartesianPower([...indices, ...leftRanges], 2);
 			const allRightConnections = GenUtils.cartesianPower([...indices, ...rightRanges], 2);
 			for(const leftConnections of GenUtils.subsets(allLeftConnections)) {
 				for(const rightConnections of GenUtils.subsets(allRightConnections)) {
-
+					result.push(this.getAbstractComponents(leftConnections, rightConnections));
 				}
 			}
 		}
 		return result;
 	}
-	getAbstractComponents(left: Set<[number | IntRange, number | IntRange]>) {
-
+	getAbstractComponents(left: Set<[number | SidedRange, number | SidedRange]>, right: Set<[number | SidedRange, number | SidedRange]>) {
+		const partition = HashPartition.empty<SidedRange | number>();
+		for(const [endpoint, endpoint2] of left) {
+			
+		}
 	}
 }
