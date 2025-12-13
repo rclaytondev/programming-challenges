@@ -121,6 +121,16 @@ export class Partition<T> {
 		}
 		return sets;
 	}
+	map<S>(callback: (value: T) => S) {
+		const mapped = Partition.empty<S>();
+		for(const value of this.values()) {
+			mapped.add(callback(value));
+		}
+		for(const value of this.values()) {
+			mapped.merge(callback(value), callback(this.representative(value)));
+		}
+		return mapped;
+	}
 
 	private moveNode(node: Node<T>, newParent: Node<T>) {
 		node.parent?.children.delete(node);

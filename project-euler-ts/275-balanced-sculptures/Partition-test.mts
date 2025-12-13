@@ -92,3 +92,21 @@ describe("Partition.copy", () => {
 		]);
 	});
 });
+describe("Partition.map", () => {
+	it("constructs a new Partition by calling the callback on each value", () => {
+		const partition = Partition.fromSets<string>([["a"], ["b", "c"], ["d"]]);
+		const mapped = partition.map(s => s.toUpperCase());
+		assert.sameDeepMembers(mapped.sets(), [
+			new Set(["A"]),
+			new Set(["B", "C"]),
+			new Set(["D"])
+		]);
+	});
+	it("merges some sets in the partition if the callback is not injective", () => {
+		const partition = Partition.fromSets<number>([[3, 4], [5], [6]]);
+		const mapped = partition.map(n => n % 2);
+		assert.sameDeepMembers(mapped.sets(), [
+			new Set([0, 1]),
+		]);
+	});
+});
