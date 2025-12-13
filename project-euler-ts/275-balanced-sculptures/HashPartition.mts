@@ -59,10 +59,21 @@ export class HashPartition<T> {
 	}
 	sets() {
 		const sets = this.partition.sets();
+		const setHash = (s: HashSet<T>) => `{${[...s].map(v => this.hashFunction(v)).sort().join(", ")}}`;
 		return new HashSet(sets.map(set => new HashSet(
 			[...set].map(hash => this.valuesMap.get(hash) as T),
 			this.hashFunction
-		)));
+		)), setHash);
+	}
+	map<S>(callback: (value: T) => S, hashFunction: (value: S) => string = (x => `${x}`)) {
+		const mapped = HashPartition.empty<S>(hashFunction);
+		for(const value of this.values()) {
+			mapped.add(callback(value));
+		}
+		for(const value of this.values()) {
+			mapped.merge(callback(value), callback(this.representative(value)));
+		}
+		return mapped;
 	}
 
 	get numSets() {
