@@ -12,11 +12,13 @@ export class PartialSculpture {
 	readonly components: Partition<number>;
 	readonly blocksLeft: number;
 	readonly weight: number;
+	readonly mode: "symmetrical" | "all";
 
-	constructor(components: Partition<number>, blocksLeft: number, weight: number) {
+	constructor(components: Partition<number>, blocksLeft: number, weight: number, mode: "symmetrical" | "all") {
 		this.components = components;
 		this.blocksLeft = blocksLeft;
 		this.weight = weight;
+		this.mode = mode;
 	}
 
 	completions() {
@@ -29,6 +31,9 @@ export class PartialSculpture {
 		const left = this.nextMinLeft();
 		let result = 0;
 		for(const blockPositions of GenUtils.subsets(ArrayUtils.range(left, right))) {
+			if(this.mode === "symmetrical" && [...blockPositions].some(x => !blockPositions.has(-x))) {
+				continue;
+			}
 			const allComponentsContinue = this.components.sets().every(s => 
 				[...s].some(position => blockPositions.has(position))
 			);
@@ -63,7 +68,8 @@ export class PartialSculpture {
 		return new PartialSculpture(
 			Partition.fromHashPartition(components),
 			this.blocksLeft - blockPositions.length,
-			this.weight + MathUtils.sum(blockPositions)
+			this.weight + MathUtils.sum(blockPositions),
+			this.mode
 		)
 	}
 
@@ -84,8 +90,9 @@ export class PartialSculpture {
 	}
 
 	static numSculptures(blocks: number) {
-		const components = Partition.empty<number>();
-		components.add(0);
-		return new PartialSculpture(components, blocks, 0).completions();
+		const all = new PartialSculpture(Partition.fromSets([[1]]), blocks, 0, "all").completions();
+		const symmetrical = new PartialSculpture(Partition.fromSets([[1]]), blocks, 0, "symmetrical").completions();
+		const asymmetrical = all - symmetrical;
+		return all - (asymmetrical / 2);
 	}
 }
