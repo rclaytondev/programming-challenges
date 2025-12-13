@@ -5,30 +5,10 @@ This algorithm computes sculptures by building them row by row, from bottom to t
 import { ArrayUtils } from "../../utils-ts/modules/core-extensions/ArrayUtils.mjs";
 import { GenUtils } from "../../utils-ts/modules/core-extensions/GenUtils.mjs";
 
-export class IntRange {
-	/* 
-	Represents a range of integers from `min` to `max`, inclusive.
-	*/
-	readonly min: number;
-	readonly max: number;
-
-	constructor(min: number, max: number) {
-		if(min < 0 || min > max || min !== Math.floor(min) || max !== Math.floor(max)) {
-			throw new Error(`Cannot construct IntRange: invalid min and max (min=${min}, max=${max}).`);
-		}
-		this.min = min;
-		this.max = max;
-	}
-
-	toString() {
-		return `[${this.min} .. ${this.max}]`;
-	}
-}
-
 export class Component {
-	readonly ranges: readonly IntRange[];
-	constructor(ranges: IntRange[]) {
-		this.ranges = ranges;
+	readonly positions: number[];
+	constructor(positions: number[]) {
+		this.positions = positions;
 	}
 }
 
@@ -47,8 +27,16 @@ export class PartialSculpture {
 		const right = this.nextMaxRight();
 		const left = this.nextMinLeft();
 		for(const blockPositions of GenUtils.subsets(ArrayUtils.range(left, right))) {
-			const sorted = [...blockPositions].sort((a, b) => a - b);
+			const allComponentsContinue = this.components.every(c => 
+				c.positions.some(p => blockPositions.has(p))
+			);
+			if(!allComponentsContinue) { continue; }
+
+
 		}
+	}
+	nextComponents(blockPositions: number[]) {
+		
 	}
 
 	nextMaxRight() {
@@ -61,9 +49,9 @@ export class PartialSculpture {
 
 	
 	right() {
-		return Math.max(...this.components.map(c => Math.max(...c.ranges.map(r => r.max))));
+		return Math.max(...this.components.map(c => Math.max(...c.positions)));
 	}
 	left() {
-		return Math.min(...this.components.map(c => Math.min(...c.ranges.map(r => r.min))));
+		return Math.min(...this.components.map(c => Math.min(...c.positions)));
 	}
 }
