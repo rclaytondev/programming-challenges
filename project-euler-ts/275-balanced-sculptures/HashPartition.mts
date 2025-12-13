@@ -27,6 +27,17 @@ export class HashPartition<T> {
 			hashFunction
 		);
 	}
+	static fromPartition<T>(partition: Partition<T>, hashFunction: (value: T) => string = (x => `${x}`)) {
+		const map = new Map<string, T>();
+		for(const value of partition.values()) {
+			map.set(hashFunction(value), value);
+		}
+		return new HashPartition(
+			partition.map(hashFunction),
+			map,
+			hashFunction
+		);
+	}
 
 	add(value: T) {
 		const hash = this.hashFunction(value);
