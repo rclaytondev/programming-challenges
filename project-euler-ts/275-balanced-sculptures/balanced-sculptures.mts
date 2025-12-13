@@ -20,6 +20,11 @@ export class PartialSculpture {
 	}
 
 	completions() {
+		if(this.blocksLeft < 0) { return 0; }
+		if(this.blocksLeft === 0) {
+			const valid = (this.components.numSets === 1 && this.weight === 0);
+			return valid ? 1 : 0;
+		}
 		const right = this.nextMaxRight();
 		const left = this.nextMinLeft();
 		let result = 0;
