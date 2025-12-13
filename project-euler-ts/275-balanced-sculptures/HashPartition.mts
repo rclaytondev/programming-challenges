@@ -92,6 +92,11 @@ export class HashPartition<T> {
 		}
 		return mapped;
 	}
+	
+	toString() {
+		const setToString = (s: HashSet<T>) => `{${[...s].map(v => this.hashFunction(v)).sort().join(", ")}}`;
+		return `Partition {${[...this.sets()].map(setToString).sort().join(", ")}}`;
+	}
 
 	get numSets() {
 		return this.partition.numSets;

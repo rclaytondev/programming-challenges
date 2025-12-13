@@ -136,6 +136,10 @@ export class Partition<T> {
 		}
 		return mapped;
 	}
+	toString() {
+		const setToString = (s: Set<T>) => `{${[...s].map(v => `${v}`).sort().join(", ")}}`;
+		return `Partition {${this.sets().map(setToString).sort().join(", ")}}`;
+	}
 
 	private moveNode(node: Node<T>, newParent: Node<T>) {
 		node.parent?.children.delete(node);
