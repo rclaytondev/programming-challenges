@@ -1,3 +1,5 @@
+import { HashPartition } from "./HashPartition.mjs";
+
 type Node<T> = { value: T, parent: Node<T> | null, children: Set<Node<T>> };
 
 export class Partition<T> {
@@ -25,6 +27,9 @@ export class Partition<T> {
 			}
 		}
 		return result;
+	}
+	static fromHashPartition<T>(hashPartition: HashPartition<T>) {
+		return hashPartition.partition.map(s => hashPartition.valuesMap.get(s) as T);
 	}
 
 	add(value: T) {

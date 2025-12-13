@@ -38,6 +38,12 @@ export class HashPartition<T> {
 			hashFunction
 		);
 	}
+	filter(callback: (value: T) => boolean) {
+		return HashPartition.fromSets(
+			this.sets().map(s => [...s].filter(callback)),
+			this.hashFunction
+		);
+	}
 
 	add(value: T) {
 		const hash = this.hashFunction(value);

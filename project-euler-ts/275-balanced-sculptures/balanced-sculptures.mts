@@ -4,20 +4,16 @@ This algorithm computes sculptures by building them row by row, from bottom to t
 
 import { ArrayUtils } from "../../utils-ts/modules/core-extensions/ArrayUtils.mjs";
 import { GenUtils } from "../../utils-ts/modules/core-extensions/GenUtils.mjs";
-
-export class Component {
-	readonly positions: number[];
-	constructor(positions: number[]) {
-		this.positions = positions;
-	}
-}
+import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
+import { HashPartition } from "./HashPartition.mjs";
+import { Partition } from "./Partition.mjs";
 
 export class PartialSculpture {
-	readonly components: readonly Component[];
+	readonly components: Partition<number>;
 	readonly blocksLeft: number;
 	readonly weight: number;
 
-	constructor(components: Component[], blocksLeft: number, weight: number) {
+	constructor(components: Partition<number>, blocksLeft: number, weight: number) {
 		this.components = components;
 		this.blocksLeft = blocksLeft;
 		this.weight = weight;
@@ -26,17 +22,44 @@ export class PartialSculpture {
 	completions() {
 		const right = this.nextMaxRight();
 		const left = this.nextMinLeft();
+		let result = 0;
 		for(const blockPositions of GenUtils.subsets(ArrayUtils.range(left, right))) {
-			const allComponentsContinue = this.components.every(c => 
-				c.positions.some(p => blockPositions.has(p))
+			const allComponentsContinue = this.components.sets().every(s => 
+				[...s].some(position => blockPositions.has(position))
 			);
 			if(!allComponentsContinue) { continue; }
 
-
+			const next = this.nextPartialSculpture([...blockPositions]);
+			result += next.completions();
 		}
+		return result;
 	}
 	nextComponents(blockPositions: number[]) {
-		
+		type Position = ({ row: "current" | "next", x: number });
+		const hashFunction = (position: Position) => `${position.row}, ${position.x}`;
+		const partition = HashPartition.fromPartition(this.components).map(
+			x => ({ row: "current", x: x }) as Position,
+			hashFunction
+		);
+		for(const x of blockPositions) {
+			const position = { x: x, row: "next" } as Position;
+			partition.add(position);
+		}
+		for(const x of blockPositions) {
+			const position = { x: x, row: "next" } as Position;
+			partition.merge(position, { x: x - 1, row: "next" });
+			partition.merge(position, { x: x + 1, row: "next" });
+			partition.merge(position, { x: x, row: "current" });
+		}
+		return partition.filter((position) => position.row === "next").map(({ x }) => x);
+	}
+	nextPartialSculpture(blockPositions: number[]) {
+		const components = this.nextComponents(blockPositions);
+		return new PartialSculpture(
+			Partition.fromHashPartition(components),
+			this.blocksLeft - blockPositions.length,
+			this.weight + MathUtils.sum(blockPositions)
+		)
 	}
 
 	nextMaxRight() {
@@ -49,9 +72,15 @@ export class PartialSculpture {
 
 	
 	right() {
-		return Math.max(...this.components.map(c => Math.max(...c.positions)));
+		return Math.max(...this.components.values());
 	}
 	left() {
-		return Math.min(...this.components.map(c => Math.min(...c.positions)));
+		return Math.min(...this.components.values());
+	}
+
+	static numSculptures(blocks: number) {
+		const components = Partition.empty<number>();
+		components.add(0);
+		return new PartialSculpture(components, blocks, 0).completions();
 	}
 }

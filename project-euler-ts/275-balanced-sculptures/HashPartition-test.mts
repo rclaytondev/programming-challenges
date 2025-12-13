@@ -56,3 +56,16 @@ describe("HashPartition.map", () => {
 		]);
 	});
 });
+describe("HashPartition.filter", () => {
+	it("returns the partition obtained by filtering each set", () => {
+		const partition = HashPartition.fromSets<number>([
+			[1, 2, 3], [4], [5, 6, 7, 8, 9, 10]
+		]);
+		const filtered = partition.filter((n: number): n is number => n % 2 === 0);
+		assert.deepEqual(new Set([...filtered.sets()].map(s => new Set(s))), new Set([
+			new Set([2]),
+			new Set([4]),
+			new Set([6, 8, 10])
+		]));
+	});
+});
