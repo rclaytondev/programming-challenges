@@ -40,7 +40,7 @@ export class HashPartition<T> {
 	}
 	filter(callback: (value: T) => boolean) {
 		return HashPartition.fromSets(
-			this.sets().map(s => [...s].filter(callback)),
+			[...this.sets()].map(s => [...s].filter(callback)),
 			this.hashFunction
 		);
 	}
