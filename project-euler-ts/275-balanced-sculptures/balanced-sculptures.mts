@@ -96,3 +96,8 @@ export class PartialSculpture {
 		return all - (asymmetrical / 2);
 	}
 }
+
+console.time();
+console.log(PartialSculpture.numSculptures(6));
+console.timeEnd();
+debugger;
