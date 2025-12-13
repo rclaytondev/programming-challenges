@@ -90,8 +90,8 @@ export class PartialSculpture {
 	}
 
 	static numSculptures(blocks: number) {
-		const all = new PartialSculpture(Partition.fromSets([[1]]), blocks, 0, "all").completions();
-		const symmetrical = new PartialSculpture(Partition.fromSets([[1]]), blocks, 0, "symmetrical").completions();
+		const all = new PartialSculpture(Partition.fromSets([[0]]), blocks, 0, "all").completions();
+		const symmetrical = new PartialSculpture(Partition.fromSets([[0]]), blocks, 0, "symmetrical").completions();
 		const asymmetrical = all - symmetrical;
 		return all - (asymmetrical / 2);
 	}
