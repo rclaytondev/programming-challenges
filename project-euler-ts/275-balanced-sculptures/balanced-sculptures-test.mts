@@ -1,5 +1,5 @@
 import { describe, it } from "mocha";
-import { PartialSculpture } from "./balanced-sculptures.mjs";
+import { PartialSculpture, setsWithSum } from "./balanced-sculptures.mjs";
 import { assert } from "chai";
 import { Partition } from "./Partition.mjs";
 
@@ -97,5 +97,18 @@ describe("PartialSculpture.weightWidthBound", () => {
 		const left = sculpture.weightWidthBound("left");
 		assert.equal(right, 2);
 		assert.equal(left, -2);
+	});
+});
+describe("setsWithSum", () => {
+	it("returns the sets in the range that have the given sum", () => {
+		const sets = setsWithSum(9, 3, 6, 2);
+		assert.deepEqual(new Set(sets), new Set([
+			[3, 6],
+			[4, 5]
+		]));
+	});
+	it("works for (0, -1, 1, 1)", () => {
+		const sets = setsWithSum(0, -1, 1, 1);
+		assert.deepEqual(sets, [[0]]);
 	});
 });

@@ -8,6 +8,40 @@ import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { HashPartition } from "./HashPartition.mjs";
 import { Partition } from "./Partition.mjs";
 
+const rangeSum = (min: number, max: number) => min * (max - min + 1) + (max - min) * (max - min + 1) / 2;
+
+export const setsWithSum = (sum: number, min: number, max: number, size: number): number[][] => {
+	// Note: can be optimized, and args can be standardized (WLOG min=0)
+	const result = [];
+	if(min === max) {
+		if(size === 0 && sum === 0) { result.push([]); }
+		if(size === 1 && sum === min) { result.push([min]); }
+		return result;
+	}
+	if(max === min + 1) {
+		if(size === 0 && sum === 0) { result.push([]); }
+		if(size === 1 && sum === min) { result.push([min]); }
+		if(size === 1 && sum === max) { result.push([max]); }
+		if(size === 2 && sum === min + max) { result.push([min, max]); }
+		return result;
+	}
+	const mid = Math.floor((min + max) / 2);
+	for(let leftSize = 0; leftSize <= mid - min + 1 && leftSize <= size; leftSize ++) {
+		const rightSize = size - leftSize;
+		for(let leftSum = rangeSum(min, min + leftSize - 1); leftSum <= rangeSum(mid - (leftSize - 1), mid); leftSum ++) {
+			const leftSets = setsWithSum(leftSum, min, mid, leftSize);
+			if(leftSets.length === 0) { continue; }
+			const rightSum = sum - leftSum;
+			for(const rightSet of setsWithSum(rightSum, mid + 1, max, rightSize)) {
+				for(const leftSet of leftSets) {
+					result.push([...leftSet, ...rightSet]);
+				}
+			}
+		}
+	}
+	return result;
+};
+
 export class PartialSculpture {
 	readonly components: Partition<number>;
 	readonly blocksLeft: number;
@@ -79,8 +113,6 @@ export class PartialSculpture {
 		}
 	}
 	canOverhang(side: "left" | "right", overhangBlocks: number): boolean {
-		const rangeSum = (min: number, max: number) => min * (max - min + 1) + (max - min) * (max - min + 1) / 2;
-
 		const left = this.left();
 		const right = this.right();
 		const notAbove = ArrayUtils.range(left, right).filter(x => !this.components.has(x));
@@ -110,11 +142,17 @@ export class PartialSculpture {
 	nextBlockPositions() {
 		const right = this.weightWidthBound("right");
 		const left = this.weightWidthBound("left");
-		const allPositions = ArrayUtils.range(left, right);
 		const result = [];
-		for(let size = 1; size <= this.blocksLeft; size ++) {
-			for(const subset of GenUtils.subsets(allPositions, size)) {
-				result.push(subset);
+		for(let blocks = 1; blocks <= this.blocksLeft; blocks ++) {
+			const blocksAbove = this.blocksLeft - blocks;
+			const minWeightAbove = rangeSum(left - blocksAbove + 1, left);
+			const maxWeightAbove = rangeSum(right, right + blocksAbove - 1);
+			const minWeight = -this.weight - maxWeightAbove;
+			const maxWeight = -this.weight - minWeightAbove;
+			for(let weight = minWeight; weight <= maxWeight; weight ++) {
+				for(const blocksSet of setsWithSum(weight, left, right, blocks)) {
+					result.push(new Set(blocksSet));
+				}
 			}
 		}
 		return result;
