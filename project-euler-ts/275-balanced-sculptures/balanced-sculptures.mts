@@ -73,8 +73,23 @@ export class PartialSculpture {
 		)
 	}
 
+	weightWidthBound(side: "left" | "right") {
+		const sign = (side === "right" ? 1 : -1);
+		const right = this.right();
+		const left = this.left();
+		// const firstOppositeBlock = (side === "left")
+		const maxOverhang = (
+			(right > left)
+			? Math.floor(-(sign * (this.weight + right + left) * this.blocksLeft + 1/2 * (this.blocksLeft - this.blocksLeft ** 2)) / (sign * (right - left) + this.blocksLeft))
+			: Math.floor(-(sign * (this.weight + right + (left - 1)) * this.blocksLeft + 1/2 * (this.blocksLeft - this.blocksLeft ** 2)) / (sign * (right - (left - 1)) + this.blocksLeft))
+		);
+		// const maxOverhang = ;
+		return (side === "right") ? right + maxOverhang : left - maxOverhang;
+	}
 	nextMaxRight() {
-		// TODO: optimize this!
+		const right = this.right();
+		// const weightBound = 
+		// const connectionBound = right + (this.blocksLeft - 1 - 2 * (this.components.numSets - 1));
 		return this.right() + (this.blocksLeft - 1);
 	}
 	nextMinLeft() {
@@ -97,7 +112,7 @@ export class PartialSculpture {
 	}
 }
 
-console.time();
-console.log(PartialSculpture.numSculptures(6));
-console.timeEnd();
-debugger;
+// console.time();
+// console.log(PartialSculpture.numSculptures(6));
+// console.timeEnd();
+// debugger;
