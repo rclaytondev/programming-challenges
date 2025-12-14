@@ -33,6 +33,27 @@ export const setsWithSum = (minSum: number, maxSum: number, min: number, max: nu
 let calls = 0;
 let memoized = 0;
 
+class PartialRow {
+	blocks: Set<number>;
+	remaining: number[];
+	requiredAbove: Set<number>;
+	sculptureBelow: PartialSculpture;
+
+	constructor(blocks: Set<number>, remaining: number[], requiredAbove: Set<number>, sculptureBelow: PartialSculpture) {
+		this.blocks = blocks;
+		this.remaining = remaining;
+		this.requiredAbove = requiredAbove;
+		this.sculptureBelow = sculptureBelow;
+	}
+
+	completions() {
+		if(this.remaining.length === 0) { return [this.blocks]; }
+		const next = this.remaining[0];
+		const result = [];
+		throw new Error("unimplemented");
+	}
+}
+
 export class PartialSculpture {
 	readonly components: Partition<number>;
 	readonly blocksLeft: number;
@@ -147,25 +168,8 @@ export class PartialSculpture {
 	nextBlockPositions() {
 		const right = this.weightWidthBound("right");
 		const left = this.weightWidthBound("left");
-		const result = [];
-		return this.blockPositions(new Set(), ArrayUtils.range(left, right), new Set());
-	}
-	mustIncludeBlock(blocks: number[], next: number, remaining: number[],) {
-
-	}
-	blockPositions(blocks: Set<number>, remaining: number[], requiredAbove: Set<number>): Array<Set<number>> {
-		if(remaining.length === 0) { return [blocks]; }
-		const next = remaining[0];
-		const result = [];
-		
-		const requiredAboveWith = new Set(requiredAbove);
-		for(const positions of this.blockPositions(
-			new Set([...blocks, next]),
-			remaining.slice(1),
-			requiredAboveWith
-		)) { result.push(positions); }
-
-		return result;
+		const emptyRow = new PartialRow(new Set(), ArrayUtils.range(left, right), new Set(), this);
+		return emptyRow.completions();
 	}
 
 	
