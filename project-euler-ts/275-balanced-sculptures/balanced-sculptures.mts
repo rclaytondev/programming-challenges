@@ -110,7 +110,14 @@ export class PartialSculpture {
 	nextBlockPositions() {
 		const right = this.weightWidthBound("right");
 		const left = this.weightWidthBound("left");
-		return GenUtils.subsets(ArrayUtils.range(left, right));
+		const allPositions = ArrayUtils.range(left, right);
+		const result = [];
+		for(let size = 1; size <= this.blocksLeft; size ++) {
+			for(const subset of GenUtils.subsets(allPositions, size)) {
+				result.push(subset);
+			}
+		}
+		return result;
 	}
 
 	
@@ -130,6 +137,6 @@ export class PartialSculpture {
 }
 
 console.time();
-console.log(PartialSculpture.numSculptures(9));
+console.log(PartialSculpture.numSculptures(10));
 console.timeEnd();
 debugger;
