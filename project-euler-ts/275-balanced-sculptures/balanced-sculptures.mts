@@ -27,10 +27,8 @@ export class PartialSculpture {
 			const valid = (this.components.numSets === 1 && this.weight === 0);
 			return valid ? 1 : 0;
 		}
-		const right = this.weightWidthBound("right");
-		const left = this.weightWidthBound("left");
 		let result = 0;
-		for(const blockPositions of GenUtils.subsets(ArrayUtils.range(left, right))) {
+		for(const blockPositions of this.nextBlockPositions()) {
 			if(this.mode === "symmetrical" && [...blockPositions].some(x => !blockPositions.has(-x))) {
 				continue;
 			}
@@ -107,6 +105,12 @@ export class PartialSculpture {
 		);
 		const weight = this.weight + overhangWeight + aboveWeight + notAboveWeight + oppositeOverhangWeight;
 		return (side === "right") ? weight <= 0 : weight >= 0;
+	}
+
+	nextBlockPositions() {
+		const right = this.weightWidthBound("right");
+		const left = this.weightWidthBound("left");
+		return GenUtils.subsets(ArrayUtils.range(left, right));
 	}
 
 	
