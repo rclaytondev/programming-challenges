@@ -28,6 +28,18 @@ describe("PartialSculpture.numSculptures", () => {
 		assert.equal(result, 9);
 	});
 });
+describe("PartialSculpture.completions", () => {
+	it("works for an example with nonzero weight that is not centered at 0", () => {
+		const sculpture = new PartialSculpture(
+			Partition.fromSets([[1]]),
+			3,
+			-3,
+			"all"
+		);
+		const result = sculpture.completions();
+		assert.equal(result, 2);
+	});
+});
 describe("PartialSculpture.weightWidthBound", () => {
 	it("returns the maximum x-position that could be in the next row while still having enough blocks to balance the sculpture", () => {
 		const sculpture = new PartialSculpture(
@@ -122,5 +134,31 @@ describe("setsWithSum", () => {
 		const sets = setsWithSum(15, 25, 0, 10, 4).map(s => new Set(s));
 		const expected = naiveAlgorithm(15, 25, 0, 10, 4);
 		assert.sameDeepMembers(sets, expected);
+	});
+});
+describe("PartialSculpture.translate", () => {
+	it("preserves the number of completions for a trivial examples", () => {
+		const sculpture = new PartialSculpture(
+			Partition.fromSets([[0]]),
+			1,
+			0,
+			"all"
+		);
+		const completions = sculpture.completions();
+		const translated = sculpture.translate(1);
+		const translatedCompletions = translated.completions();
+		assert.equal(completions, translatedCompletions);
+	});
+	it("preserves the number of completions for a more complex example", () => {
+		const sculpture = new PartialSculpture(
+			Partition.fromSets([[0]]),
+			5,
+			0,
+			"all"
+		);
+		const completions = sculpture.completions();
+		const translated = sculpture.translate(3);
+		const translatedCompletions = translated.completions();
+		assert.equal(completions, translatedCompletions);
 	});
 });

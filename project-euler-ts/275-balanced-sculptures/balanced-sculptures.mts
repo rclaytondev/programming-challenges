@@ -46,11 +46,15 @@ export class PartialSculpture {
 		this.mode = mode;
 	}
 
-	completions() {
+	completions(): number {
 		if(this.blocksLeft < 0) { return 0; }
 		if(this.blocksLeft === 0) {
 			const valid = (this.components.numSets === 1 && this.weight === 0);
 			return valid ? 1 : 0;
+		}
+
+		if(!this.isNormalized()) {
+			return this.normalize().completions();
 		}
 
 		const cachedResult = PartialSculpture.completionsCache.get(this);
@@ -175,10 +179,24 @@ export class PartialSculpture {
 	toString() {
 		return `(${this.components}, ${this.blocksLeft}, ${this.weight}, ${this.mode})`;
 	}
+	translate(amountX: number) {
+		return new PartialSculpture(
+			this.components.map(x => x + amountX),
+			this.blocksLeft,
+			this.weight - amountX * this.blocksLeft,
+			this.mode
+		);
+	}
+	normalize() {
+		return this.translate(-this.left());
+	}
+	isNormalized() {
+		return this.mode === "symmetrical" || this.left() === 0;
+	}
 	static completionsCache = new HashMap<PartialSculpture, number>();
 }
 
 console.time();
-console.log(PartialSculpture.numSculptures(10));
+console.log(PartialSculpture.numSculptures(11));
 console.timeEnd();
 debugger;
