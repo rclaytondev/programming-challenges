@@ -148,16 +148,23 @@ export class PartialSculpture {
 		const right = this.weightWidthBound("right");
 		const left = this.weightWidthBound("left");
 		const result = [];
-		for(let blocks = 1; blocks <= this.blocksLeft; blocks ++) {
-			const blocksAbove = this.blocksLeft - blocks;
-			const minWeightAbove = rangeSum(left - blocksAbove + 1, left);
-			const maxWeightAbove = rangeSum(right, right + blocksAbove - 1);
-			const minWeight = -this.weight - maxWeightAbove;
-			const maxWeight = -this.weight - minWeightAbove;
-			for(const blocksSet of setsWithSum(minWeight, maxWeight, left, right, blocks)) {
-				result.push(new Set(blocksSet));
-			}
-		}
+		return this.blockPositions(new Set(), ArrayUtils.range(left, right), new Set());
+	}
+	mustIncludeBlock(blocks: number[], next: number, remaining: number[],) {
+
+	}
+	blockPositions(blocks: Set<number>, remaining: number[], requiredAbove: Set<number>): Array<Set<number>> {
+		if(remaining.length === 0) { return [blocks]; }
+		const next = remaining[0];
+		const result = [];
+		
+		const requiredAboveWith = new Set(requiredAbove);
+		for(const positions of this.blockPositions(
+			new Set([...blocks, next]),
+			remaining.slice(1),
+			requiredAboveWith
+		)) { result.push(positions); }
+
 		return result;
 	}
 
