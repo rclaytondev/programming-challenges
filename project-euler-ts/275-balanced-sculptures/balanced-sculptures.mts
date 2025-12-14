@@ -10,33 +10,20 @@ import { Partition } from "./Partition.mjs";
 
 const rangeSum = (min: number, max: number) => min * (max - min + 1) + (max - min) * (max - min + 1) / 2;
 
-export const setsWithSum = (sum: number, min: number, max: number, size: number): number[][] => {
-	// Note: can be optimized, and args can be standardized (WLOG min=0)
+export const setsWithSum = (minSum: number, maxSum: number, min: number, max: number, size: number): number[][] => {
 	const result = [];
+	if(size === 0) {
+		if(size === 0 && minSum <= 0 && maxSum >= 0) { result.push([]); }
+		return result;
+	}
 	if(min === max) {
-		if(size === 0 && sum === 0) { result.push([]); }
-		if(size === 1 && sum === min) { result.push([min]); }
+		if(size === 0 && minSum <= 0 && maxSum >= 0) { result.push([]); }
+		if(size === 1 && minSum <= min && maxSum >= min) { result.push([min]); }
 		return result;
 	}
-	if(max === min + 1) {
-		if(size === 0 && sum === 0) { result.push([]); }
-		if(size === 1 && sum === min) { result.push([min]); }
-		if(size === 1 && sum === max) { result.push([max]); }
-		if(size === 2 && sum === min + max) { result.push([min, max]); }
-		return result;
-	}
-	const mid = Math.floor((min + max) / 2);
-	for(let leftSize = 0; leftSize <= mid - min + 1 && leftSize <= size; leftSize ++) {
-		const rightSize = size - leftSize;
-		for(let leftSum = rangeSum(min, min + leftSize - 1); leftSum <= rangeSum(mid - (leftSize - 1), mid); leftSum ++) {
-			const leftSets = setsWithSum(leftSum, min, mid, leftSize);
-			if(leftSets.length === 0) { continue; }
-			const rightSum = sum - leftSum;
-			for(const rightSet of setsWithSum(rightSum, mid + 1, max, rightSize)) {
-				for(const leftSet of leftSets) {
-					result.push([...leftSet, ...rightSet]);
-				}
-			}
+	for(let first = min; first <= max - size + 1; first ++) {
+		for(const set of setsWithSum(minSum - first, maxSum - first, first + 1, max, size - 1)) {
+			result.push([first, ...set]);
 		}
 	}
 	return result;
@@ -149,10 +136,8 @@ export class PartialSculpture {
 			const maxWeightAbove = rangeSum(right, right + blocksAbove - 1);
 			const minWeight = -this.weight - maxWeightAbove;
 			const maxWeight = -this.weight - minWeightAbove;
-			for(let weight = minWeight; weight <= maxWeight; weight ++) {
-				for(const blocksSet of setsWithSum(weight, left, right, blocks)) {
-					result.push(new Set(blocksSet));
-				}
+			for(const blocksSet of setsWithSum(minWeight, maxWeight, left, right, blocks)) {
+				result.push(new Set(blocksSet));
 			}
 		}
 		return result;
