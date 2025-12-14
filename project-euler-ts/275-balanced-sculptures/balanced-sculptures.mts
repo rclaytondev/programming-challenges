@@ -5,6 +5,7 @@ This algorithm computes sculptures by building them row by row, from bottom to t
 import { ArrayUtils } from "../../utils-ts/modules/core-extensions/ArrayUtils.mjs";
 import { GenUtils } from "../../utils-ts/modules/core-extensions/GenUtils.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
+import { HashMap } from "../327-rooms-of-doom/HashMap.mjs";
 import { HashPartition } from "./HashPartition.mjs";
 import { Partition } from "./Partition.mjs";
 
@@ -29,6 +30,9 @@ export const setsWithSum = (minSum: number, maxSum: number, min: number, max: nu
 	return result;
 };
 
+let calls = 0;
+let memoized = 0;
+
 export class PartialSculpture {
 	readonly components: Partition<number>;
 	readonly blocksLeft: number;
@@ -48,6 +52,14 @@ export class PartialSculpture {
 			const valid = (this.components.numSets === 1 && this.weight === 0);
 			return valid ? 1 : 0;
 		}
+
+		const cachedResult = PartialSculpture.completionsCache.get(this);
+		calls ++;
+		if(typeof cachedResult === "number") {
+			memoized ++;
+			return cachedResult;
+		}
+
 		let result = 0;
 		for(const blockPositions of this.nextBlockPositions()) {
 			if(this.mode === "symmetrical" && [...blockPositions].some(x => !blockPositions.has(-x))) {
@@ -61,6 +73,8 @@ export class PartialSculpture {
 			const next = this.nextPartialSculpture([...blockPositions]);
 			result += next.completions();
 		}
+
+		PartialSculpture.completionsCache.set(this, result);
 		return result;
 	}
 	nextComponents(blockPositions: number[]) {
@@ -157,6 +171,11 @@ export class PartialSculpture {
 		const asymmetrical = all - symmetrical;
 		return all - (asymmetrical / 2);
 	}
+
+	toString() {
+		return `(${this.components}, ${this.blocksLeft}, ${this.weight}, ${this.mode})`;
+	}
+	static completionsCache = new HashMap<PartialSculpture, number>();
 }
 
 console.time();
