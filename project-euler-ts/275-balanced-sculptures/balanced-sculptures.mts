@@ -27,8 +27,8 @@ export class PartialSculpture {
 			const valid = (this.components.numSets === 1 && this.weight === 0);
 			return valid ? 1 : 0;
 		}
-		const right = this.nextMaxRight();
-		const left = this.nextMinLeft();
+		const right = this.weightWidthBound("right");
+		const left = this.weightWidthBound("left");
 		let result = 0;
 		for(const blockPositions of GenUtils.subsets(ArrayUtils.range(left, right))) {
 			if(this.mode === "symmetrical" && [...blockPositions].some(x => !blockPositions.has(-x))) {
@@ -74,26 +74,39 @@ export class PartialSculpture {
 	}
 
 	weightWidthBound(side: "left" | "right") {
-		const sign = (side === "right" ? 1 : -1);
-		const right = this.right();
+		for(let overhang = 1; true; overhang ++) {
+			if(!this.canOverhang(side, overhang)) {
+				return (side === "left") ? this.left() - (overhang - 1) : this.right() + (overhang - 1);
+			}
+		}
+	}
+	canOverhang(side: "left" | "right", overhangBlocks: number): boolean {
+		const rangeSum = (min: number, max: number) => min * (max - min + 1) + (max - min) * (max - min + 1) / 2;
+
 		const left = this.left();
-		// const firstOppositeBlock = (side === "left")
-		const maxOverhang = (
-			(right > left)
-			? Math.floor(-(sign * (this.weight + right + left) * this.blocksLeft + 1/2 * (this.blocksLeft - this.blocksLeft ** 2)) / (sign * (right - left) + this.blocksLeft))
-			: Math.floor(-(sign * (this.weight + right + (left - 1)) * this.blocksLeft + 1/2 * (this.blocksLeft - this.blocksLeft ** 2)) / (sign * (right - (left - 1)) + this.blocksLeft))
-		);
-		// const maxOverhang = ;
-		return (side === "right") ? right + maxOverhang : left - maxOverhang;
-	}
-	nextMaxRight() {
 		const right = this.right();
-		// const weightBound = 
-		// const connectionBound = right + (this.blocksLeft - 1 - 2 * (this.components.numSets - 1));
-		return this.right() + (this.blocksLeft - 1);
-	}
-	nextMinLeft() {
-		return this.left() - (this.blocksLeft - 1);
+		const notAbove = ArrayUtils.range(left, right).filter(x => !this.components.has(x));
+
+		const overhangWeight = ((side === "right")
+			? rangeSum(right + 1, right + overhangBlocks)
+			: rangeSum(left - overhangBlocks, left - 1)
+		);
+		const aboveBlocks = this.components.numSets;
+		const aboveWeight = MathUtils.sum(this.components.sets().map(
+			s => (side === "right") ? Math.min(...s) : Math.max(...s))
+		);
+		const notAboveBlocks = this.components.numSets - 1;
+		const notAboveWeight = MathUtils.sum(
+			side === "right" ? notAbove.slice(0, notAboveBlocks) : notAbove.slice(-notAboveBlocks)
+		);
+		const remainingBlocks = this.blocksLeft - (overhangBlocks + aboveBlocks + notAboveBlocks);
+		if(remainingBlocks < 0) { return false; }
+		const oppositeOverhangWeight = ((side === "right")
+			? rangeSum(left - remainingBlocks, left - 1)
+			: rangeSum(right + 1, right + remainingBlocks)
+		);
+		const weight = this.weight + overhangWeight + aboveWeight + notAboveWeight + oppositeOverhangWeight;
+		return (side === "right") ? weight <= 0 : weight >= 0;
 	}
 
 	
@@ -112,7 +125,7 @@ export class PartialSculpture {
 	}
 }
 
-// console.time();
-// console.log(PartialSculpture.numSculptures(6));
-// console.timeEnd();
-// debugger;
+console.time();
+console.log(PartialSculpture.numSculptures(9));
+console.timeEnd();
+debugger;

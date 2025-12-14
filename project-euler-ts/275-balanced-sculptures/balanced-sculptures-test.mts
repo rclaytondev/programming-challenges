@@ -74,4 +74,28 @@ describe("PartialSculpture.weightWidthBound", () => {
 		assert.equal(right, 6);
 		assert.equal(left, 3);
 	});
+	it("works when the width is greater than 1", () => {
+		const sculpture = new PartialSculpture(
+			Partition.fromSets([[-1, 1]]),
+			6,
+			0,
+			"all"
+		);
+		const right = sculpture.weightWidthBound("right");
+		const left = sculpture.weightWidthBound("left");
+		assert.equal(right, 3);
+		assert.equal(left, -3);
+	});
+	it("works when there are multiple components", () => {
+		const sculpture = new PartialSculpture(
+			Partition.fromSets([[-1], [1]]),
+			6,
+			0,
+			"all"
+		);
+		const right = sculpture.weightWidthBound("right");
+		const left = sculpture.weightWidthBound("left");
+		assert.equal(right, 2);
+		assert.equal(left, -2);
+	});
 });
