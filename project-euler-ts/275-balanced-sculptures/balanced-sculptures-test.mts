@@ -1,5 +1,5 @@
 import { describe, it } from "mocha";
-import { PartialSculpture } from "./balanced-sculptures.mjs";
+import { componentsOfArray, PartialSculpture } from "./balanced-sculptures.mjs";
 import { assert } from "chai";
 import { Partition } from "./Partition.mjs";
 import { GenUtils } from "../../utils-ts/modules/core-extensions/GenUtils.mjs";
@@ -31,7 +31,7 @@ describe("PartialSculpture.numSculptures", () => {
 describe("PartialSculpture.completions", () => {
 	it("works for an example with nonzero weight that is not centered at 0", () => {
 		const sculpture = new PartialSculpture(
-			Partition.fromSets([[1]]),
+			[[1]],
 			3,
 			-3,
 			"all"
@@ -41,7 +41,7 @@ describe("PartialSculpture.completions", () => {
 	});
 	it("works for a sculpture with width>1", () => {
 		const sculpture = new PartialSculpture(
-			Partition.fromSets([[-1, 0, 1]]),
+			[[-1, 0, 1]],
 			2,
 			0,
 			"all"
@@ -49,11 +49,16 @@ describe("PartialSculpture.completions", () => {
 		const result = sculpture.completions();
 		assert.equal(result, 2);
 	});
+	it("works for a very wide sculpture", () => {
+		const sculpture = new PartialSculpture([[-3, -2, -1, 0, 1, 2, 3]], 4, 0, "all");
+		const result = sculpture.completions();
+		assert.equal(result, 24);
+	});
 });
 describe("PartialSculpture.weightWidthBound", () => {
 	it("returns the maximum x-position that could be in the next row while still having enough blocks to balance the sculpture", () => {
 		const sculpture = new PartialSculpture(
-			Partition.fromSets([[0]]),
+			[[0]],
 			21,
 			0,
 			"all"
@@ -65,7 +70,7 @@ describe("PartialSculpture.weightWidthBound", () => {
 	});
 	it("works when the sculpture is not centered at 0", () => {
 		const sculpture = new PartialSculpture(
-			Partition.fromSets([[10]]),
+			[[10]],
 			21,
 			0,
 			"all"
@@ -77,7 +82,7 @@ describe("PartialSculpture.weightWidthBound", () => {
 	});
 	it("works when the sculpture has nonzero weight", () => {
 		const sculpture = new PartialSculpture(
-			Partition.fromSets([[0]]),
+			[[0]],
 			4,
 			1 + 2 + 3,
 			"all"
@@ -89,7 +94,7 @@ describe("PartialSculpture.weightWidthBound", () => {
 	});
 	it("works when the sculpture is not centered at 0 and has nonzero weight", () => {
 		const sculpture = new PartialSculpture(
-			Partition.fromSets([[3]]),
+			[[3]],
 			4,
 			-(3 + 4 + 5 + 6),
 			"all"
@@ -101,7 +106,7 @@ describe("PartialSculpture.weightWidthBound", () => {
 	});
 	it("works when the width is greater than 1", () => {
 		const sculpture = new PartialSculpture(
-			Partition.fromSets([[-1, 1]]),
+			[[-1, 1]],
 			6,
 			0,
 			"all"
@@ -113,7 +118,7 @@ describe("PartialSculpture.weightWidthBound", () => {
 	});
 	it("works when there are multiple components", () => {
 		const sculpture = new PartialSculpture(
-			Partition.fromSets([[-1], [1]]),
+			[[-1], [1]],
 			6,
 			0,
 			"all"
@@ -127,7 +132,7 @@ describe("PartialSculpture.weightWidthBound", () => {
 describe("Partial.nextBlockPositions", () => {
 	it("returns a list containing all the possible combinations for the next row", () => {
 		const sculpture = new PartialSculpture(
-			Partition.fromSets([[0]]),
+			[[0]],
 			5,
 			0,
 			"all"
@@ -141,7 +146,7 @@ describe("Partial.nextBlockPositions", () => {
 	});
 	it("works for a sculpture with width>1", () => {
 		const sculpture = new PartialSculpture(
-			Partition.fromSets([[-1, 0, 1]]),
+			[[-1, 0, 1]],
 			2,
 			0,
 			"all"
@@ -154,7 +159,7 @@ describe("Partial.nextBlockPositions", () => {
 describe("PartialSculpture.translate", () => {
 	it("preserves the number of completions for a trivial examples", () => {
 		const sculpture = new PartialSculpture(
-			Partition.fromSets([[0]]),
+			[[0]],
 			1,
 			0,
 			"all"
@@ -166,7 +171,7 @@ describe("PartialSculpture.translate", () => {
 	});
 	it("preserves the number of completions for a more complex example", () => {
 		const sculpture = new PartialSculpture(
-			Partition.fromSets([[0]]),
+			[[0]],
 			5,
 			0,
 			"all"
@@ -180,7 +185,7 @@ describe("PartialSculpture.translate", () => {
 describe("PartialSculpture.reflect", () => {
 	it("preserves the number of completions", () => {
 		const sculpture = new PartialSculpture(
-			Partition.fromSets([[10]]),
+			[[10]],
 			3,
 			9 + 10 + 10,
 			"all"
@@ -189,5 +194,26 @@ describe("PartialSculpture.reflect", () => {
 		const reflected = sculpture.reflect();
 		const reflectedCompletions = reflected.completions();
 		assert.equal(completions, reflectedCompletions);
+	});
+});
+describe("componentsOfArray", () => {
+	it("groups the sorted array into connected components based on adjacency", () => {
+		const array = [0, 1, 2, 7, 8, 9, 15, 18, 19];
+		const components = componentsOfArray(array);
+		assert.deepEqual(components, [
+			[0, 1, 2],
+			[7, 8, 9],
+			[15],
+			[18, 19]
+		]);
+	});
+});
+describe("PartialSculpture.nextComponents", () => {
+	it("returns the next components based on the given block positions", () => {
+		const components = [[0, 1, 2], [5, 6, 7, 10], [14], [16, 17, 18]];
+		const sculpture = new PartialSculpture(components, 10, 0, "all");
+		const result = sculpture.nextComponents([0, 2, 4, 5, 11, 14, 20, 21]);
+		const sets = result.map(set => [...set].sort((a, b) => a - b).join(", "));
+		assert.sameMembers(sets, ["0, 2", "4, 5", "11", "14", "20, 21"]);
 	});
 });

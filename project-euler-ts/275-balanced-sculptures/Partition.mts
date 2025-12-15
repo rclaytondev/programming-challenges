@@ -108,7 +108,7 @@ export class Partition<T> {
 	values() {
 		return this.nodes.keys();
 	}
-	sets() {
+	get sets() {
 		const nodesChecked = new Set<Node<T>>();
 		const sets: Set<T>[] = [];
 		const searchTree = (node: Node<T>) => {
@@ -138,7 +138,7 @@ export class Partition<T> {
 	}
 	toString() {
 		const setToString = (s: Set<T>) => `{${[...s].map(v => `${v}`).sort().join(", ")}}`;
-		return `Partition {${this.sets().map(setToString).sort().join(", ")}}`;
+		return `Partition {${this.sets.map(setToString).sort().join(", ")}}`;
 	}
 
 	private moveNode(node: Node<T>, newParent: Node<T>) {

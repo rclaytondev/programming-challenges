@@ -74,7 +74,7 @@ describe("Partition.fromSets", () => {
 describe("Partition.sets", () => {
 	it("can return all the sets in the partition", () => {
 		const partition = Partition.fromSets([[1], [2, 3], [4]]);
-		assert.sameDeepMembers(partition.sets(), [
+		assert.sameDeepMembers(partition.sets, [
 			new Set([1]),
 			new Set([2, 3]),
 			new Set([4]),
@@ -85,7 +85,7 @@ describe("Partition.copy", () => {
 	it("returns a new partition consisting of the same sets", () => {
 		const partition = Partition.fromSets([[1], [2, 3], [4]]);
 		const copy = partition.copy();
-		assert.sameDeepMembers(copy.sets(), [
+		assert.sameDeepMembers(copy.sets, [
 			new Set([1]),
 			new Set([2, 3]),
 			new Set([4]),
@@ -96,7 +96,7 @@ describe("Partition.map", () => {
 	it("constructs a new Partition by calling the callback on each value", () => {
 		const partition = Partition.fromSets<string>([["a"], ["b", "c"], ["d"]]);
 		const mapped = partition.map(s => s.toUpperCase());
-		assert.sameDeepMembers(mapped.sets(), [
+		assert.sameDeepMembers(mapped.sets, [
 			new Set(["A"]),
 			new Set(["B", "C"]),
 			new Set(["D"])
@@ -105,7 +105,7 @@ describe("Partition.map", () => {
 	it("merges some sets in the partition if the callback is not injective", () => {
 		const partition = Partition.fromSets<number>([[3, 4], [5], [6]]);
 		const mapped = partition.map(n => n % 2);
-		assert.sameDeepMembers(mapped.sets(), [
+		assert.sameDeepMembers(mapped.sets, [
 			new Set([0, 1]),
 		]);
 	});

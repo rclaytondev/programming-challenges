@@ -11,6 +11,19 @@ import { Partition } from "./Partition.mjs";
 
 const rangeSum = (min: number, max: number) => min * (max - min + 1) + (max - min) * (max - min + 1) / 2;
 
+export const componentsOfArray = (sortedArray: number[]) => {
+	const components = [];
+	for(let i = 0; i < sortedArray.length; i ++) {
+		let j = i + 1;
+		while(sortedArray[j] === sortedArray[j - 1] + 1) {
+			j ++;
+		}
+		components.push(sortedArray.slice(i, j));
+		i = j - 1;
+	}
+	return components;
+};
+
 let calls = 0;
 let memoized = 0;
 
@@ -64,7 +77,7 @@ class PartialRow {
 
 	canSkipNext() {
 		const next = this.remaining[0];
-		for(const component of this.sculptureBelow.components.sets()) {
+		for(const component of this.sculptureBelow.components) {
 			if(next === Math.max(...component) && [...component].every(x => !this.blocks.has(x))) {
 				return false;
 			}
@@ -89,7 +102,7 @@ class PartialRow {
 }
 
 export class PartialSculpture {
-	readonly components: Partition<number>;
+	readonly components: number[][];
 	readonly blocksLeft: number;
 	readonly weight: number;
 	readonly mode: "symmetrical" | "all";
@@ -97,20 +110,20 @@ export class PartialSculpture {
 	readonly left: number;
 	readonly right: number;
 
-	constructor(components: Partition<number>, blocksLeft: number, weight: number, mode: "symmetrical" | "all") {
+	constructor(components: number[][], blocksLeft: number, weight: number, mode: "symmetrical" | "all") {
 		this.components = components;
 		this.blocksLeft = blocksLeft;
 		this.weight = weight;
 		this.mode = mode;
 
-		this.left = Math.min(...this.components.values());
-		this.right = Math.max(...this.components.values());
+		this.left = Math.min(...components.map(c => Math.min(...c)));
+		this.right = Math.max(...components.map(c => Math.max(...c)));
 	}
 
 	completions(): number {
 		if(this.blocksLeft < 0) { return 0; }
 		if(this.blocksLeft === 0) {
-			const valid = (this.components.numSets === 1 && this.weight === 0);
+			const valid = (this.components.length === 1 && this.weight === 0);
 			return valid ? 1 : 0;
 		}
 
@@ -133,8 +146,8 @@ export class PartialSculpture {
 			if(this.mode === "symmetrical" && [...blockPositions].some(x => !blockPositions.has(-x))) {
 				continue;
 			}
-			const allComponentsContinue = this.components.sets().every(s => 
-				[...s].some(position => blockPositions.has(position))
+			const allComponentsContinue = this.components.every(s => 
+				s.some(position => blockPositions.has(position))
 			);
 			if(!allComponentsContinue) { continue; }
 
@@ -146,29 +159,26 @@ export class PartialSculpture {
 		PartialSculpture.completionsCache.set(normalized1, result);
 		return result;
 	}
-	nextComponents(blockPositions: number[]) {
-		type Position = ({ row: "current" | "next", x: number });
-		const hashFunction = (position: Position) => `${position.row}, ${position.x}`;
-		const partition = HashPartition.fromPartition(this.components).map(
-			x => ({ row: "current", x: x }) as Position,
-			hashFunction
-		);
+	nextComponents(blockPositions: number[]): number[][] {
+		const nextComponents = componentsOfArray(blockPositions);
+		const partition = Partition.fromSets<string>([
+			...this.components.map(c => c.map(x => `current ${x}`)),
+			...nextComponents.map(c => c.map(x => `next ${x}`)),
+		]);
 		for(const x of blockPositions) {
-			const position = { x: x, row: "next" } as Position;
-			partition.add(position);
+			partition.merge(`current ${x}`, `next ${x}`);
 		}
-		for(const x of blockPositions) {
-			const position = { x: x, row: "next" } as Position;
-			partition.merge(position, { x: x - 1, row: "next" });
-			partition.merge(position, { x: x + 1, row: "next" });
-			partition.merge(position, { x: x, row: "current" });
-		}
-		return partition.filter((position) => position.row === "next").map(({ x }) => x);
+		const prefixLength = "next ".length;
+		return partition.sets.map(
+			set => [...set]
+			.filter(str => str.startsWith("next"))
+			.map(str => Number.parseInt(str.slice(prefixLength)))
+		).filter(set => set.length !== 0);
 	}
 	nextPartialSculpture(blockPositions: number[]) {
 		const components = this.nextComponents(blockPositions);
 		return new PartialSculpture(
-			Partition.fromHashPartition(components),
+			components,
 			this.blocksLeft - blockPositions.length,
 			this.weight + MathUtils.sum(blockPositions),
 			this.mode
@@ -185,17 +195,17 @@ export class PartialSculpture {
 	canOverhang(side: "left" | "right", overhangBlocks: number): boolean {
 		const left = this.left;
 		const right = this.right;
-		const notAbove = ArrayUtils.range(left, right).filter(x => !this.components.has(x));
+		const notAbove = ArrayUtils.range(left, right).filter(x => !this.components.some(arr => arr.includes(x)));
 
 		const overhangWeight = ((side === "right")
 			? rangeSum(right + 1, right + overhangBlocks)
 			: rangeSum(left - overhangBlocks, left - 1)
 		);
-		const aboveBlocks = this.components.numSets;
-		const aboveWeight = MathUtils.sum(this.components.sets().map(
+		const aboveBlocks = this.components.length;
+		const aboveWeight = MathUtils.sum(this.components.map(
 			s => (side === "right") ? Math.min(...s) : Math.max(...s))
 		);
-		const notAboveBlocks = this.components.numSets - 1;
+		const notAboveBlocks = this.components.length - 1;
 		const notAboveWeight = MathUtils.sum(
 			side === "right" ? notAbove.slice(0, notAboveBlocks) : notAbove.slice(-notAboveBlocks)
 		);
@@ -217,18 +227,19 @@ export class PartialSculpture {
 	}
 
 	static numSculptures(blocks: number) {
-		const all = new PartialSculpture(Partition.fromSets([[0]]), blocks, 0, "all").completions();
-		const symmetrical = new PartialSculpture(Partition.fromSets([[0]]), blocks, 0, "symmetrical").completions();
+		const all = new PartialSculpture([[0]], blocks, 0, "all").completions();
+		const symmetrical = new PartialSculpture([[0]], blocks, 0, "symmetrical").completions();
 		const asymmetrical = all - symmetrical;
 		return all - (asymmetrical / 2);
 	}
 
 	toString() {
-		return `(${this.components}, ${this.blocksLeft}, ${this.weight}, ${this.mode})`;
+		const components = this.components.map(c => c.sort((a, b) => a - b).join(",")).sort().join("; ");
+		return `((${components}), ${this.blocksLeft}, ${this.weight}, ${this.mode})`;
 	}
 	translate(amountX: number) {
 		return new PartialSculpture(
-			this.components.map(x => x + amountX),
+			this.components.map(c => c.map(x => x + amountX)),
 			this.blocksLeft,
 			this.weight - amountX * this.blocksLeft,
 			this.mode
@@ -236,7 +247,7 @@ export class PartialSculpture {
 	}
 	reflect() {
 		return new PartialSculpture(
-			this.components.map(x => -x),
+			this.components.map(c => c.map(x => -x)),
 			this.blocksLeft,
 			-this.weight,
 			this.mode

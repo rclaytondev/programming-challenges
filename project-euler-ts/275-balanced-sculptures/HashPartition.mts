@@ -75,7 +75,7 @@ export class HashPartition<T> {
 		return this.valuesMap.values();
 	}
 	sets() {
-		const sets = this.partition.sets();
+		const sets = this.partition.sets;
 		const setHash = (s: HashSet<T>) => `{${[...s].map(v => this.hashFunction(v)).sort().join(", ")}}`;
 		return new HashSet(sets.map(set => new HashSet(
 			[...set].map(hash => this.valuesMap.get(hash) as T),
