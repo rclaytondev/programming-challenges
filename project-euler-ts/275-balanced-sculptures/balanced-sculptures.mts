@@ -48,6 +48,7 @@ class PartialRow {
 
 	completions() {
 		if(this.remaining.length === 0) { return [this.blocks]; }
+		if(!this.canComplete()) { return []; }
 		return [...this.completionsWithNext(), ...this.completionsWithoutNext()];
 	}
 	completionsWithNext(): Array<Set<number>> {
@@ -73,6 +74,22 @@ class PartialRow {
 	}
 	completionsWithoutNext(): Array<Set<number>> {
 		return new PartialRow(this.blocks, this.remaining.slice(1), this.requiredAbove, this.sculptureBelow).completions();
+	}
+
+	canComplete() {
+		const blocks = this.blocks.size + this.requiredAbove.size;
+		const blocksLeft = this.sculptureBelow.blocksLeft - blocks;
+		if(blocksLeft < 0) { return false; }
+
+		if(this.blocks.size === 0) { return true; } // maybe can optimize this?
+
+		const min = Math.min(Math.min(...this.blocks) - 1, this.sculptureBelow.left());
+		const max = Math.max(Math.max(...this.blocks) + 1, this.sculptureBelow.right());
+
+		const weight = this.sculptureBelow.weight + MathUtils.sum(this.blocks) + MathUtils.sum(this.requiredAbove);
+		const minWeight = weight + rangeSum(min - blocksLeft + 1, min);
+		const maxWeight = weight + rangeSum(max, max + blocksLeft - 1);
+		return minWeight <= 0 && maxWeight >= 0;
 	}
 }
 
@@ -118,7 +135,8 @@ export class PartialSculpture {
 			if(!allComponentsContinue) { continue; }
 
 			const next = this.nextPartialSculpture([...blockPositions]);
-			result += next.completions();
+			const completions = next.completions();
+			result += completions;
 		}
 
 		PartialSculpture.completionsCache.set(this, result);
@@ -229,7 +247,7 @@ export class PartialSculpture {
 	static completionsCache = new HashMap<PartialSculpture, number>();
 }
 
-// console.time();
-// console.log(PartialSculpture.numSculptures(11));
-// console.timeEnd();
-// debugger;
+console.time();
+console.log(PartialSculpture.numSculptures(11));
+console.timeEnd();
+debugger;

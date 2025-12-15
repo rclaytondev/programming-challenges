@@ -39,6 +39,16 @@ describe("PartialSculpture.completions", () => {
 		const result = sculpture.completions();
 		assert.equal(result, 2);
 	});
+	it("works for a sculpture with width>1", () => {
+		const sculpture = new PartialSculpture(
+			Partition.fromSets([[-1, 0, 1]]),
+			2,
+			0,
+			"all"
+		);
+		const result = sculpture.completions();
+		assert.equal(result, 2);
+	});
 });
 describe("PartialSculpture.weightWidthBound", () => {
 	it("returns the maximum x-position that could be in the next row while still having enough blocks to balance the sculpture", () => {
@@ -112,6 +122,33 @@ describe("PartialSculpture.weightWidthBound", () => {
 		const left = sculpture.weightWidthBound("left");
 		assert.equal(right, 2);
 		assert.equal(left, -2);
+	});
+});
+describe("Partial.nextBlockPositions", () => {
+	it("returns a list containing all the possible combinations for the next row", () => {
+		const sculpture = new PartialSculpture(
+			Partition.fromSets([[0]]),
+			5,
+			0,
+			"all"
+		)
+		const positions = sculpture.nextBlockPositions();
+		assert.deepInclude(positions, new Set([-2, -1, 0, 1, 2]));
+		assert.deepInclude(positions, new Set([-1, 0, 1]));
+		assert.deepInclude(positions, new Set([-1, 0]));
+		assert.deepInclude(positions, new Set([0, 1]));
+		assert.deepInclude(positions, new Set([0]));
+	});
+	it("works for a sculpture with width>1", () => {
+		const sculpture = new PartialSculpture(
+			Partition.fromSets([[-1, 0, 1]]),
+			2,
+			0,
+			"all"
+		);
+		const positions = sculpture.nextBlockPositions();
+		assert.deepInclude(positions, new Set([-1, 1]));
+		assert.deepInclude(positions, new Set([0]));
 	});
 });
 describe("setsWithSum", () => {
