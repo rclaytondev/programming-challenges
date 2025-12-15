@@ -1,5 +1,5 @@
 import { describe, it } from "mocha";
-import { PartialSculpture, setsWithSum } from "./balanced-sculptures.mjs";
+import { PartialSculpture } from "./balanced-sculptures.mjs";
 import { assert } from "chai";
 import { Partition } from "./Partition.mjs";
 import { GenUtils } from "../../utils-ts/modules/core-extensions/GenUtils.mjs";
@@ -149,28 +149,6 @@ describe("Partial.nextBlockPositions", () => {
 		const positions = sculpture.nextBlockPositions();
 		assert.deepInclude(positions, new Set([-1, 1]));
 		assert.deepInclude(positions, new Set([0]));
-	});
-});
-describe("setsWithSum", () => {
-	it("works for a small example", () => {
-		const sets = setsWithSum(9, 9, 3, 6, 2);
-		assert.deepEqual(new Set(sets), new Set([
-			[3, 6],
-			[4, 5]
-		]));
-	});
-	it("works for a trivial example", () => {
-		const sets = setsWithSum(0, 0, -1, 1, 1);
-		assert.deepEqual(sets, [[0]]);
-	});
-	const naiveAlgorithm = (minSum: number, maxSum: number, min: number, max: number, size: number) => (
-		[...GenUtils.subsets(ArrayUtils.range(min, max), size)]
-		.filter(s => minSum <= MathUtils.sum(s) && MathUtils.sum(s) <= maxSum)
-	);
-	it("works for a larger example", () => {
-		const sets = setsWithSum(15, 25, 0, 10, 4).map(s => new Set(s));
-		const expected = naiveAlgorithm(15, 25, 0, 10, 4);
-		assert.sameDeepMembers(sets, expected);
 	});
 });
 describe("PartialSculpture.translate", () => {

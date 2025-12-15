@@ -11,25 +11,6 @@ import { Partition } from "./Partition.mjs";
 
 const rangeSum = (min: number, max: number) => min * (max - min + 1) + (max - min) * (max - min + 1) / 2;
 
-export const setsWithSum = (minSum: number, maxSum: number, min: number, max: number, size: number): number[][] => {
-	const result = [];
-	if(size === 0) {
-		if(size === 0 && minSum <= 0 && maxSum >= 0) { result.push([]); }
-		return result;
-	}
-	if(min === max) {
-		if(size === 0 && minSum <= 0 && maxSum >= 0) { result.push([]); }
-		if(size === 1 && minSum <= min && maxSum >= min) { result.push([min]); }
-		return result;
-	}
-	for(let first = min; first <= max - size + 1; first ++) {
-		for(const set of setsWithSum(minSum - first, maxSum - first, first + 1, max, size - 1)) {
-			result.push([first, ...set]);
-		}
-	}
-	return result;
-};
-
 let calls = 0;
 let memoized = 0;
 
