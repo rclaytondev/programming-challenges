@@ -30,7 +30,11 @@ class PartialRow {
 	completions() {
 		if(this.remaining.length === 0) { return [this.blocks]; }
 		if(!this.canComplete()) { return []; }
-		return [...this.completionsWithNext(), ...this.completionsWithoutNext()];
+		const completions = this.completionsWithNext();
+		for(const completion of this.completionsWithoutNext()) {
+			completions.push(completion);
+		}
+		return completions;
 	}
 	completionsWithNext(): Array<Set<number>> {
 		const next = this.remaining[0];
