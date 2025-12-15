@@ -177,3 +177,17 @@ describe("PartialSculpture.translate", () => {
 		assert.equal(completions, translatedCompletions);
 	});
 });
+describe("PartialSculpture.reflect", () => {
+	it("preserves the number of completions", () => {
+		const sculpture = new PartialSculpture(
+			Partition.fromSets([[10]]),
+			3,
+			9 + 10 + 10,
+			"all"
+		);
+		const completions = sculpture.completions();
+		const reflected = sculpture.reflect();
+		const reflectedCompletions = reflected.completions();
+		assert.equal(completions, reflectedCompletions);
+	});
+});

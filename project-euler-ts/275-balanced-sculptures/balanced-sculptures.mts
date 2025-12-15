@@ -108,17 +108,20 @@ export class PartialSculpture {
 			return valid ? 1 : 0;
 		}
 
-		if(!this.isNormalized()) {
-			return this.normalize().completions();
-		}
-
-		const cachedResult = PartialSculpture.completionsCache.get(this);
+		const normalized1 = this.normalize();
+		const cachedResult1 = PartialSculpture.completionsCache.get(normalized1);
 		calls ++;
-		if(typeof cachedResult === "number") {
+		if(typeof cachedResult1 === "number") {
 			memoized ++;
-			return cachedResult;
+			return cachedResult1;
 		}
-
+		const normalized2 = this.reflect().normalize();
+		const cachedResult2 = PartialSculpture.completionsCache.get(normalized2);
+		if(typeof cachedResult2 === "number") {
+			memoized ++;
+			return cachedResult2;
+		}
+		
 		let result = 0;
 		for(const blockPositions of this.nextBlockPositions()) {
 			if(this.mode === "symmetrical" && [...blockPositions].some(x => !blockPositions.has(-x))) {
@@ -134,7 +137,7 @@ export class PartialSculpture {
 			result += completions;
 		}
 
-		PartialSculpture.completionsCache.set(this, result);
+		PartialSculpture.completionsCache.set(normalized1, result);
 		return result;
 	}
 	nextComponents(blockPositions: number[]) {
@@ -230,6 +233,14 @@ export class PartialSculpture {
 			this.components.map(x => x + amountX),
 			this.blocksLeft,
 			this.weight - amountX * this.blocksLeft,
+			this.mode
+		);
+	}
+	reflect() {
+		return new PartialSculpture(
+			this.components.map(x => -x),
+			this.blocksLeft,
+			-this.weight,
 			this.mode
 		);
 	}
