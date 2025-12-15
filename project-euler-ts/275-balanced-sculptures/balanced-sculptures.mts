@@ -54,9 +54,19 @@ class PartialRow {
 		).completions();
 	}
 	completionsWithoutNext(): Array<Set<number>> {
+		if(!this.canSkipNext()) { return []; }
 		return new PartialRow(this.blocks, this.remaining.slice(1), this.requiredAbove, this.sculptureBelow).completions();
 	}
 
+	canSkipNext() {
+		const next = this.remaining[0];
+		for(const component of this.sculptureBelow.components.sets()) {
+			if(next === Math.max(...component) && [...component].every(x => !this.blocks.has(x))) {
+				return false;
+			}
+		}
+		return true;
+	}
 	canComplete() {
 		const blocks = this.blocks.size + this.requiredAbove.size;
 		const blocksLeft = this.sculptureBelow.blocksLeft - blocks;
