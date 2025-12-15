@@ -35,7 +35,7 @@ let memoized = 0;
 
 class PartialRow {
 	blocks: Set<number>;
-	remaining: number[];
+	remaining:  number[];
 	requiredAbove: Set<number>;
 	sculptureBelow: PartialSculpture;
 
@@ -48,9 +48,31 @@ class PartialRow {
 
 	completions() {
 		if(this.remaining.length === 0) { return [this.blocks]; }
+		return [...this.completionsWithNext(), ...this.completionsWithoutNext()];
+	}
+	completionsWithNext(): Array<Set<number>> {
 		const next = this.remaining[0];
-		const result = [];
-		throw new Error("unimplemented");
+		const nextBlocks = new Set(this.blocks);
+		nextBlocks.add(next);
+		const nextRequiredAbove = new Set(this.requiredAbove);
+		if(this.blocks.size > 0) {
+			const previous = Math.max(...this.blocks);
+			const outside = (next > this.sculptureBelow.right() || previous < this.sculptureBelow.left());
+			if(next > previous + 1 && outside) {
+				for(let i = next; i >= previous; i --) {
+					nextRequiredAbove.add(i);
+				}
+			}
+		}
+		return new PartialRow(
+			nextBlocks,
+			this.remaining.slice(1),
+			nextRequiredAbove,
+			this.sculptureBelow
+		).completions();
+	}
+	completionsWithoutNext(): Array<Set<number>> {
+		return new PartialRow(this.blocks, this.remaining.slice(1), this.requiredAbove, this.sculptureBelow).completions();
 	}
 }
 
@@ -207,7 +229,7 @@ export class PartialSculpture {
 	static completionsCache = new HashMap<PartialSculpture, number>();
 }
 
-console.time();
-console.log(PartialSculpture.numSculptures(11));
-console.timeEnd();
-debugger;
+// console.time();
+// console.log(PartialSculpture.numSculptures(11));
+// console.timeEnd();
+// debugger;
