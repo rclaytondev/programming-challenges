@@ -43,7 +43,7 @@ class PartialRow {
 		const nextRequiredAbove = new Set(this.requiredAbove);
 		if(this.blocks.size > 0) {
 			const previous = Math.max(...this.blocks);
-			const outside = (next > this.sculptureBelow.right() || previous < this.sculptureBelow.left());
+			const outside = (next > this.sculptureBelow.right || previous < this.sculptureBelow.left);
 			if(next > previous + 1 && outside) {
 				for(let i = next; i >= previous; i --) {
 					nextRequiredAbove.add(i);
@@ -78,8 +78,8 @@ class PartialRow {
 
 		if(this.blocks.size === 0) { return true; } // maybe can optimize this?
 
-		const min = Math.min(Math.min(...this.blocks) - 1, this.sculptureBelow.left());
-		const max = Math.max(Math.max(...this.blocks) + 1, this.sculptureBelow.right());
+		const min = Math.min(Math.min(...this.blocks) - 1, this.sculptureBelow.left);
+		const max = Math.max(Math.max(...this.blocks) + 1, this.sculptureBelow.right);
 
 		const weight = this.sculptureBelow.weight + MathUtils.sum(this.blocks) + MathUtils.sum(this.requiredAbove);
 		const minWeight = weight + rangeSum(min - blocksLeft + 1, min);
@@ -94,11 +94,17 @@ export class PartialSculpture {
 	readonly weight: number;
 	readonly mode: "symmetrical" | "all";
 
+	readonly left: number;
+	readonly right: number;
+
 	constructor(components: Partition<number>, blocksLeft: number, weight: number, mode: "symmetrical" | "all") {
 		this.components = components;
 		this.blocksLeft = blocksLeft;
 		this.weight = weight;
 		this.mode = mode;
+
+		this.left = Math.min(...this.components.values());
+		this.right = Math.max(...this.components.values());
 	}
 
 	completions(): number {
@@ -172,13 +178,13 @@ export class PartialSculpture {
 	weightWidthBound(side: "left" | "right") {
 		for(let overhang = 1; true; overhang ++) {
 			if(!this.canOverhang(side, overhang)) {
-				return (side === "left") ? this.left() - (overhang - 1) : this.right() + (overhang - 1);
+				return (side === "left") ? this.left - (overhang - 1) : this.right + (overhang - 1);
 			}
 		}
 	}
 	canOverhang(side: "left" | "right", overhangBlocks: number): boolean {
-		const left = this.left();
-		const right = this.right();
+		const left = this.left;
+		const right = this.right;
 		const notAbove = ArrayUtils.range(left, right).filter(x => !this.components.has(x));
 
 		const overhangWeight = ((side === "right")
@@ -210,14 +216,6 @@ export class PartialSculpture {
 		return emptyRow.completions();
 	}
 
-	
-	right() {
-		return Math.max(...this.components.values());
-	}
-	left() {
-		return Math.min(...this.components.values());
-	}
-
 	static numSculptures(blocks: number) {
 		const all = new PartialSculpture(Partition.fromSets([[0]]), blocks, 0, "all").completions();
 		const symmetrical = new PartialSculpture(Partition.fromSets([[0]]), blocks, 0, "symmetrical").completions();
@@ -245,10 +243,10 @@ export class PartialSculpture {
 		);
 	}
 	normalize() {
-		return this.translate(-this.left());
+		return this.translate(-this.left);
 	}
 	isNormalized() {
-		return this.mode === "symmetrical" || this.left() === 0;
+		return this.mode === "symmetrical" || this.left === 0;
 	}
 	static completionsCache = new HashMap<PartialSculpture, number>();
 }
