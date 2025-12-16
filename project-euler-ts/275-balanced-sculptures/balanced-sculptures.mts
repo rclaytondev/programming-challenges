@@ -31,13 +31,15 @@ class PartialRow {
 	blocks: Set<number>;
 	remaining:  number[];
 	requiredAbove: Set<number>;
+	requiredNextOrAbove: Set<number>;
 	sculptureBelow: PartialSculpture;
 
-	constructor(blocks: Set<number>, remaining: number[], requiredAbove: Set<number>, sculptureBelow: PartialSculpture) {
+	constructor(blocks: Set<number>, remaining: number[], requiredAbove: Set<number>, requiredNextOrAbove: Set<number>, sculptureBelow: PartialSculpture) {
 		this.blocks = blocks;
 		this.remaining = remaining;
 		this.requiredAbove = requiredAbove;
 		this.sculptureBelow = sculptureBelow;
+		this.requiredNextOrAbove = requiredNextOrAbove;
 	}
 
 	completions() {
@@ -63,16 +65,19 @@ class PartialRow {
 				}
 			}
 		}
-		return new PartialRow(
+		const nextRow = new PartialRow(
 			nextBlocks,
 			this.remaining.slice(1),
 			nextRequiredAbove,
+			new Set([...this.requiredNextOrAbove].filter(n => n !== next)),
 			this.sculptureBelow
-		).completions();
+		);
+		return nextRow.completions();
 	}
 	completionsWithoutNext(): Array<Set<number>> {
 		if(!this.canSkipNext()) { return []; }
-		return new PartialRow(this.blocks, this.remaining.slice(1), this.requiredAbove, this.sculptureBelow).completions();
+		const row = new PartialRow(this.blocks, this.remaining.slice(1), this.requiredAbove, this.requiredNextOrAbove, this.sculptureBelow);
+		return row.completions();
 	}
 
 	canSkipNext() {
@@ -85,7 +90,8 @@ class PartialRow {
 		return true;
 	}
 	canComplete() {
-		const blocks = this.blocks.size + this.requiredAbove.size;
+		const requiredAbove = new Set([...this.requiredAbove, ...this.requiredNextOrAbove]);
+		const blocks = this.blocks.size + requiredAbove.size;
 		const blocksLeft = this.sculptureBelow.blocksLeft - blocks;
 		if(blocksLeft < 0) { return false; }
 
@@ -93,10 +99,10 @@ class PartialRow {
 
 		const left = Math.min(...this.blocks);
 		const right = Math.max(...this.blocks);
-		const min = (this.requiredAbove.has(left) ? left - 1 : left);
-		const max = this.remaining[this.remaining.length-1] ?? (this.requiredAbove.has(right) ? right + 1 : right)
+		const min = (requiredAbove.has(left) ? left - 1 : left);
+		const max = this.remaining[this.remaining.length-1] ?? (requiredAbove.has(right) ? right + 1 : right)
 
-		const weight = this.sculptureBelow.weight + MathUtils.sum(this.blocks) + MathUtils.sum(this.requiredAbove);
+		const weight = this.sculptureBelow.weight + MathUtils.sum(this.blocks) + MathUtils.sum(requiredAbove);
 		const minWeight = weight + rangeSum(min - blocksLeft + 1, min);
 		const maxWeight = weight + rangeSum(max, max + blocksLeft - 1);
 		return minWeight <= 0 && maxWeight >= 0;
@@ -221,10 +227,24 @@ export class PartialSculpture {
 		return (side === "right") ? weight <= 0 : weight >= 0;
 	}
 
+	requiredNextOrAbove() {
+		const result = new Set<number>();
+		const components = this.components.sort((c1, c2) => Math.min(...c1) - Math.min(...c2));
+		for(let i = 0; i < components.length - 1; i ++) {
+			const component = components[i];
+			const next = components[i+1];
+			if(Math.min(...next) >= Math.max(...component) + 2) {
+				for(let x = Math.max(...component); x <= Math.min(...next); x ++) {
+					result.add(x);
+				}
+			}
+		}
+		return result;
+	}
 	nextBlockPositions() {
 		const right = this.weightWidthBound("right");
 		const left = this.weightWidthBound("left");
-		const emptyRow = new PartialRow(new Set(), ArrayUtils.range(left, right), new Set(), this);
+		const emptyRow = new PartialRow(new Set(), ArrayUtils.range(left, right), new Set(), this.requiredNextOrAbove(), this);
 		return emptyRow.completions();
 	}
 

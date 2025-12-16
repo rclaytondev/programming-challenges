@@ -155,6 +155,12 @@ describe("Partial.nextBlockPositions", () => {
 		assert.deepInclude(positions, new Set([-1, 1]));
 		assert.deepInclude(positions, new Set([0]));
 	});
+	it("works when there are multiple components", () => {
+		const sculpture = new PartialSculpture([[-2], [2]], 7, 0, "all");
+		const positions = sculpture.nextBlockPositions();
+		assert.deepInclude(positions, new Set([-2, -1, 0, 1, 2]));
+		assert.deepInclude(positions, new Set([-3, -2, -1, 0, 1, 2, 3]));
+	});
 });
 describe("PartialSculpture.translate", () => {
 	it("preserves the number of completions for a trivial examples", () => {
