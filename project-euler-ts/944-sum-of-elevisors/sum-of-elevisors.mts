@@ -1,10 +1,13 @@
 import { assert } from "chai";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
+import { CountLogger } from "../project-specific-utilities/CountLogger.mjs";
 
 const sumOfElevisors = (upperBound: number, modulo: number) => {
+	const logger = new CountLogger(n => n ** 4 * 10000, upperBound);
 	let sum = MathUtils.modularExponentiate(2, upperBound - 1, modulo) * (MathUtils.rangeSum(1, upperBound) % modulo) % modulo;
 	let quotient = 1;
 	while(quotient <= upperBound) {
+		logger.countTo(quotient);
 		const smallestWithQuotient = Math.floor(upperBound / (quotient + 1)) + 1;
 		const largestWithQuotient = Math.floor(upperBound / quotient);
 		const rangeSum = MathUtils.rangeSum(smallestWithQuotient, largestWithQuotient) % modulo;
@@ -21,3 +24,8 @@ describe("sumOfElevisors", () => {
 		assert.equal(result, 4927);
 	});
 });
+
+console.time();
+console.log(sumOfElevisors(10 ** 14, 1234567891));
+console.timeEnd();
+debugger;
