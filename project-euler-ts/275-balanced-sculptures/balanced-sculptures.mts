@@ -41,8 +41,8 @@ class PartialRow {
 	}
 
 	completions() {
-		if(this.remaining.length === 0) { return [this.blocks]; }
 		if(!this.canComplete()) { return []; }
+		if(this.remaining.length === 0) { return [this.blocks]; }
 		const completions = this.completionsWithNext();
 		for(const completion of this.completionsWithoutNext()) {
 			completions.push(completion);
@@ -91,8 +91,10 @@ class PartialRow {
 
 		if(this.blocks.size === 0) { return true; } // maybe can optimize this?
 
-		const min = Math.min(Math.min(...this.blocks) - 1, this.sculptureBelow.left);
-		const max = Math.max(Math.max(...this.blocks) + 1, this.sculptureBelow.right);
+		const left = Math.min(...this.blocks);
+		const right = Math.max(...this.blocks);
+		const min = (this.requiredAbove.has(left) ? left - 1 : left);
+		const max = this.remaining[this.remaining.length-1] ?? (this.requiredAbove.has(right) ? right + 1 : right)
 
 		const weight = this.sculptureBelow.weight + MathUtils.sum(this.blocks) + MathUtils.sum(this.requiredAbove);
 		const minWeight = weight + rangeSum(min - blocksLeft + 1, min);
@@ -263,6 +265,6 @@ export class PartialSculpture {
 }
 
 console.time();
-console.log(PartialSculpture.numSculptures(11));
+console.log(PartialSculpture.numSculptures(13));
 console.timeEnd();
 debugger;
