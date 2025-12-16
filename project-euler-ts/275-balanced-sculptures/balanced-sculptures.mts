@@ -9,8 +9,6 @@ import { HashMap } from "../327-rooms-of-doom/HashMap.mjs";
 import { HashPartition } from "./HashPartition.mjs";
 import { Partition } from "./Partition.mjs";
 
-const rangeSum = (min: number, max: number) => min * (max - min + 1) + (max - min) * (max - min + 1) / 2;
-
 export const componentsOfArray = (sortedArray: number[]) => {
 	const components = [];
 	for(let i = 0; i < sortedArray.length; i ++) {
@@ -103,8 +101,8 @@ class PartialRow {
 		const max = this.remaining[this.remaining.length-1] ?? (requiredAbove.has(right) ? right + 1 : right)
 
 		const weight = this.sculptureBelow.weight + MathUtils.sum(this.blocks) + MathUtils.sum(requiredAbove);
-		const minWeight = weight + rangeSum(min - blocksLeft + 1, min);
-		const maxWeight = weight + rangeSum(max, max + blocksLeft - 1);
+		const minWeight = weight + MathUtils.rangeSum(min - blocksLeft + 1, min);
+		const maxWeight = weight + MathUtils.rangeSum(max, max + blocksLeft - 1);
 		return minWeight <= 0 && maxWeight >= 0;
 	}
 }
@@ -206,8 +204,8 @@ export class PartialSculpture {
 		const notAbove = ArrayUtils.range(left, right).filter(x => !this.components.some(arr => arr.includes(x)));
 
 		const overhangWeight = ((side === "right")
-			? rangeSum(right + 1, right + overhangBlocks)
-			: rangeSum(left - overhangBlocks, left - 1)
+			? MathUtils.rangeSum(right + 1, right + overhangBlocks)
+			: MathUtils.rangeSum(left - overhangBlocks, left - 1)
 		);
 		const aboveBlocks = this.components.length;
 		const aboveWeight = MathUtils.sum(this.components.map(
@@ -220,8 +218,8 @@ export class PartialSculpture {
 		const remainingBlocks = this.blocksLeft - (overhangBlocks + aboveBlocks + notAboveBlocks);
 		if(remainingBlocks < 0) { return false; }
 		const oppositeOverhangWeight = ((side === "right")
-			? rangeSum(left - remainingBlocks, left - 1)
-			: rangeSum(right + 1, right + remainingBlocks)
+			? MathUtils.rangeSum(left - remainingBlocks, left - 1)
+			: MathUtils.rangeSum(right + 1, right + remainingBlocks)
 		);
 		const weight = this.weight + overhangWeight + aboveWeight + notAboveWeight + oppositeOverhangWeight;
 		return (side === "right") ? weight <= 0 : weight >= 0;
