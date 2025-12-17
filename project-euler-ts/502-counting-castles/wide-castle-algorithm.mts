@@ -3,6 +3,8 @@ This algorithm counts castles by repeatedly cutting it in half horizontally.
 (This means it is supposed to be fast for wide, short rectangles).
 */
 
+import { Utils } from "../../utils-ts/modules/Utils.mjs";
+
 type Parity = (typeof Parities.PARITIES)[number];
 
 export class Parities {
@@ -17,7 +19,7 @@ export class Parities {
 	}
 }
 
-const paths = (width: number, height: number, startY: number, endY: number, parity: Parity) => {
+const paths = Utils.memoize((width: number, height: number, startY: number, endY: number, parity: Parity) => {
 	if(width === 1) {
 		if(startY <= endY) {
 			return Parities.parity(endY - startY) === parity ? 1 : 0;
@@ -39,7 +41,7 @@ const paths = (width: number, height: number, startY: number, endY: number, pari
 		result += left2 * right2;
 	}
 	return result;
-};
+});
 
 const allCastles = (width: number, height: number) => {
 	let result = 0;
@@ -52,3 +54,8 @@ const allCastles = (width: number, height: number) => {
 export const fullHeightCastles = (width: number, height: number) => {
 	return allCastles(width, height - 1) - allCastles(width, height - 2);
 };
+
+console.time();
+console.log(fullHeightCastles(10 ** 12, 20));
+console.timeEnd();
+debugger;
