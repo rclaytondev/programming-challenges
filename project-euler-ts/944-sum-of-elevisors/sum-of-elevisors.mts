@@ -1,10 +1,14 @@
 import { assert } from "chai";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { CountLogger } from "../project-specific-utilities/CountLogger.mjs";
+import { BigintMath } from "../../utils-ts/modules/math/BigintMath.mjs";
 
 const sumOfElevisors = (upperBound: number, modulo: number) => {
 	const logger = new CountLogger(n => n ** 4 * 10000, upperBound);
-	let sum = MathUtils.modularExponentiate(2, upperBound - 1, modulo) * (MathUtils.rangeSum(1, upperBound) % modulo) % modulo;
+	let sum = Number((
+		BigInt(MathUtils.modularExponentiate(2, upperBound - 1, modulo))
+		 * (BigintMath.rangeSum(1n, BigInt(upperBound)) % BigInt(modulo))
+	) % BigInt(modulo));
 	let quotient = 1;
 	while(quotient <= upperBound) {
 		logger.countTo(quotient);
@@ -12,7 +16,7 @@ const sumOfElevisors = (upperBound: number, modulo: number) => {
 		const largestWithQuotient = Math.floor(upperBound / quotient);
 		const rangeSum = MathUtils.rangeSum(smallestWithQuotient, largestWithQuotient) % modulo;
 		const power = MathUtils.modularExponentiate(2, upperBound - quotient, modulo);
-		sum -= (rangeSum * power) % modulo;
+		sum -= Number((BigInt(rangeSum) * BigInt(power)) % BigInt(modulo));
 		quotient = Math.floor(upperBound / (smallestWithQuotient - 1));
 	}
 	return MathUtils.generalizedModulo(sum, modulo);
