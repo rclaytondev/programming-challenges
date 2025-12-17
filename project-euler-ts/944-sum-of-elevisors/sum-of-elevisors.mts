@@ -4,7 +4,6 @@ import { CountLogger } from "../project-specific-utilities/CountLogger.mjs";
 import { BigintMath } from "../../utils-ts/modules/math/BigintMath.mjs";
 
 const sumOfElevisors = (upperBound: bigint, modulo: bigint) => {
-	const logger = new CountLogger(n => n ** 4 * 10000, Number(upperBound));
 	const firstTerm = (
 		BigintMath.modularExponentiate(2n, upperBound - 1n, modulo)
 		 * (BigintMath.rangeSum(1n, upperBound) % modulo)
@@ -12,7 +11,6 @@ const sumOfElevisors = (upperBound: bigint, modulo: bigint) => {
 	let sum = 0n;
 	let quotient = 1n;
 	while(quotient <= upperBound) {
-		logger.countTo(Number(quotient));
 		const smallestWithQuotient = upperBound / (quotient + 1n) + 1n;
 		const largestWithQuotient = upperBound / quotient;
 		const rangeSum = BigintMath.rangeSum(smallestWithQuotient, largestWithQuotient) % modulo;
@@ -32,7 +30,7 @@ describe("sumOfElevisors", () => {
 	});
 });
 
-console.time();
-console.log(sumOfElevisors(10n ** 14n, 1234567891n));
-console.timeEnd();
-debugger;
+// console.time();
+// console.log(sumOfElevisors(10n ** 14n, 1234567891n));
+// console.timeEnd();
+// debugger;
