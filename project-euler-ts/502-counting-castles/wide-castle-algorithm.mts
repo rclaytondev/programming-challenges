@@ -6,7 +6,7 @@ This algorithm counts castles by repeatedly cutting it in half horizontally.
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
-type Parity = (typeof Parities.PARITIES)[number];
+export type Parity = (typeof Parities.PARITIES)[number];
 
 export class Parities {
 	static PARITIES = ["even", "odd"] as const;
