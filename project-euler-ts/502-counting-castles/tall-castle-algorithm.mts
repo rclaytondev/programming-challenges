@@ -1,74 +1,82 @@
+import { Directions } from "../../utils-ts/modules/geometry/Direction.mjs";
 import { Parities, Parity } from "./wide-castle-algorithm.mjs";
 
-const paths = (startY: number, endY: number, width: number, height: number, parity: Parity, nextMove: "up" | "down"): number => {
-	/* 
-	Returns the number of lattice paths from (0, startY) to (width, endY) satisfying the following criteria:
-	- The path only moves right, up, and down, and stays within the given rectangle,
-	- The last move in the path (if there is one) is a move to the right,
-	- The number of "up" moves in the path has the given parity,
-	- The path first moves either right or in the direction of `nextMove`.
-	*/
+const paritiesWithSum = (parity: Parity) => [["even", parity], ["odd", Parities.opposite[parity]]] as [Parity, Parity][];
 
-	if(width === 1) {
-		const correctParity = (startY >= endY && parity === "even") || (startY < endY && Parities.parity(endY - startY) === parity);
-		const correctDirection = (nextMove === "up" && endY >= startY) || (nextMove === "down" && endY <= startY);
-		return (correctParity && correctDirection) ? 1 : 0;
+const pathsFromCorner = (width: number, height: number, endCorner: "up" | "down", stepType: "up" | "down", parity: Parity): number => {
+	if(width < 0 || height < 0) { return 0; }
+	if(width === 0) {
+		const steps = (stepType === "up") ? height : 0;
+		return (Parities.parity(steps) === parity) ? 1 : 0;
 	}
-	
-	const pivotY = (height % 2 === 0) ? height / 2 : height - 1;
-	const parities = [["even", parity], ["odd", Parities.opposite[parity]]] as [Parity, Parity][];
-	let result;
-	if(startY === 0) {
-		result = paths(0, endY, width, height - 1, parity, "up");
+	if(height === 0) {
+		return (parity === "even") ? 1 : 0;
 	}
-	else if(nextMove === "up") {
-		result = (endY <= startY) ? 0 : paths(0, endY - startY, )
-	}
-	for(let nextCrossingX = 1; nextCrossingX <= width; nextCrossingX ++) {
-		for(const [parityBefore, parityAfter] of parities) {
-			let pathsBefore: number, pathsAfter: number;
-			if(startY === 0) {
-				pathsBefore = paths(0, pivotY, nextCrossingX, pivotY, parityBefore, "up");
-				pathsAfter = paths(pivotY, endY, width - nextCrossingX, height, parityAfter, "up");
-			}
-			else if(nextMove === "up") {
-				pathsBefore = paths(0, 0, nextCrossingX, height - startY, parityBefore, "up");
-				pathsAfter = paths(startY, endY, width - nextCrossingX, height, parityAfter, "down");
-			}
-			else {
-				pathsBefore = paths(0, 0, nextCrossingX, startY, parityBefore, "up");
-				pathsAfter = paths(startY, endY, width - nextCrossingX, height, parityAfter, "up");
-			}
+
+	const pivotY = (height % 2 === 0) ? height / 2 : Math.max(1, height - 1);
+	const pathsWithoutCrossing = (endCorner === "up") ? 0 : pathsFromCorner(width, pivotY - 1, endCorner, stepType, parity)
+	let result = pathsWithoutCrossing;
+	for(let firstCrossingX = 0; firstCrossingX <= width; firstCrossingX ++) {
+		for(const [parityBefore, parityAfter] of paritiesWithSum((stepType === "up" ? Parities.opposite[parity] : parity))) {
+			const pathsBefore = pathsFromCorner(firstCrossingX, pivotY - 1, "up", stepType, parityBefore);
+			const pathsAfter = pathsFromMiddle(width - firstCrossingX, height, pivotY, endCorner, stepType, parityAfter, "up");
 			result += pathsBefore * pathsAfter;
 		}
 	}
 	return result;
-
-	// let result = 0;
-	// if(startY === 0) {
-	// 	const pivotY = (height % 2 === 0) ? height / 2 : height - 1;
-	// 	for(let nextCrossingX = 1; nextCrossingX <= width; nextCrossingX ++) {
-	// 		const parities = [["even", parity], ["odd", Parities.opposite[parity]]] as [Parity, Parity][];
-	// 		for(const [parityBefore, parityAfter] of parities) {
-	// 			const pathsBefore1 = paths(0, pivotY, nextCrossingX, pivotY, "even", "up");
-	// 			const pathsAfter1 = paths(pivotY, endY, width - nextCrossingX, height, parity, "up");
-	// 			result += pathsBefore1 * pathsAfter1;
-	// 		}
-	// 	}
-	// }
-	// else if(nextMove === "up") {
-	// 	for(let nextCrossingX = 1; nextCrossingX <= width; nextCrossingX ++) {
-	// 		const pathsBefore1 = paths(startY, startY, nextCrossingX, startY, "even", "up");
-	// 		const pathsAfter1 = paths(startY, endY, width - nextCrossingX, height, parity, "up");
-	// 		result += pathsBefore1 * pathsAfter1;
-			
-	// 		const pathsBefore2 = paths(startY, startY, nextCrossingX, startY, "odd", "up");
-	// 		const pathsAfter2 = paths(startY, endY, width - nextCrossingX, height, Parities.opposite[parity], "up");
-	// 		result += pathsBefore2 * pathsAfter2;
-	// 	}
-	// }
-	// else {
-		
-	// }
-	// return result;
 };
+
+const pathsFromMiddle = (width: number, height: number, startY: number, endCorner: "up" | "down", stepType: "up" | "down", parity: Parity, nextMove: "up" | "down"): number => {
+	/*
+	Returns the number of lattice paths with moves right/up/down satisfying the following:
+	- The path starts at (0, `startY`).
+	- The path ends at either (`width`, 0) or (`height`, 0) depending on `endCorner`.
+	- The path stays within the rectangle of size `width` by `height`.
+	- The parity of the number of steps in the direction `stepType` is `parity`.
+	- The first move in the path is right or up (if `nextMove` is "up") or down (if `nextMove` is "down").
+	*/
+	if(width === 0) {
+		const steps = (stepType !== endCorner) ? 0 :(stepType === "down" ? startY : height - startY);
+		const correctParity = (parity === Parities.parity(steps));
+		const correctDirection = (nextMove === endCorner);
+		return (correctParity && correctDirection) ? 1 : 0;
+	}
+	if(height === 0) {
+		throw new Error("Unimplemented.");
+	}
+
+	// const pathsWithFirstStepRight = (
+	// 	pathsFromMiddle(width - 1, height, startY, endCorner, stepType, parity, "up")
+	// 	+ pathsFromMiddle(width - 1, height, startY, endCorner, stepType, parity, "down")
+	// );
+	// if((startY === height && nextMove === "up") || (startY === 0 && nextMove === "down")) {
+	// 	return pathsWithFirstStepRight;
+	// }
+	const pathsWithoutCrossing = ((endCorner !== nextMove) ? 0 : pathsFromCorner(
+		width,
+		nextMove === "up" ? height - startY : startY - 1,
+		"up",
+		stepType,
+		endCorner === stepType ? Parities.opposite[parity] : parity
+	));
+	let result = pathsWithoutCrossing;
+	for(let firstCrossingX = 1; firstCrossingX <= width; firstCrossingX ++) {
+		for(const [parityBefore, parityAfter] of paritiesWithSum((nextMove === "down" ? Parities.opposite[parity] : parity))) {
+			const pathsBefore = pathsFromCorner(firstCrossingX, nextMove === "up" ? height - startY : startY - 1, "down", stepType, parityBefore);
+			const pathsAfter = pathsFromMiddle(width - firstCrossingX, height, startY, endCorner, stepType, parityAfter, Directions.opposite[nextMove]);
+			result += pathsBefore * pathsAfter;
+		}
+	}
+	return result;
+};
+
+export const fullHeightCastles = (width: number, height: number) => {
+	const allCastles = pathsFromCorner(width, height - 1, "down", "up", "odd");
+	const nonFullHeight = pathsFromCorner(width, height - 2, "down", "up", "odd");
+	return allCastles - nonFullHeight;
+};
+
+console.time();
+console.log(fullHeightCastles(5, 12));
+console.timeEnd();
+debugger;

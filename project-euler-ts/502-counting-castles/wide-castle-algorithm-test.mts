@@ -2,7 +2,7 @@ import { assert } from "chai";
 import { describe, it } from "mocha";
 import { fullHeightCastles } from "./wide-castle-algorithm.mjs";
 
-describe("fullHeightCastles", () => {
+describe("fullHeightCastles (wide castle algorithm)", () => {
 	it("works for a 1x2 grid", () => {
 		const result = fullHeightCastles(1, 2, 1_000_000_007);
 		assert.equal(result, 1);

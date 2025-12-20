@@ -59,7 +59,7 @@ export const fullHeightCastles = (width: number, height: number, modulo: number)
 	);
 };
 
-console.time();
-console.log(fullHeightCastles(10 ** 12, 20, 1_000_000_007));
-console.timeEnd();
-debugger;
+// console.time();
+// console.log(fullHeightCastles(10 ** 12, 20, 1_000_000_007));
+// console.timeEnd();
+// debugger;
