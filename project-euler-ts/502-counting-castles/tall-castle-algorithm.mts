@@ -1,9 +1,10 @@
 import { Directions } from "../../utils-ts/modules/geometry/Direction.mjs";
+import { Utils } from "../../utils-ts/modules/Utils.mjs";
 import { Parities, Parity } from "./wide-castle-algorithm.mjs";
 
 const paritiesWithSum = (parity: Parity) => [["even", parity], ["odd", Parities.opposite[parity]]] as [Parity, Parity][];
 
-const pathsFromCorner = (width: number, height: number, endCorner: "up" | "down", stepType: "up" | "down", parity: Parity): number => {
+const pathsFromCorner = Utils.memoize((width: number, height: number, endCorner: "up" | "down", stepType: "up" | "down", parity: Parity): number => {
 	if(width < 0 || height < 0) { return 0; }
 	if(width === 0) {
 		const steps = (stepType === "up") ? height : 0;
@@ -24,9 +25,9 @@ const pathsFromCorner = (width: number, height: number, endCorner: "up" | "down"
 		}
 	}
 	return result;
-};
+});
 
-const pathsFromMiddle = (width: number, height: number, startY: number, endCorner: "up" | "down", stepType: "up" | "down", parity: Parity, nextMove: "up" | "down"): number => {
+const pathsFromMiddle = Utils.memoize((width: number, height: number, startY: number, endCorner: "up" | "down", stepType: "up" | "down", parity: Parity, nextMove: "up" | "down"): number => {
 	/*
 	Returns the number of lattice paths with moves right/up/down satisfying the following:
 	- The path starts at (0, `startY`).
@@ -68,7 +69,7 @@ const pathsFromMiddle = (width: number, height: number, startY: number, endCorne
 		}
 	}
 	return result;
-};
+});
 
 export const fullHeightCastles = (width: number, height: number) => {
 	const allCastles = pathsFromCorner(width, height - 1, "down", "up", "odd");
@@ -77,6 +78,6 @@ export const fullHeightCastles = (width: number, height: number) => {
 };
 
 console.time();
-console.log(fullHeightCastles(5, 12));
+console.log(fullHeightCastles(100, 75));
 console.timeEnd();
 debugger;
