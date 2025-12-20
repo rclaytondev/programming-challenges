@@ -21,6 +21,10 @@ export const pathsFromCorner = ((width: number, height: number, endCorner: "up" 
 	}
 
 	if(endCorner === "down") { stepType = "up"; }
+	if(parity === "odd") {
+		const allPaths = (height + 1) ** width;
+		return allPaths - pathsFromCorner(width, height, endCorner, stepType, "even");
+	}
 
 	const argsString = `${width},${height},${endCorner},${stepType},${parity}`;
 	const precomputed = cornerPathsCache.get(argsString);
@@ -60,6 +64,12 @@ export const pathsFromMiddle = ((width: number, height: number, startY: number, 
 		throw new Error("Unimplemented.");
 	}
 
+	if(parity === "odd") {
+		const firstChoices = (nextMove === "up") ? height - startY + 1 : startY;
+		const allPaths = firstChoices * (height + 1) ** (width - 1);
+		return allPaths - pathsFromMiddle(width, height, startY, endCorner, stepType, "even", nextMove);
+	}
+
 	const argsString = `${width},${height},${startY},${endCorner},${stepType},${parity},${nextMove}`;
 	const precomputed = middlePathsCache.get(argsString);
 	if(typeof precomputed === "number") { return precomputed; }
@@ -90,6 +100,6 @@ export const fullHeightCastles = (width: number, height: number) => {
 };
 
 console.time();
-console.log(fullHeightCastles(100, 75));
+console.log(fullHeightCastles(100, 10 ** 12));
 console.timeEnd();
 debugger;
