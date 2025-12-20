@@ -4,7 +4,10 @@ import { Parities, Parity } from "./wide-castle-algorithm.mjs";
 
 const paritiesWithSum = (parity: Parity) => [["even", parity], ["odd", Parities.opposite[parity]]] as [Parity, Parity][];
 
+let heights = new Set<number>();
+
 export const pathsFromCorner = Utils.memoize((width: number, height: number, endCorner: "up" | "down", stepType: "up" | "down", parity: Parity): number => {
+	heights.add(height);
 	if(width < 0 || height < 0) { return 0; }
 	if(width === 0) {
 		const steps = (stepType === "up") ? height : 0;
@@ -36,6 +39,7 @@ export const pathsFromMiddle = Utils.memoize((width: number, height: number, sta
 	- The parity of the number of steps in the direction `stepType` is `parity`.
 	- The first move in the path is right or up (if `nextMove` is "up") or down (if `nextMove` is "down").
 	*/
+	heights.add(height);
 	if(width === 0) {
 		const steps = (stepType !== endCorner) ? 0 :(stepType === "down" ? startY : height - startY);
 		const correctParity = (parity === Parities.parity(steps));
@@ -46,13 +50,6 @@ export const pathsFromMiddle = Utils.memoize((width: number, height: number, sta
 		throw new Error("Unimplemented.");
 	}
 
-	// const pathsWithFirstStepRight = (
-	// 	pathsFromMiddle(width - 1, height, startY, endCorner, stepType, parity, "up")
-	// 	+ pathsFromMiddle(width - 1, height, startY, endCorner, stepType, parity, "down")
-	// );
-	// if((startY === height && nextMove === "up") || (startY === 0 && nextMove === "down")) {
-	// 	return pathsWithFirstStepRight;
-	// }
 	const pathsWithoutCrossing = ((endCorner !== nextMove) ? 0 : pathsFromCorner(
 		width,
 		endCorner === "up" ? height - startY : startY - 1,
@@ -78,6 +75,6 @@ export const fullHeightCastles = (width: number, height: number) => {
 };
 
 console.time();
-console.log(fullHeightCastles(100, 75));
+console.log(fullHeightCastles(100, 200));
 console.timeEnd();
 debugger;
