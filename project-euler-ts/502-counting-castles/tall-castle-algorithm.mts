@@ -4,7 +4,7 @@ import { Parities, Parity } from "./wide-castle-algorithm.mjs";
 
 const paritiesWithSum = (parity: Parity) => [["even", parity], ["odd", Parities.opposite[parity]]] as [Parity, Parity][];
 
-const pathsFromCorner = Utils.memoize((width: number, height: number, endCorner: "up" | "down", stepType: "up" | "down", parity: Parity): number => {
+export const pathsFromCorner = Utils.memoize((width: number, height: number, endCorner: "up" | "down", stepType: "up" | "down", parity: Parity): number => {
 	if(width < 0 || height < 0) { return 0; }
 	if(width === 0) {
 		const steps = (stepType === "up") ? height : 0;
@@ -14,7 +14,7 @@ const pathsFromCorner = Utils.memoize((width: number, height: number, endCorner:
 		return (parity === "even") ? 1 : 0;
 	}
 
-	const pivotY = (height % 2 === 0) ? height / 2 : Math.max(1, height - 1);
+	const pivotY = (height % 2 === 0) ? height : (height + 1) / 2;
 	const pathsWithoutCrossing = (endCorner === "up") ? 0 : pathsFromCorner(width, pivotY - 1, endCorner, stepType, parity)
 	let result = pathsWithoutCrossing;
 	for(let firstCrossingX = 0; firstCrossingX <= width; firstCrossingX ++) {
@@ -27,7 +27,7 @@ const pathsFromCorner = Utils.memoize((width: number, height: number, endCorner:
 	return result;
 });
 
-const pathsFromMiddle = Utils.memoize((width: number, height: number, startY: number, endCorner: "up" | "down", stepType: "up" | "down", parity: Parity, nextMove: "up" | "down"): number => {
+export const pathsFromMiddle = Utils.memoize((width: number, height: number, startY: number, endCorner: "up" | "down", stepType: "up" | "down", parity: Parity, nextMove: "up" | "down"): number => {
 	/*
 	Returns the number of lattice paths with moves right/up/down satisfying the following:
 	- The path starts at (0, `startY`).
@@ -55,10 +55,10 @@ const pathsFromMiddle = Utils.memoize((width: number, height: number, startY: nu
 	// }
 	const pathsWithoutCrossing = ((endCorner !== nextMove) ? 0 : pathsFromCorner(
 		width,
-		nextMove === "up" ? height - startY : startY - 1,
+		endCorner === "up" ? height - startY : startY - 1,
 		"up",
-		stepType,
-		endCorner === stepType ? Parities.opposite[parity] : parity
+		endCorner === "up" ? stepType : Directions.opposite[stepType],
+		(endCorner === "down" && stepType === "down") ? Parities.opposite[parity] : parity
 	));
 	let result = pathsWithoutCrossing;
 	for(let firstCrossingX = 1; firstCrossingX <= width; firstCrossingX ++) {
