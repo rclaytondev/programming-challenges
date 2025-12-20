@@ -20,6 +20,8 @@ export const pathsFromCorner = ((width: number, height: number, endCorner: "up" 
 		return (parity === "even") ? 1 : 0;
 	}
 
+	if(endCorner === "down") { stepType = "up"; }
+
 	const argsString = `${width},${height},${endCorner},${stepType},${parity}`;
 	const precomputed = cornerPathsCache.get(argsString);
 	if(typeof precomputed === "number") { return precomputed; }
