@@ -6,7 +6,10 @@ const paritiesWithSum = (parity: Parity) => [["even", parity], ["odd", Parities.
 
 let heights = new Set<number>();
 
-export const pathsFromCorner = Utils.memoize((width: number, height: number, endCorner: "up" | "down", stepType: "up" | "down", parity: Parity): number => {
+const cornerPathsCache = new Map<string, number>();
+const middlePathsCache = new Map<string, number>();
+
+export const pathsFromCorner = ((width: number, height: number, endCorner: "up" | "down", stepType: "up" | "down", parity: Parity): number => {
 	heights.add(height);
 	if(width < 0 || height < 0) { return 0; }
 	if(width === 0) {
@@ -16,6 +19,10 @@ export const pathsFromCorner = Utils.memoize((width: number, height: number, end
 	if(height === 0) {
 		return (parity === "even") ? 1 : 0;
 	}
+
+	const argsString = `${width},${height},${endCorner},${stepType},${parity}`;
+	const precomputed = cornerPathsCache.get(argsString);
+	if(typeof precomputed === "number") { return precomputed; }
 
 	const pivotY = (height % 2 === 0) ? height : (height + 1) / 2;
 	const pathsWithoutCrossing = (endCorner === "up") ? 0 : pathsFromCorner(width, pivotY - 1, endCorner, stepType, parity)
@@ -27,10 +34,11 @@ export const pathsFromCorner = Utils.memoize((width: number, height: number, end
 			result += pathsBefore * pathsAfter;
 		}
 	}
+	cornerPathsCache.set(argsString, result);
 	return result;
 });
 
-export const pathsFromMiddle = Utils.memoize((width: number, height: number, startY: number, endCorner: "up" | "down", stepType: "up" | "down", parity: Parity, nextMove: "up" | "down"): number => {
+export const pathsFromMiddle = ((width: number, height: number, startY: number, endCorner: "up" | "down", stepType: "up" | "down", parity: Parity, nextMove: "up" | "down"): number => {
 	/*
 	Returns the number of lattice paths with moves right/up/down satisfying the following:
 	- The path starts at (0, `startY`).
@@ -50,6 +58,10 @@ export const pathsFromMiddle = Utils.memoize((width: number, height: number, sta
 		throw new Error("Unimplemented.");
 	}
 
+	const argsString = `${width},${height},${startY},${endCorner},${stepType},${parity},${nextMove}`;
+	const precomputed = middlePathsCache.get(argsString);
+	if(typeof precomputed === "number") { return precomputed; }
+
 	const pathsWithoutCrossing = ((endCorner !== nextMove) ? 0 : pathsFromCorner(
 		width,
 		endCorner === "up" ? height - startY : startY - 1,
@@ -65,6 +77,7 @@ export const pathsFromMiddle = Utils.memoize((width: number, height: number, sta
 			result += pathsBefore * pathsAfter;
 		}
 	}
+	middlePathsCache.set(argsString, result);
 	return result;
 });
 
@@ -75,6 +88,6 @@ export const fullHeightCastles = (width: number, height: number) => {
 };
 
 console.time();
-console.log(fullHeightCastles(100, 200));
+console.log(fullHeightCastles(100, 75));
 console.timeEnd();
 debugger;
