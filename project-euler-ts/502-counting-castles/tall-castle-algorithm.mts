@@ -99,7 +99,7 @@ export const fullHeightCastles = (width: number, height: number) => {
 	return allCastles - nonFullHeight;
 };
 
-console.time();
-console.log(fullHeightCastles(100, 10 ** 12));
-console.timeEnd();
-debugger;
+// console.time();
+// console.log(fullHeightCastles(100, 10 ** 12));
+// console.timeEnd();
+// debugger;
