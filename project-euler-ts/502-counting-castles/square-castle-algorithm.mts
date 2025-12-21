@@ -27,28 +27,6 @@ export const nextPaths = (evenPaths: number[], oddPaths: number[]): [number[], n
 		downSumOdd += oddPaths[y];
 	}
 
-	// let upSumEven = 0;
-	// let upSumOdd = 0;
-	// for(let y = 0; y < evenPaths.length; y ++) {
-	// 	nextEvenPaths[y] += upSumEven;
-	// 	nextOddPaths[y] += upSumOdd;
-	// 	upSumEven += (y % 2 === 0) ? evenPaths[y] : oddPaths[y];
-	// 	upSumOdd += (y % 2 === 0) ? oddPaths[y] : evenPaths[y];
-	// }
-
-	// let upSumEven = 0;
-	// let upSumOdd = 0;
-	// for(let y = 0; y < evenPaths.length; y ++) {
-	// 	// upSumEven += (y % 2 === 0) ? evenPaths[y] : oddPaths[y];
-	// 	// upSumOdd += (y % 2 === 1) ? evenPaths[y] : oddPaths[y];
-	// 	// nextEvenPaths[y] += upSumEven;
-	// 	// nextOddPaths[y] += upSumOdd;
-	// 	upSumEven += evenPaths[y];
-	// 	upSumOdd += oddPaths[y];
-	// 	nextEvenPaths[y] += (y % 2 === 0) ? upSumEven : upSumOdd;
-	// 	nextOddPaths[y] += (y % 2 === 1) ? upSumEven : upSumOdd;
-	// }
-
 	let upSumEvenEven = 0;
 	let upSumEvenOdd = 0;
 	for(let y = 0; y < evenPaths.length; y ++) {
@@ -65,30 +43,6 @@ export const nextPaths = (evenPaths: number[], oddPaths: number[]): [number[], n
 	}
 	return [nextEvenPaths, nextOddPaths];
 };
-
-// const nextPaths = (paths: Map<string, number>, height: number) => {
-// 	const nextPaths = new Map<string, number>();
-// 	for(let y = 0; y <= height; y ++) {
-// 		for(const parity of ["left", "right"]) {
-// 			nextPaths.set(
-// 				`${y}, ${parity}, right`,
-// 				paths.get(`${y}, ${parity}, up`)! +
-// 				paths.get(`${y}, ${parity}, down`)! +
-// 				paths.get(`${y}, ${parity}, right`)!
-// 			);
-// 		}
-// 	}
-
-// 	for(const parity of ["even", "odd"]) {
-// 		for(let y = 0; y <= height; y ++) {
-// 			nextPaths.set(
-// 				`${y}, ${parity}, up`,
-// 				nextPaths.get(`${y}, ${parity}`)
-// 			)
-
-// 		}
-// 	}
-// };
 
 const allCastles = (width: number, height: number): number => {
 	let [evenPaths, oddPaths] = initialPaths(height);
