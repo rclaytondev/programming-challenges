@@ -4,58 +4,98 @@ This algorithm counts castles using the recurrence relation for the number of pa
 This is a reimplementation of an algorithm I wrote a few years ago.
 */
 
-import { Utils } from "../../utils-ts/modules/Utils.mjs";
-import { Parities, Parity } from "./wide-castle-algorithm.mjs";
-
-const paths = Utils.memoize((x: number, y: number, width: number, height: number, parity: Parity, lastMove: "right" | "up" | "down"): number => {
-	if(x < 0 || x > width || y < 0 || y > height) { return 0; }
-	if(x === 0) {
-		const valid = (lastMove === "right" && Parities.parity(y) === parity);
-		return valid ? 1 : 0;
+const initialPaths = (height: number): [number[], number[]] => {
+	const evenPaths = [];
+	const oddPaths = [];
+	for(let y = 0; y <= height; y ++) {
+		evenPaths[y] = (y % 2 === 0) ? 1 : 0;
+		oddPaths[y] = (y % 2 === 1) ? 1 : 0;
 	}
-
-
-	if(lastMove === "up") {
-		return (
-			paths(x, y - 1, width, height, Parities.opposite[parity], "right") +
-			paths(x, y - 1, width, height, Parities.opposite[parity], "up")
-		);
-	}
-	else if(lastMove === "down") {
-		return (
-			paths(x, y + 1, width, height, parity, "right") +
-			paths(x, y + 1, width, height, parity, "down")
-		);
-	}
-	else {
-		return (
-			paths(x - 1, y, width, height, parity, "right") +
-			paths(x - 1, y, width, height, parity, "up") +
-			paths(x - 1, y, width, height, parity, "down")
-		);
-	}
-});
-
-const setupMemoization = (width: number, height: number) => {
-	for(let x = 0; x < width; x ++) {
-		for(let y = 0; y < height; y ++) {
-			for(const parity of ["even", "odd"] as const) {
-				for(const lastMove of ["up", "down", "right"] as const) {
-					paths(x, y, width, height, parity, lastMove);
-				}
-			}
-		}
-	}
+	return [evenPaths, oddPaths];
 };
 
-const allCastles = (width: number, height: number): number => {
-	setupMemoization(width, height);
+export const nextPaths = (evenPaths: number[], oddPaths: number[]): [number[], number[]] => {
+	const nextEvenPaths = [...evenPaths].fill(0);
+	const nextOddPaths = [...oddPaths].fill(0);
 
-	let sum = 0;
-	for(let y = 0; y <= height; y ++) {
-		sum += paths(width, y, width, height, "odd", "right");
+	let downSumEven = 0;
+	let downSumOdd = 0;
+	for(let y = evenPaths.length - 1; y >= 0; y --) {
+		nextEvenPaths[y] += downSumEven;
+		downSumEven += evenPaths[y];
+		nextOddPaths[y] += downSumOdd;
+		downSumOdd += oddPaths[y];
 	}
-	return sum;
+
+	// let upSumEven = 0;
+	// let upSumOdd = 0;
+	// for(let y = 0; y < evenPaths.length; y ++) {
+	// 	nextEvenPaths[y] += upSumEven;
+	// 	nextOddPaths[y] += upSumOdd;
+	// 	upSumEven += (y % 2 === 0) ? evenPaths[y] : oddPaths[y];
+	// 	upSumOdd += (y % 2 === 0) ? oddPaths[y] : evenPaths[y];
+	// }
+
+	// let upSumEven = 0;
+	// let upSumOdd = 0;
+	// for(let y = 0; y < evenPaths.length; y ++) {
+	// 	// upSumEven += (y % 2 === 0) ? evenPaths[y] : oddPaths[y];
+	// 	// upSumOdd += (y % 2 === 1) ? evenPaths[y] : oddPaths[y];
+	// 	// nextEvenPaths[y] += upSumEven;
+	// 	// nextOddPaths[y] += upSumOdd;
+	// 	upSumEven += evenPaths[y];
+	// 	upSumOdd += oddPaths[y];
+	// 	nextEvenPaths[y] += (y % 2 === 0) ? upSumEven : upSumOdd;
+	// 	nextOddPaths[y] += (y % 2 === 1) ? upSumEven : upSumOdd;
+	// }
+
+	let upSumEvenEven = 0;
+	let upSumEvenOdd = 0;
+	for(let y = 0; y < evenPaths.length; y ++) {
+		upSumEvenEven += (y % 2 === 0) ? evenPaths[y] : oddPaths[y];
+		upSumEvenOdd += (y % 2 === 0) ? oddPaths[y] : evenPaths[y];
+		nextEvenPaths[y] += (y % 2 === 0) ? upSumEvenEven : upSumEvenOdd;
+	}
+	let upSumOddEven = 0;
+	let upSumOddOdd = 0;
+	for(let y = 0; y < evenPaths.length; y ++) {
+		upSumOddEven += (y % 2 === 1) ? evenPaths[y] : oddPaths[y];
+		upSumOddOdd += (y % 2 === 1) ? oddPaths[y] : evenPaths[y];
+		nextOddPaths[y] += (y % 2 === 0) ? upSumOddEven : upSumOddOdd;
+	}
+	return [nextEvenPaths, nextOddPaths];
+};
+
+// const nextPaths = (paths: Map<string, number>, height: number) => {
+// 	const nextPaths = new Map<string, number>();
+// 	for(let y = 0; y <= height; y ++) {
+// 		for(const parity of ["left", "right"]) {
+// 			nextPaths.set(
+// 				`${y}, ${parity}, right`,
+// 				paths.get(`${y}, ${parity}, up`)! +
+// 				paths.get(`${y}, ${parity}, down`)! +
+// 				paths.get(`${y}, ${parity}, right`)!
+// 			);
+// 		}
+// 	}
+
+// 	for(const parity of ["even", "odd"]) {
+// 		for(let y = 0; y <= height; y ++) {
+// 			nextPaths.set(
+// 				`${y}, ${parity}, up`,
+// 				nextPaths.get(`${y}, ${parity}`)
+// 			)
+
+// 		}
+// 	}
+// };
+
+const allCastles = (width: number, height: number): number => {
+	let [evenPaths, oddPaths] = initialPaths(height);
+	for(let i = 0; i < width; i ++) {
+		[evenPaths, oddPaths] = nextPaths(evenPaths, oddPaths);
+	}
+	return oddPaths[0];
 };
 
 export const fullHeightCastles = (width: number, height: number) => {

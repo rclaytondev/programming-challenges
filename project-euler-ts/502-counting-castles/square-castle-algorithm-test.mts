@@ -1,6 +1,6 @@
 import { assert } from "chai";
 import { describe, it } from "mocha";
-import { fullHeightCastles } from "./square-castle-algorithm.mjs";
+import { fullHeightCastles, nextPaths } from "./square-castle-algorithm.mjs";
 
 describe("fullHeightCastles (square castle algorithm)", () => {
 	it("works for a 1x2 grid", () => {
@@ -39,5 +39,18 @@ describe("fullHeightCastles (square castle algorithm)", () => {
 	it("works for a 10x13 grid (test case from Project Euler)", () => {
 		const result = fullHeightCastles(10, 13);
 		assert.equal(result, 37959702514);
+	});
+});
+
+describe("nextPaths", () => {
+	it("works for an example with a height of 1", () => {
+		const [evenPaths, oddPaths] = nextPaths([1, 0], [0, 1]);
+		assert.sameOrderedMembers(evenPaths, [1, 0]);
+		assert.sameOrderedMembers(oddPaths, [1, 2]);
+	});
+	it("works for an example with a height of 3", () => {
+		const [evenPaths, oddPaths] = nextPaths([1, 0, 1], [0, 1, 0]);
+		assert.sameOrderedMembers(evenPaths, [2, 1, 3]);
+		assert.sameOrderedMembers(oddPaths, [1, 2, 0]);
 	});
 });
