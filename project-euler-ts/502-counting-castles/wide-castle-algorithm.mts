@@ -3,6 +3,7 @@ This algorithm counts castles by repeatedly cutting it in half horizontally.
 (This means it is supposed to be fast for wide, short rectangles).
 */
 
+import { BigintMath } from "../../utils-ts/modules/math/BigintMath.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
@@ -15,24 +16,24 @@ export class Parities {
 		"odd": "even"
 	} as const;
 
-	static parity(num: number) {
-		return (num % 2 === 0) ? "even" : "odd";
+	static parity(num: number | bigint) {
+		return (BigInt(num) % 2n === 0n) ? "even" : "odd";
 	}
 }
 
-const paths = Utils.memoize((width: number, height: number, startY: number, endY: number, parity: Parity, modulo: number) => {
-	if(width === 1) {
+const paths = Utils.memoize((width: bigint, height: bigint, startY: bigint, endY: bigint, parity: Parity, modulo: bigint) => {
+	if(width === 1n) {
 		if(startY <= endY) {
-			return Parities.parity(endY - startY) === parity ? 1 : 0;
+			return Parities.parity(endY - startY) === parity ? 1n : 0n;
 		}
 		else {
-			return (parity === "even") ? 1 : 0;
+			return (parity === "even") ? 1n : 0n;
 		}
 	}
 
-	const pivotX = (width % 2 === 1) ? width - 1 : width / 2;
-	let result = 0;
-	for(let midY = 0; midY <= height; midY ++) {
+	const pivotX = (width % 2n === 1n) ? width - 1n : width / 2n;
+	let result = 0n;
+	for(let midY = 0n; midY <= height; midY ++) {
 		const left1 = paths(pivotX, height, startY, midY, "even", modulo);
 		const right1 = paths(width - pivotX, height, midY, endY, parity, modulo);
 		result = (result + (left1 * right1)) % modulo;
@@ -44,17 +45,17 @@ const paths = Utils.memoize((width: number, height: number, startY: number, endY
 	return result;
 });
 
-const allCastles = (width: number, height: number, modulo: number) => {
-	let result = 0;
-	for(let endY = 0; endY <= height; endY ++) {
-		result += paths(width, height, 0, endY, "odd", modulo);
+const allCastles = (width: bigint, height: bigint, modulo: bigint) => {
+	let result = 0n;
+	for(let endY = 0n; endY <= height; endY ++) {
+		result += paths(width, height, 0n, endY, "odd", modulo);
 	}
 	return result;
 };
 
-export const fullHeightCastles = (width: number, height: number, modulo: number) => {
-	return MathUtils.generalizedModulo(
-		allCastles(width, height - 1, modulo) - allCastles(width, height - 2, modulo),
+export const fullHeightCastles = (width: bigint, height: bigint, modulo: bigint) => {
+	return BigintMath.generalizedModulo(
+		allCastles(width, height - 1n, modulo) - allCastles(width, height - 2n, modulo),
 		modulo
 	);
 };

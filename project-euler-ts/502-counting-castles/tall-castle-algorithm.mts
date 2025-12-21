@@ -1,50 +1,55 @@
 import { Directions } from "../../utils-ts/modules/geometry/Direction.mjs";
+import { BigintMath } from "../../utils-ts/modules/math/BigintMath.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 import { Parities, Parity } from "./wide-castle-algorithm.mjs";
 
 const paritiesWithSum = (parity: Parity) => [["even", parity], ["odd", Parities.opposite[parity]]] as [Parity, Parity][];
 
-let heights = new Set<number>();
+let heights = new Set<bigint>();
 
-const cornerPathsCache = new Map<string, number>();
-const middlePathsCache = new Map<string, number>();
+const cornerPathsCache = new Map<string, bigint>();
+const middlePathsCache = new Map<string, bigint>();
 
-export const pathsFromCorner = ((width: number, height: number, endCorner: "up" | "down", stepType: "up" | "down", parity: Parity): number => {
+export const pathsFromCorner = ((width: bigint, height: bigint, endCorner: "up" | "down", stepType: "up" | "down", parity: Parity, modulo: bigint): bigint => {
 	heights.add(height);
-	if(width < 0 || height < 0) { return 0; }
-	if(width === 0) {
-		const steps = (stepType === "up") ? height : 0;
-		return (Parities.parity(steps) === parity) ? 1 : 0;
+	if(width < 0 || height < 0) { return 0n; }
+	if(width === 0n) {
+		const steps = (stepType === "up") ? height : 0n;
+		return (Parities.parity(steps) === parity) ? 1n : 0n;
 	}
-	if(height === 0) {
-		return (parity === "even") ? 1 : 0;
+	if(height === 0n) {
+		return (parity === "even") ? 1n : 0n;
 	}
 
 	if(endCorner === "down") { stepType = "up"; }
 	if(parity === "odd") {
-		const allPaths = (height + 1) ** width;
-		return allPaths - pathsFromCorner(width, height, endCorner, stepType, "even");
+		const allPaths = (height + 1n) ** width;
+		return BigintMath.generalizedModulo(
+			allPaths - pathsFromCorner(width, height, endCorner, stepType, "even", modulo),
+			modulo
+		);
 	}
 
-	const argsString = `${width},${height},${endCorner},${stepType},${parity}`;
+	const argsString = `${width},${height},${endCorner},${stepType},${parity},${modulo}`;
 	const precomputed = cornerPathsCache.get(argsString);
-	if(typeof precomputed === "number") { return precomputed; }
+	if(typeof precomputed === "bigint") { return precomputed; }
 
-	const pivotY = (height % 2 === 0) ? height : (height + 1) / 2;
-	const pathsWithoutCrossing = (endCorner === "up") ? 0 : pathsFromCorner(width, pivotY - 1, endCorner, stepType, parity)
+	const pivotY = (height % 2n === 0n) ? height : (height + 1n) / 2n;
+	const pathsWithoutCrossing = (endCorner === "up") ? 0n : pathsFromCorner(width, pivotY - 1n, endCorner, stepType, parity, modulo)
 	let result = pathsWithoutCrossing;
-	for(let firstCrossingX = 0; firstCrossingX <= width; firstCrossingX ++) {
+	for(let firstCrossingX = 0n; firstCrossingX <= width; firstCrossingX ++) {
 		for(const [parityBefore, parityAfter] of paritiesWithSum((stepType === "up" ? Parities.opposite[parity] : parity))) {
-			const pathsBefore = pathsFromCorner(firstCrossingX, pivotY - 1, "up", stepType, parityBefore);
-			const pathsAfter = pathsFromMiddle(width - firstCrossingX, height, pivotY, endCorner, stepType, parityAfter, "up");
+			const pathsBefore = pathsFromCorner(firstCrossingX, pivotY - 1n, "up", stepType, parityBefore, modulo);
+			const pathsAfter = pathsFromMiddle(width - firstCrossingX, height, pivotY, endCorner, stepType, parityAfter, "up", modulo);
 			result += pathsBefore * pathsAfter;
+			result %= modulo;
 		}
 	}
 	cornerPathsCache.set(argsString, result);
 	return result;
 });
 
-export const pathsFromMiddle = ((width: number, height: number, startY: number, endCorner: "up" | "down", stepType: "up" | "down", parity: Parity, nextMove: "up" | "down"): number => {
+export const pathsFromMiddle = ((width: bigint, height: bigint, startY: bigint, endCorner: "up" | "down", stepType: "up" | "down", parity: Parity, nextMove: "up" | "down", modulo: bigint): bigint => {
 	/*
 	Returns the number of lattice paths with moves right/up/down satisfying the following:
 	- The path starts at (0, `startY`).
@@ -54,52 +59,57 @@ export const pathsFromMiddle = ((width: number, height: number, startY: number, 
 	- The first move in the path is right or up (if `nextMove` is "up") or down (if `nextMove` is "down").
 	*/
 	heights.add(height);
-	if(width === 0) {
-		const steps = (stepType !== endCorner) ? 0 :(stepType === "down" ? startY : height - startY);
+	if(width === 0n) {
+		const steps = (stepType !== endCorner) ? 0n :(stepType === "down" ? startY : height - startY);
 		const correctParity = (parity === Parities.parity(steps));
 		const correctDirection = (nextMove === endCorner);
-		return (correctParity && correctDirection) ? 1 : 0;
+		return (correctParity && correctDirection) ? 1n : 0n;
 	}
-	if(height === 0) {
+	if(height === 0n) {
 		throw new Error("Unimplemented.");
 	}
 
 	if(parity === "odd") {
-		const firstChoices = (nextMove === "up") ? height - startY + 1 : startY;
-		const allPaths = firstChoices * (height + 1) ** (width - 1);
-		return allPaths - pathsFromMiddle(width, height, startY, endCorner, stepType, "even", nextMove);
+		const firstChoices = (nextMove === "up") ? height - startY + 1n : startY;
+		const allPaths = firstChoices * (height + 1n) ** (width - 1n);
+		return BigintMath.generalizedModulo(
+			allPaths - pathsFromMiddle(width, height, startY, endCorner, stepType, "even", nextMove, modulo),
+			modulo
+		);
 	}
 
-	const argsString = `${width},${height},${startY},${endCorner},${stepType},${parity},${nextMove}`;
+	const argsString = `${width},${height},${startY},${endCorner},${stepType},${parity},${nextMove},${modulo}`;
 	const precomputed = middlePathsCache.get(argsString);
-	if(typeof precomputed === "number") { return precomputed; }
+	if(typeof precomputed === "bigint") { return precomputed; }
 
-	const pathsWithoutCrossing = ((endCorner !== nextMove) ? 0 : pathsFromCorner(
+	const pathsWithoutCrossing = ((endCorner !== nextMove) ? 0n : pathsFromCorner(
 		width,
-		endCorner === "up" ? height - startY : startY - 1,
+		endCorner === "up" ? height - startY : startY - 1n,
 		"up",
 		endCorner === "up" ? stepType : Directions.opposite[stepType],
-		(endCorner === "down" && stepType === "down") ? Parities.opposite[parity] : parity
+		(endCorner === "down" && stepType === "down") ? Parities.opposite[parity] : parity,
+		modulo
 	));
 	let result = pathsWithoutCrossing;
-	for(let firstCrossingX = 1; firstCrossingX <= width; firstCrossingX ++) {
+	for(let firstCrossingX = 1n; firstCrossingX <= width; firstCrossingX ++) {
 		for(const [parityBefore, parityAfter] of paritiesWithSum((nextMove === "down" ? Parities.opposite[parity] : parity))) {
-			const pathsBefore = pathsFromCorner(firstCrossingX, nextMove === "up" ? height - startY : startY - 1, "down", stepType, parityBefore);
-			const pathsAfter = pathsFromMiddle(width - firstCrossingX, height, startY, endCorner, stepType, parityAfter, Directions.opposite[nextMove]);
+			const pathsBefore = pathsFromCorner(firstCrossingX, nextMove === "up" ? height - startY : startY - 1n, "down", stepType, parityBefore, modulo);
+			const pathsAfter = pathsFromMiddle(width - firstCrossingX, height, startY, endCorner, stepType, parityAfter, Directions.opposite[nextMove], modulo);
 			result += pathsBefore * pathsAfter;
+			result %= modulo;
 		}
 	}
 	middlePathsCache.set(argsString, result);
 	return result;
 });
 
-export const fullHeightCastles = (width: number, height: number) => {
-	const allCastles = pathsFromCorner(width, height - 1, "down", "up", "odd");
-	const nonFullHeight = pathsFromCorner(width, height - 2, "down", "up", "odd");
-	return allCastles - nonFullHeight;
+export const fullHeightCastles = (width: bigint, height: bigint, modulo: bigint) => {
+	const allCastles = pathsFromCorner(width, height - 1n, "down", "up", "odd", modulo);
+	const nonFullHeight = pathsFromCorner(width, height - 2n, "down", "up", "odd", modulo);
+	return BigintMath.generalizedModulo(allCastles - nonFullHeight, modulo);
 };
 
-// console.time();
-// console.log(fullHeightCastles(100, 10 ** 12));
-// console.timeEnd();
-// debugger;
+console.time();
+console.log(fullHeightCastles(6n, 7n, 10n ** 12n));
+console.timeEnd();
+debugger;
