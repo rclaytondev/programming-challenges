@@ -109,7 +109,7 @@ export const fullHeightCastles = (width: bigint, height: bigint, modulo: bigint)
 	return BigintMath.generalizedModulo(allCastles - nonFullHeight, modulo);
 };
 
-console.time();
-console.log(fullHeightCastles(6n, 7n, 10n ** 12n));
-console.timeEnd();
-debugger;
+// console.time();
+// console.log(fullHeightCastles(6n, 7n, 10n ** 12n));
+// console.timeEnd();
+// debugger;
