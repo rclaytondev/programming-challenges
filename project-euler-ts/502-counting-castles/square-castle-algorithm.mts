@@ -36,7 +36,21 @@ const paths = Utils.memoize((x: number, y: number, width: number, height: number
 	}
 });
 
+const setupMemoization = (width: number, height: number) => {
+	for(let x = 0; x < width; x ++) {
+		for(let y = 0; y < height; y ++) {
+			for(const parity of ["even", "odd"] as const) {
+				for(const lastMove of ["up", "down", "right"] as const) {
+					paths(x, y, width, height, parity, lastMove);
+				}
+			}
+		}
+	}
+};
+
 const allCastles = (width: number, height: number): number => {
+	setupMemoization(width, height);
+
 	let sum = 0;
 	for(let y = 0; y <= height; y ++) {
 		sum += paths(width, y, width, height, "odd", "right");
@@ -51,6 +65,6 @@ export const fullHeightCastles = (width: number, height: number) => {
 };
 
 console.time();
-console.log(fullHeightCastles(100, 100));
+console.log(fullHeightCastles(1000, 1000));
 console.timeEnd();
 debugger;
