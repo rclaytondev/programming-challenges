@@ -1,5 +1,5 @@
 import { describe } from "mocha";
-import { fullConnectedGraphs, graphsWithComponents } from "./power-sets.mjs";
+import { fullConnectedGraphs, graphsWithComponents, intPartitions } from "./power-sets.mjs";
 import { assert } from "chai";
 
 describe("graphsWithComponents", () => {
@@ -44,5 +44,14 @@ describe("fullConnectedGraphs", () => {
 	it("works for n=2", () => {
 		const result = fullConnectedGraphs(2);
 		assert.equal(result, 4);
+	});
+});
+describe("intPartitions", () => {
+	it("returns the list of lists of positive integers (in increasing order) of the given size that sum to the given number", () => {
+		const result = intPartitions(5, 3);
+		assert.sameDeepMembers(result, [
+			[1, 1, 3],
+			[1, 2, 2],
+		]);
 	});
 });
