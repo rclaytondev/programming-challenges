@@ -2,8 +2,9 @@ import { ArrayUtils } from "../../utils-ts/modules/core-extensions/ArrayUtils.mj
 import { GenUtils } from "../../utils-ts/modules/core-extensions/GenUtils.mjs";
 import { SetUtils } from "../../utils-ts/modules/core-extensions/SetUtils.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
+import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
-export const graphsWithComponents = (upperBound: number, numComponents: number) => {
+export const graphsWithComponents = Utils.memoize((upperBound: number, numComponents: number) => {
 	if(upperBound <= 0) { throw new Error("Unimplemented."); }
 	if(upperBound === 1) {
 		return (numComponents === 1) ? 1 : 0;
@@ -19,9 +20,9 @@ export const graphsWithComponents = (upperBound: number, numComponents: number) 
 		}
 	}
 	return result;
-};
+});
 
-export const connectedGraphs = (upperBound: number) => {
+export const connectedGraphs = Utils.memoize((upperBound: number) => {
 	if(upperBound <= 0) { throw new Error("Unimplemented."); }
 	if(upperBound === 1) { return 1; }
 
@@ -31,9 +32,9 @@ export const connectedGraphs = (upperBound: number) => {
 		disconnected += graphsWithComponents(upperBound, components);
 	}
 	return all - disconnected;
-};
+});
 
-export const fullConnectedGraphs = (upperBound: number) => {
+export const fullConnectedGraphs = Utils.memoize((upperBound: number) => {
 	if(upperBound <= 0) { throw new Error("Unimplemented."); }
 	if(upperBound === 1) { return 1; }
 
@@ -43,9 +44,9 @@ export const fullConnectedGraphs = (upperBound: number) => {
 		notFull += MathUtils.binomial(upperBound, size) * fullConnectedGraphs(size);
 	}
 	return all - notFull;
-};
+});
 
 console.time();
-console.log(graphsWithComponents(8, 3));
+console.log(graphsWithComponents(11, 3));
 console.timeEnd();
 debugger;
