@@ -2,10 +2,12 @@ import { BigintMath } from "../../utils-ts/modules/math/BigintMath.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
+const binomial = Utils.memoize(BigintMath.binomial);
+
 export const numDisjointSets = Utils.memoize((numElements: bigint, setSize: bigint, numSets: bigint): bigint => {
 	if(numSets === 0n) { return 1n; }
 	if(numSets * setSize > numElements) { return 0n; }
-	return BigintMath.binomial(numElements, setSize) * numDisjointSets(numElements - setSize, setSize, numSets - 1n) / numSets;
+	return binomial(numElements, setSize) * numDisjointSets(numElements - setSize, setSize, numSets - 1n) / numSets;
 });
 
 let calls = 0;
@@ -16,7 +18,7 @@ export const graphsWithComponents = Utils.memoize((upperBound: bigint, numCompon
 	if(numComponents === 1n) {
 		let result = 0n;
 		for(let i = smallestComponentUnion; i <= upperBound; i ++) {
-			result += BigintMath.binomial(upperBound, i) * fullConnectedGraphs(i, modulo);
+			result += binomial(upperBound, i) * fullConnectedGraphs(i, modulo);
 			result %= modulo;
 		}
 		return result;
@@ -67,13 +69,13 @@ export const fullConnectedGraphs = Utils.memoize((upperBound: bigint, modulo: bi
 	const all = connectedGraphs(upperBound, modulo);
 	let notFull = 0n;
 	for(let size = 1n; size < upperBound; size ++) {
-		notFull += BigintMath.binomial(upperBound, size) * fullConnectedGraphs(size, modulo);
+		notFull += binomial(upperBound, size) * fullConnectedGraphs(size, modulo);
 		notFull %= modulo;
 	}
 	return BigintMath.generalizedModulo(all - notFull, modulo);
 });
 
 console.time();
-console.log(graphsWithComponents(100n, 10n));
+console.log(graphsWithComponents(200n, 10n));
 console.timeEnd();
 debugger;
