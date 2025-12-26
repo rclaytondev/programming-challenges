@@ -1,5 +1,5 @@
 import { describe } from "mocha";
-import { fullConnectedGraphs, graphsWithComponents, intPartitions } from "./power-sets.mjs";
+import { fullConnectedGraphs, graphsWithComponents, numDisjointSets } from "./power-sets.mjs";
 import { assert } from "chai";
 
 describe("graphsWithComponents", () => {
@@ -14,6 +14,10 @@ describe("graphsWithComponents", () => {
 	it("can find the number of sets of subsets of {1, 2} whose graph has 2 components", () => {
 		const result = graphsWithComponents(2, 2);
 		assert.equal(result, 1);
+	});
+	it("can find the number of sets of subsets of {1, 2} whose graph has 1 component and whose components have unions of size >=2", () => {
+		const result = graphsWithComponents(2, 1, 2);
+		assert.equal(result, 4);
 	});
 
 	it("can find the number of sets of subsets of {1, 2} whose graph has 1 component", () => {
@@ -46,12 +50,13 @@ describe("fullConnectedGraphs", () => {
 		assert.equal(result, 4);
 	});
 });
-describe("intPartitions", () => {
-	it("returns the list of lists of positive integers (in increasing order) of the given size that sum to the given number", () => {
-		const result = intPartitions(5, 3);
-		assert.sameDeepMembers(result, [
-			[1, 1, 3],
-			[1, 2, 2],
-		]);
+describe("numDisjointSets", () => {
+	it("works for a trivial example", () => {
+		const result = numDisjointSets(2, 1, 2);
+		assert.equal(result, 1);
+	});
+	it("returns the number of sets of disjoint subsets with the given sizes", () => {
+		const result = numDisjointSets(6, 2, 3);
+		assert.equal(result, 15);
 	});
 });
