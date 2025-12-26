@@ -44,3 +44,8 @@ export const fullConnectedGraphs = (upperBound: number) => {
 	}
 	return all - notFull;
 };
+
+console.time();
+console.log(graphsWithComponents(8, 3));
+console.timeEnd();
+debugger;
