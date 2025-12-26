@@ -1,72 +1,78 @@
+import { BigintMath } from "../../utils-ts/modules/math/BigintMath.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
-export const numDisjointSets = (numElements: number, setSize: number, numSets: number) => {
-	let result = 1;
-	for(let i = 0; i < numSets; i ++) {
-		result *= MathUtils.binomial(numElements - setSize * i, setSize);
+export const numDisjointSets = (numElements: bigint, setSize: bigint, numSets: bigint) => {
+	let result = 1n;
+	for(let i = 0n; i < numSets; i ++) {
+		result *= BigintMath.binomial(numElements - setSize * i, setSize);
 	}
-	return result / MathUtils.factorial(numSets);
+	return result / BigintMath.factorial(numSets);
 };
 
 let calls = 0;
 
 
-export const graphsWithComponents = Utils.memoize((upperBound: number, numComponents: number, smallestComponentUnion: number = 1) => {
+export const graphsWithComponents = Utils.memoize((upperBound: bigint, numComponents: bigint, smallestComponentUnion: bigint = 1n, modulo: bigint = 1_000_000_007n) => {
 	calls ++;
-	if(numComponents === 1) {
-		let result = 0;
+	if(numComponents === 1n) {
+		let result = 0n;
 		for(let i = smallestComponentUnion; i <= upperBound; i ++) {
-			result += MathUtils.binomial(upperBound, i) * fullConnectedGraphs(i);
+			result += BigintMath.binomial(upperBound, i) * fullConnectedGraphs(i, modulo);
+			result %= modulo;
 		}
 		return result;
 	}
-	if(numComponents === 0) { return 1; }
+	if(numComponents === 0n) { return 1n; }
 
-	let result = 0;
+	let result = 0n;
 	for(let componentUnionSize = smallestComponentUnion; componentUnionSize * numComponents <= upperBound; componentUnionSize ++) {
-		for(let componentsWithSize = 1; componentsWithSize <= numComponents; componentsWithSize ++) {
+		for(let componentsWithSize = 1n; componentsWithSize <= numComponents; componentsWithSize ++) {
 			const remainingElements = upperBound - componentUnionSize * componentsWithSize;
 			const remainingComponents = numComponents - componentsWithSize;
-			if(remainingElements < 0 || remainingComponents < 0) { break; }
+			if(remainingElements < 0n || remainingComponents < 0n) { break; }
 
 
 			const setChoices = numDisjointSets(upperBound, componentUnionSize, componentsWithSize);
-			const subgraphChoices = fullConnectedGraphs(componentUnionSize) ** componentsWithSize;
-			const remainingChoices = graphsWithComponents(remainingElements, remainingComponents, componentUnionSize + 1);
+			const subgraphChoices = fullConnectedGraphs(componentUnionSize, modulo) ** componentsWithSize;
+			const remainingChoices = graphsWithComponents(remainingElements, remainingComponents, componentUnionSize + 1n, modulo);
 			result += setChoices * subgraphChoices * remainingChoices;
+			result %= modulo;
 		}
 	}
 	return result;
 });
 
-export const connectedGraphs = Utils.memoize((upperBound: number) => {
+export const connectedGraphs = Utils.memoize((upperBound: bigint, modulo: bigint = 1_000_000_007n) => {
 	calls ++;
-	if(upperBound <= 0) { throw new Error("Unimplemented."); }
-	if(upperBound === 1) { return 1; }
+	if(upperBound <= 0n) { throw new Error("Unimplemented."); }
+	if(upperBound === 1n) { return 1n; }
 
-	const all = 2 ** (2 ** upperBound - 1) - 1;
-	let disconnected = 0;
-	for(let components = 2; components <= upperBound; components ++) {
-		disconnected += graphsWithComponents(upperBound, components);
+	// const all = 2n ** (2n ** upperBound - 1n) - 1n;
+	const all = BigintMath.modularExponentiate(2n, (2n ** upperBound - 1n), modulo) - 1n;
+	let disconnected = 0n;
+	for(let components = 2n; components <= upperBound; components ++) {
+		disconnected += graphsWithComponents(upperBound, components, 1n, modulo);
+		disconnected %= modulo;
 	}
-	return all - disconnected;
+	return BigintMath.generalizedModulo(all - disconnected, modulo);
 });
 
-export const fullConnectedGraphs = Utils.memoize((upperBound: number) => {
+export const fullConnectedGraphs = Utils.memoize((upperBound: bigint, modulo: bigint = 1_000_000_007n) => {
 	calls ++;
 	if(upperBound <= 0) { throw new Error("Unimplemented."); }
-	if(upperBound === 1) { return 1; }
+	if(upperBound === 1n) { return 1n; }
 
-	const all = connectedGraphs(upperBound);
-	let notFull = 0;
-	for(let size = 1; size < upperBound; size ++) {
-		notFull += MathUtils.binomial(upperBound, size) * fullConnectedGraphs(size);
+	const all = connectedGraphs(upperBound, modulo);
+	let notFull = 0n;
+	for(let size = 1n; size < upperBound; size ++) {
+		notFull += BigintMath.binomial(upperBound, size) * fullConnectedGraphs(size, modulo);
+		notFull %= modulo;
 	}
-	return all - notFull;
+	return BigintMath.generalizedModulo(all - notFull, modulo);
 });
 
 console.time();
-console.log(graphsWithComponents(200, 10));
+console.log(graphsWithComponents(100n, 10n));
 console.timeEnd();
 debugger;
