@@ -2,13 +2,11 @@ import { BigintMath } from "../../utils-ts/modules/math/BigintMath.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
-export const numDisjointSets = (numElements: bigint, setSize: bigint, numSets: bigint) => {
-	let result = 1n;
-	for(let i = 0n; i < numSets; i ++) {
-		result *= BigintMath.binomial(numElements - setSize * i, setSize);
-	}
-	return result / BigintMath.factorial(numSets);
-};
+export const numDisjointSets = Utils.memoize((numElements: bigint, setSize: bigint, numSets: bigint): bigint => {
+	if(numSets === 0n) { return 1n; }
+	if(numSets * setSize > numElements) { return 0n; }
+	return BigintMath.binomial(numElements, setSize) * numDisjointSets(numElements - setSize, setSize, numSets - 1n) / numSets;
+});
 
 let calls = 0;
 
