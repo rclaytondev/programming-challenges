@@ -9,8 +9,11 @@ export const numDisjointSets = (numElements: number, setSize: number, numSets: n
 	return result / MathUtils.factorial(numSets);
 };
 
+let calls = 0;
+
 
 export const graphsWithComponents = Utils.memoize((upperBound: number, numComponents: number, smallestComponentUnion: number = 1) => {
+	calls ++;
 	if(numComponents === 1) {
 		let result = 0;
 		for(let i = smallestComponentUnion; i <= upperBound; i ++) {
@@ -21,7 +24,7 @@ export const graphsWithComponents = Utils.memoize((upperBound: number, numCompon
 	if(numComponents === 0) { return 1; }
 
 	let result = 0;
-	for(let componentUnionSize = smallestComponentUnion; componentUnionSize < upperBound; componentUnionSize ++) {
+	for(let componentUnionSize = smallestComponentUnion; componentUnionSize * numComponents <= upperBound; componentUnionSize ++) {
 		for(let componentsWithSize = 1; componentsWithSize <= numComponents; componentsWithSize ++) {
 			const remainingElements = upperBound - componentUnionSize * componentsWithSize;
 			const remainingComponents = numComponents - componentsWithSize;
@@ -38,6 +41,7 @@ export const graphsWithComponents = Utils.memoize((upperBound: number, numCompon
 });
 
 export const connectedGraphs = Utils.memoize((upperBound: number) => {
+	calls ++;
 	if(upperBound <= 0) { throw new Error("Unimplemented."); }
 	if(upperBound === 1) { return 1; }
 
@@ -50,6 +54,7 @@ export const connectedGraphs = Utils.memoize((upperBound: number) => {
 });
 
 export const fullConnectedGraphs = Utils.memoize((upperBound: number) => {
+	calls ++;
 	if(upperBound <= 0) { throw new Error("Unimplemented."); }
 	if(upperBound === 1) { return 1; }
 
@@ -62,6 +67,6 @@ export const fullConnectedGraphs = Utils.memoize((upperBound: number) => {
 });
 
 console.time();
-console.log(graphsWithComponents(100, 10));
+console.log(graphsWithComponents(200, 10));
 console.timeEnd();
 debugger;
