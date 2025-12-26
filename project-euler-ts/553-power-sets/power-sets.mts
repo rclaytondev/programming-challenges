@@ -28,6 +28,9 @@ export const graphsWithComponents = Utils.memoize((upperBound: bigint, numCompon
 	let result = 0n;
 	for(let componentUnionSize = smallestComponentUnion; componentUnionSize * numComponents <= upperBound; componentUnionSize ++) {
 		for(let componentsWithSize = 1n; componentsWithSize <= numComponents; componentsWithSize ++) {
+			if(componentUnionSize * componentsWithSize + (componentUnionSize + 1n) * (numComponents - componentsWithSize) > upperBound) {
+				continue;
+			}
 			const remainingElements = upperBound - componentUnionSize * componentsWithSize;
 			const remainingComponents = numComponents - componentsWithSize;
 			if(remainingElements < 0n || remainingComponents < 0n) { break; }
