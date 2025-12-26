@@ -53,7 +53,7 @@ export const connectedGraphs = Utils.memoize((upperBound: number) => {
 
 	const all = 2 ** (2 ** upperBound - 1) - 1;
 	let disconnected = 0;
-	for(let components = 2; components <= 2 ** upperBound; components ++) {
+	for(let components = 2; components <= upperBound; components ++) {
 		disconnected += graphsWithComponents(upperBound, components);
 	}
 	return all - disconnected;
@@ -72,6 +72,6 @@ export const fullConnectedGraphs = Utils.memoize((upperBound: number) => {
 });
 
 console.time();
-console.log(graphsWithComponents(24, 3));
+console.log(graphsWithComponents(40, 3));
 console.timeEnd();
 debugger;
