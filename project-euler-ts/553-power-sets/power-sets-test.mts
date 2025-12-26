@@ -5,15 +5,15 @@ import { assert } from "chai";
 describe("graphsWithComponents", () => {
 	it("can find the number of sets of subsets of {1} whose graph has 2 components", () => {
 		const result = graphsWithComponents(1, 2);
-		assert.equal(result, 1);
+		assert.equal(result, 0);
 	});
 	it("can find the number of sets of subsets of {1} whose graph has 1 component", () => {
 		const result = graphsWithComponents(1, 1);
-		assert.equal(result, 2);
+		assert.equal(result, 1);
 	});
 	it("can find the number of sets of subsets of {1, 2} whose graph has 2 components", () => {
 		const result = graphsWithComponents(2, 2);
-		assert.equal(result, 7);
+		assert.equal(result, 1);
 	});
 
 	it("can find the number of sets of subsets of {1, 2} whose graph has 1 component", () => {
