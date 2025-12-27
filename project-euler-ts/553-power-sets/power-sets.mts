@@ -13,35 +13,41 @@ export const numDisjointSets = Utils.memoize((numElements: bigint, setSize: bigi
 let calls = 0;
 
 
-export const graphsWithComponents = Utils.memoize((upperBound: bigint, numComponents: bigint, smallestComponentUnion: bigint = 1n, modulo: bigint = 1_000_000_007n) => {
+export const graphsWithComponents = Utils.memoize((upperBound: bigint, numComponents: bigint, minComponentUnion: bigint = 1n, modulo: bigint = 1_000_000_007n): bigint => {
 	calls ++;
 	if(numComponents === 1n) {
 		let result = 0n;
-		for(let i = smallestComponentUnion; i <= upperBound; i ++) {
+		for(let i = minComponentUnion; i <= upperBound; i ++) {
 			result += binomial(upperBound, i) * fullConnectedGraphs(i, modulo);
 			result %= modulo;
 		}
 		return result;
 	}
 	if(numComponents === 0n) { return 1n; }
+	if(minComponentUnion * numComponents > upperBound) { return 0n; }
 
+	return (
+		graphsWithSmallestComponent(upperBound, numComponents, minComponentUnion, modulo)
+		+ graphsWithComponents(upperBound, numComponents, minComponentUnion + 1n)
+	);
+});
+
+export const graphsWithSmallestComponent = Utils.memoize((upperBound: bigint, numComponents: bigint, smallestComponentUnion: bigint, modulo: bigint) => {
 	let result = 0n;
-	for(let componentUnionSize = smallestComponentUnion; componentUnionSize * numComponents <= upperBound; componentUnionSize ++) {
-		for(let componentsWithSize = 1n; componentsWithSize <= numComponents; componentsWithSize ++) {
-			if(componentUnionSize * componentsWithSize + (componentUnionSize + 1n) * (numComponents - componentsWithSize) > upperBound) {
-				continue;
-			}
-			const remainingElements = upperBound - componentUnionSize * componentsWithSize;
-			const remainingComponents = numComponents - componentsWithSize;
-			if(remainingElements < 0n || remainingComponents < 0n) { break; }
-
-
-			const setChoices = numDisjointSets(upperBound, componentUnionSize, componentsWithSize);
-			const subgraphChoices = fullConnectedGraphs(componentUnionSize, modulo) ** componentsWithSize;
-			const remainingChoices = graphsWithComponents(remainingElements, remainingComponents, componentUnionSize + 1n, modulo);
-			result += setChoices * subgraphChoices * remainingChoices;
-			result %= modulo;
+	for(let componentsWithSize = 1n; componentsWithSize <= numComponents; componentsWithSize ++) {
+		if(smallestComponentUnion * componentsWithSize + (smallestComponentUnion + 1n) * (numComponents - componentsWithSize) > upperBound) {
+			continue;
 		}
+		const remainingElements = upperBound - smallestComponentUnion * componentsWithSize;
+		const remainingComponents = numComponents - componentsWithSize;
+		if(remainingElements < 0n || remainingComponents < 0n) { break; }
+		
+		
+		const setChoices = numDisjointSets(upperBound, smallestComponentUnion, componentsWithSize);
+		const subgraphChoices = fullConnectedGraphs(smallestComponentUnion, modulo) ** componentsWithSize;
+		const remainingChoices = graphsWithComponents(remainingElements, remainingComponents, smallestComponentUnion + 1n, modulo);
+		result += setChoices * subgraphChoices * remainingChoices;
+		result %= modulo;
 	}
 	return result;
 });
