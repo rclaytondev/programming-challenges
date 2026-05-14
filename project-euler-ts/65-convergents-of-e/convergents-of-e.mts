@@ -22,7 +22,7 @@ const bigintDigits = (num: bigint) => {
 	return [...num.toString()].map(c => Number.parseInt(c));
 };
 
-const solve = () => {
+export const solve = () => {
 	const partialNumerators = (n: number) => {
 		if(n === 1) { return 2; }
 		if(n % 3 === 0) {

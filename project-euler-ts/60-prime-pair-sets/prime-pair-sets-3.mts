@@ -1,21 +1,19 @@
-import { describe, it } from "mocha";
-import { assert } from "chai";
+import { describe } from "mocha";
 import { Sequence } from "../../utils-ts/modules/math/Sequence.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 
-const solve = (setSize: number = 5): number => {
-	const cliques: number[][][] = new Array(setSize + 1).fill([]).map(v => []);
+export const solve = (setSize: number = 5): number => {
+	const cliques: number[][][] = new Array(setSize + 1).fill([]).map(_ => []);
 	const EMPTY_CLIQUE: number[] = [];
 	cliques[0].push(EMPTY_CLIQUE);
 	let maxPrime = Infinity;
-	for(const [index, prime] of Sequence.PRIMES.entries()) {
+	for(const prime of Sequence.PRIMES) {
 		if(prime > maxPrime) { break; }
 		for(let cliqueSize = 0; cliqueSize < setSize; cliqueSize ++) {
 			for(const clique of cliques[cliqueSize]) {
 				if(!clique.includes(prime) && clique.every(num => MathUtils.isPrime(Number.parseInt(`${num}${prime}`)) && MathUtils.isPrime(Number.parseInt(`${prime}${num}`)))) {
 					cliques[cliqueSize + 1].push([...clique, prime]);
 					if(cliqueSize + 1 === setSize) {
-						console.log(`Found a ${cliqueSize + 1}-clique! (${[...clique, prime].join(",")})`);
 						maxPrime = Math.min(maxPrime, prime - 2 * (setSize - 1));
 					}
 				}

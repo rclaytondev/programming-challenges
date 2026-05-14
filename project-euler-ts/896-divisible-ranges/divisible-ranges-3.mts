@@ -1,6 +1,5 @@
 import { ArrayUtils } from "../../utils-ts/modules/core-extensions/ArrayUtils.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
-import { Sequence } from "../../utils-ts/modules/math/Sequence.mjs";
 import { PeriodicSet } from "../project-specific-utilities/PeriodicSet.mjs";
 import { isDivisible } from "./divisible-ranges.mjs";
 

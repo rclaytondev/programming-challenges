@@ -14,7 +14,7 @@ export const numBlockCombinations = Utils.memoize((minBlockSize: number, length:
 	return result;
 });
 
-const solve = (minBlockSize: number = 50, target = 1_000_000) => {
+export const solve = (minBlockSize: number = 50, target = 1_000_000) => {
 	for(let length = 1; true; length ++) {
 		if(numBlockCombinations(minBlockSize, length) > target) {
 			return length;

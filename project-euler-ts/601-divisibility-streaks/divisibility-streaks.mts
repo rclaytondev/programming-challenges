@@ -9,7 +9,7 @@ export const numWithStreaks = (streakLength: number, maximum: number): number =>
 	return streakCondition.numTermsBelow(maximum - 1);
 };
 
-const solve = (upperBound: number) => {
+export const solve = (upperBound: number) => {
 	return MathUtils.sum(ArrayUtils.range(1, upperBound).map(n => numWithStreaks(n, 4 ** n)));
 };
 

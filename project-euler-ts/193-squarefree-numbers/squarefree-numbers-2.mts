@@ -1,4 +1,3 @@
-import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Sequence } from "../../utils-ts/modules/math/Sequence.mjs";
 
 export const sizeOfUnion = <T,>(sets: Iterable<T>, getSize: (set: T) => number, getIntersection: (set1: T, set2: T) => T): number => {

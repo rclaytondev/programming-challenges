@@ -7,7 +7,7 @@ const hasPandigitalEnds = (num: bigint) => {
 	return !first9.includes("0") && new Set(first9).size === 9;
 };
 
-const solve = () => {
+export const solve = () => {
 	let previousFib = 1n;
 	let currentFib = 1n;
 	let index = 2;

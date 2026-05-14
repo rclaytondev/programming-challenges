@@ -31,14 +31,12 @@ export class HashMap<K, V> {
 	}
 
 	*keys() {
-		for(const [key, value] of this.internalValues.values()) {
+		for(const [key] of this.internalValues.values()) {
 			yield key;
 		}
 	}
 	*values() {
-		for(const [key, value] of this.internalValues.values()) {
-			yield value;
-		}
+		yield* this.internalValues.values();
 	}
 	*entries() {
 		yield* this.internalValues.values();

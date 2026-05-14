@@ -1,9 +1,8 @@
 import { Sequence } from "../../utils-ts/modules/math/Sequence.mjs";
-import { CountLogger } from "../project-specific-utilities/CountLogger.mjs";
 
 // const logger = new CountLogger(n => 1000 * n);
 
-const solve = (upperBound: number) => {
+export const solve = (upperBound: number) => {
 	const expressibles = new Set<number>();
 	for(const prime1 of Sequence.PRIMES.termsBelow(upperBound ** (1/2))) {
 		// logger.countTo(prime1);

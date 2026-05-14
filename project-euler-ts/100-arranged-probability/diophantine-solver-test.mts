@@ -6,7 +6,7 @@ describe("DiophantineEquation.solutions", () => {
 	it("can generate Pythagorean triples", () => {
 		const equation = new DiophantineEquation(
 			3,
-			(a, b, c) => a ** 2n + b ** 2n,
+			(a, b, _c) => a ** 2n + b ** 2n,
 			(a, b, c) => c ** 2n,
 		);
 		let iterations = 0;

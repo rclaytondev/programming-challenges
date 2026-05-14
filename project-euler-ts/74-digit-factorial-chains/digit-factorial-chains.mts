@@ -12,7 +12,7 @@ export const isChainLength = (num: number, length: number) => {
 	return false;
 };
 
-const solve = (upperBound: number = 1000000, length: number = 60) => {
+export const solve = (upperBound: number = 1000000, length: number = 60) => {
 	let result = 0;
 	for(let i = 1; i < upperBound; i ++) {
 		if(isChainLength(i, length)) {

@@ -1,7 +1,6 @@
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Sequence } from "../../utils-ts/modules/math/Sequence.mjs";
 import { PriorityQueue } from "../../utils-ts/modules/PriorityQueue.mjs";
-import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
 const isPowerOf = (base: number, num: number) => {
 	if(base === 1) { return num === 1; }
@@ -12,14 +11,6 @@ const isPowerOf = (base: number, num: number) => {
 };
 
 const isPowerOfDigitSum = (num: number) => isPowerOf(MathUtils.sum(MathUtils.digits(num)), num);
-
-const nextPrime = (num: number) => {
-	for(let i = num + 1; true; i ++) {
-		if(MathUtils.isPrime(i)) {
-			return i;
-		}
-	}	
-};
 
 export const powers = function*(): Generator<number, never> {
 	let largestExponent = 2;
@@ -43,7 +34,6 @@ export const powers = function*(): Generator<number, never> {
 export const solutionSequence = new Sequence(function*() {
 	for(const power of powers()) {
 		if(power >= 10 && isPowerOfDigitSum(power)) {
-			console.log(power);
 			yield power;
 		}
 	}

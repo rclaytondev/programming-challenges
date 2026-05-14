@@ -21,7 +21,7 @@ export const sqrtDigits = (num: number, numDigits: number) => {
 	return [...MathUtils.digits(integerPart), ...digits];
 };
 
-const solve = () => {
+export const solve = () => {
 	let result = 0;
 	for(let n = 1; n <= 100; n ++) {
 		if(Math.sqrt(n) % 1 !== 0) {

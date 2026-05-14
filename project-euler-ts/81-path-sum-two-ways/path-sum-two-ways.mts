@@ -2,7 +2,6 @@ import { Field } from "../../utils-ts/modules/math/Field.mjs";
 import { Matrix } from "../../utils-ts/modules/math/Matrix.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 import { MATRIX_DATA } from "./matrix-data.mjs";
-import { TEST_MATRIX_DATA } from "./test-matrix-data.mjs";
 
 const MATRIX = new Matrix(80, 80, Field.REALS, MATRIX_DATA);
 

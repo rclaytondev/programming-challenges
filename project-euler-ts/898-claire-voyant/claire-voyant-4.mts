@@ -1,6 +1,5 @@
 import { BigRational } from "../../utils-ts/modules/math/BigRational.mjs";
 import { Field } from "../../utils-ts/modules/math/Field.mjs";
-import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
 /* 
 Idea behind the algorithm:

@@ -1,11 +1,9 @@
 import { describe } from "mocha";
-import { admissiblePaths, inadmissiblePathsTo, modularCombination } from "./admissible-paths-2.mjs";
+import { admissiblePaths, modularCombination } from "./admissible-paths-2.mjs";
 import { admissiblePaths as naiveAlgorithm } from "./admissible-paths.mjs";
 import { assert } from "chai";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { BigintMath } from "../../utils-ts/modules/math/BigintMath.mjs";
-import { VectorSet } from "./VectorSet.mjs";
-import { Vector } from "../../utils-ts/modules/geometry/Vector.mjs";
 
 describe("admissiblePaths", () => {
 	it("can compute the number of admissible paths to (5, 5), which has no inadmissible points", () => {

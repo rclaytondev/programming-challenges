@@ -6,7 +6,7 @@ const bestApproximants = (height: number, rectangles: number) => {
 	return [Math.floor(width), Math.floor(width) + 1];
 };
 const countRectangles = (width: number, height: number) => width * (width + 1) * height * (height + 1) / 4;
-const solve = (targetRectangles: number) => {
+export const solve = (targetRectangles: number) => {
 	let closestArea = 0;
 	let closestRectangles = Infinity;
 	for(let height = 1; height < Infinity; height ++) {

@@ -1,5 +1,4 @@
 import { ArrayUtils } from "../../utils-ts/modules/core-extensions/ArrayUtils.mjs";
-import { SetUtils } from "../../utils-ts/modules/core-extensions/SetUtils.mjs";
 import { GenUtils } from "../../utils-ts/modules/core-extensions/GenUtils.mjs";
 
 const OPERATIONS = [
@@ -42,7 +41,7 @@ const streakLength = (nums: Set<number>) => {
 	}
 };
 
-const solve = () => {
+export const solve = () => {
 	return ArrayUtils.maxEntry(
 		[...GenUtils.subsets(ArrayUtils.range(1, MAX_DIGIT), NUM_DIGITS)],
 		s => streakLength(arithmeticCombinations([...s])),

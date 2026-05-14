@@ -61,7 +61,7 @@ export const trianglesWithPerimeter = (upperBound: number) => {
 };
 
 export const solve = (upperBound: number) => {
-	return [...trianglesWithPerimeter(upperBound)].filter(([k, v]) => v === 1).length;
+	return [...trianglesWithPerimeter(upperBound)].filter(([_k, v]) => v === 1).length;
 };
 // console.log(solve(1500000));
 // debugger;

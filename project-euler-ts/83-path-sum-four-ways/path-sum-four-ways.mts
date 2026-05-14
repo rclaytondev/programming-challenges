@@ -1,7 +1,6 @@
 import { Field } from "../../utils-ts/modules/math/Field.mjs";
 import { Matrix } from "../../utils-ts/modules/math/Matrix.mjs";
 import { MATRIX_DATA } from "../81-path-sum-two-ways/matrix-data.mjs";
-import { TEST_MATRIX_DATA } from "../81-path-sum-two-ways/test-matrix-data.mjs";
 
 const MATRIX = new Matrix(80, 80, Field.REALS, MATRIX_DATA);
 // const MATRIX = new Matrix(5, 5, Field.REALS, TEST_MATRIX_DATA);
@@ -54,7 +53,7 @@ const propagate = (nodes: NodeInfo[][], row: number, column: number) => {
 		neighbor.value = Math.min(neighbor.value, node.value + MATRIX.get(neighborRow, neighborColumn));
 	}
 };
-const pathSum = () => {
+export const pathSum = () => {
 	const nodes = initializeNodes();
 	nodes[0][0].value = MATRIX.get(0, 0);
 	for(let i = 0; i < MATRIX.width * MATRIX.height; i ++) {

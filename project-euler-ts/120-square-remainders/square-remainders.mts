@@ -19,10 +19,9 @@ export const maxSquareRemainder = (a: number) => {
 	}
 };
 
-const maxSquareRemainderSum = (upperBound: number) => {
+export const maxSquareRemainderSum = (upperBound: number) => {
 	let sum = 0;
 	for(let a = 3; a <= upperBound; a ++) {
-		console.log(a);
 		sum += maxSquareRemainder(a);
 	}
 	return sum;

@@ -115,4 +115,4 @@ describe("sqrtContinuedFractionPeriod", () => {
 
 const isSquare = (n: number) => Math.floor(Math.sqrt(n)) ** 2 === n;
 
-const solve = () => ArrayUtils.range(2, 10000).filter(n => !isSquare(n) && sqrtContinuedFractionPeriod(n) % 2 === 1).length;
+export const solve = () => ArrayUtils.range(2, 10000).filter(n => !isSquare(n) && sqrtContinuedFractionPeriod(n) % 2 === 1).length;

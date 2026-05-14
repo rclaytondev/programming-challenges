@@ -1,5 +1,4 @@
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
-import { CountLogger } from "../project-specific-utilities/CountLogger.mjs";
 
 const isSquare = (n: number) => Math.floor(Math.sqrt(n)) ** 2 === n;
 export const admissiblePaths = Utils.memoize((width: number, height: number, modulo: number): number => {

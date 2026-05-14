@@ -1,6 +1,5 @@
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { PriorityQueue } from "../../utils-ts/modules/PriorityQueue.mjs";
-import { Utils } from "../../utils-ts/modules/Utils.mjs";
 import { CountLogger } from "../project-specific-utilities/CountLogger.mjs";
 
 type NumSet = { size: number, sum: number, product: number, next: number };
@@ -13,7 +12,6 @@ const getNewSet = (set: NumSet): NumSet => ({
 });
 
 export const solve = (maxSetSize: number) => {
-	const logger = new CountLogger(n => 100 * n, maxSetSize, "sets found");
 	const logger2 = new CountLogger(n => 100 * n, null, "numbers checked");
 	const EMPTY_SET: NumSet = { size: 0, sum: 0, product: 1, next: 1 };
 	const sets = new PriorityQueue<NumSet>();

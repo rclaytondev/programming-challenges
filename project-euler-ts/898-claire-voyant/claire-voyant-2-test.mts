@@ -1,7 +1,4 @@
-import { describe, it } from "mocha";
-import { naiveProbabilitySum, probabilitySum } from "./claire-voyant-2.mjs";
-import { assert } from "chai";
-import { Rational } from "../../utils-ts/modules/math/Rational.mjs";
+import { describe } from "mocha";
 
 describe("probabilitySum", () => {
 	// it("returns the same result as the naive algorithm for a test case with 2 probabilities", () => {

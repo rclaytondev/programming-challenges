@@ -2,7 +2,6 @@ import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { GenUtils } from "../../utils-ts/modules/core-extensions/GenUtils.mjs";
 
 export const solve = (lyingProbabilities: number[]) => {
-	debugger;
 	return MathUtils.sum([...GenUtils.cartesianProduct(
 		...lyingProbabilities
 		.filter(p => p !== 0.5)

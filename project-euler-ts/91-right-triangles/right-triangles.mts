@@ -1,5 +1,3 @@
-import { Line } from "../../utils-ts/modules/geometry/Line.mjs";
-import { Vector } from "../../utils-ts/modules/geometry/Vector.mjs";
 import { Rational } from "../../utils-ts/modules/math/Rational.mjs";
 import { RationalLine } from "../project-specific-utilities/RationalLine.mjs";
 import { RationalVector } from "../project-specific-utilities/RationalVector.mjs";

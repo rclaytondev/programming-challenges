@@ -7,7 +7,7 @@ export class Polynomial {
 	}
 	static monomial(degree: number, coefficient: number = 1) {
 		const coefs = new Array(degree).fill(0);
-		coefs[degree] = 1;
+		coefs[degree] = coefficient;
 		return new Polynomial(coefs);
 	}
 

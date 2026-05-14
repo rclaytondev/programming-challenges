@@ -26,7 +26,7 @@ const updateMatchsticksList = () => {
 	matchsticksList.push(Math.min(min, productMatchsticks(num)));
 };
 
-const solve = (num: number) => {
+export const solve = (num: number) => {
 	let sum = 0;
 	while(matchsticksList.length <= num + 1) {
 		sum += matchsticksList[matchsticksList.length - 1];

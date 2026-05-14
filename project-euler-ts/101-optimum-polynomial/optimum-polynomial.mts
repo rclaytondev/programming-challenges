@@ -99,7 +99,7 @@ describe("Polynomial.multiply", () => {
 });
 
 const POLYNOMIAL = new Polynomial([1, -1, 1, -1, 1, -1, 1, -1, 1, -1, 1]);
-const solve = () => {
+export const solve = () => {
 	let result = 0;
 	for(let numTerms = 1; numTerms <= POLYNOMIAL.degree(); numTerms ++) {
 		const terms = new Array(numTerms).fill(0).map((v, index) => [index + 1, POLYNOMIAL.evaluate(index + 1)] as [number, number]);

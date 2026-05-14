@@ -10,6 +10,6 @@ export const cardsRequired = (rooms: number, carryableCards: number): number => 
 	return cards + 2 * trips + 1;
 };
 
-const solve = () => {
+export const solve = () => {
 	return MathUtils.sum(ArrayUtils.range(3, 40).map(cards => cardsRequired(30, cards)));
 };

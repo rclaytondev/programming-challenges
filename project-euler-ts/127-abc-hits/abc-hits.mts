@@ -20,7 +20,7 @@ const isABCHit = (a: number, b: number, c: number) => {
 	);
 };
 
-const naiveABCHits = (c: number) => {
+export const naiveABCHits = (c: number) => {
 	let hits = 0;
 	for(let a = 1; a < c / 2; a ++) {
 		if(isABCHit(a, c - a, c)) {

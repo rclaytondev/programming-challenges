@@ -1,6 +1,6 @@
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 
-const solve = (upperBound: number = 1000000) => {
+export const solve = (upperBound: number = 1000000) => {
 	let maxValue = 0;
 	let maxRatio = -Infinity;
 	for(let n = 2; n <= upperBound; n ++) {

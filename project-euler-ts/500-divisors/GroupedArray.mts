@@ -52,7 +52,7 @@ export class GroupedArray<T> {
 	}
 	*groupStartEntries(): Generator<[number, T]> {
 		let groupStartIndex = 0;
-		for(const [index, group] of this.groups.entries()) {
+		for(const group of this.groups) {
 			yield [groupStartIndex, group.value];
 			groupStartIndex += group.length;
 		}

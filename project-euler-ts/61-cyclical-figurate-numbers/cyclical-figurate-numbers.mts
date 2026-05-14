@@ -21,7 +21,7 @@ const POLYGONAL_TYPES = [TRIANGULARS, SQUARES, PENTAGONALS, HEXAGONALS, HEPTAGON
 // 	}
 // }
 
-const solve = () => {
+export const solve = () => {
 	type PartialResult = { numbers: number[], polygonalsUsed: number[][] };
 	const EMPTY_RESULT: PartialResult = { numbers: [], polygonalsUsed: [] };
 	const results = [...Tree.leaves(EMPTY_RESULT, function*(partialResult: PartialResult) {
@@ -32,7 +32,6 @@ const solve = () => {
 					(partialResult.numbers.length === 0 || `${polygonalNumber}`.slice(0, 2) === `${lastNumber}`.slice(2, 4)) &&
 					(partialResult.numbers.length !== POLYGONAL_TYPES.length - 1 || `${polygonalNumber}`.slice(2, 4) === `${partialResult.numbers[0]}`.slice(0, 2))
 				) {
-					console.log(`[${[...partialResult.numbers, polygonalNumber].join(", ")}]`);
 					yield {
 						numbers: [...partialResult.numbers, polygonalNumber],
 						polygonalsUsed: [...partialResult.polygonalsUsed, polygonalType],
@@ -41,6 +40,5 @@ const solve = () => {
 			}
 		}
 	})].filter(partialResult => partialResult.numbers.length === POLYGONAL_TYPES.length);
-	console.log(`the tuples are ${results.map(r => `[${r.numbers.join(", ")}]`)}`);
 	return MathUtils.sum(results[0].numbers);
 };

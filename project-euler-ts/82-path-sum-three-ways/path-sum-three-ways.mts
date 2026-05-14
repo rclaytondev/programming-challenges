@@ -4,7 +4,6 @@ import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Matrix } from "../../utils-ts/modules/math/Matrix.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 import { MATRIX_DATA } from "../81-path-sum-two-ways/matrix-data.mjs";
-import { TEST_MATRIX_DATA } from "../81-path-sum-two-ways/test-matrix-data.mjs";
 
 const MATRIX = new Matrix(80, 80, Field.REALS, MATRIX_DATA);
 // const MATRIX = new Matrix(5, 5, Field.REALS, TEST_MATRIX_DATA);
@@ -22,7 +21,7 @@ const pathSum = Utils.memoize((row: number, column: number): number => {
 	}
 	return Math.min(...values);
 });
-const solve = () => {
+export const solve = () => {
 	const values = [];
 	for(let row = 0; row < MATRIX.height; row ++) {
 		values.push(pathSum(row, 0));

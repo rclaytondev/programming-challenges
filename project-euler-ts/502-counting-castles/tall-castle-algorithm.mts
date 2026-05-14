@@ -5,7 +5,6 @@ Its runtime is supposed to be O(w^2 log h), so it should be fast for tall, narro
 
 import { Directions } from "../../utils-ts/modules/geometry/Direction.mjs";
 import { BigintMath } from "../../utils-ts/modules/math/BigintMath.mjs";
-import { Utils } from "../../utils-ts/modules/Utils.mjs";
 import { Parities, Parity } from "./wide-castle-algorithm.mjs";
 
 const paritiesWithSum = (parity: Parity) => [["even", parity], ["odd", Parities.opposite[parity]]] as [Parity, Parity][];

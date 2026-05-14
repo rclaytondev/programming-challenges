@@ -108,7 +108,7 @@ export class PartialSolution {
 	}
 }
 
-const largestEncoding = (partialSolution: PartialSolution, encodingLength: number): bigint | null => {
+export const largestEncoding = (partialSolution: PartialSolution, encodingLength: number): bigint | null => {
 	if(partialSolution.isComplete() && partialSolution.isValid()) {
 		const encoding = partialSolution.encoding();
 		return `${encoding}`.length === encodingLength ? encoding : null;

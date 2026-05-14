@@ -1,4 +1,3 @@
-import { assert } from "chai";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Sequence } from "../../utils-ts/modules/math/Sequence.mjs";
 
@@ -13,9 +12,8 @@ const allConcatsPrime = (numbers: number[]) => {
 	}
 	return true;
 };
-const solve = (setSize = 5) => {
+export const solve = (setSize = 5) => {
 	let sum = 2 + 3 + 5 + 7 + 11;
-	if(true) {}
 	while(true) {
 		sum ++;
 		for(const set of Sequence.PRIMES.setsWithSum(sum, setSize)) {

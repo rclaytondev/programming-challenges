@@ -1,6 +1,5 @@
-import { assert } from "chai";
 import { Sequence } from "../../utils-ts/modules/math/Sequence.mjs";
-import { describe, it } from "mocha";
+import { describe } from "mocha";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 
 const getSets = function*(setSize: number, sum: number, partialSet: number[] = []): Generator<number[]> {
@@ -22,10 +21,11 @@ const getSets = function*(setSize: number, sum: number, partialSet: number[] = [
 		}
 	}
 };
-const solve = (setSize: number = 5) => {
+export const solve = (setSize: number = 5) => {
 	for(let sum = 2 + 3 + 5 + 7 + 11; sum < Infinity; sum ++) {
 		let foundSet = false;
-		for(const set of getSets(setSize, sum)) {
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		for(const _ of getSets(setSize, sum)) {
 			foundSet = true;
 			break;
 		}

@@ -2,8 +2,6 @@ import { assert } from "chai";
 import { describe } from "mocha";
 import { Tree } from "../../utils-ts/modules/math/Tree.mjs";
 
-const MODULO = 1234567891;
-
 const iterateCyclically = function*<T>(items: T[], startValue: T) {
 	const startIndex = items.indexOf(startValue);
 	if(startIndex === -1) {
@@ -55,7 +53,7 @@ abstract class Edge {
 	abstract edgeOfSameType(vertex1: number, vertex2: number): Edge;
 }
 class LineEdge extends Edge {
-	type: "line" = "line";
+	type = "line" as const;
 	edgeOfSameType(vertex1: number, vertex2: number) {
 		return new LineEdge(vertex1, vertex2);
 	}
@@ -65,7 +63,7 @@ class LineEdge extends Edge {
 	}
 }
 class ArcEdge extends Edge {
-	type: "arc" = "arc";
+	type = "arc" as const;
 	edgeOfSameType(vertex1: number, vertex2: number) {
 		return new ArcEdge(vertex1, vertex2);
 	}
@@ -196,7 +194,7 @@ const allCuttings = function*(numPoints: number) {
 		}
 	}
 };
-const coloringDifferenceSum = (numPoints: number) => {
+export const coloringDifferenceSum = (numPoints: number) => {
 	let sum = 0;
 	for(const cutting of allCuttings(numPoints)) {
 		sum += cutting.coloringDifference();

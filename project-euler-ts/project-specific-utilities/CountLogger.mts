@@ -34,6 +34,7 @@ export class CountLogger {
 				const time = CountLogger.formatTime(now - this.startTime);
 				const percent = (this.total == null) ? "" : ` (${(100 * milestone / this.total).toFixed(1)}%)`;
 				this.timeOfLastLog = now;
+				// eslint-disable-next-line no-console
 				console.log(`${name}: ${milestone}${percent} in ${time}`);
 			}
 			this.milestoneIndex ++;

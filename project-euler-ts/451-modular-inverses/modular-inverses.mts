@@ -55,7 +55,7 @@ export const getSqrtsOf1 = (upperBound: number) => modularRoots(
 	p => [1, p - 1],
 );
 
-const solve = (upperBound: number) => {
+export const solve = (upperBound: number) => {
 	const sqrtsOf1 = getSqrtsOf1(upperBound);
 	let sum = 0;
 	for(let i = 3; i <= upperBound; i ++) {

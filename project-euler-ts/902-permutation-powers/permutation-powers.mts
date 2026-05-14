@@ -1,9 +1,8 @@
 import { ArrayUtils } from "../../utils-ts/modules/core-extensions/ArrayUtils.mjs";
 import { BigintMath } from "../../utils-ts/modules/math/BigintMath.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
-import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
-export function cycleOf<T extends { toString: () => string }>(func: (arg: T) => T, startValue: T) {
+export const cycleOf = <T extends { toString: () => string }>(func: (arg: T) => T, startValue: T) => {
 	const cycle = [];
 	let value = startValue;
 	do {
@@ -11,7 +10,7 @@ export function cycleOf<T extends { toString: () => string }>(func: (arg: T) => 
 		value = func(value);
 	} while(value.toString() !== startValue.toString());
 	return cycle;
-}
+};
 
 export class Permutation {
 	readonly values: number[];
@@ -52,6 +51,7 @@ export class Permutation {
 	}
 
 	*powers(maxPower: number | bigint) {
+		// eslint-disable-next-line @typescript-eslint/no-this-alias
 		let power: Permutation = this;
 		for(let i = 0; i < maxPower; i ++) {
 			yield power;

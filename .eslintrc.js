@@ -34,7 +34,7 @@ module.exports = {
 			"always"
 		],
 		"no-unused-vars": [
-			"error",
+			"off",
 			{ "argsIgnorePattern": "^_"}
 		],
 		"@typescript-eslint/no-unused-vars": [
@@ -47,5 +47,7 @@ module.exports = {
 		"prefer-template": ["error"],
 		"template-curly-spacing": ["error", "never"],
 		"func-style": ["error", "expression"],
+		"no-constant-condition": ["error", { "checkLoops": false }],
+		"no-console": ["error"]
 	}
 };

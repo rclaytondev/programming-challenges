@@ -36,12 +36,13 @@ const grundyValue = Utils.memoize(
 	(pile1: number, pile2: number): [number, number] => [Math.min(pile1, pile2), Math.max(pile1, pile2)],	
 );
 
-const logGrundyValues = (maxPileSize: number) => {
+export const logGrundyValues = (maxPileSize: number) => {
 	const matrix = new Matrix(maxPileSize - 1, maxPileSize - 1, Field.REALS);
 	for(let pile1 = 1; pile1 <= maxPileSize; pile1 ++) {
 		for(let pile2 = 1; pile2 <= maxPileSize; pile2 ++) {
 			matrix.set(pile1 - 1, pile2 - 1, grundyValue(pile1, pile2));
 		}
 	}
+	// eslint-disable-next-line no-console
 	console.log(matrix.toString());
 };

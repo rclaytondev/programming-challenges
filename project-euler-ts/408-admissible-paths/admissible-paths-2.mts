@@ -1,9 +1,7 @@
 import { Vector } from "../../utils-ts/modules/geometry/Vector.mjs";
-import { HashSet } from "../../utils-ts/modules/HashSet.mjs";
 import { BigintMath } from "../../utils-ts/modules/math/BigintMath.mjs";
 import { Field } from "../../utils-ts/modules/math/Field.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
-import { VectorSet } from "./VectorSet.mjs";
 
 const getInadmissiblePoints = (width: number, height: number) => {
 	const points = [];

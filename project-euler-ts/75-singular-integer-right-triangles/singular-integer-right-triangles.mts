@@ -2,7 +2,7 @@ import { CountLogger } from "../project-specific-utilities/CountLogger.mjs";
 
 const logger = new CountLogger(n => 10 ** n);
 
-const solve = (upperBound: number) => {
+export const solve = (upperBound: number) => {
 	const numWays = new Map<number, number>();
 	loop1: for(let leg1 = 1; true; leg1 ++) {
 		logger.count();
@@ -21,7 +21,7 @@ const solve = (upperBound: number) => {
 			}
 		}
 	}
-	return [...numWays].filter(([k, v]) => v === 1).length;
+	return [...numWays].filter(([_k, v]) => v === 1).length;
 };
 
 // console.time();

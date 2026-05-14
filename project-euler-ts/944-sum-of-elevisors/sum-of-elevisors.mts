@@ -4,7 +4,7 @@ import { BigintMath } from "../../utils-ts/modules/math/BigintMath.mjs";
 const sumOfElevisors = (upperBound: bigint, modulo: bigint) => {
 	const firstTerm = (
 		BigintMath.modularExponentiate(2n, upperBound - 1n, modulo)
-		 * (BigintMath.rangeSum(1n, upperBound) % modulo)
+		* (BigintMath.rangeSum(1n, upperBound) % modulo)
 	) % modulo;
 	let sum = 0n;
 	let quotient = 1n;

@@ -4,7 +4,6 @@ This algorithm counts castles by repeatedly cutting it in half horizontally.
 */
 
 import { BigintMath } from "../../utils-ts/modules/math/BigintMath.mjs";
-import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
 export type Parity = (typeof Parities.PARITIES)[number];

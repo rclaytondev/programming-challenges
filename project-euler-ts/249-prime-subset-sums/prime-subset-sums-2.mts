@@ -1,7 +1,5 @@
 import { BigintMath } from "../../utils-ts/modules/math/BigintMath.mjs";
-import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Sequence } from "../../utils-ts/modules/math/Sequence.mjs";
-import { CountLogger } from "../project-specific-utilities/CountLogger.mjs";
 
 export const primeSubsetSums = (upperBound: bigint, modulo: bigint = 10n ** 16n) => {
 	const primes = [...Sequence.PRIMES.termsBelow(Number(upperBound), "exclusive")].map(BigInt);

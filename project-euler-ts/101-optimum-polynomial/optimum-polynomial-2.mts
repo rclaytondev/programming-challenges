@@ -45,7 +45,7 @@ const rationals = new Field<Rational>(
 );
 
 const POLYNOMIAL = new Polynomial(rationals, [1, -1, 1, -1, 1, -1, 1, -1, 1, -1, 1].map(num => new Rational(num, 1)));
-const solve = () => {
+export const solve = () => {
 	let result = new Rational(0, 1);
 	for(let numTerms = 1; numTerms <= POLYNOMIAL.degree(); numTerms ++) {
 		const terms = new Array(numTerms).fill(0).map((v, index) => [new Rational(index + 1, 1), POLYNOMIAL.evaluate(new Rational(index + 1, 1))] as [Rational, Rational]);

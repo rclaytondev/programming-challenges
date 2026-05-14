@@ -1,5 +1,4 @@
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
-import { CountLogger } from "../project-specific-utilities/CountLogger.mjs";
 
 const divisorSum = (num: number) => {
 	return 1 + MathUtils.sum(MathUtils.properDivisors(num));
@@ -22,10 +21,9 @@ export const getAmicableLoop = (start: number, upperBound: number) => {
 	}
 };
 
-const solve = (upperBound: number) => {
+export const solve = (upperBound: number) => {
 	// const logger = new CountLogger(n => 1000 * n, upperBound);
 	let longestLoop: number[] | null = null;
-	const numsChecked = new Set<number>();
 	for(let start = 1; start <= upperBound; start ++) {
 		// logger.count();
 		const loop = getAmicableLoop(start, upperBound);

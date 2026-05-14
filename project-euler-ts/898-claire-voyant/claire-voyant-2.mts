@@ -1,5 +1,4 @@
 import { Field } from "../../utils-ts/modules/math/Field.mjs";
-import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 import { Rational } from "../../utils-ts/modules/math/Rational.mjs";
 import { GenUtils } from "../../utils-ts/modules/core-extensions/GenUtils.mjs";
 

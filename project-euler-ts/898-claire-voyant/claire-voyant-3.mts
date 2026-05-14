@@ -1,6 +1,5 @@
 import { Field } from "../../utils-ts/modules/math/Field.mjs";
 import { BigRational } from "../../utils-ts/modules/math/BigRational.mjs";
-import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
 const getMax = (rationals: BigRational[]) => {
 	let max = rationals[0];
@@ -103,8 +102,8 @@ export const solve = (probabilities: BigRational[]) => {
 	const [productDistribution, extraTotalAbove] = getProductDistribution(...distributions);
 	const term1 = Field.BIG_RATIONALS.sum(
 		...[...productDistribution.entries()]
-		.filter(([value, probability]) => value.isGreaterThan(new BigRational(1)))
-		.map(([value, probability]) => probability),
+		.filter(([value, _probability]) => value.isGreaterThan(new BigRational(1)))
+		.map(([_value, probability]) => probability),
 	);
 	const term2 = productDistribution.get(new BigRational(1)).multiply(new BigRational(1, 2));
 	return extraTotalAbove.add(term1).add(term2);

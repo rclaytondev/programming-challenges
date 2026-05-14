@@ -86,10 +86,8 @@ export const cardsRequired = (rooms: number, carryableCards: number) => {
 	let states = new HashSet<RoomsState>([startState]);
 	let bestSolution = Infinity;
 	let done = false;
-	let iterations = 0;
 	while(!done) {
 		states = nextStates(states, mostEfficientWays);
-		iterations ++;
 		let minimum = Infinity;
 		for(const state of states) {
 			if(state.isSolved()) {
@@ -97,7 +95,6 @@ export const cardsRequired = (rooms: number, carryableCards: number) => {
 			}
 			minimum = Math.min(minimum, state.cardsUsed);
 		}
-		// console.log(`depth ${iterations}: ${states.size} states with a minimum cardsUsed of ${minimum} (best solution so far: ${bestSolution})`);
 		if(minimum >= bestSolution) { done = true; }
 	}
 	return bestSolution;

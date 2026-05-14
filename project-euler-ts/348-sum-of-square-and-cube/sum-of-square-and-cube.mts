@@ -27,14 +27,14 @@ export const sumsOfSquareAndCube = (num: number) => {
 	const ways: [number, number][] = [];
 	for(let i = 2; i ** 3 <= num - 4; i ++) {
 		const difference = num - (i ** 3);
-		if(Math.sqrt(difference) % 1 === 0 && !ways.some(([x, y]) => x === i ** 3)) {
+		if(Math.sqrt(difference) % 1 === 0 && !ways.some(([x]) => x === i ** 3)) {
 			ways.push([difference, i ** 3]);
 		}
 	}
 	return ways;
 };
 
-const solve = (count: number = 5, ways: number = 4) => {
+export const solve = (count: number = 5, ways: number = 4) => {
 	const numsFound = [];
 	for(const palindrome of palindromes()) {
 		if(sumsOfSquareAndCube(palindrome).length === ways) {

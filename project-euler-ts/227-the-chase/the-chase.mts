@@ -21,7 +21,7 @@ const getMatrix = (numPlayers: number) => {
 	}
 	return matrix;
 };
-const solve = (numPlayers: number) => {
+export const solve = (numPlayers: number) => {
 	const values = getMatrix(numPlayers).inverse()!.values();
 	const lastRow = values[values.length - 1];
 	return Field.BIG_RATIONALS.sum(...lastRow.slice(1));

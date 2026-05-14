@@ -19,7 +19,7 @@ const allTuples = function*<T>(elements: T[], tupleSize: number): Generator<T[]>
 };
 
 export const solve = () => {
-	outerLoop: for(let codeLength = 3; codeLength < Infinity; codeLength ++) {
+	for(let codeLength = 3; codeLength < Infinity; codeLength ++) {
 		codeLoop: for(const code of allTuples([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], codeLength)) {
 			for(const triple of TRIPLES) {
 				const firstIndex = code.indexOf(triple[0]);
@@ -31,8 +31,8 @@ export const solve = () => {
 					continue codeLoop;
 				}
 			}
-			console.log(`the code is ${code.join("")}`);
-			break outerLoop;
+			return code.join("");
 		}
 	}
+	throw new Error("Unreachable");
 };

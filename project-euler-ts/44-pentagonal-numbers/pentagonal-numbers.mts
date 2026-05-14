@@ -9,8 +9,8 @@ const isPentagonal = function(num: number) {
 	return (1 + Math.sqrt(1 + 24 * num)) % 6 === 0;
 };
 
-const solve = () => {
-	for(const [differenceIndex, difference] of pentagonals()) {
+export const solve = () => {
+	for(const [, difference] of pentagonals()) {
 		innerLoop: for(const [lowerIndex, lowerPentagonal] of pentagonals()) {
 			const nextPentagonal = (lowerIndex + 1) * (3 * (lowerIndex + 1) - 1) / 2;
 			const upperPentagonal = lowerPentagonal + difference;

@@ -1,6 +1,6 @@
 import { Sequence } from "../../utils-ts/modules/math/Sequence.mjs";
 
-const solve = () => {
+export const solve = () => {
 	for(let n = 1; n < Infinity; n ++) {
 		if(Sequence.PRIMES.numMultisetsWithSum(n) > 5000) {
 			return n;
