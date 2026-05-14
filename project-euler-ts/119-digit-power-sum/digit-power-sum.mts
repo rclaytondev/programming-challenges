@@ -38,7 +38,7 @@ export const powers = function*(): Generator<number, never> {
 			powers.insert({ base: 2, exponent: exponent + 1, value: 2 ** (exponent + 1) }, 2 ** (exponent + 1));
 		}
 	}
-}
+};
 
 export const solutionSequence = new Sequence(function*() {
 	for(const power of powers()) {

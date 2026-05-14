@@ -8,9 +8,7 @@
 // type SudokuGrid = Grid<Digit | EmptyCell, 9>;
 
 import { Vector } from "../../utils-ts/modules/geometry/Vector.mjs";
-import { Grid } from "../../utils-ts/modules/Grid.mjs";
 import { Table } from "../../utils-ts/modules/Table.mjs";
-import { CountLogger } from "../project-specific-utilities/CountLogger.mjs";
 import { PUZZLES_DATA } from "./puzzles-data.mjs";
 
 type Digit = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
@@ -40,7 +38,7 @@ const deduce = (sudoku: Table<Digit | EmptyCell>): void => {
 
 const solveSudoku = (sudoku: Table<Digit | EmptyCell>): Table<Digit | EmptyCell> | null => {
 	deduce(sudoku);
-	const nextPosition = sudoku.findPosition((v, x, y) => v === EMPTY_CELL);
+	const nextPosition = sudoku.findPosition((v, _x, _y) => v === EMPTY_CELL);
 	if(!nextPosition) { return sudoku; }
 	for(const nextPossibleValue of getPossibleValues(sudoku, nextPosition)) {
 		const solved = solveSudoku(sudoku.copyAndSet(nextPosition.x, nextPosition.y, nextPossibleValue));
@@ -51,11 +49,11 @@ const solveSudoku = (sudoku: Table<Digit | EmptyCell>): Table<Digit | EmptyCell>
 	return null;
 };
 
-const solve = () => {
+export const solve = () => {
 	const ALL_SUDOKU = PUZZLES_DATA.map(sudoku => new Table(sudoku as (Digit | EmptyCell)[][]));
 	let sum = 0;
 	for(const sudoku of ALL_SUDOKU) {
-		const initial = sudoku.copy();
+		// const initial = sudoku.copy();
 		const solved = solveSudoku(sudoku)!;
 		// console.log(isCorrect(initial, solved) && isComplete(solved));
 		sum += Number.parseInt(`${solved.rows[0][0]}${solved.rows[0][1]}${solved.rows[0][2]}`);
@@ -67,7 +65,7 @@ const containsDuplicates = <T, >(array: T[]) => {
 	return array.length !== new Set(array).size;
 };
 
-const isCorrect = (initial: Table<Digit | EmptyCell>, final: Table<Digit | EmptyCell>) => {
+export const isCorrect = (initial: Table<Digit | EmptyCell>, final: Table<Digit | EmptyCell>) => {
 	for(const row of final.rows) {
 		if(containsDuplicates(row.filter(v => v !== 0))) {
 			return false;
@@ -85,7 +83,7 @@ const isCorrect = (initial: Table<Digit | EmptyCell>, final: Table<Digit | Empty
 			}
 		}
 	}
-	for(let [x, y, value] of initial.entries()) {
+	for(const [x, y, value] of initial.entries()) {
 		if(final.rows[y][x] !== value && value !== 0) {
 			return false;
 		}
@@ -93,11 +91,11 @@ const isCorrect = (initial: Table<Digit | EmptyCell>, final: Table<Digit | Empty
 	return true;
 };
 
-const toString = (sudoku: Table<Digit | EmptyCell>) => {
+export const toString = (sudoku: Table<Digit | EmptyCell>) => {
 	return sudoku.map(v => v === 0 ? " " : `${v}`).rows.map(r => r.join(", ")).join("\n");
 };
 
-const isComplete = (sudoku: Table<Digit | EmptyCell>) => !sudoku.includes(EMPTY_CELL);
+export const isComplete = (sudoku: Table<Digit | EmptyCell>) => !sudoku.includes(EMPTY_CELL);
 
 // console.time();
 // console.log(solve());

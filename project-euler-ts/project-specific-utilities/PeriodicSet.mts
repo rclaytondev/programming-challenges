@@ -1,7 +1,6 @@
 import { ArrayUtils } from "../../utils-ts/modules/core-extensions/ArrayUtils.mjs";
 import { MapUtils } from "../../utils-ts/modules/core-extensions/MapUtils.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
-import { Utils } from "../../utils-ts/modules/Utils.mjs";
 
 const modNonzero = (num: number, modulo: number) => {
 	const result = MathUtils.generalizedModulo(num, modulo);
@@ -50,7 +49,7 @@ export class PeriodicSet {
 	}
 	numTermsBelow(upperBound: number) {
 		if(upperBound <= 0) { return 0; }
-		let count = this.offsets.length * Math.floor(upperBound / this.period);
+		const count = this.offsets.length * Math.floor(upperBound / this.period);
 		upperBound %= this.period;
 		return count + this.offsets.filter(n => n <= upperBound).length; // can be optimized
 	}
@@ -88,7 +87,7 @@ export class PeriodicSet {
 		const offsets = new Set(this.offsets);
 		return new PeriodicSet(
 			this.period,
-			ArrayUtils.range(1, this.period).filter(n => !offsets.has(n))
+			ArrayUtils.range(1, this.period).filter(n => !offsets.has(n)),
 		);
 	}
 	multiply(multiplier: number) {

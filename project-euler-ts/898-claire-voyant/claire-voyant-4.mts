@@ -69,7 +69,7 @@ export const getProductDistribution = (...distributions: DiscreteDistribution[])
 const getVotingDistributions = (probabilities: BigRational[]) => {
 	return probabilities.map(probability => new DiscreteDistribution(new Map([
 		[probability.divide(new BigRational(1).subtract(probability)), probability],
-		[(new BigRational(1).subtract(probability)).divide(probability), new BigRational(1).subtract(probability)]
+		[(new BigRational(1).subtract(probability)).divide(probability), new BigRational(1).subtract(probability)],
 	])));
 };
 const getNextRayOrPointDistribution = (distribution: DiscreteDistribution, votingDistribution: DiscreteDistribution) => {
@@ -123,7 +123,8 @@ const getFinalDistributions = (votingDistributions: DiscreteDistribution[]): [Di
 export const weightedSum = (stateDistribution: DiscreteDistribution, rayDistribution: DiscreteDistribution) => {
 	let result = new BigRational(0);
 	const sortedStateValues = stateDistribution.values().sort((a, b) => Number(b.compare(a)));
-	const sortedRayValues = (rayDistribution
+	const sortedRayValues = (
+		rayDistribution
 		.values()
 		.filter(v => sortedStateValues.length === 0 || v.isLessThan(sortedStateValues[0]))
 		.sort((a, b) => Number(b.compare(a)))
@@ -169,7 +170,7 @@ export const solve = (probabilities: BigRational[]) => {
 	probabilities = probabilities.map(p => p.isLessThan(new BigRational(1, 2)) ? new BigRational(1).subtract(p) : p);
 	probabilities = probabilities.sort((a, b) => Number(b.compare(a)));
 	const votingDistributions = getVotingDistributions(probabilities);
-	let [stateDistribution, rayDistribution, result] = getFinalDistributions(votingDistributions);
+	const [stateDistribution, rayDistribution, result] = getFinalDistributions(votingDistributions);
 	return result.add(weightedSum(stateDistribution, rayDistribution));
 };
 

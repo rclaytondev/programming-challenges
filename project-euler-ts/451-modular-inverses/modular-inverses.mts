@@ -14,11 +14,11 @@ export const naiveSqrtsOf1 = (upperBound: number) => {
 export const modularRoots = (
 	upperBound: number,
 	polynomial: (x: number) => number,
-	solutionsForPrimes?: (prime: number) => number[]
+	solutionsForPrimes?: (prime: number) => number[],
 ) => {
 	const solutions = [
 		new PeriodicSet(1, [1]),
-		new PeriodicSet(1, [1])
+		new PeriodicSet(1, [1]),
 	];
 	const logger = new CountLogger(n => 10000 * n, upperBound);
 	for(let modulo = 2; modulo <= upperBound; modulo ++) {
@@ -30,7 +30,7 @@ export const modularRoots = (
 			if(exponent === 1) {
 				solutions.push(new PeriodicSet(
 					modulo,
-					solutionsForPrimes?.(prime) ?? ArrayUtils.range(1, prime).filter(isSolution))
+					solutionsForPrimes?.(prime) ?? ArrayUtils.range(1, prime).filter(isSolution)),
 				);
 			}
 			else {
@@ -42,7 +42,7 @@ export const modularRoots = (
 			solutions.push(
 				[...factorization.entries()]
 				.map(([prime, exponent]) => solutions[prime ** exponent])
-				.reduce((a, b) => a.intersection(b))
+				.reduce((a, b) => a.intersection(b)),
 			);
 		}
 	}
@@ -52,7 +52,7 @@ export const modularRoots = (
 export const getSqrtsOf1 = (upperBound: number) => modularRoots(
 	upperBound,
 	x => x ** 2 - 1,
-	p => [1, p - 1]
+	p => [1, p - 1],
 );
 
 const solve = (upperBound: number) => {

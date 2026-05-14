@@ -6,7 +6,7 @@ const DIGITS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 export const fromDigits = (integerPart: number, digits: number[]) => new BigRational(
 	BigInt(integerPart) * (10n ** BigInt(digits.length)) + BigintMath.sum(digits.map((d, i) => BigInt(d) * (10n ** BigInt((digits.length - i - 1))))),
-	10n ** BigInt(digits.length)
+	10n ** BigInt(digits.length),
 );
 
 export const sqrtDigits = (num: number, numDigits: number) => {

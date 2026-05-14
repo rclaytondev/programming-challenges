@@ -32,7 +32,7 @@ export const sumsOfSquareAndCube = (num: number) => {
 		}
 	}
 	return ways;
-}
+};
 
 const solve = (count: number = 5, ways: number = 4) => {
 	const numsFound = [];

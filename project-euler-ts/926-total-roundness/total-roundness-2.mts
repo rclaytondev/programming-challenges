@@ -14,7 +14,7 @@ const valuationSum = Utils.memoize((maximum: number, remainingExponents: number[
 	for(let i = 0; i <= remainingExponents[0]; i ++) {
 		result += valuationSum(
 			Math.min(maximum, Math.floor(remainingExponents[0] / i)),
-			nextExponents
+			nextExponents,
 		);
 	}
 	return result;

@@ -13,7 +13,7 @@ const isLosing: (pile1: number, pile2: number) => boolean = Utils.memoize(
 		if(pile1 === 1) { return (pile2 % 2 === 1); }
 		return [...getChildren(pile1, pile2)].every(c => !isLosing(...c));
 	},
-	(pile1: number, pile2: number): [number, number] => [Math.min(pile1, pile2), Math.max(pile1, pile2)]
+	(pile1: number, pile2: number): [number, number] => [Math.min(pile1, pile2), Math.max(pile1, pile2)],
 );
 export const numLosing = (maxPileSize: bigint) => {
 	let total = 0n;
@@ -33,7 +33,7 @@ const minimumExcludant = (nums: number[]) => {
 };
 const grundyValue = Utils.memoize(
 	(pile1: number, pile2: number): number => minimumExcludant([...getChildren(pile1, pile2)].map(c => grundyValue(...c))),
-	(pile1: number, pile2: number): [number, number] => [Math.min(pile1, pile2), Math.max(pile1, pile2)]	
+	(pile1: number, pile2: number): [number, number] => [Math.min(pile1, pile2), Math.max(pile1, pile2)],	
 );
 
 const logGrundyValues = (maxPileSize: number) => {

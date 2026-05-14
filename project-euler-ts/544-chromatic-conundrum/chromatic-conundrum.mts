@@ -14,7 +14,7 @@ const rectangleGraph = (width: number, height: number) => {
 };
 
 export const chromaticPolynomial = <T, >(graph: HashGraph<T>): Polynomial => {
-	for(const vertex1 of graph.vertices())  {
+	for(const vertex1 of graph.vertices()) {
 		const neighbors = graph.neighbors(vertex1);
 		if(neighbors.size !== 0) {
 			const vertex2 = [...neighbors][0];

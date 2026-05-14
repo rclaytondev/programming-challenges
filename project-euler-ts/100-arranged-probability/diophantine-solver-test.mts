@@ -7,7 +7,7 @@ describe("DiophantineEquation.solutions", () => {
 		const equation = new DiophantineEquation(
 			3,
 			(a, b, c) => a ** 2n + b ** 2n,
-			(a, b, c) => c ** 2n
+			(a, b, c) => c ** 2n,
 		);
 		let iterations = 0;
 		for(const solution of equation.solutions()) {

@@ -36,13 +36,13 @@ class SqrtPlusRational {
 			return new SqrtPlusRational(this.numberInSqrt, 0, 0, 1);
 		}
 		const gcd = [this.sqrtCoefficient, this.rationalPart, this.denominator].reduce(
-			(a, b) => (a === 0) ? b : ((b === 0) ? a : MathUtils.gcd(a, b))
-		)
+			(a, b) => (a === 0) ? b : ((b === 0) ? a : MathUtils.gcd(a, b)),
+		);
 		return new SqrtPlusRational(
 			this.numberInSqrt,
 			this.sqrtCoefficient / gcd,
 			this.rationalPart / gcd,
-			this.denominator / gcd
+			this.denominator / gcd,
 		);
 	}
 
@@ -51,7 +51,7 @@ class SqrtPlusRational {
 			this.numberInSqrt,
 			this.sqrtCoefficient * this.denominator,
 			-this.rationalPart * this.denominator,
-			this.sqrtCoefficient ** 2 * this.numberInSqrt - this.rationalPart ** 2
+			this.sqrtCoefficient ** 2 * this.numberInSqrt - this.rationalPart ** 2,
 		);
 	}
 	addInteger(integer: number) {
@@ -62,7 +62,7 @@ class SqrtPlusRational {
 			this.numberInSqrt,
 			this.sqrtCoefficient,
 			this.rationalPart + integer * this.denominator,
-			this.denominator
+			this.denominator,
 		);
 	}
 

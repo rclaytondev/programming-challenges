@@ -3,7 +3,7 @@ import { Sequence } from "../../utils-ts/modules/math/Sequence.mjs";
 import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 
 const solutionsModuloPrime = (D: number, prime: number) => {
-	let solutions = [];
+	const solutions = [];
 	for(let x = 0; x < prime; x ++) {
 		for(let y = 0; y < prime; y ++) {
 			if(MathUtils.generalizedModulo((x ** 2 - (D * y ** 2)), prime) === 1) {

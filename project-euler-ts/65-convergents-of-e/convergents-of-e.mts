@@ -20,7 +20,7 @@ describe("getConvergent", () => {
 
 const bigintDigits = (num: bigint) => {
 	return [...num.toString()].map(c => Number.parseInt(c));
-}
+};
 
 const solve = () => {
 	const partialNumerators = (n: number) => {

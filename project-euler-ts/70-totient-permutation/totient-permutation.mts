@@ -25,8 +25,8 @@ const arePermutations = <T,>(array1: T[], array2: T[]) => {
 
 const solve = (upperBound: number) => ArrayUtils.minValue(
 	ArrayUtils.range(1, upperBound, "exclusive", "exclusive")
-		.filter(n => arePermutations(MathUtils.digits(n), MathUtils.digits(MathUtils.totient(n)))),
-	n => n / MathUtils.totient(n)
+	.filter(n => arePermutations(MathUtils.digits(n), MathUtils.digits(MathUtils.totient(n)))),
+	n => n / MathUtils.totient(n),
 );
 
 // console.time();

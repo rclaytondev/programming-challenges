@@ -15,7 +15,7 @@ export const idempotents = (maxEntry: number) => {
 
 const standardize = (maxEntry: number, b0: number, b1: number, b2: number) => [
 	maxEntry,
-	...[b0, b1, b2].sort((x, y) => x - y)
+	...[b0, b1, b2].sort((x, y) => x - y),
 ] as [number, number, number, number];
 
 const idempotentsWithImage = Utils.memoize((maxEntry: number, b0: number, b1: number, b2: number) => {

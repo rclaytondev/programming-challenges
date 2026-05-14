@@ -4,7 +4,7 @@ const TARGET = new Rational(3, 7);
 const UPPER_BOUND = 1000000;
 
 const solve = () => {
-	let fractions = [];
+	const fractions = [];
 	for(let denominator = 1; denominator <= UPPER_BOUND; denominator ++) {
 		let numerator = Number(BigInt(TARGET.numerator * denominator) / BigInt(TARGET.denominator));
 		if(new Rational(numerator, denominator).equals(TARGET)) {

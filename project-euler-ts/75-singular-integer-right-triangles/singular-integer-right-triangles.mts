@@ -6,7 +6,7 @@ const solve = (upperBound: number) => {
 	const numWays = new Map<number, number>();
 	loop1: for(let leg1 = 1; true; leg1 ++) {
 		logger.count();
-		loop2: for(let leg2 = 1; true; leg2 ++) {
+		for(let leg2 = 1; true; leg2 ++) {
 			const hypotenuse = Math.sqrt(leg1 ** 2 + leg2 ** 2);
 			const perimeter = leg1 + leg2 + hypotenuse;
 			if(perimeter > upperBound && leg2 === 1) {

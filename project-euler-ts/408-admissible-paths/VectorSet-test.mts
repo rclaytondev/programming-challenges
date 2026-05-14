@@ -41,7 +41,7 @@ describe("VectorSet.slice", () => {
 			[..." ny   yn"],
 			[..."        "],
 			[..."  yy  y "],
-			[..."  n     "]
+			[..."  n     "],
 		]);
 		const vectorSet = VectorSet.fromIterable([...input.positionsOf("y"), ...input.positionsOf("n")]);
 		const expected = VectorSet.fromIterable([...input.positionsOf("y")]);

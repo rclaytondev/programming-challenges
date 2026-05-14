@@ -10,7 +10,7 @@ describe("getSqrtsOf1", () => {
 		for(let i = 2; i <= 20; i ++) {
 			assert.deepEqual(
 				actual[i], expected.get(i)!,
-				`For n=${i}, expected ${expected.get(i)!} but got ${actual[i]})`
+				`For n=${i}, expected ${expected.get(i)!} but got ${actual[i]})`,
 			);
 		}
 	});

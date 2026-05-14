@@ -7,7 +7,7 @@ const getAnagramSets = (words: string[]) => {
 		const sorted = [...word].sort().join("");
 		anagramSets.set(sorted, [
 			...(anagramSets.get(sorted) ?? []),
-			word
+			word,
 		]);
 	}
 	return [...anagramSets.values()];
@@ -17,7 +17,7 @@ const DIGITS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 const isSquare = (n: number) => (Math.floor(Math.sqrt(n)) ** 2) === n;
 
-const solve = (words: string[]) => {
+export const solve = (words: string[] = WORDS_DATA) => {
 	let largest = -Infinity;
 	const anagramSets = getAnagramSets(words).filter(v => v.length > 1);
 	for(const anagrams of anagramSets) {

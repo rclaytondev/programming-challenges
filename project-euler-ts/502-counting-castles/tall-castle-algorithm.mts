@@ -10,7 +10,7 @@ import { Parities, Parity } from "./wide-castle-algorithm.mjs";
 
 const paritiesWithSum = (parity: Parity) => [["even", parity], ["odd", Parities.opposite[parity]]] as [Parity, Parity][];
 
-let heights = new Set<bigint>();
+const heights = new Set<bigint>();
 
 const cornerPathsCache = new Map<string, bigint>();
 const middlePathsCache = new Map<string, bigint>();
@@ -38,7 +38,7 @@ export const pathsFromCorner = ((width: bigint, height: bigint, endCorner: "up" 
 		const allPaths = (height + 1n) ** width;
 		return BigintMath.generalizedModulo(
 			allPaths - pathsFromCorner(width, height, endCorner, stepType, "even", modulo),
-			modulo
+			modulo,
 		);
 	}
 
@@ -47,7 +47,7 @@ export const pathsFromCorner = ((width: bigint, height: bigint, endCorner: "up" 
 	if(typeof precomputed === "bigint") { return precomputed; }
 
 	const pivotY = (height % 2n === 0n) ? height : (height + 1n) / 2n;
-	const pathsWithoutCrossing = (endCorner === "up") ? 0n : pathsFromCorner(width, pivotY - 1n, endCorner, stepType, parity, modulo)
+	const pathsWithoutCrossing = (endCorner === "up") ? 0n : pathsFromCorner(width, pivotY - 1n, endCorner, stepType, parity, modulo);
 	let result = pathsWithoutCrossing;
 	for(let firstCrossingX = 0n; firstCrossingX <= width; firstCrossingX ++) {
 		for(const [parityBefore, parityAfter] of paritiesWithSum((stepType === "up" ? Parities.opposite[parity] : parity))) {
@@ -86,7 +86,7 @@ export const pathsFromMiddle = ((width: bigint, height: bigint, startY: bigint, 
 		const allPaths = firstChoices * (height + 1n) ** (width - 1n);
 		return BigintMath.generalizedModulo(
 			allPaths - pathsFromMiddle(width, height, startY, endCorner, stepType, "even", nextMove, modulo),
-			modulo
+			modulo,
 		);
 	}
 
@@ -100,7 +100,7 @@ export const pathsFromMiddle = ((width: bigint, height: bigint, startY: bigint, 
 		"up",
 		endCorner === "up" ? stepType : Directions.opposite[stepType],
 		(endCorner === "down" && stepType === "down") ? Parities.opposite[parity] : parity,
-		modulo
+		modulo,
 	));
 	let result = pathsWithoutCrossing;
 	for(let firstCrossingX = 1n; firstCrossingX <= width; firstCrossingX ++) {

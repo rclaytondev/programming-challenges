@@ -92,7 +92,7 @@ export const getProductDistribution = (...distributions: DiscreteDistribution[])
 const getDistributions = (probabilities: BigRational[]) => {
 	return probabilities.map(probability => new DiscreteDistribution(new Map([
 		[probability.divide(new BigRational(1).subtract(probability)), probability],
-		[(new BigRational(1).subtract(probability)).divide(probability), new BigRational(1).subtract(probability)]
+		[(new BigRational(1).subtract(probability)).divide(probability), new BigRational(1).subtract(probability)],
 	])));
 };
 export const solve = (probabilities: BigRational[]) => {
@@ -101,9 +101,10 @@ export const solve = (probabilities: BigRational[]) => {
 	probabilities = probabilities.sort((a, b) => Number(b.compare(a)));
 	const distributions = getDistributions(probabilities);
 	const [productDistribution, extraTotalAbove] = getProductDistribution(...distributions);
-	const term1 = Field.BIG_RATIONALS.sum(...[...productDistribution.entries()]
+	const term1 = Field.BIG_RATIONALS.sum(
+		...[...productDistribution.entries()]
 		.filter(([value, probability]) => value.isGreaterThan(new BigRational(1)))
-		.map(([value, probability]) => probability)
+		.map(([value, probability]) => probability),
 	);
 	const term2 = productDistribution.get(new BigRational(1)).multiply(new BigRational(1, 2));
 	return extraTotalAbove.add(term1).add(term2);

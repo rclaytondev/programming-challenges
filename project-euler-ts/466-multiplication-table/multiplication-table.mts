@@ -29,7 +29,7 @@ const checkSubset = (range: Range, remaining: bigint[], lcm: bigint): bigint => 
 	}
 	if(lcm > range.max) { return 0n; }
 	if(lcm !== 1n && remaining.length === 0) {
-		const result = -multiplesInRange([lcm], range);;
+		const result = -multiplesInRange([lcm], range);
 		cachedResults.set(argsString, result);
 		return result;
 	}

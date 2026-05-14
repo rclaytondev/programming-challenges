@@ -41,7 +41,7 @@ const rationals = new Field<Rational>(
 	(a, b) => a.add(b),
 	(a, b) => a.multiply(b),
 	r => r.opposite(),
-	r => r.inverse()
+	r => r.inverse(),
 );
 
 const POLYNOMIAL = new Polynomial(rationals, [1, -1, 1, -1, 1, -1, 1, -1, 1, -1, 1].map(num => new Rational(num, 1)));

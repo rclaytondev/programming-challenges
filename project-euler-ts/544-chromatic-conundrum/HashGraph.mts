@@ -18,7 +18,7 @@ export class HashGraph<V> {
 		return new HashGraph(
 			Graph.emptyGraph([...vertices].map(hashFunction)),
 			hashes,
-			hashFunction
+			hashFunction,
 		);
 	}
 	static fromEdgesList<V>(vertices: Iterable<V>, edges: Iterable<[V, V]>) {

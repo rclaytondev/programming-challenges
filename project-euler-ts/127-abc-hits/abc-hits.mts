@@ -34,7 +34,7 @@ const getNextPrime = (num: number) => {
 	for(let i = num + 1; true; i ++) {
 		if(MathUtils.isPrime(i)) { return i; }
 	}
-}
+};
 
 export const abcHits = (cFactorization: Factorization, aFactorization: Factorization = Factorization.ONE, c: number = cFactorization.toNumber(), a: number = aFactorization.toNumber(), previousPrime: number = -Infinity, currentPrime: number = 2) => {
 	if(a >= c / 2) { return 0; }

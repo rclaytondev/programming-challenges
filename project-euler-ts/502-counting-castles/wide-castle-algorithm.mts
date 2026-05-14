@@ -13,7 +13,7 @@ export class Parities {
 	static PARITIES = ["even", "odd"] as const;
 	static opposite = {
 		"even": "odd",
-		"odd": "even"
+		"odd": "even",
 	} as const;
 
 	static parity(num: number | bigint) {
@@ -56,7 +56,7 @@ const allCastles = (width: bigint, height: bigint, modulo: bigint) => {
 export const fullHeightCastles = (width: bigint, height: bigint, modulo: bigint) => {
 	return BigintMath.generalizedModulo(
 		allCastles(width, height - 1n, modulo) - allCastles(width, height - 2n, modulo),
-		modulo
+		modulo,
 	);
 };
 

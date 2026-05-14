@@ -76,7 +76,7 @@ describe("Polynomial.interpolate", () => {
 	it("correctly interpolates a line", () => {
 		const points = [
 			[3, 9],
-			[5, 13]
+			[5, 13],
 		] as [number, number][];
 		const polynomial = Polynomial.interpolate(points, Field.REALS);
 		assert.sameMembers(polynomial.coefficients, [3, 2]);
@@ -85,7 +85,7 @@ describe("Polynomial.interpolate", () => {
 		const points = [
 			[1, 1],
 			[2, 4],
-			[3, 9]
+			[3, 9],
 		] as [number, number][];
 		const polynomial = Polynomial.interpolate(points, Field.REALS);
 		assert.sameMembers(polynomial.coefficients, [0, 0, 1]);

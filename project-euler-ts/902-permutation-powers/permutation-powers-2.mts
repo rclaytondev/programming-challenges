@@ -12,7 +12,7 @@ export const productCycles = function*(permutation: Permutation) {
 			for(const startValue of cycle2.slice(0, cycle1.length * cycle2.length / period)) {
 				yield cycleOf(
 					([x, y]) => [permutation.values[x-1], permutation.values[y-1]] as [number, number],
-					[cycle1[0], startValue] as [number, number]
+					[cycle1[0], startValue] as [number, number],
 				);
 			}
 		}

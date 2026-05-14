@@ -9,7 +9,7 @@ describe("GroupedArray.fromArray", () => {
 			{ value: "a", length: 2 },
 			{ value: "b", length: 1 },
 			{ value: "a", length: 1 },
-			{ value: "c", length: 3 }
+			{ value: "c", length: 3 },
 		]);
 	});
 	it("returns an array with no groups when given the empty array", () => {

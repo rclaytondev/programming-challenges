@@ -7,7 +7,7 @@ describe("chromaticPolynomial", () => {
 	it("can compute the chromatic polynomial of the line graph on 2 vertices", () => {
 		const lineGraph = HashGraph.fromEdgesList(
 			[1, 2],
-			[[1, 2]]
+			[[1, 2]],
 		);
 		const polynomial = chromaticPolynomial(lineGraph);
 		assert.sameOrderedMembers(polynomial.coefficients, [0, -1, 1]);
@@ -15,7 +15,7 @@ describe("chromaticPolynomial", () => {
 	it("can compute the chromatic polynomial of the line graph on 3 vertices", () => {
 		const lineGraph = HashGraph.fromEdgesList(
 			[1, 2, 3],
-			[[1, 2], [2, 3]]
+			[[1, 2], [2, 3]],
 		);
 		const polynomial = chromaticPolynomial(lineGraph);
 		assert.sameOrderedMembers(polynomial.coefficients, [0, 1, -2, 1]);

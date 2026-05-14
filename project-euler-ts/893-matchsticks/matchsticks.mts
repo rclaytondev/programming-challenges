@@ -15,7 +15,7 @@ const productMatchsticks = Utils.memoize((num: number): number => {
 	return Math.min(matchsticksForDigits(num), ...productRepresentations);
 });
 
-let matchsticksList = [0, 2];
+const matchsticksList = [0, 2];
 
 const updateMatchsticksList = () => {
 	const num = matchsticksList.length;

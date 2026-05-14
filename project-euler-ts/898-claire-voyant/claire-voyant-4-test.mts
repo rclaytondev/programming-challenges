@@ -28,10 +28,10 @@ describe("solve", () => {
 describe("weightedSum", () => {
 	it("works for a simple test case with 1 state and 1 ray", () => {
 		const stateDistribution = new DiscreteDistribution(new Map([
-			[new BigRational(3), new BigRational(1, 4)]
+			[new BigRational(3), new BigRational(1, 4)],
 		]));
 		const rayDistribution = new DiscreteDistribution(new Map([
-			[new BigRational(2), new BigRational(1, 5)]
+			[new BigRational(2), new BigRational(1, 5)],
 		]));
 		const expected = naiveWeightedSum(stateDistribution, rayDistribution);
 		const actual = weightedSum(stateDistribution, rayDistribution);
@@ -40,10 +40,10 @@ describe("weightedSum", () => {
 	it("works for a simple test case with 2 states and 1 ray", () => {
 		const stateDistribution = new DiscreteDistribution(new Map([
 			[new BigRational(3), new BigRational(1, 4)],
-			[new BigRational(4), new BigRational(1, 4)]
+			[new BigRational(4), new BigRational(1, 4)],
 		]));
 		const rayDistribution = new DiscreteDistribution(new Map([
-			[new BigRational(2), new BigRational(1, 5)]
+			[new BigRational(2), new BigRational(1, 5)],
 		]));
 		const expected = naiveWeightedSum(stateDistribution, rayDistribution);
 		const actual = weightedSum(stateDistribution, rayDistribution);
@@ -52,11 +52,11 @@ describe("weightedSum", () => {
 	it("works for a test case with 2 states and 2 rays", () => {
 		const stateDistribution = new DiscreteDistribution(new Map([
 			[new BigRational(2), new BigRational(1, 3)],
-			[new BigRational(4), new BigRational(1, 4)]
+			[new BigRational(4), new BigRational(1, 4)],
 		]));
 		const rayDistribution = new DiscreteDistribution(new Map([
 			[new BigRational(1), new BigRational(1, 5)],
-			[new BigRational(3), new BigRational(1, 6)]
+			[new BigRational(3), new BigRational(1, 6)],
 		]));
 		const expected = naiveWeightedSum(stateDistribution, rayDistribution);
 		const actual = weightedSum(stateDistribution, rayDistribution);
@@ -64,11 +64,11 @@ describe("weightedSum", () => {
 	});
 	it("works for a test case where one state is at the endpoint of a ray", () => {
 		const stateDistribution = new DiscreteDistribution(new Map([
-			[new BigRational(4), new BigRational(1, 4)]
+			[new BigRational(4), new BigRational(1, 4)],
 		]));
 		const rayDistribution = new DiscreteDistribution(new Map([
 			[new BigRational(2), new BigRational(1, 5)],
-			[new BigRational(4), new BigRational(1, 6)]
+			[new BigRational(4), new BigRational(1, 6)],
 		]));
 		const expected = naiveWeightedSum(stateDistribution, rayDistribution);
 		const actual = weightedSum(stateDistribution, rayDistribution);

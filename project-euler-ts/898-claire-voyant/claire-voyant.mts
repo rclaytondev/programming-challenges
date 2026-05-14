@@ -6,10 +6,10 @@ export const solve = (lyingProbabilities: number[]) => {
 	return MathUtils.sum([...GenUtils.cartesianProduct(
 		...lyingProbabilities
 		.filter(p => p !== 0.5)
-		.map((probability, i) => (i === 0) ? [probability] : [probability, 1 - probability])
+		.map((probability, i) => (i === 0) ? [probability] : [probability, 1 - probability]),
 	)].map(combination => Math.max(
 		MathUtils.product(combination),
-		MathUtils.product(combination.map(p => 1 - p))
+		MathUtils.product(combination.map(p => 1 - p)),
 	)));
 };
 

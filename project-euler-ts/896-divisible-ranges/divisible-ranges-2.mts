@@ -52,7 +52,7 @@ export class Wheel {
 }
 
 const consecutiveTuples = function*<T>(iterable: Iterable<T>, tupleSize: number) {
-	let tuple = [];
+	const tuple = [];
 	for(const value of iterable) {
 		tuple.push(value);
 		if(tuple.length > tupleSize) {

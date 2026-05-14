@@ -22,7 +22,7 @@ export const naiveProbabilitySum = (probabilities: Rational[], nextProbability: 
 	for(const combination of [...GenUtils.cartesianProduct(
 		...probabilities
 		.filter(p => !p.equals(new Rational(1, 2)))
-		.map((probability, i) => (i === 0) ? [probability] : [probability, new Rational(1).subtract(probability)])
+		.map((probability, i) => (i === 0) ? [probability] : [probability, new Rational(1).subtract(probability)]),
 	)]) {
 		if(isProbable(probabilities, [...combination, nextProbability])) {
 			result = result.add(Field.RATIONALS.product(...combination));

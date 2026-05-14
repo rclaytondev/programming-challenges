@@ -6,9 +6,9 @@ const divisorSum = (num: number) => {
 };
 
 export const getAmicableLoop = (start: number, upperBound: number) => {
-	let numsChecked = new Set<number>();
+	const numsChecked = new Set<number>();
 	let value = start;
-	let loop = [];
+	const loop = [];
 	while(true) {
 		loop.push(value);
 		value = divisorSum(value);
@@ -25,7 +25,7 @@ export const getAmicableLoop = (start: number, upperBound: number) => {
 const solve = (upperBound: number) => {
 	// const logger = new CountLogger(n => 1000 * n, upperBound);
 	let longestLoop: number[] | null = null;
-	let numsChecked = new Set<number>();
+	const numsChecked = new Set<number>();
 	for(let start = 1; start <= upperBound; start ++) {
 		// logger.count();
 		const loop = getAmicableLoop(start, upperBound);

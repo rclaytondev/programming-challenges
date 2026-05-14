@@ -11,7 +11,7 @@ export function cycleOf<T extends { toString: () => string }>(func: (arg: T) => 
 		value = func(value);
 	} while(value.toString() !== startValue.toString());
 	return cycle;
-};
+}
 
 export class Permutation {
 	readonly values: number[];
@@ -109,7 +109,7 @@ export const permutations = {
 		const sigma = permutations.sigma(m);
 		const tau = permutations.tau(m * (m + 1) / 2);
 		return Permutation.compose(tau.inverse(), Permutation.compose(sigma, tau));
-	}
+	},
 };
 
 export const naiveRankPowerSum = (m: number) => {
@@ -127,7 +127,7 @@ const getCycleCount = (permutation: Permutation, i: number, j: number, cycleCoun
 	if(cycleCounts.has(`${i},${j}`)) {
 		return cycleCounts.get(`${i},${j}`)!.value;
 	}
-	let count = { value: 0 }; // wrapper used to pass numeric values by reference
+	const count = { value: 0 }; // wrapper used to pass numeric values by reference
 	for(let k = 1; k <= period; k ++) {
 		if(permutation.applyPower(k, i) < permutation.applyPower(k, j)) {
 			cycleCounts.set(`${permutation.applyPower(k, i)},${permutation.applyPower(k, j)}`, count);
@@ -137,19 +137,19 @@ const getCycleCount = (permutation: Permutation, i: number, j: number, cycleCoun
 	return count.value;
 };
 
-export const rankPowerSum = (m: number,  modulo = BigInt(10 ** 9 + 7)) => {
+export const rankPowerSum = (m: number, modulo = BigInt(10 ** 9 + 7)) => {
 	const permutation = permutations.pi(Number(m));
 	const n = m * (m + 1) / 2;
 	const mFactorial = BigintMath.factorial(BigInt(m));
 	let result = mFactorial;
-	let cycleCounts = new Map<string, { value: number }>();
+	const cycleCounts = new Map<string, { value: number }>();
 	for(let j = 1; j <= n; j ++) {
-		let nMinusJFactorial = BigintMath.factorial(BigInt(n - j));
+		const nMinusJFactorial = BigintMath.factorial(BigInt(n - j));
 		for(let i = j + 1; i <= n; i ++) {
 			const period = MathUtils.lcm(permutation.cycleLength(i), permutation.cycleLength(j));
 			const cycleCount = getCycleCount(permutation, i, j, cycleCounts, period);
 			if(mFactorial % BigInt(period) !== 0n) {
-				throw new Error(`Period length did not divide m!, which means you need to rewrite the algorithm with extra code to handle this case.`);
+				throw new Error("Period length did not divide m!, which means you need to rewrite the algorithm with extra code to handle this case.");
 			}
 			result += (nMinusJFactorial * BigInt(cycleCount) * mFactorial / BigInt(period)) % modulo;
 			result %= modulo;

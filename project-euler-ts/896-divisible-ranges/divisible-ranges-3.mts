@@ -27,9 +27,9 @@ export const divisibleRanges = (size: number): PeriodicSet => {
 		return PeriodicSet.fromIncludes(period, r => isDivisible(size, r));
 	}
 	else {
-		let [factor1, factor2] = factors;
-		let candidates1 = streakify(divisibleRanges(size / factor1).multiply(factor1), factor1);
-		let candidates2 = streakify(divisibleRanges(size / factor2).multiply(factor2), factor2);
+		const [factor1, factor2] = factors;
+		const candidates1 = streakify(divisibleRanges(size / factor1).multiply(factor1), factor1);
+		const candidates2 = streakify(divisibleRanges(size / factor2).multiply(factor2), factor2);
 		const candidates = candidates1.intersection(candidates2);
 		const offsets = [...candidates.termsBelow(period)].filter(r => isDivisible(size, r));
 		return new PeriodicSet(period, offsets);
@@ -42,9 +42,9 @@ export const solve = (size: number) => {
 	if(factors.length === 1) {
 		return PeriodicSet.fromIncludes(period, r => isDivisible(size, r)).getTerm(size - 1);
 	}
-	let [factor1, factor2] = factors;
-	let candidates1 = streakify(divisibleRanges(size / factor1).multiply(factor1), factor1);
-	let candidates2 = streakify(divisibleRanges(size / factor2).multiply(factor2), factor2);
+	const [factor1, factor2] = factors;
+	const candidates1 = streakify(divisibleRanges(size / factor1).multiply(factor1), factor1);
+	const candidates2 = streakify(divisibleRanges(size / factor2).multiply(factor2), factor2);
 	let numFound = 0;
 	for(const candidate of candidates1.values()) {
 		if(candidates2.includes(candidate) && isDivisible(size, candidate)) {

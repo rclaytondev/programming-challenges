@@ -15,7 +15,7 @@ const solve = (setSize: number = 5): number => {
 				if(!clique.includes(prime) && clique.every(num => MathUtils.isPrime(Number.parseInt(`${num}${prime}`)) && MathUtils.isPrime(Number.parseInt(`${prime}${num}`)))) {
 					cliques[cliqueSize + 1].push([...clique, prime]);
 					if(cliqueSize + 1 === setSize) {
-						console.log(`Found a ${cliqueSize + 1}-clique! (${[...clique, prime].join(",")})`)
+						console.log(`Found a ${cliqueSize + 1}-clique! (${[...clique, prime].join(",")})`);
 						maxPrime = Math.min(maxPrime, prime - 2 * (setSize - 1));
 					}
 				}

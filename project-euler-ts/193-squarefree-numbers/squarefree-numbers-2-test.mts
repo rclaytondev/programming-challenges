@@ -8,7 +8,7 @@ describe("sizeOfUnion", () => {
 		const result = sizeOfUnion(
 			[new Set([1, 2]), new Set([3]), new Set([1, 4]), new Set([2, 3]), new Set([3, 5])],
 			s => s.size,
-			SetUtils.intersection
+			SetUtils.intersection,
 		);
 		assert.equal(result, 5);
 	});
@@ -16,7 +16,7 @@ describe("sizeOfUnion", () => {
 		const result = sizeOfUnion(
 			[new Set([1, 2]), new Set([2, 3])],
 			s => s.size,
-			SetUtils.intersection
+			SetUtils.intersection,
 		);
 		assert.equal(result, 3);
 	});

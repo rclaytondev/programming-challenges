@@ -5,7 +5,7 @@ import { MathUtils } from "../../utils-ts/modules/math/MathUtils.mjs";
 const MAX_MODULO = 10;
 
 const getModularSquares = (modulo: number) => {
-	let squares = new Set<number>();
+	const squares = new Set<number>();
 	for(let i = 0; i < modulo; i ++) {
 		squares.add((i ** 2) % modulo);
 	}

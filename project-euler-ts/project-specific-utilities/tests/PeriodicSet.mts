@@ -29,7 +29,7 @@ describe("PeriodicSet.intersection", () => {
 		const set2 = new PeriodicSet(7, [2, 5]);
 		const actual = set1.intersection(set2);
 		const expected = ArrayUtils.range(1, 35).filter(
-			n => [1, 3].includes(n % 5) && [2, 5].includes(n % 7)
+			n => [1, 3].includes(n % 5) && [2, 5].includes(n % 7),
 		); // 16, 23, 26, 33
 		assert.deepEqual(actual, new PeriodicSet(35, expected));
 	});

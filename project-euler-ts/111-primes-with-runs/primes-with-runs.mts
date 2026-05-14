@@ -39,7 +39,7 @@ export const primeSumMaxDigits = (numDigits: number, digit: number) => {
 	throw new Error(`Unexpected: did not find any ${numDigits}-digits prime numbers.`);
 };
 
-export const solve = (numDigits: number = 10) =>  {
+export const solve = (numDigits: number = 10) => {
 	let sum = 0;
 	for(let digit = 0; digit <= 9; digit ++) {
 		sum += primeSumMaxDigits(numDigits, digit);

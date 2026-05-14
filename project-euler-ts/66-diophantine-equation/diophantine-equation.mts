@@ -12,7 +12,7 @@ export const solve = () => {
 	let highestMinSolution = -Infinity;
 	for(let D = 1; D <= 50; D ++) {
 		if(Math.sqrt(D) % 1 === 0) { continue; }
-		const solution =  minSolution(D);
+		const solution = minSolution(D);
 		// console.log(`For D=${D}, the minimal solution has x=${solution}`);
 		if(solution > highestMinSolution) {
 			highestMinSolution = solution;

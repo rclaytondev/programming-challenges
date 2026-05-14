@@ -17,7 +17,7 @@ const compareExponentInFactorial = (num: bigint, prime: bigint, targetExponent: 
 		return (exponent === targetExponent) ? 0n : 1n;
 	}
 	return -1n;
-}
+};
 
 export const minDivisible = (prime: number, exponent: number, lowerBound: bigint = 1n): bigint => {
 	/*
@@ -28,9 +28,9 @@ export const minDivisible = (prime: number, exponent: number, lowerBound: bigint
 		BigInt(prime) * BigInt(exponent),
 		(n: bigint) => compareExponentInFactorial(n, BigInt(prime), BigInt(exponent)),
 		"first",
-		"after"
+		"after",
 	);
-}
+};
 
 export const smallestFactorialDivisible = (base: number, exponent: number, lowerBound: bigint = 1n, primes: number[] = [...Sequence.PRIMES.termsBelow(base)]) => {
 	let biggest = lowerBound;
@@ -60,7 +60,7 @@ export const factorialDivisibilitySum = (baseMin: number = 10, baseMax: number =
 		sum += last;
 	}
 	return sum;
-}
+};
 
 // console.time();
 // console.log(factorialDivisibilitySum(10, 1_000_000));

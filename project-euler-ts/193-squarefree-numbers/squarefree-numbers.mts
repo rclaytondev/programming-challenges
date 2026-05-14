@@ -7,9 +7,9 @@ export const numSquarefree = (upperBound: number, minPrimeIndex: number = 0): nu
 	}
 	return numSquarefree(
 		Math.floor(upperBound / minPrime),
-		minPrimeIndex + 1
+		minPrimeIndex + 1,
 	) + numSquarefree(
 		upperBound,
-		minPrimeIndex + 1
+		minPrimeIndex + 1,
 	);
 };

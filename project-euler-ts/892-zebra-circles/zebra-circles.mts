@@ -26,7 +26,7 @@ abstract class Edge {
 		this.vertex2 = vertex2;
 	}
 
-	hasVertex(vertex: number)  {
+	hasVertex(vertex: number) {
 		return this.vertex1 === vertex || this.vertex2 === vertex;
 	}
 	passesVertex(vertex: number) {
@@ -57,19 +57,19 @@ abstract class Edge {
 class LineEdge extends Edge {
 	type: "line" = "line";
 	edgeOfSameType(vertex1: number, vertex2: number) {
-		return new  LineEdge(vertex1, vertex2);
+		return new LineEdge(vertex1, vertex2);
 	}
 
 	toString() {
 		return `${Math.min(this.vertex1, this.vertex2)},${Math.max(this.vertex1, this.vertex2)}`;
 	}
-};
+}
 class ArcEdge extends Edge {
 	type: "arc" = "arc";
 	edgeOfSameType(vertex1: number, vertex2: number) {
-		return new  ArcEdge(vertex1, vertex2);
+		return new ArcEdge(vertex1, vertex2);
 	}
-};
+}
 
 class Region {
 	edges: Edge[] = [];
@@ -125,14 +125,14 @@ class PartialCutting {
 					[
 						new Region([
 							new ArcEdge(1, vertex),
-							new LineEdge(vertex, 1)
+							new LineEdge(vertex, 1),
 						]),
 						new Region([
 							new LineEdge(1, vertex),
-							new ArcEdge(vertex, 1)
-						])
-					]
-				)
+							new ArcEdge(vertex, 1),
+						]),
+					],
+				);
 			}
 		}
 		else {
@@ -162,7 +162,7 @@ class PartialCutting {
 		return new PartialCutting(
 			this.numPoints,
 			[...this.edges, newEdge],
-			[...this.regions.filter(r => r !== containingRegion), ...containingRegion.cut(newEdge)]
+			[...this.regions.filter(r => r !== containingRegion), ...containingRegion.cut(newEdge)],
 		);
 	}
 	adjacentRegions(region: Region) {
@@ -172,7 +172,7 @@ class PartialCutting {
 	coloringDifference() {
 		let numWhite = 0;
 		let numBlack = 0;
-		let visitedRegions = new Set<Region>();
+		const visitedRegions = new Set<Region>();
 		for(const { node, ancestors } of Tree.nodesAndAncestors(
 			this.regions[0], 
 			(region) => this.adjacentRegions(region).filter(r => !visitedRegions.has(r)))
@@ -233,13 +233,13 @@ describe("Region.cut", () => {
 			new ArcEdge(6, 8),
 			new LineEdge(8, 12),
 			new ArcEdge(12, 15),
-			new LineEdge(15, 6)
+			new LineEdge(15, 6),
 		]));
 		assert.deepEqual(subregion2, new Region([
 			new ArcEdge(15, 1),
 			new LineEdge(1, 5),
 			new ArcEdge(5, 6),
-			new LineEdge(6, 15)
+			new LineEdge(6, 15),
 		]));
 	});
 });

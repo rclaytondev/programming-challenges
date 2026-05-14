@@ -18,7 +18,7 @@ describe("sumsOfSquareAndCube", () => {
 			[2285 ** 2, 20 ** 3],
 			[2223 ** 2, 66 ** 3],
 			[1810 ** 2, 125 ** 3],
-			[1197 ** 2, 156 ** 3]
+			[1197 ** 2, 156 ** 3],
 		]);
 	});
 	it("does not count ways where the cube is 1", () => {

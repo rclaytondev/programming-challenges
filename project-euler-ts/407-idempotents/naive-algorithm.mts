@@ -11,7 +11,7 @@ export const largestIdempotent = (modulo: number) => {
 export const naiveIdempotentSum = (upperBound: number) => {
 	let sum = 0;
 	for(let m = 1; m <= upperBound; m ++) {
-		sum +=  largestIdempotent(m);
+		sum += largestIdempotent(m);
 	}
 	return sum;
 };

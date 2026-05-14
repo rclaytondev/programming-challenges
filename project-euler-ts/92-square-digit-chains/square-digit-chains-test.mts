@@ -7,4 +7,4 @@ describe("getChainEnd", () => {
 		assert.equal(getChainEnd(44), 1);
 		assert.equal(getChainEnd(85), 89);
 	});
-});;
+});

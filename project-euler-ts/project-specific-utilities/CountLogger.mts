@@ -30,7 +30,7 @@ export class CountLogger {
 		while(this.counter >= this.milestoneSequence(this.milestoneIndex)) {
 			const milestone = this.milestoneSequence(this.milestoneIndex);
 			if(shouldLog) {
-				const name = (this.label ? `counter "${this.label}"` : `counter`);
+				const name = (this.label ? `counter "${this.label}"` : "counter");
 				const time = CountLogger.formatTime(now - this.startTime);
 				const percent = (this.total == null) ? "" : ` (${(100 * milestone / this.total).toFixed(1)}%)`;
 				this.timeOfLastLog = now;

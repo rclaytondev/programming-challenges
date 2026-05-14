@@ -11,7 +11,7 @@ const getSets = function*(setSize: number, sum: number, partialSet: number[] = [
 		outerLoop: for(const nextTerm of Sequence.PRIMES.termsBetween(
 			partialSet[partialSet.length - 1] ?? 0,
 			(sum - MathUtils.sum(partialSet)) / (setSize - partialSet.length),
-			"exclusive", "inclusive"
+			"exclusive", "inclusive",
 		)) {
 			for(const previousTerm of partialSet) {
 				if(!MathUtils.isPrime(Number.parseInt(`${previousTerm}${nextTerm}`)) || !MathUtils.isPrime(Number.parseInt(`${nextTerm}${previousTerm}`))) {

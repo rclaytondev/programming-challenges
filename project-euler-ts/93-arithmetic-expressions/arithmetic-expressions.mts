@@ -45,7 +45,7 @@ const streakLength = (nums: Set<number>) => {
 const solve = () => {
 	return ArrayUtils.maxEntry(
 		[...GenUtils.subsets(ArrayUtils.range(1, MAX_DIGIT), NUM_DIGITS)],
-		s => streakLength(arithmeticCombinations([...s]))
+		s => streakLength(arithmeticCombinations([...s])),
 	);
 };
 // console.time();

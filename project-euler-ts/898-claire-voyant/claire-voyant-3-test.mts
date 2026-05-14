@@ -8,7 +8,7 @@ describe("getProductDistribution", () => {
 		const dist1 = new DiscreteDistribution(new Map([
 			[new BigRational(1), new BigRational(1, 4)],
 			[new BigRational(2), new BigRational(1, 2)],
-			[new BigRational(3), new BigRational(1, 4)]
+			[new BigRational(3), new BigRational(1, 4)],
 		]));
 		const dist2 = new DiscreteDistribution(new Map([
 			[new BigRational(1), new BigRational(1, 6)],

@@ -9,7 +9,7 @@ const HEXAGONALS = [...new Sequence(n => n * (2 * n - 1)).termsBetween(1000, 100
 const HEPTAGONALS = [...new Sequence(n => n * (5 * n - 3) / 2).termsBetween(1000, 10000)];
 const OCTAGONALS = [...new Sequence(n => n * (3 * n - 2)).termsBetween(1000, 10000)];
 
-const POLYGONAL_TYPES = [TRIANGULARS,  SQUARES, PENTAGONALS, HEXAGONALS, HEPTAGONALS, OCTAGONALS];
+const POLYGONAL_TYPES = [TRIANGULARS, SQUARES, PENTAGONALS, HEXAGONALS, HEPTAGONALS, OCTAGONALS];
 // const ALL_POLYGONALS = POLYGONAL_TYPES.flat().sort();
 // const DUPLICATES = ALL_POLYGONALS.filter((num, index) => num === ALL_POLYGONALS[index + 1]);
 // for(const polygonalType of POLYGONAL_TYPES) {
@@ -35,7 +35,7 @@ const solve = () => {
 					console.log(`[${[...partialResult.numbers, polygonalNumber].join(", ")}]`);
 					yield {
 						numbers: [...partialResult.numbers, polygonalNumber],
-						polygonalsUsed: [...partialResult.polygonalsUsed, polygonalType]
+						polygonalsUsed: [...partialResult.polygonalsUsed, polygonalType],
 					};
 				}
 			}

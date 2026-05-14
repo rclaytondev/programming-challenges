@@ -97,7 +97,7 @@ export class GroupedArray<T> {
 			this.groups.splice(
 				groupIndex, 1,
 				{ value: value, length: 1 },
-				{ value: group.value, length: group.length - 1 }
+				{ value: group.value, length: group.length - 1 },
 			);
 			nextGroupIndex ++;
 		}
@@ -105,7 +105,7 @@ export class GroupedArray<T> {
 			this.groups.splice(
 				groupIndex, 1,
 				{ value: group.value, length: group.length - 1 },
-				{ value: value, length: 1 }
+				{ value: value, length: 1 },
 			);
 			nextGroupIndex ++;
 		}
@@ -164,7 +164,7 @@ export class GroupedArray<T> {
 		}
 	}
 	toString() {
-		return  this.groups.map(g => g.length === 1 ? `${g.value}` : `${g.value} (x${g.length})`).join(", ");
+		return this.groups.map(g => g.length === 1 ? `${g.value}` : `${g.value} (x${g.length})`).join(", ");
 	}
 
 	isValid() {

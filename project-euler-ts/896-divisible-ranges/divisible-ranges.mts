@@ -31,7 +31,7 @@ const deleteKey = function<K, V>(map: Map<K, V>, key: K) {
 
 const setInPermutation = (state: State, index: number, value: number): State => ({
 	indexPossibilities: deleteKey(mapMap(state.indexPossibilities, arr => arr.filter(v => v !== value)), index),
-	valuePossibilities: deleteKey(mapMap(state.valuePossibilities, arr => arr.filter(i => i !== index)), value)
+	valuePossibilities: deleteKey(mapMap(state.valuePossibilities, arr => arr.filter(i => i !== index)), value),
 });
 
 const nextStates = (state: State) => {

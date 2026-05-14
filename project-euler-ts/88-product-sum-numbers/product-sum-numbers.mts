@@ -6,7 +6,7 @@ const addToSet = (set: NumSet, num: number): NumSet => ({
 	size: set.size + 1,
 	sum: set.sum + num,
 	product: set.product * num,
-	max: Math.max(set.max, num)
+	max: Math.max(set.max, num),
 });
 
 export const minimalProductSumNumber = (setSize: number) => {
@@ -30,7 +30,7 @@ export const minimalProductSumNumber = (setSize: number) => {
 
 
 export const solve = (upperBound: number) => {
-	let numbers = new Set<number>();
+	const numbers = new Set<number>();
 	for(let setSize = 2; setSize <= upperBound; setSize ++) {
 		numbers.add(minimalProductSumNumber(setSize));
 	}

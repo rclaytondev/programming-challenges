@@ -9,7 +9,7 @@ const getNewSet = (set: NumSet): NumSet => ({
 	size: set.size + 1,
 	sum: set.sum + set.next,
 	product: set.product * set.next,
-	next: set.next
+	next: set.next,
 });
 
 export const solve = (maxSetSize: number) => {

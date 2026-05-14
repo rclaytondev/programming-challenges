@@ -17,7 +17,7 @@ export const primeSubsetSums = (upperBound: bigint, modulo: bigint = 10n ** 16n)
 	return BigintMath.sum(
 		[...numSetsWithSums.keys()]
 		.filter(BigintMath.isPrime)
-		.map(k => numSetsWithSums.get(k)!)
+		.map(k => numSetsWithSums.get(k)!),
 	) % modulo;
 };
 

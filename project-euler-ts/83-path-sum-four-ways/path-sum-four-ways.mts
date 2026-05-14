@@ -16,7 +16,7 @@ const initializeNodes = () => {
 		for(let column = 0; column < MATRIX.width; column ++) {
 			nodes[row][column] = {
 				value: Infinity,
-				visited: false
+				visited: false,
 			};
 		}
 	}
@@ -43,7 +43,7 @@ const neighbors = (row: number, column: number) => {
 		[row - 1, column],
 		[row + 1, column],
 		[row, column - 1],
-		[row, column + 1]
+		[row, column + 1],
 	].filter(([r, c]) => 0 <= r && r < MATRIX.width && 0 <= c && c < MATRIX.height);
 };
 const propagate = (nodes: NodeInfo[][], row: number, column: number) => {

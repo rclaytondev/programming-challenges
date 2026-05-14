@@ -18,7 +18,7 @@ const getInadmissiblePoints = (width: number, height: number) => {
 	return points;
 };
 
-let inadmissiblePathsCache = new Map<string, bigint>();
+const inadmissiblePathsCache = new Map<string, bigint>();
 export const inadmissiblePathsTo = (point: Vector, modulo: number) => {
 	const argsString = `${point},${modulo}`;
 	const reversedArgsString = `${new Vector(point.y, point.x)},${modulo}`;
@@ -44,14 +44,14 @@ const admissiblePathsTo = (point: Vector, modulo: number) => {
 	const totalPaths = modularCombination(point.x + point.y, point.x, modulo);
 	return BigintMath.generalizedModulo(
 		BigInt(totalPaths) - inadmissiblePathsTo(point, modulo),
-		BigInt(modulo)
+		BigInt(modulo),
 	);
 };
 
 export const admissiblePaths = (gridSize: number, modulo: number) => {
 	return admissiblePathsTo(
 		new Vector(gridSize, gridSize),
-		modulo
+		modulo,
 	);
 };
 
@@ -88,7 +88,7 @@ export const modularCombination = Utils.memoize(
 			* BigInt(field.inverse(modularFactorial(n - k, modulo)))
 		) % BigInt(modulo));
 	},
-	(n: number, k: number, modulo: number): [number, number, number] => [n, Math.min(k, n-k), modulo]
+	(n: number, k: number, modulo: number): [number, number, number] => [n, Math.min(k, n-k), modulo],
 );
 
 // console.time();

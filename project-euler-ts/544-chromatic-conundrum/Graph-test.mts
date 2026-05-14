@@ -12,7 +12,7 @@ describe("Graph.edges", () => {
 				[1, 2],
 				[2, 3],
 				[4, 4],
-			]
+			],
 		);
 		const edges = [...graph.edges()];
 		assert.equal(edges.length, 3);
