@@ -1,6 +1,7 @@
-import { assert } from "chai";
-import { describe } from "mocha";
+import { ArrayUtils } from "../../../utils-ts/modules/core-extensions/ArrayUtils.mjs";
 import { Tree } from "../../../utils-ts/modules/math/Tree.mjs";
+
+const MODULO = 1234567891;
 
 const iterateCyclically = function*<T>(items: T[], startValue: T) {
 	const startIndex = items.indexOf(startValue);
@@ -15,10 +16,9 @@ const iterateCyclically = function*<T>(items: T[], startValue: T) {
 	}
 };
 
-abstract class Edge {
-	abstract type: "line" | "arc";
-	vertex1: number;
-	vertex2: number;
+export class Edge {
+	readonly vertex1: number;
+	readonly vertex2: number;
 	constructor(vertex1: number, vertex2: number) {
 		this.vertex1 = vertex1;
 		this.vertex2 = vertex2;
@@ -50,65 +50,60 @@ abstract class Edge {
 		}
 		return result;
 	}
-	abstract edgeOfSameType(vertex1: number, vertex2: number): Edge;
-}
-class LineEdge extends Edge {
-	type = "line" as const;
-	edgeOfSameType(vertex1: number, vertex2: number) {
-		return new LineEdge(vertex1, vertex2);
+
+	reverse() {
+		return new Edge(this.vertex2, this.vertex1);
 	}
 
+	static areClockwise(vertex1: number, vertex2: number, vertex3: number) {
+		/* Returns whether vertex1, vertex2, and vertex3 are arranged clockwise (in that order) around the circle. */
+		return (
+			(vertex1 < vertex2 && vertex2 < vertex3) ||
+			(vertex3 < vertex1 && vertex1 < vertex2) ||
+			(vertex2 < vertex3 && vertex3 < vertex1)
+		);
+	}
+
+	sort() {
+		return new Edge(Math.min(this.vertex1, this.vertex2), Math.max(this.vertex1, this.vertex2));
+	}
 	toString() {
-		return `${Math.min(this.vertex1, this.vertex2)},${Math.max(this.vertex1, this.vertex2)}`;
-	}
-}
-class ArcEdge extends Edge {
-	type = "arc" as const;
-	edgeOfSameType(vertex1: number, vertex2: number) {
-		return new ArcEdge(vertex1, vertex2);
+		return `(${this.vertex1},${this.vertex2})`;
 	}
 }
 
-class Region {
-	edges: Edge[] = [];
+export class Region {
+	readonly edges: readonly Edge[] = [];
 
 	constructor(edges: Edge[]) {
-		this.edges = edges;
+		this.edges = edges.sort((e1, e2) => Math.min(e1.vertex1, e1.vertex2) - Math.min(e2.vertex1, e2.vertex2));
 	}
 
-	cut(edge: LineEdge): [Region, Region] {
+	cut(edge: Edge): [Region, Region] {
 		const regions = [];
-		for(const [startVertex, endVertex] of [[edge.vertex1, edge.vertex2], [edge.vertex2, edge.vertex1]] as const) {
-			const startingEdge2 = this.edges.find(e => e.passesVertex(startVertex));
-			if(!startingEdge2) { throw new Error(`Did not find an edge passing vertex ${startVertex}`); }
-			const edges = [startingEdge2.edgeOfSameType(startVertex, startingEdge2.vertex2)];
-			for(const edge of [...iterateCyclically(this.edges, startingEdge2)].slice(1)) {
-				if(edge.passesVertex(endVertex)) {
-					edges.push(edge.edgeOfSameType(edge.vertex1, endVertex));
-					break;
-				}
-				edges.push(edge);
-			}
-			edges.push(new LineEdge(endVertex, startVertex));
-			regions.push(new Region(edges));
-		}
-		return regions as [Region, Region];
+		return [
+			new Region([
+				edge.reverse(), 
+				...this.edges.filter(e => Edge.areClockwise(edge.vertex1, e.vertex1, edge.vertex2)),
+			]),
+			new Region([
+				edge, 
+				...this.edges.filter(e => !Edge.areClockwise(edge.vertex1, e.vertex1, edge.vertex2)),
+			]),
+		];
 	}
 	unusedVertices(numPoints: number) {
-		let vertices: number[] = [];
-		for(const edge of this.edges.filter(e => e instanceof ArcEdge)) {
-			vertices = [...vertices, ...edge.passedVertices(numPoints)];
-		}
-		return vertices;
+		const usedVertices = new Set(this.edges.map(e => e.passedVertices(numPoints)).flat(1));
+		return ArrayUtils.range(1, numPoints, "inclusive", "inclusive").filter(v => !usedVertices.has(v));
 	}
 }
 
-class PartialCutting {
-	numPoints: number;
-	edges: LineEdge[];
-	regions: Region[];
+export class PartialCutting {
+	readonly numPoints: number;
+	readonly edges: readonly Edge[];
+	readonly regions: readonly Region[];
 
-	constructor(numPoints: number, edges: LineEdge[] = [], regions: Region[] = [new Region([new ArcEdge(1, numPoints)])]) {
+	constructor(numPoints: number, edges: Edge[] = [], regions: Region[] = [new Region([])]) {
 		this.numPoints = numPoints;
 		this.edges = edges;
 		this.regions = regions;
@@ -119,16 +114,10 @@ class PartialCutting {
 			for(let vertex = 2; vertex <= this.numPoints; vertex += 2) {
 				yield new PartialCutting(
 					this.numPoints,
-					[new LineEdge(1, vertex)],
+					[new Edge(1, vertex)],
 					[
-						new Region([
-							new ArcEdge(1, vertex),
-							new LineEdge(vertex, 1),
-						]),
-						new Region([
-							new LineEdge(1, vertex),
-							new ArcEdge(vertex, 1),
-						]),
+						new Region([new Edge(1, vertex)]),
+						new Region([new Edge(vertex, 1)]),
 					],
 				);
 			}
@@ -156,7 +145,7 @@ class PartialCutting {
 		return null;
 	}
 	connect(vertex1: number, vertex2: number, containingRegion: Region) {
-		const newEdge = new LineEdge(vertex1, vertex2);
+		const newEdge = new Edge(vertex1, vertex2);
 		return new PartialCutting(
 			this.numPoints,
 			[...this.edges, newEdge],
@@ -164,29 +153,38 @@ class PartialCutting {
 		);
 	}
 	adjacentRegions(region: Region) {
-		const edges = new Set(region.edges.filter(e => e instanceof LineEdge).map(e => (e as LineEdge).toString()));
-		return this.regions.filter(r => r !== region && r.edges.some(e => e instanceof LineEdge && edges.has(e.toString())));
+		const edges = new Set(region.edges.map(e => e.sort().toString()));
+		return this.regions.filter(r => r !== region && r.edges.some(e => edges.has(e.sort().toString())));
 	}
-	coloringDifference() {
-		let numWhite = 0;
-		let numBlack = 0;
+	getColoring() {
 		const visitedRegions = new Set<Region>();
+		const coloredRegions: [Region, "white" | "black"][] = [];
 		for(const { node, ancestors } of Tree.nodesAndAncestors(
 			this.regions[0], 
 			(region) => this.adjacentRegions(region).filter(r => !visitedRegions.has(r)))
 		) {
 			visitedRegions.add(node);
 			if(ancestors.length % 2 === 0) {
-				numWhite ++;
+				coloredRegions.push([node, "white"]);
 			}
 			else {
-				numBlack ++;
+				coloredRegions.push([node, "black"]);
 			}
 		}
+		return coloredRegions;
+	}
+	coloringDifference() {
+		const coloring = this.getColoring();
+		const numWhite = coloring.filter(([region, color]) => color === "white").length;
+		const numBlack = coloring.filter(([region, color]) => color === "black").length;
 		return Math.abs(numWhite - numBlack);
 	}
+
+	// equals(cutting: PartialCutting) {
+
+	// }
 }
-const allCuttings = function*(numPoints: number) {
+export const allCuttings = function*(numPoints: number) {
 	const EMPTY_CUTTING = new PartialCutting(numPoints);
 	for(const cutting of Tree.leaves(EMPTY_CUTTING, c => c.getChildren())) {
 		if(cutting.edges.length * 2 === numPoints) {
@@ -202,48 +200,12 @@ export const coloringDifferenceSum = (numPoints: number) => {
 	return sum;
 };
 
-describe("allCuttings", () => {
-	it("returns the correct number of cuttings for 2 points", () => {
-		const cuttings = [...allCuttings(2)];
-		assert.lengthOf(cuttings, 1);
-	});
-	it("returns the correct number of cuttings for 4 points", () => {
-		const cuttings = [...allCuttings(4)];
-		assert.lengthOf(cuttings, 2);
-	});
-	it("returns the correct number of cuttings for 6 points", () => {
-		const cuttings = [...allCuttings(6)];
-		assert.lengthOf(cuttings, 5);
-	});
-});
-describe("Region.cut", () => {
-	it("cuts the region along the given line segment, returning the resulting two smaller regions", () => {
-		const region = new Region([
-			new LineEdge(1, 5),
-			new ArcEdge(5, 8),
-			new LineEdge(8, 12),
-			new ArcEdge(12, 1),
-		]);
-		const subregions = region.cut(new LineEdge(6, 15));
-		const subregion1 = subregions.find(s => s.edges.some(e => e.hasVertex(8)));
-		const subregion2 = subregions.find(s => s !== subregion1);
-		assert.deepEqual(subregion1, new Region([
-			new ArcEdge(6, 8),
-			new LineEdge(8, 12),
-			new ArcEdge(12, 15),
-			new LineEdge(15, 6),
-		]));
-		assert.deepEqual(subregion2, new Region([
-			new ArcEdge(15, 1),
-			new LineEdge(1, 5),
-			new ArcEdge(5, 6),
-			new LineEdge(6, 15),
-		]));
-	});
-});
-describe("coloringDifferenceSum", () => {
-	// it("returns the correct answer for the input of 100 from Project Euler", () => {
-	// 	const sum = coloringDifferenceSum(100);
-	// 	assert.equal(sum % MODULO, 1172122931);
-	// });
-});
+export const cuttingsWithColoringDifference = (numPoints: number, coloringDifference: number) => {
+	let num = 0;
+	for(const cutting of allCuttings(numPoints)) {
+		if(cutting.coloringDifference() === coloringDifference) {
+			num ++;
+		}
+	}
+	return num;
+};

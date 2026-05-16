@@ -24,10 +24,11 @@ export const numLosing = (maxPileSize: bigint) => {
 	return total;
 };
 
-const minimumExcludant = (nums: number[]) => {
+export const minimumExcludant = (nums: number[]) => {
+	const numsSet = new Set(nums);
 	let i = 0;
 	while(true) {
-		if(!nums.includes(i)) { return i; }
+		if(!numsSet.has(i)) { return i; }
 		i ++;
 	}
 };
