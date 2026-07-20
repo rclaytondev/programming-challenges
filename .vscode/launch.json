@@ -50,7 +50,9 @@
 				"--timeout",
 				"999999",
 				"--colors",
-				"${workspaceFolder}\\compiled\\**\\*.mjs"
+				"${workspaceFolder}/compiled/**/*.mjs",
+				"--exclude",
+				"**/*visualization.mjs"
 			],
 			"internalConsoleOptions": "openOnSessionStart",
 			"name": "All Mocha Tests",

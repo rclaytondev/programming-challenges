@@ -1,7 +1,10 @@
-import { CanvasIO, canvasIO } from "../../../utils-ts/modules/CanvasIO.mjs";
+import { CanvasIO } from "../../../utils-ts/modules/CanvasIO.mjs";
 import { Vector } from "../../../utils-ts/modules/geometry/Vector.mjs";
 import { MathUtils } from "../../../utils-ts/modules/math/MathUtils.mjs";
 import { allCuttings, PartialCutting, Region } from "./zebra-circles.mjs";
+
+const canvasIO = new CanvasIO();
+canvasIO.attach();
 
 const NUM_POINTS = 4;
 const TEXT_SIZE = 20;
@@ -62,6 +65,4 @@ class Visualization {
 }
 
 
-if(canvasIO) {
-	Visualization.display(canvasIO);
-}
+Visualization.display(canvasIO);

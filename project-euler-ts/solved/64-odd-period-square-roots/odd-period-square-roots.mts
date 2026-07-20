@@ -1,9 +1,8 @@
-import { assert } from "chai";
 import { Rational } from "../../../utils-ts/modules/math/Rational.mjs";
 import { MathUtils } from "../../../utils-ts/modules/math/MathUtils.mjs";
 import { ArrayUtils } from "../../../utils-ts/modules/core-extensions/ArrayUtils.mjs";
 
-class SqrtPlusRational {
+export class SqrtPlusRational {
 	readonly numberInSqrt: number;
 	readonly sqrtCoefficient: number;
 	readonly rationalPart: number;
@@ -46,6 +45,29 @@ class SqrtPlusRational {
 		);
 	}
 
+	add(sqrtPlusRational: SqrtPlusRational) {
+		if(this.numberInSqrt !== sqrtPlusRational.numberInSqrt) {
+			throw new Error("Cannot add numbers in different quadratic fields as the result will not be representable in this format.");
+		}
+
+		return new SqrtPlusRational(
+			this.numberInSqrt,
+			this.sqrtCoefficient * sqrtPlusRational.denominator + sqrtPlusRational.sqrtCoefficient * this.denominator,
+			this.rationalPart * sqrtPlusRational.denominator + sqrtPlusRational.rationalPart * this.denominator,
+			this.denominator * sqrtPlusRational.denominator,
+		);
+	}
+	opposite() {
+		return new SqrtPlusRational(
+			this.numberInSqrt,
+			-this.sqrtCoefficient,
+			-this.rationalPart,
+			this.denominator,
+		);
+	}
+	subtract(sqrtPlusRational: SqrtPlusRational) {
+		return this.add(sqrtPlusRational.opposite());
+	}
 	inverse() {
 		return new SqrtPlusRational(
 			this.numberInSqrt,
@@ -65,6 +87,25 @@ class SqrtPlusRational {
 			this.denominator,
 		);
 	}
+	multiplyByInteger(integer: number) {
+		if(integer !== Math.floor(integer)) {
+			throw new Error("Expected input to be an integer.");
+		}
+		return new SqrtPlusRational(
+			this.numberInSqrt,
+			this.sqrtCoefficient * integer,
+			this.rationalPart * integer,
+			this.denominator,
+		);
+	}
+	multiplyByRational(rational: Rational) {
+		return new SqrtPlusRational(
+			this.numberInSqrt,
+			this.sqrtCoefficient * rational.numerator,
+			this.rationalPart * rational.denominator,
+			this.denominator * rational.denominator,
+		);
+	}
 
 	equals(sqrtPlusRational: SqrtPlusRational) {
 		if(sqrtPlusRational.numberInSqrt !== this.numberInSqrt) {
@@ -75,9 +116,17 @@ class SqrtPlusRational {
 			&& new Rational(this.rationalPart, this.denominator).equals(new Rational(sqrtPlusRational.rationalPart, sqrtPlusRational.denominator))
 		);
 	}
+
+	isInteger() {
+		const sqrt = Math.floor(Math.sqrt(this.numberInSqrt));
+		if(sqrt ** 2 === this.numberInSqrt) {
+			return (this.rationalPart + this.sqrtCoefficient * sqrt) % this.denominator === 0;
+		}
+		return this.numberInSqrt === 0 || this.sqrtCoefficient === 0;
+	}
 }
 
-const sqrtContinuedFractionPeriod = (numberInSqrt: number) => {
+export const sqrtContinuedFractionPeriod = (numberInSqrt: number) => {
 	const start = new SqrtPlusRational(numberInSqrt, 1, 0, 1);
 	const results = [start];
 	while(true) {
@@ -91,27 +140,6 @@ const sqrtContinuedFractionPeriod = (numberInSqrt: number) => {
 		results.push(next);
 	}
 };
-
-describe("sqrtContinuedFractionPeriod", () => {
-	const cases: [number, number][] = [
-		[2, 1],
-		[3, 2],
-		[5, 1],
-		[6, 2],
-		[7, 4],
-		[8, 2],
-		[10, 1],
-		[11, 2],
-		[12, 2],
-		[13, 5],
-	];
-	for(const [input, expected] of cases) {
-		it(`outputs ${expected} for an input of ${input}`, () => {
-			const result = sqrtContinuedFractionPeriod(input);
-			assert.equal(result, expected);
-		});
-	}
-});
 
 const isSquare = (n: number) => Math.floor(Math.sqrt(n)) ** 2 === n;
 
