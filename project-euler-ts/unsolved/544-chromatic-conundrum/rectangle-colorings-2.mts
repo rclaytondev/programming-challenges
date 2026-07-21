@@ -57,7 +57,9 @@ export class ColoredRectangle {
 		);
 	}
 
+	static calls = 0;
 	colorings(splitMode: number | "middle" = "middle") {
+		ColoredRectangle.calls ++;
 		if(this.width === 0 || this.height === 0) {
 			return 1n;
 		}
