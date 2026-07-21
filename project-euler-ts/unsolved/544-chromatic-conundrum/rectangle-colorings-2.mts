@@ -36,43 +36,34 @@ export class ColoredRectangle {
 		return new ColoredRectangle(this.height, this.width, this.maxColors, this.topColors, this.bottomColors, this.leftColors, this.rightColors);
 	}
 
-	colorings() {
-		if(this.height % 2 === 0) {
-			return this.oddHeightColorings();
+	colorings(splitMode: number | "auto" = "auto") {
+		if(typeof splitMode === "number") {
+			return this.coloringsBySplitRow(splitMode, "auto", "auto");
+		}
+		else if(this.height % 2 === 1) {
+			return this.coloringsBySplitRow((this.height - 1) / 2, "auto", "auto");
 		}
 		else {
-			return this.evenHeightColorings();
+			return this.coloringsBySplitRow(this.height / 2 - 1, "auto", 0);
 		}
 	}
-	oddHeightColorings() {
+	coloringsBySplitRow(rowY: number, topSplit: number | "auto", bottomSplit: number | "auto") {
 		if(this.height % 2 === 0) {
 			throw new Error("Called oddHeightColorings on a rectangle with even height.");
 		}
 
-		const middleRowY = (this.height - 1) / 2;
-		const rowCombinations = this.rowCombinations(middleRowY);
+		const rowCombinations = this.rowCombinations(rowY);
 		const maxColorUsed = this.maxColorUsed();
 		let colorings = 0;
 		for(const row of rowCombinations) {
 			const recolorings = this.rowRecolorings(maxColorUsed, Math.max(...row));
-			const topHalf = this.splitTop(middleRowY, row);
-			const bottomHalf = this.splitBottom(middleRowY, row);
-			const topHalfColorings = topHalf.colorings();
-			const bottomHalfColorings = bottomHalf.colorings();
+			const topHalf = this.splitTop(rowY, row);
+			const bottomHalf = this.splitBottom(rowY, row);
+			const topHalfColorings = topHalf.colorings(topSplit);
+			const bottomHalfColorings = bottomHalf.colorings(bottomSplit);
 			colorings += recolorings * topHalfColorings * bottomHalfColorings;
 		}
 		return colorings;
-	}
-	evenHeightColorings() {
-		if(this.height % 2 === 1) {
-			throw new Error("Called evenHeightColorings on a rectangle with odd height.");
-		}
-		
-		const topRowCombinations = this.rowCombinations(this.height / 2 - 1);
-		const colorings = 0;
-		for(const topRow of topRowCombinations) {
-			
-		}
 	}
 
 	rowCombinations(rowY: number, row: number[] = [], maxColorUsed: number = Math.max(...row, this.maxColorUsed())): number[][] {
