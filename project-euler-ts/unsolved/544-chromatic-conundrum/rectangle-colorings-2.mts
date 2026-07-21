@@ -31,6 +31,13 @@ export class ColoredRectangle {
 	static empty(width: number, height: number, maxColors: number) {
 		return new ColoredRectangle(width, height, maxColors, null, null, null, null);
 	}
+	static coloringSum(width: number, height: number, maxColors: number) {
+		let sum = 0;
+		for(let i = 1; i <= maxColors; i ++) {
+			sum += ColoredRectangle.empty(width, height, i).colorings();
+		}
+		return sum;
+	}
 
 	transpose() {
 		return new ColoredRectangle(this.height, this.width, this.maxColors, this.topColors, this.bottomColors, this.leftColors, this.rightColors);
@@ -177,10 +184,10 @@ export class ColoredRectangle {
 	}
 }
 
-(() => {
-	const rectangle = ColoredRectangle.empty(6, 6, 90);
-	console.time();
-	console.log(rectangle.colorings());
-	console.timeEnd();
-	debugger;
-}) ();
+// (() => {
+// 	const rectangle = ColoredRectangle.empty(6, 6, 90);
+// 	console.time();
+// 	console.log(rectangle.colorings());
+// 	console.timeEnd();
+// 	debugger;
+// }) ();

@@ -20,6 +20,14 @@ describe("ColoredRectangle.colorings", () => {
 	});
 });
 
+describe("ColoredRectangle.coloringSum", () => {
+	it("matches the result from Project Euler for a 4x4 with at most 15 colors", () => {
+		const sum = ColoredRectangle.coloringSum(4, 4, 15);
+		debugger;
+		assert.equal(sum % (10 ** 9 + 7), 325951319);
+	});
+});
+
 describe("ColoredRectangle.rowCombinations", () => {
 	it("returns all the ways of coloring the given row, up to permuting the colors", () => {
 		const rectangle = ColoredRectangle.empty(2, 2, 3);
