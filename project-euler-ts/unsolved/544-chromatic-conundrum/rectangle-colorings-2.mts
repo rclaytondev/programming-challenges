@@ -44,11 +44,13 @@ export class ColoredRectangle {
 		if(typeof splitMode === "number") {
 			return this.coloringsBySplitRow(splitMode, "middle", "middle");
 		}
-		else if(this.height % 2 === 1) {
-			return this.coloringsBySplitRow((this.height - 1) / 2, "middle", "middle");
+
+		const normalized = this.normalize();
+		if(normalized.height % 2 === 1) {
+			return normalized.coloringsBySplitRow((normalized.height - 1) / 2, "middle", "middle");
 		}
 		else {
-			return this.coloringsBySplitRow(this.height / 2 - 1, "middle", 0);
+			return normalized.coloringsBySplitRow(normalized.height / 2 - 1, "middle", 0);
 		}
 	}
 	coloringsBySplitRow(rowY: number, topSplit: number | "middle", bottomSplit: number | "middle") {
@@ -64,6 +66,18 @@ export class ColoredRectangle {
 			colorings += recolorings * topHalfColorings * bottomHalfColorings;
 		}
 		return colorings;
+	}
+
+	normalize() {
+		// eslint-disable-next-line @typescript-eslint/no-this-alias
+		let normalized: ColoredRectangle = this;
+		const unrotatedRowSize = this.width * ((this.height % 2 === 0) ? 2 : 1);
+		const rotatedRowSize = this.height * ((this.width % 2 === 0) ? 2 : 1);
+		if(rotatedRowSize < unrotatedRowSize) {
+			normalized = normalized.transpose();
+		}
+
+		return normalized;
 	}
 
 	rowCombinations(rowY: number, row: number[] = [], maxColorUsed: number = Math.max(...row, this.maxColorUsed())): number[][] {
@@ -151,7 +165,7 @@ export class ColoredRectangle {
 }
 
 (() => {
-	const rectangle = ColoredRectangle.empty(5, 4, 90);
+	const rectangle = ColoredRectangle.empty(6, 5, 90);
 	console.time();
 	console.log(rectangle.colorings());
 	console.timeEnd();
