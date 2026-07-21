@@ -1,5 +1,5 @@
 import { Vector } from "../../../utils-ts/modules/geometry/Vector.mjs";
-import { MathUtils } from "../../../utils-ts/modules/math/MathUtils.mjs";
+import { BigintMath } from "../../../utils-ts/modules/math/BigintMath.mjs";
 
 export class ColoredRectangle {
 	readonly width: number;
@@ -32,7 +32,7 @@ export class ColoredRectangle {
 		return new ColoredRectangle(width, height, maxColors, null, null, null, null);
 	}
 	static coloringSum(width: number, height: number, maxColors: number) {
-		let sum = 0;
+		let sum = 0n;
 		for(let i = 1; i <= maxColors; i ++) {
 			sum += ColoredRectangle.empty(width, height, i).colorings();
 		}
@@ -45,7 +45,7 @@ export class ColoredRectangle {
 
 	colorings(splitMode: number | "middle" = "middle") {
 		if(this.width === 0 || this.height === 0) {
-			return 1;
+			return 1n;
 		}
 
 		const cacheKey = this.cacheKey();
@@ -71,7 +71,7 @@ export class ColoredRectangle {
 	coloringsBySplitRow(rowY: number, topSplit: number | "middle", bottomSplit: number | "middle") {
 		const rowCombinations = this.rowCombinations(rowY);
 		const maxColorUsed = this.maxColorUsed();
-		let colorings = 0;
+		let colorings = 0n;
 		for(const row of rowCombinations) {
 			const recolorings = this.rowRecolorings(maxColorUsed, Math.max(...row));
 			const topHalf = this.splitTop(rowY, row);
@@ -84,7 +84,7 @@ export class ColoredRectangle {
 	}
 
 	
-	static coloringsCache = new Map<string, number>();
+	static coloringsCache = new Map<string, bigint>();
 	cacheKey() {
 		return `${this.width}, ${this.height}, ${this.maxColors}: ${this.leftColors}; ${this.rightColors}; ${this.topColors}; ${this.bottomColors}`;
 	}
@@ -131,7 +131,7 @@ export class ColoredRectangle {
 
 	rowRecolorings(maxColorUsed: number, newMaxColorUsed: number) {
 		const remainingColors = this.maxColors - (maxColorUsed + 1);
-		return MathUtils.permutation(remainingColors, Math.max(0, newMaxColorUsed - maxColorUsed));
+		return BigintMath.permutation(BigInt(remainingColors), BigInt(Math.max(0, newMaxColorUsed - maxColorUsed)));
 	}
 
 	maxColorUsed() {
@@ -184,10 +184,10 @@ export class ColoredRectangle {
 	}
 }
 
-// (() => {
-// 	const rectangle = ColoredRectangle.empty(6, 6, 90);
-// 	console.time();
-// 	console.log(rectangle.colorings());
-// 	console.timeEnd();
-// 	debugger;
-// }) ();
+(() => {
+	const rectangle = ColoredRectangle.empty(6, 6, 90);
+	console.time();
+	console.log(rectangle.colorings());
+	console.timeEnd();
+	debugger;
+}) ();
