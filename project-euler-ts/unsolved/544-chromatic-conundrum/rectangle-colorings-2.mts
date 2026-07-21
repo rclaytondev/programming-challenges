@@ -36,18 +36,18 @@ export class ColoredRectangle {
 		return new ColoredRectangle(this.height, this.width, this.maxColors, this.topColors, this.bottomColors, this.leftColors, this.rightColors);
 	}
 
-	colorings(splitMode: number | "auto" = "auto") {
+	colorings(splitMode: number | "middle" = "middle") {
 		if(typeof splitMode === "number") {
-			return this.coloringsBySplitRow(splitMode, "auto", "auto");
+			return this.coloringsBySplitRow(splitMode, "middle", "middle");
 		}
 		else if(this.height % 2 === 1) {
-			return this.coloringsBySplitRow((this.height - 1) / 2, "auto", "auto");
+			return this.coloringsBySplitRow((this.height - 1) / 2, "middle", "middle");
 		}
 		else {
-			return this.coloringsBySplitRow(this.height / 2 - 1, "auto", 0);
+			return this.coloringsBySplitRow(this.height / 2 - 1, "middle", 0);
 		}
 	}
-	coloringsBySplitRow(rowY: number, topSplit: number | "auto", bottomSplit: number | "auto") {
+	coloringsBySplitRow(rowY: number, topSplit: number | "middle", bottomSplit: number | "middle") {
 		if(this.height % 2 === 0) {
 			throw new Error("Called oddHeightColorings on a rectangle with even height.");
 		}
