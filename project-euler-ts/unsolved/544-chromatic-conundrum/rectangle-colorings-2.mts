@@ -131,8 +131,8 @@ export class ColoredRectangle {
 			this.width,
 			rowY,
 			this.maxColors,
-			this.leftColors?.splice(0, rowY) ?? null,
-			this.rightColors?.splice(0, rowY) ?? null,
+			this.leftColors?.slice(0, rowY) ?? null,
+			this.rightColors?.slice(0, rowY) ?? null,
 			this.topColors,
 			row,
 		);
@@ -142,8 +142,8 @@ export class ColoredRectangle {
 			this.width,
 			this.height - rowY - 1,
 			this.maxColors,
-			this.leftColors?.splice(rowY + 1) ?? null,
-			this.rightColors?.splice(rowY + 1) ?? null,
+			this.leftColors?.slice(rowY + 1) ?? null,
+			this.rightColors?.slice(rowY + 1) ?? null,
 			row,
 			this.bottomColors,
 		);
