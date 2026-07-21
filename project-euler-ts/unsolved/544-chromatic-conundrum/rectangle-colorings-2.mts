@@ -37,6 +37,10 @@ export class ColoredRectangle {
 	}
 
 	colorings(splitMode: number | "middle" = "middle") {
+		if(this.width === 0 || this.height === 0) {
+			return 1;
+		}
+
 		if(typeof splitMode === "number") {
 			return this.coloringsBySplitRow(splitMode, "middle", "middle");
 		}
