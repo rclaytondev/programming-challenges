@@ -41,17 +41,25 @@ export class ColoredRectangle {
 			return 1;
 		}
 
-		if(typeof splitMode === "number") {
-			return this.coloringsBySplitRow(splitMode, "middle", "middle");
-		}
+		const cacheKey = this.cacheKey();
+		const precomputed = ColoredRectangle.coloringsCache.get(cacheKey);
+		if(precomputed != undefined) { return precomputed; }
 
-		const normalized = this.normalize();
-		if(normalized.height % 2 === 1) {
-			return normalized.coloringsBySplitRow((normalized.height - 1) / 2, "middle", "middle");
+		let result;
+		if(typeof splitMode === "number") {
+			result = this.coloringsBySplitRow(splitMode, "middle", "middle");
 		}
 		else {
-			return normalized.coloringsBySplitRow(normalized.height / 2 - 1, "middle", 0);
+			const normalized = this.normalize();
+			if(normalized.height % 2 === 1) {
+				result = normalized.coloringsBySplitRow((normalized.height - 1) / 2, "middle", "middle");
+			}
+			else {
+				result = normalized.coloringsBySplitRow(normalized.height / 2 - 1, "middle", 0);
+			}
 		}
+		ColoredRectangle.coloringsCache.set(cacheKey, result);
+		return result;
 	}
 	coloringsBySplitRow(rowY: number, topSplit: number | "middle", bottomSplit: number | "middle") {
 		const rowCombinations = this.rowCombinations(rowY);
@@ -68,6 +76,11 @@ export class ColoredRectangle {
 		return colorings;
 	}
 
+	
+	static coloringsCache = new Map<string, number>();
+	cacheKey() {
+		return `${this.width}, ${this.height}, ${this.maxColors}: ${this.leftColors}; ${this.rightColors}; ${this.topColors}; ${this.bottomColors}`;
+	}
 	normalize() {
 		// eslint-disable-next-line @typescript-eslint/no-this-alias
 		let normalized: ColoredRectangle = this;
@@ -165,7 +178,7 @@ export class ColoredRectangle {
 }
 
 (() => {
-	const rectangle = ColoredRectangle.empty(6, 5, 90);
+	const rectangle = ColoredRectangle.empty(6, 6, 90);
 	console.time();
 	console.log(rectangle.colorings());
 	console.timeEnd();
