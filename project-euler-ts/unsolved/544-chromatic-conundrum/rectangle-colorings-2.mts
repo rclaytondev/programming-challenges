@@ -52,10 +52,6 @@ export class ColoredRectangle {
 		}
 	}
 	coloringsBySplitRow(rowY: number, topSplit: number | "middle", bottomSplit: number | "middle") {
-		if(this.height % 2 === 0) {
-			throw new Error("Called oddHeightColorings on a rectangle with even height.");
-		}
-
 		const rowCombinations = this.rowCombinations(rowY);
 		const maxColorUsed = this.maxColorUsed();
 		let colorings = 0;
