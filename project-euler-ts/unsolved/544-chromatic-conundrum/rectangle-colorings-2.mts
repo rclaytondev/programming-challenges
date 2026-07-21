@@ -149,3 +149,11 @@ export class ColoredRectangle {
 		);
 	}
 }
+
+(() => {
+	const rectangle = ColoredRectangle.empty(5, 4, 90);
+	console.time();
+	console.log(rectangle.colorings());
+	console.timeEnd();
+	debugger;
+}) ();
