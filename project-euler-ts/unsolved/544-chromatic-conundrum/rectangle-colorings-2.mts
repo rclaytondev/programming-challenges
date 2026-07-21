@@ -164,7 +164,23 @@ export class ColoredRectangle {
 		)[0];
 	}
 
-	rowCombinations(rowY: number, row: number[] = [], maxColorUsed: number = Math.max(...row, this.maxColorUsed())): number[][] {
+	static rowCombinationsCache = new Map<string, number[][]>();
+	rowCombinations(rowY: number, maxColorUsed: number = this.maxColorUsed()) {
+		if((rowY === 0 && this.topColors !== null) || (rowY === this.height - 1 && this.bottomColors !== null)) {
+			return this.rowCombinationsHelper(rowY, [], maxColorUsed);
+		}
+		const left = (this.leftColors === null) ? null : this.leftColors[rowY];
+		const right = (this.rightColors === null) ? null : this.rightColors[rowY];
+		const cacheKey = `${left}, ${right}, ${this.width}, ${this.maxColors}, ${maxColorUsed}`;
+		const precomputed = ColoredRectangle.rowCombinationsCache.get(cacheKey);
+		if(precomputed !== undefined) {
+			return precomputed;
+		}
+		const result = this.rowCombinationsHelper(rowY, [], maxColorUsed);
+		ColoredRectangle.rowCombinationsCache.set(cacheKey, result);
+		return result;
+	}
+	private rowCombinationsHelper(rowY: number, row: number[] = [], maxColorUsed: number = Math.max(...row, this.maxColorUsed())): number[][] {
 		if(row.length === this.width) {
 			return [row];
 		}
@@ -176,7 +192,7 @@ export class ColoredRectangle {
 		const result: number[][] = [];
 		for(let next = 0; next <= maxColorUsed; next ++) {
 			if(!neighbors.includes(next)) {
-				result.push(...this.rowCombinations(
+				result.push(...this.rowCombinationsHelper(
 					rowY,
 					[...row, next],
 					maxColorUsed,
@@ -184,7 +200,7 @@ export class ColoredRectangle {
 			}
 		}
 		if(maxColorUsed + 1 < this.maxColors) {
-			result.push(...this.rowCombinations(
+			result.push(...this.rowCombinationsHelper(
 				rowY,
 				[...row, maxColorUsed + 1],
 				maxColorUsed + 1,
