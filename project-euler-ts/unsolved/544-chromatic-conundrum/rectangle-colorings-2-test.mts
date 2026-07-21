@@ -9,3 +9,11 @@ describe("ColoredRectangle.colorings", () => {
 		assert.equal(colorings, 18);
 	});
 });
+
+describe("ColoredRectangle.rowCombinations", () => {
+	it("returns all the ways of coloring the given row, up to permuting the colors", () => {
+		const rectangle = ColoredRectangle.empty(2, 2, 3);
+		const rowCombinations = rectangle.rowCombinations(0);
+		assert.sameDeepMembers(rowCombinations, [ [0, 1] ]);
+	});
+});

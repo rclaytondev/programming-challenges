@@ -148,5 +148,5 @@ class RectTopRightFilled {
 
 
 
-console.log(new RectUnfilled(10, 9, 90).colorings());
-debugger;
+// console.log(new RectUnfilled(10, 9, 90).colorings());
+// debugger;

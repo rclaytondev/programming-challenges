@@ -71,6 +71,9 @@ export class ColoredRectangle {
 	}
 
 	rowCombinations(rowY: number, row: number[] = [], maxColorUsed: number = Math.max(...row, this.maxColorUsed())): number[][] {
+		if(row.length === this.width) {
+			return [row];
+		}
 		const point = new Vector(row.length, rowY);
 		const neighbors = [
 			...this.neighborColors(point),
