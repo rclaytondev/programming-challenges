@@ -155,9 +155,13 @@ export class ColoredRectangle {
 			: (transposedRowSize < untransposedRowSize) ? [this.transpose()]
 			: [this]
 		);
-		const reflections = candidates.flatMap(r => [r, r.reflectX(), r.reflectY(), r.reflectX().reflectY()]);
+		const reflections = candidates.flatMap(r => [r, r.reflectX()]).flatMap(r => [r, r.reflectY()]);
 		const recolorings = reflections.map(r => r.normalizeColors());
-		return recolorings.reduce((a, b) => a.cacheKey() < b.cacheKey() ? a : b);
+		return (
+			recolorings
+			.map(r => [r, r.cacheKey()] as [ColoredRectangle, string])
+			.reduce(([r1, s1], [r2, s2]) => (s1 < s2) ? [r1, s1] : [r2, s2])
+		)[0];
 	}
 
 	rowCombinations(rowY: number, row: number[] = [], maxColorUsed: number = Math.max(...row, this.maxColorUsed())): number[][] {
