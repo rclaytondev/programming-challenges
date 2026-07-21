@@ -42,6 +42,20 @@ export class ColoredRectangle {
 	transpose() {
 		return new ColoredRectangle(this.height, this.width, this.maxColors, this.topColors, this.bottomColors, this.leftColors, this.rightColors);
 	}
+	reflectX() {
+		return new ColoredRectangle(
+			this.width, this.height, this.maxColors,
+			this.rightColors, this.leftColors,
+			this.topColors?.toReversed() ?? null, this.bottomColors?.toReversed() ?? null,
+		);
+	}
+	reflectY() {
+		return new ColoredRectangle(
+			this.width, this.height, this.maxColors,
+			this.leftColors?.toReversed() ?? null, this.rightColors?.toReversed() ?? null,
+			this.bottomColors, this.topColors,
+		);
+	}
 
 	colorings(splitMode: number | "middle" = "middle") {
 		if(this.width === 0 || this.height === 0) {
@@ -88,16 +102,62 @@ export class ColoredRectangle {
 	cacheKey() {
 		return `${this.width}, ${this.height}, ${this.maxColors}: ${this.leftColors}; ${this.rightColors}; ${this.topColors}; ${this.bottomColors}`;
 	}
-	normalize() {
-		// eslint-disable-next-line @typescript-eslint/no-this-alias
-		let normalized: ColoredRectangle = this;
-		const unrotatedRowSize = this.width * ((this.height % 2 === 0) ? 2 : 1);
-		const rotatedRowSize = this.height * ((this.width % 2 === 0) ? 2 : 1);
-		if(rotatedRowSize < unrotatedRowSize) {
-			normalized = normalized.transpose();
+	static normalize(nums: number[]) {
+		const result = [];
+		const numsFound = new Map<number, number>();
+		for(const num of nums) {
+			const numFound = numsFound.get(num);
+			if(numFound == undefined) {
+				result.push(numsFound.size);
+				numsFound.set(num, numsFound.size);
+			}
+			else {
+				result.push(numFound);
+			}
 		}
+		return result;
+	}
+	normalizeColors() {
+		const colors = [...(this.leftColors ?? []), ...(this.rightColors ?? []), ...(this.topColors ?? []), ...(this.bottomColors ?? [])];
+		const normalized = ColoredRectangle.normalize(colors);
+		let index = 0;
+		let leftColors, rightColors, topColors, bottomColors;
+		if(this.leftColors !== null) {
+			leftColors = normalized.slice(index, index + this.height);
+			index += this.height;
+		}
+		else { leftColors = null; }
 
-		return normalized;
+		if(this.rightColors !== null) {
+			rightColors = normalized.slice(index, index + this.height);
+			index += this.height;
+		}
+		else { rightColors = null; }
+
+		if(this.topColors !== null) {
+			topColors = normalized.slice(index, index + this.width);
+			index += this.width;
+		}
+		else { topColors = null; }
+
+		if(this.bottomColors !== null) {
+			bottomColors = normalized.slice(index, index + this.width);
+		}
+		else { bottomColors = null; }
+
+		return new ColoredRectangle(this.width, this.height, this.maxColors, leftColors, rightColors, topColors, bottomColors);
+	}
+	normalize() {
+		const untransposedRowSize = this.width * ((this.height % 2 === 0) ? 2 : 1);
+		const transposedRowSize = this.height * ((this.width % 2 === 0) ? 2 : 1);
+		const candidates = (
+			(transposedRowSize === untransposedRowSize) ? [this, this.transpose()]
+			: (transposedRowSize < untransposedRowSize) ? [this.transpose()]
+			: [this]
+		);
+		const reflections = candidates.flatMap(r => [r, r.reflectX(), r.reflectY(), r.reflectX().reflectY()]);
+		const recolorings = reflections.map(r => r.normalizeColors());
+		return recolorings.reduce((a, b) => a.cacheKey() < b.cacheKey() ? a : b);
 	}
 
 	rowCombinations(rowY: number, row: number[] = [], maxColorUsed: number = Math.max(...row, this.maxColorUsed())): number[][] {

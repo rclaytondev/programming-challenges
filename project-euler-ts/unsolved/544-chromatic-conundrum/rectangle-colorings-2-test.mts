@@ -34,3 +34,52 @@ describe("ColoredRectangle.rowCombinations", () => {
 		assert.sameDeepMembers(rowCombinations, [ [0, 1] ]);
 	});
 });
+
+describe("ColoredRectangle.normalize (static method)", () => {
+	it("replaces the numbers with the numbers 0, 1, 2, ... according to their first appearance", () => {
+		const numbers = [5, 7, 5, 4, 4, 3, 5, 4, 1];
+		const normalized = ColoredRectangle.normalize(numbers);
+		assert.sameOrderedMembers(normalized, [0, 1, 0, 2, 2, 3, 0, 2, 4]);
+	});
+});
+
+describe("ColoredRectangle.normalize", () => {
+	it("maps any equivalent rectangles to the same rectangle", () => {
+		const rectangle = new ColoredRectangle(3, 2, 5, [1, 0], null, [2, 3, 6], [4, 3, 2]);
+		const recolored = new ColoredRectangle(3, 2, 5, [0, 1], null, [6, 2, 3], [7, 2, 6]);
+
+		const normalized1 = rectangle.normalize();
+		const normalized2 = rectangle.reflectX().normalize();
+		const normalized3 = rectangle.reflectY().normalize();
+		const normalized4 = rectangle.reflectX().reflectY().normalize();
+		const normalized5 = rectangle.transpose().normalize();
+		const normalized6 = rectangle.transpose().reflectX().normalize();
+		const normalized7 = rectangle.transpose().reflectY().normalize();
+		const normalized8 = rectangle.transpose().reflectX().reflectY().normalize();
+
+		const normalized9 = recolored.normalize();
+		const normalized10 = recolored.reflectX().normalize();
+		const normalized11 = recolored.reflectY().normalize();
+		const normalized12 = recolored.reflectX().reflectY().normalize();
+		const normalized13 = recolored.transpose().normalize();
+		const normalized14 = recolored.transpose().reflectX().normalize();
+		const normalized15 = recolored.transpose().reflectY().normalize();
+		const normalized16 = recolored.transpose().reflectX().reflectY().normalize();
+
+		assert.deepEqual(normalized1, normalized2);
+		assert.deepEqual(normalized1, normalized3);
+		assert.deepEqual(normalized1, normalized4);
+		assert.deepEqual(normalized1, normalized5);
+		assert.deepEqual(normalized1, normalized6);
+		assert.deepEqual(normalized1, normalized7);
+		assert.deepEqual(normalized1, normalized8);
+		assert.deepEqual(normalized1, normalized9);
+		assert.deepEqual(normalized1, normalized10);
+		assert.deepEqual(normalized1, normalized11);
+		assert.deepEqual(normalized1, normalized12);
+		assert.deepEqual(normalized1, normalized13);
+		assert.deepEqual(normalized1, normalized14);
+		assert.deepEqual(normalized1, normalized15);
+		assert.deepEqual(normalized1, normalized16);
+	});
+});
