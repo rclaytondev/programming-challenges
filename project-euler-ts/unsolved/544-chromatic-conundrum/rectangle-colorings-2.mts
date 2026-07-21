@@ -64,25 +64,25 @@ export class ColoredRectangle {
 			return 1n;
 		}
 
-		const cacheKey = this.cacheKey();
-		const precomputed = ColoredRectangle.coloringsCache.get(cacheKey);
-		if(precomputed != undefined) { return precomputed; }
-
-		let result;
 		if(typeof splitMode === "number") {
-			result = this.coloringsBySplitRow(splitMode, "middle", "middle");
+			return this.coloringsBySplitRow(splitMode, "middle", "middle");
 		}
 		else {
+			let result;
 			const normalized = this.normalize();
+			const cacheKey = normalized.cacheKey();
+			const precomputed = ColoredRectangle.coloringsCache.get(cacheKey);
+			if(precomputed != undefined) { return precomputed; }
+
 			if(normalized.height % 2 === 1) {
 				result = normalized.coloringsBySplitRow((normalized.height - 1) / 2, "middle", "middle");
 			}
 			else {
 				result = normalized.coloringsBySplitRow(normalized.height / 2 - 1, "middle", 0);
 			}
+			ColoredRectangle.coloringsCache.set(cacheKey, result);
+			return result;
 		}
-		ColoredRectangle.coloringsCache.set(cacheKey, result);
-		return result;
 	}
 	coloringsBySplitRow(rowY: number, topSplit: number | "middle", bottomSplit: number | "middle") {
 		const rowCombinations = this.rowCombinations(rowY);
