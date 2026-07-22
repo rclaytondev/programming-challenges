@@ -90,4 +90,9 @@ describe("ColoredRectangle.coloringsByTopRow", () => {
 		const colorings = rect.coloringsByTopRow();
 		assert.equal(colorings, 1n);
 	});
+	it("works for a 4x2 rectangle with 3 colors and top row [0, 1, 0, 1]", () => {
+		const rect = new ColoredRectangle(4, 2, 3, null, null, [0, 1, 0, 1], null);
+		const colorings = rect.coloringsByTopRow();
+		assert.equal(colorings, 57n);
+	});
 });
