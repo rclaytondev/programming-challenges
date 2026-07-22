@@ -1,3 +1,4 @@
+import { ArrayUtils } from "../../../utils-ts/modules/core-extensions/ArrayUtils.mjs";
 import { Vector } from "../../../utils-ts/modules/geometry/Vector.mjs";
 import { BigintMath } from "../../../utils-ts/modules/math/BigintMath.mjs";
 
@@ -65,7 +66,7 @@ export class ColoredRectangle {
 		}
 
 		if(splitMode === "top") {
-			return this.coloringsBySplitRow(0, "middle", "middle");
+			return this.coloringsByTopRow();
 		}
 		else {
 			let result;
@@ -97,6 +98,82 @@ export class ColoredRectangle {
 			colorings += recolorings * topHalfColorings * bottomHalfColorings;
 		}
 		return colorings;
+	}
+	coloringsByTopRow() {
+		if(this.topColors === null || this.leftColors !== null || this.rightColors !== null || this.bottomColors !== null) {
+			return this.coloringsBySplitRow(0, "middle", "middle");
+		}
+
+		const rowCombinations = ColoredRectangle.empty(this.width, this.height, this.maxColors).rowCombinations(0, -1);
+		let result = 0n;
+		for(const row of rowCombinations) {
+			const rect = new ColoredRectangle(this.width, this.height - 1, this.maxColors, null, null, this.topColors, null);
+			const colorings = rect.colorings("middle");
+			const recolorings = ColoredRectangle.topRowRecolorings(this.topColors, row, this.maxColors);
+			result += colorings * recolorings;
+		}
+		return result;
+	}
+	// static topRowRecolorings(topColors: number[], rowTemplate: number[], maxColors: number, maxColorUsed: number = -1, previous: number | null = null) {
+	// 	let result = 0;
+	// 	const maxTopColor = Math.max(...topColors);
+	// 	for(let next = 0; next <= maxTopColor; next ++) {
+	// 		result += ColoredRectangle.topRowRecolorings(
+	// 			topColors.slice(1),
+	// 			rowTemplate.slice(1),
+	// 		)
+	// 	}
+	// }
+	// private static topRowRecolorings(topColors: number[], rowTemplate: number[], newInRow: number, maxColors: number, previous: number | "none" | "new") {
+	// 	if(topColors.length === 0) { return 1; }
+
+	// 	const topColorsMax = Math.max(...topColors);
+	// 	let result = 0;
+	// 	for(let next = 0; next <= topColorsMax; next ++) {
+	// 		if(next === previous || next === topColors[0]) { continue; }
+	// 		result += ColoredRectangle.topRowRecolorings(
+	// 			topColors.slice(1),
+	// 			rowTemplate.slice(1),
+	// 			newInRow,
+	// 			maxColors,
+	// 			next,
+	// 		);
+	// 	}
+
+
+
+	// 	return result;
+	// }
+
+
+	static topRowRecolorings(topRow: number[], row: number[], maxColors: number) {
+		const maxColorUsed = Math.max(...topRow);
+		const possibleColors = new Array(topRow.length).fill(0).map(_ => new Set(ArrayUtils.range(0, maxColorUsed)));
+		for(const [i, templateColor] of row.entries()) {
+			possibleColors[templateColor].delete(topRow[i]);
+		}
+		return ColoredRectangle.injectiveMaps(
+			possibleColors.map(s => [...s]),
+			maxColors - maxColorUsed - 1,
+		);
+	}
+	private static injectiveMaps(possibleOutputs: number[][], unusedCodomain: number) {
+		if(possibleOutputs.length === 0) { return 1n; }
+		let result = 0n;
+		for(const next of possibleOutputs[0]) {
+			result += ColoredRectangle.injectiveMaps(
+				possibleOutputs.slice(1).map(s => s.filter(n => n !== next)),
+				unusedCodomain,
+			);
+		}
+		if(unusedCodomain > 0) {
+			const remaining = ColoredRectangle.injectiveMaps(
+				possibleOutputs.slice(1),
+				unusedCodomain - 1,
+			);
+			result += BigInt(unusedCodomain) * remaining;
+		}
+		return result;
 	}
 
 	
@@ -264,12 +341,17 @@ export class ColoredRectangle {
 			this.bottomColors,
 		);
 	}
+
+	toString() {
+		const colorsToString = (colors: number[] | null) => colors === null ? "null" : `[${colors}]`;
+		return `${this.width}x${this.height} with ${this.maxColors} colors; ${colorsToString(this.leftColors)}, ${colorsToString(this.rightColors)}, ${colorsToString(this.topColors)}, ${colorsToString(this.bottomColors)}`;
+	}
 }
 
-(() => {
-	const rectangle = ColoredRectangle.empty(6, 6, 90);
-	console.time();
-	console.log(rectangle.colorings());
-	console.timeEnd();
-	debugger;
-}) ();
+// (() => {
+// 	const rectangle = ColoredRectangle.empty(6, 6, 90);
+// 	console.time();
+// 	console.log(rectangle.colorings());
+// 	console.timeEnd();
+// 	debugger;
+// }) ();
