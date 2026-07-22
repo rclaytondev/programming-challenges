@@ -118,7 +118,8 @@ export class ColoredRectangle {
 
 	static topRowRecolorings(topRow: number[], row: number[], maxColors: number) {
 		const maxColorUsed = Math.max(...topRow);
-		const possibleColors = new Array(topRow.length).fill(0).map(_ => new Set(ArrayUtils.range(0, maxColorUsed)));
+		const rowMax = Math.max(...row);
+		const possibleColors = new Array(rowMax + 1).fill(0).map(_ => new Set(ArrayUtils.range(0, maxColorUsed)));
 		for(const [i, templateColor] of row.entries()) {
 			possibleColors[templateColor].delete(topRow[i]);
 		}

@@ -83,3 +83,11 @@ describe("ColoredRectangle.normalize", () => {
 		assert.deepEqual(normalized1, normalized16);
 	});
 });
+
+describe("ColoredRectangle.coloringsByTopRow", () => {
+	it("works for a 4x2 rectangle with 2 colors and top row [0, 1, 0, 1]", () => {
+		const rect = new ColoredRectangle(4, 2, 2, null, null, [0, 1, 0, 1], null);
+		const colorings = rect.coloringsByTopRow();
+		assert.equal(colorings, 1n);
+	});
+});
