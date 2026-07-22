@@ -327,7 +327,7 @@ export class ColoredRectangle {
 }
 
 (() => {
-	const rectangle = ColoredRectangle.empty(6, 7, 90);
+	const rectangle = ColoredRectangle.empty(7, 8, 90);
 	console.time();
 	console.log(rectangle.colorings());
 	console.timeEnd();
