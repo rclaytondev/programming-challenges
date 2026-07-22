@@ -114,36 +114,6 @@ export class ColoredRectangle {
 		}
 		return result;
 	}
-	// static topRowRecolorings(topColors: number[], rowTemplate: number[], maxColors: number, maxColorUsed: number = -1, previous: number | null = null) {
-	// 	let result = 0;
-	// 	const maxTopColor = Math.max(...topColors);
-	// 	for(let next = 0; next <= maxTopColor; next ++) {
-	// 		result += ColoredRectangle.topRowRecolorings(
-	// 			topColors.slice(1),
-	// 			rowTemplate.slice(1),
-	// 		)
-	// 	}
-	// }
-	// private static topRowRecolorings(topColors: number[], rowTemplate: number[], newInRow: number, maxColors: number, previous: number | "none" | "new") {
-	// 	if(topColors.length === 0) { return 1; }
-
-	// 	const topColorsMax = Math.max(...topColors);
-	// 	let result = 0;
-	// 	for(let next = 0; next <= topColorsMax; next ++) {
-	// 		if(next === previous || next === topColors[0]) { continue; }
-	// 		result += ColoredRectangle.topRowRecolorings(
-	// 			topColors.slice(1),
-	// 			rowTemplate.slice(1),
-	// 			newInRow,
-	// 			maxColors,
-	// 			next,
-	// 		);
-	// 	}
-
-
-
-	// 	return result;
-	// }
 
 
 	static topRowRecolorings(topRow: number[], row: number[], maxColors: number) {
