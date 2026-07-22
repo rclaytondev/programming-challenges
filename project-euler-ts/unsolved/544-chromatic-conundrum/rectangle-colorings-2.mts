@@ -59,21 +59,30 @@ export class ColoredRectangle {
 	}
 
 	static calls = 0;
+	static depth = 0;
+	static log = true;
 	colorings(splitMode: "top" | "middle" = "middle") {
 		ColoredRectangle.calls ++;
+		ColoredRectangle.depth ++;
 		if(this.width === 0 || this.height === 0) {
+			ColoredRectangle.depth --;
 			return 1n;
 		}
 
 		if(splitMode === "top") {
-			return this.coloringsByTopRow();
+			const result = this.coloringsByTopRow();
+			ColoredRectangle.depth --;
+			return result;
 		}
 		else {
 			let result;
 			const normalized = this.normalize();
 			const cacheKey = normalized.cacheKey();
 			const precomputed = ColoredRectangle.coloringsCache.get(cacheKey);
-			if(precomputed != undefined) { return precomputed; }
+			if(precomputed != undefined) {
+				ColoredRectangle.depth --;
+				return precomputed;
+			}
 
 			if(normalized.height % 2 === 1) {
 				result = normalized.coloringsBySplitRow((normalized.height - 1) / 2, "middle", "middle");
@@ -82,11 +91,16 @@ export class ColoredRectangle {
 				result = normalized.coloringsBySplitRow(normalized.height / 2 - 1, "middle", "top");
 			}
 			ColoredRectangle.coloringsCache.set(cacheKey, result);
+			ColoredRectangle.depth --;
 			return result;
 		}
 	}
 	coloringsBySplitRow(rowY: number, topSplit: "top" | "middle", bottomSplit: "top" | "middle") {
 		const rowCombinations = this.rowCombinations(rowY);
+		if(ColoredRectangle.log) {
+			console.log(`${"| ".repeat(ColoredRectangle.depth)}${this.width}x${this.height} with ${this.maxColorUsed()} edge colors: ${rowCombinations.length} row combinations`);
+			if(ColoredRectangle.calls % 100 === 0) { debugger; }
+		}
 		const maxColorUsed = this.maxColorUsed();
 		let colorings = 0n;
 		for(const row of rowCombinations) {
@@ -105,6 +119,9 @@ export class ColoredRectangle {
 		}
 
 		const rowCombinations = ColoredRectangle.empty(this.width, this.height, this.maxColors).rowCombinations(0, -1);
+		if(ColoredRectangle.log) {
+			console.log(`${"| ".repeat(ColoredRectangle.depth)}${this.width}x${this.height} with ${this.maxColorUsed()} edge colors: ${rowCombinations.length} top row combinations`);
+		}
 		let result = 0n;
 		for(const row of rowCombinations) {
 			const rect = new ColoredRectangle(this.width, this.height - 1, this.maxColors, null, null, row, null);
