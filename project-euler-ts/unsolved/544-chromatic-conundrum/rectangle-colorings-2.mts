@@ -58,14 +58,14 @@ export class ColoredRectangle {
 	}
 
 	static calls = 0;
-	colorings(splitMode: number | "middle" = "middle") {
+	colorings(splitMode: "top" | "middle" = "middle") {
 		ColoredRectangle.calls ++;
 		if(this.width === 0 || this.height === 0) {
 			return 1n;
 		}
 
-		if(typeof splitMode === "number") {
-			return this.coloringsBySplitRow(splitMode, "middle", "middle");
+		if(splitMode === "top") {
+			return this.coloringsBySplitRow(0, "middle", "middle");
 		}
 		else {
 			let result;
@@ -78,13 +78,13 @@ export class ColoredRectangle {
 				result = normalized.coloringsBySplitRow((normalized.height - 1) / 2, "middle", "middle");
 			}
 			else {
-				result = normalized.coloringsBySplitRow(normalized.height / 2 - 1, "middle", 0);
+				result = normalized.coloringsBySplitRow(normalized.height / 2 - 1, "middle", "top");
 			}
 			ColoredRectangle.coloringsCache.set(cacheKey, result);
 			return result;
 		}
 	}
-	coloringsBySplitRow(rowY: number, topSplit: number | "middle", bottomSplit: number | "middle") {
+	coloringsBySplitRow(rowY: number, topSplit: "top" | "middle", bottomSplit: "top" | "middle") {
 		const rowCombinations = this.rowCombinations(rowY);
 		const maxColorUsed = this.maxColorUsed();
 		let colorings = 0n;
