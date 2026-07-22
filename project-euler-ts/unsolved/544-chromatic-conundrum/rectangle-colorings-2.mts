@@ -107,7 +107,7 @@ export class ColoredRectangle {
 		const rowCombinations = ColoredRectangle.empty(this.width, this.height, this.maxColors).rowCombinations(0, -1);
 		let result = 0n;
 		for(const row of rowCombinations) {
-			const rect = new ColoredRectangle(this.width, this.height - 1, this.maxColors, null, null, this.topColors, null);
+			const rect = new ColoredRectangle(this.width, this.height - 1, this.maxColors, null, null, row, null);
 			const colorings = rect.colorings("middle");
 			const recolorings = ColoredRectangle.topRowRecolorings(this.topColors, row, this.maxColors);
 			result += colorings * recolorings;
@@ -319,10 +319,10 @@ export class ColoredRectangle {
 	}
 }
 
-// (() => {
-// 	const rectangle = ColoredRectangle.empty(6, 6, 90);
-// 	console.time();
-// 	console.log(rectangle.colorings());
-// 	console.timeEnd();
-// 	debugger;
-// }) ();
+(() => {
+	const rectangle = ColoredRectangle.empty(6, 7, 90);
+	console.time();
+	console.log(rectangle.colorings());
+	console.timeEnd();
+	debugger;
+}) ();
