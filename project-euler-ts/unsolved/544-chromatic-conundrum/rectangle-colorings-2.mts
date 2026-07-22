@@ -76,18 +76,11 @@ export class ColoredRectangle {
 			ColoredRectangle.depth --;
 			return precomputed;
 		}
-		let result;
-		if(splitMode === "top") {
-			result = this.coloringsByTopRow();
-		}
-		else {
-			if(normalized.height % 2 === 1) {
-				result = normalized.coloringsBySplitRow((normalized.height - 1) / 2, "middle", "middle");
-			}
-			else {
-				result = normalized.coloringsBySplitRow(normalized.height / 2 - 1, "middle", "top");
-			}
-		}
+		const result = (
+			(splitMode === "top") ? this.coloringsByTopRow()
+			: (normalized.height % 2 === 1) ? normalized.coloringsBySplitRow((normalized.height - 1) / 2, "middle", "middle")
+			: normalized.coloringsBySplitRow(normalized.height / 2 - 1, "middle", "top")
+		);
 		ColoredRectangle.depth --;
 		ColoredRectangle.coloringsCache.set(cacheKey, result);
 		return result;
