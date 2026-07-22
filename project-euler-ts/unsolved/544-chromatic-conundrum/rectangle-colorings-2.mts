@@ -60,7 +60,7 @@ export class ColoredRectangle {
 
 	static calls = 0;
 	static depth = 0;
-	static log = true;
+	static log = false;
 	colorings(splitMode: "top" | "middle" = "middle") {
 		ColoredRectangle.calls ++;
 		ColoredRectangle.depth ++;
@@ -69,31 +69,28 @@ export class ColoredRectangle {
 			return 1n;
 		}
 
-		if(splitMode === "top") {
-			const result = this.coloringsByTopRow();
+		const normalized = this.normalize();
+		const cacheKey = normalized.cacheKey();
+		const precomputed = ColoredRectangle.coloringsCache.get(cacheKey);
+		if(precomputed != undefined) {
 			ColoredRectangle.depth --;
-			return result;
+			return precomputed;
+		}
+		let result;
+		if(splitMode === "top") {
+			result = this.coloringsByTopRow();
 		}
 		else {
-			let result;
-			const normalized = this.normalize();
-			const cacheKey = normalized.cacheKey();
-			const precomputed = ColoredRectangle.coloringsCache.get(cacheKey);
-			if(precomputed != undefined) {
-				ColoredRectangle.depth --;
-				return precomputed;
-			}
-
 			if(normalized.height % 2 === 1) {
 				result = normalized.coloringsBySplitRow((normalized.height - 1) / 2, "middle", "middle");
 			}
 			else {
 				result = normalized.coloringsBySplitRow(normalized.height / 2 - 1, "middle", "top");
 			}
-			ColoredRectangle.coloringsCache.set(cacheKey, result);
-			ColoredRectangle.depth --;
-			return result;
 		}
+		ColoredRectangle.depth --;
+		ColoredRectangle.coloringsCache.set(cacheKey, result);
+		return result;
 	}
 	coloringsBySplitRow(rowY: number, topSplit: "top" | "middle", bottomSplit: "top" | "middle") {
 		const rowCombinations = this.rowCombinations(rowY);
