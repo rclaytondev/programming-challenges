@@ -155,7 +155,12 @@ export class ColoredRectangle {
 			result += BigInt(unusedCodomain) * remaining;
 		}
 		return result;
-	});
+	}, ColoredRectangle.normalizeInjMapsArgs);
+	private static normalizeInjMapsArgs(possibleOutputs: number[][], unusedCodomain: number) {
+		possibleOutputs = possibleOutputs.toSorted((a, b) => a.length - b.length);
+		possibleOutputs = possibleOutputs.map(arr => arr.sort((a, b) => a - b));
+		return [possibleOutputs, unusedCodomain] as [number[][], number];
+	}
 
 	
 	static coloringsCache = new Map<string, bigint>();
