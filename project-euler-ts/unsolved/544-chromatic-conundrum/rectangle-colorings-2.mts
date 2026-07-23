@@ -159,7 +159,15 @@ export class ColoredRectangle {
 	private static normalizeInjMapsArgs(possibleOutputs: number[][], unusedCodomain: number) {
 		possibleOutputs = possibleOutputs.toSorted((a, b) => a.length - b.length);
 		possibleOutputs = possibleOutputs.map(arr => arr.sort((a, b) => a - b));
-		return [possibleOutputs, unusedCodomain] as [number[][], number];
+		const normalized = ColoredRectangle.normalize(possibleOutputs.flat(1));
+		let result: number[][] = [];
+		let index = 0;
+		for(const arr of possibleOutputs) {
+			result.push(normalized.slice(index, index + arr.length));
+			index += arr.length;
+		}
+		result = possibleOutputs;
+		return [result, unusedCodomain] as [number[][], number];
 	}
 
 	
