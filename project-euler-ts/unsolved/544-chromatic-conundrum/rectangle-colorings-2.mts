@@ -1,7 +1,6 @@
 import { ArrayUtils } from "../../../utils-ts/modules/core-extensions/ArrayUtils.mjs";
 import { Vector } from "../../../utils-ts/modules/geometry/Vector.mjs";
 import { BigintMath } from "../../../utils-ts/modules/math/BigintMath.mjs";
-import { Utils } from "../../../utils-ts/modules/Utils.mjs";
 
 export class ColoredRectangle {
 	readonly width: number;
@@ -137,9 +136,14 @@ export class ColoredRectangle {
 		);
 	}
 	private static injectiveMapsCalls = 0;
-	private static injectiveMaps = Utils.memoize((possibleOutputs: number[][], unusedCodomain: number) => {
-		ColoredRectangle.injectiveMapsCalls ++;
+	private static injectiveMapsCache = new Map<string, bigint>();
+	private static injectiveMaps = (possibleOutputs: number[][], unusedCodomain: number) => {
 		if(possibleOutputs.length === 0) { return 1n; }
+		possibleOutputs = ColoredRectangle.normalizeInjMapsArgs(possibleOutputs);
+		const cacheKey = `[${possibleOutputs.map(s => `[${s}]`).join(", ")}], ${unusedCodomain}`;
+		const precomputed = ColoredRectangle.injectiveMapsCache.get(cacheKey);
+		if(precomputed !== undefined) { return precomputed; }
+		ColoredRectangle.injectiveMapsCalls ++;
 		let result = 0n;
 		for(const next of possibleOutputs[0]) {
 			result += ColoredRectangle.injectiveMaps(
@@ -154,20 +158,20 @@ export class ColoredRectangle {
 			);
 			result += BigInt(unusedCodomain) * remaining;
 		}
+		ColoredRectangle.injectiveMapsCache.set(cacheKey, result);
 		return result;
-	}, ColoredRectangle.normalizeInjMapsArgs);
-	private static normalizeInjMapsArgs(possibleOutputs: number[][], unusedCodomain: number) {
+	}
+	private static normalizeInjMapsArgs(possibleOutputs: number[][]) {
 		possibleOutputs = possibleOutputs.toSorted((a, b) => a.length - b.length);
 		possibleOutputs = possibleOutputs.map(arr => arr.sort((a, b) => a - b));
 		const normalized = ColoredRectangle.normalize(possibleOutputs.flat(1));
-		let result: number[][] = [];
+		const result: number[][] = [];
 		let index = 0;
 		for(const arr of possibleOutputs) {
 			result.push(normalized.slice(index, index + arr.length));
 			index += arr.length;
 		}
-		result = possibleOutputs;
-		return [result, unusedCodomain] as [number[][], number];
+		return result;
 	}
 
 	
