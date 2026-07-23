@@ -208,17 +208,39 @@ export class ColoredRectangle {
 		const untransposedRowSize = this.width * ((this.height % 2 === 0) ? 2 : 1);
 		const transposedRowSize = this.height * ((this.width % 2 === 0) ? 2 : 1);
 		const candidates = (
-			(transposedRowSize === untransposedRowSize) ? [this, this.transpose()]
-			: (transposedRowSize < untransposedRowSize) ? [this.transpose()]
-			: [this]
+			(transposedRowSize < untransposedRowSize) ? [this.transpose()]
+			: (transposedRowSize > untransposedRowSize) ? [this]
+			: (this.width < this.height) ? [this.transpose()]
+			: (this.width > this.height) ? [this]
+			: [this, this.transpose()]
 		);
 		const reflections = candidates.flatMap(r => [r, r.reflectX()]).flatMap(r => [r, r.reflectY()]);
-		const recolorings = reflections.map(r => r.normalizeColors());
+		const minimal = ColoredRectangle.allMinima(
+			reflections.map(r => [r, `${r.leftColors === null}${r.rightColors === null}${r.topColors === null}${r.bottomColors === null}`] as [ColoredRectangle, string]),
+			([_r1, s1], [_r2, s2]) => s1.localeCompare(s2),
+		).map(([r]) => r);
+		if(minimal.length === 1) {
+			return minimal[0].normalizeColors();
+		}
+		const recolorings = minimal.map(r => r.normalizeColors());
 		return (
 			recolorings
 			.map(r => [r, r.cacheKey()] as [ColoredRectangle, string])
 			.reduce(([r1, s1], [r2, s2]) => (s1 < s2) ? [r1, s1] : [r2, s2])
 		)[0];
+	}
+	static allMinima<T>(array: T[], comparison: (v1: T, v2: T) => number) {
+		let minima = [array[0]];
+		for(let i = 1; i < array.length; i ++) {
+			const comparisonResult = comparison(minima[0], array[i]);
+			if(comparisonResult > 0) {
+				minima = [array[i]];
+			}
+			else if(comparisonResult === 0) {
+				minima.push(array[i]);
+			}
+		}
+		return minima;
 	}
 
 	static rowCombinationsCache = new Map<string, number[][]>();
@@ -327,7 +349,7 @@ export class ColoredRectangle {
 }
 
 (() => {
-	const rectangle = ColoredRectangle.empty(7, 8, 90);
+	const rectangle = ColoredRectangle.empty(8, 8, 90);
 	console.time();
 	console.log(rectangle.colorings());
 	console.timeEnd();

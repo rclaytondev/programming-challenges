@@ -96,3 +96,11 @@ describe("ColoredRectangle.coloringsByTopRow", () => {
 		assert.equal(colorings, 57n);
 	});
 });
+
+describe("ColoredRectangle.allMinima", () => {
+	it("returns all of the elements that are minima of the given ordering", () => {
+		const nums = [2, 3, 1, 1, 3, 3, 1, 2, 1, 3];
+		const minima = ColoredRectangle.allMinima(nums, (a, b) => a - b);
+		assert.sameOrderedMembers(minima, [1, 1, 1, 1]);
+	});
+});
