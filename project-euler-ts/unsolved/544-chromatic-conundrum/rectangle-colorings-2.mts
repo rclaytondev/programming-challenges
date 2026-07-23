@@ -138,7 +138,10 @@ export class ColoredRectangle {
 	private static injectiveMapsCalls = 0;
 	private static injectiveMapsCache = new Map<string, bigint>();
 	private static injectiveMaps = (possibleOutputs: number[][], unusedCodomain: number) => {
-		if(possibleOutputs.length === 0) { return 1n; }
+		if(possibleOutputs.length <= 1) {
+			if(possibleOutputs.length === 0) { return 1n; }
+			return BigInt(possibleOutputs[0].length + unusedCodomain);
+		}
 		possibleOutputs = ColoredRectangle.normalizeInjMapsArgs(possibleOutputs);
 		const cacheKey = `[${possibleOutputs.map(s => `[${s}]`).join(", ")}], ${unusedCodomain}`;
 		const precomputed = ColoredRectangle.injectiveMapsCache.get(cacheKey);
