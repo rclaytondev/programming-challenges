@@ -136,7 +136,9 @@ export class ColoredRectangle {
 			maxColors - maxColorUsed - 1,
 		);
 	}
+	private static injectiveMapsCalls = 0;
 	private static injectiveMaps = Utils.memoize((possibleOutputs: number[][], unusedCodomain: number) => {
+		ColoredRectangle.injectiveMapsCalls ++;
 		if(possibleOutputs.length === 0) { return 1n; }
 		let result = 0n;
 		for(const next of possibleOutputs[0]) {
