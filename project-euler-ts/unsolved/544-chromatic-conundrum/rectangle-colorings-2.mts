@@ -1,6 +1,7 @@
 import { ArrayUtils } from "../../../utils-ts/modules/core-extensions/ArrayUtils.mjs";
 import { Vector } from "../../../utils-ts/modules/geometry/Vector.mjs";
 import { BigintMath } from "../../../utils-ts/modules/math/BigintMath.mjs";
+import { Utils } from "../../../utils-ts/modules/Utils.mjs";
 
 export class ColoredRectangle {
 	readonly width: number;
@@ -135,7 +136,7 @@ export class ColoredRectangle {
 			maxColors - maxColorUsed - 1,
 		);
 	}
-	private static injectiveMaps(possibleOutputs: number[][], unusedCodomain: number) {
+	private static injectiveMaps = Utils.memoize((possibleOutputs: number[][], unusedCodomain: number) => {
 		if(possibleOutputs.length === 0) { return 1n; }
 		let result = 0n;
 		for(const next of possibleOutputs[0]) {
@@ -152,7 +153,7 @@ export class ColoredRectangle {
 			result += BigInt(unusedCodomain) * remaining;
 		}
 		return result;
-	}
+	});
 
 	
 	static coloringsCache = new Map<string, bigint>();
