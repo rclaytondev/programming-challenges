@@ -137,7 +137,13 @@ export class ColoredRectangle {
 	}
 	private static injectiveMapsCalls = 0;
 	private static injectiveMapsCache = new Map<string, bigint>();
-	private static injectiveMaps = (possibleOutputs: number[][], unusedCodomain: number) => {
+	private static injectiveMaps(possibleOutputs: number[][], unusedCodomain: number) {
+		const nonEmpty = possibleOutputs.filter(arr => arr.length !== 0);
+		const numEmpty = possibleOutputs.length - nonEmpty.length;
+		if(numEmpty > unusedCodomain) { return 0n; }
+		return BigintMath.permutation(BigInt(unusedCodomain), BigInt(numEmpty)) * ColoredRectangle.injectiveMapsHelper(nonEmpty, unusedCodomain - numEmpty);
+	}
+	private static injectiveMapsHelper(possibleOutputs: number[][], unusedCodomain: number) {
 		if(possibleOutputs.length <= 1) {
 			if(possibleOutputs.length === 0) { return 1n; }
 			return BigInt(possibleOutputs[0].length + unusedCodomain);
