@@ -1,5 +1,16 @@
 import { Vector } from "../../../utils-ts/modules/geometry/Vector.mjs";
-import { BigintMath } from "../../../utils-ts/modules/math/BigintMath.mjs";
+import { Field } from "../../../utils-ts/modules/math/Field.mjs";
+import { Polynomial } from "../../project-specific-utilities/PolynomialOverField.mjs";
+
+const BIGINTS = new Field<bigint>(
+	0n,
+	1n,
+	(a, b) => a + b,
+	(a, b) => a * b,
+	(a) => -a,
+	() => { throw new Error("Cannot take inverse of BigInt"); },
+	(a, b) => a === b,
+);
 
 export class ColoredRectangle {
 	readonly width: number;
@@ -8,9 +19,8 @@ export class ColoredRectangle {
 	readonly rightColors: number[] | null;
 	readonly topColors: number[] | null;
 	readonly bottomColors: number[] | null;
-	readonly maxColors: number;
 
-	constructor(width: number, height: number, maxColors: number, leftColors: number[] | null, rightColors: number[] | null, topColors: number[] | null, bottomColors: number[] | null) {
+	constructor(width: number, height: number, leftColors: number[] | null, rightColors: number[] | null, topColors: number[] | null, bottomColors: number[] | null) {
 		if(
 			(leftColors && leftColors.length !== height)
 			|| (rightColors && rightColors.length !== height)
@@ -22,36 +32,36 @@ export class ColoredRectangle {
 
 		this.width = width;
 		this.height = height;
-		this.maxColors = maxColors;
 		this.leftColors = leftColors;
 		this.rightColors = rightColors;
 		this.topColors = topColors;
 		this.bottomColors = bottomColors;
 	}
-	static empty(width: number, height: number, maxColors: number) {
-		return new ColoredRectangle(width, height, maxColors, null, null, null, null);
+	static empty(width: number, height: number) {
+		return new ColoredRectangle(width, height, null, null, null, null);
 	}
 	static coloringSum(width: number, height: number, maxColors: number) {
+		const chromaticPoly = ColoredRectangle.empty(width, height).colorings();
 		let sum = 0n;
 		for(let i = 1; i <= maxColors; i ++) {
-			sum += ColoredRectangle.empty(width, height, i).colorings();
+			sum += chromaticPoly.evaluate(BigInt(i));
 		}
 		return sum;
 	}
 
 	transpose() {
-		return new ColoredRectangle(this.height, this.width, this.maxColors, this.topColors, this.bottomColors, this.leftColors, this.rightColors);
+		return new ColoredRectangle(this.height, this.width, this.topColors, this.bottomColors, this.leftColors, this.rightColors);
 	}
 	reflectX() {
 		return new ColoredRectangle(
-			this.width, this.height, this.maxColors,
+			this.width, this.height,
 			this.rightColors, this.leftColors,
 			this.topColors?.toReversed() ?? null, this.bottomColors?.toReversed() ?? null,
 		);
 	}
 	reflectY() {
 		return new ColoredRectangle(
-			this.width, this.height, this.maxColors,
+			this.width, this.height,
 			this.leftColors?.toReversed() ?? null, this.rightColors?.toReversed() ?? null,
 			this.bottomColors, this.topColors,
 		);
@@ -60,12 +70,12 @@ export class ColoredRectangle {
 	static calls = 0;
 	static depth = 0;
 	static log = false;
-	colorings(splitMode: "top" | "middle" = "middle") {
+	colorings(splitMode: "top" | "middle" = "middle"): Polynomial<bigint> {
 		ColoredRectangle.calls ++;
 		ColoredRectangle.depth ++;
 		if(this.width === 0 || this.height === 0) {
 			ColoredRectangle.depth --;
-			return 1n;
+			return new Polynomial<bigint>(BIGINTS, [1n]);
 		}
 
 		const normalized = this.normalize();
@@ -84,33 +94,33 @@ export class ColoredRectangle {
 		ColoredRectangle.coloringsCache.set(cacheKey, result);
 		return result;
 	}
-	coloringsBySplitRow(rowY: number, topSplit: "top" | "middle", bottomSplit: "top" | "middle") {
+	coloringsBySplitRow(rowY: number, topSplit: "top" | "middle", bottomSplit: "top" | "middle"): Polynomial<bigint> {
 		const rowCombinations = this.rowCombinations(rowY);
 		if(ColoredRectangle.log) {
 			console.log(`${"| ".repeat(ColoredRectangle.depth)}${this.width}x${this.height} with ${this.maxColorUsed()} edge colors: ${rowCombinations.length} row combinations`);
 			if(ColoredRectangle.calls % 100 === 0) { debugger; }
 		}
 		const maxColorUsed = this.maxColorUsed();
-		let colorings = 0n;
+		let colorings = new Polynomial(BIGINTS, [0n]);
 		for(const row of rowCombinations) {
-			const recolorings = this.rowRecolorings(maxColorUsed, Math.max(...row));
-			let topHalfColorings: bigint;
+			const recolorings = ColoredRectangle.permutation(maxColorUsed - Math.max(...row));
+			let topHalfColorings: Polynomial<bigint>;
 			if(rowY !== 0) {
 				const topHalf = this.splitTop(rowY, row);
 				topHalfColorings = topHalf.colorings(topSplit);
 			}
-			else { topHalfColorings = 1n; }
+			else { topHalfColorings = new Polynomial(BIGINTS, [1n]); }
 			const bottomHalf = this.splitBottom(rowY, row);
 			const bottomHalfColorings = bottomHalf.colorings(bottomSplit);
-			colorings += recolorings * topHalfColorings * bottomHalfColorings;
+			colorings = colorings.add(Polynomial.multiply(recolorings, topHalfColorings, bottomHalfColorings));
 		}
 		return colorings;
 	}
 
 	
-	static coloringsCache = new Map<string, bigint>();
+	static coloringsCache = new Map<string, Polynomial<bigint>>();
 	cacheKey() {
-		return `${this.width}, ${this.height}, ${this.maxColors}: ${this.leftColors}; ${this.rightColors}; ${this.topColors}; ${this.bottomColors}`;
+		return `${this.width}, ${this.height}: ${this.leftColors}; ${this.rightColors}; ${this.topColors}; ${this.bottomColors}`;
 	}
 	static normalize(nums: number[]) {
 		const result = [];
@@ -155,7 +165,7 @@ export class ColoredRectangle {
 		}
 		else { bottomColors = null; }
 
-		return new ColoredRectangle(this.width, this.height, this.maxColors, leftColors, rightColors, topColors, bottomColors);
+		return new ColoredRectangle(this.width, this.height, leftColors, rightColors, topColors, bottomColors);
 	}
 	normalize() {
 		const untransposedRowSize = this.width * ((this.height % 2 === 0) ? 2 : 1);
@@ -203,7 +213,7 @@ export class ColoredRectangle {
 		}
 		const left = (this.leftColors === null) ? null : this.leftColors[rowY];
 		const right = (this.rightColors === null) ? null : this.rightColors[rowY];
-		const cacheKey = `${left}, ${right}, ${this.width}, ${this.maxColors}, ${maxColorUsed}`;
+		const cacheKey = `${left}, ${right}, ${this.width}, ${maxColorUsed}`;
 		const precomputed = ColoredRectangle.rowCombinationsCache.get(cacheKey);
 		if(precomputed !== undefined) {
 			return precomputed;
@@ -231,19 +241,21 @@ export class ColoredRectangle {
 				));
 			}
 		}
-		if(maxColorUsed + 1 < this.maxColors) {
-			result.push(...this.rowCombinationsHelper(
-				rowY,
-				[...row, maxColorUsed + 1],
-				maxColorUsed + 1,
-			));
-		}
+		result.push(...this.rowCombinationsHelper(
+			rowY,
+			[...row, maxColorUsed + 1],
+			maxColorUsed + 1,
+		));
 		return result;
 	}
 
-	rowRecolorings(maxColorUsed: number, newMaxColorUsed: number) {
-		const remainingColors = this.maxColors - (maxColorUsed + 1);
-		return BigintMath.permutation(BigInt(remainingColors), BigInt(Math.max(0, newMaxColorUsed - maxColorUsed)));
+	
+	static permutation(numElements: number) {
+		let result = new Polynomial(BIGINTS, [1n]);
+		for(let i = 0; i < numElements; i ++) {
+			result = result.multiply(new Polynomial(BIGINTS, [-BigInt(i), 1n]));
+		}
+		return result;
 	}
 
 	maxColorUsed() {
@@ -276,7 +288,6 @@ export class ColoredRectangle {
 		return new ColoredRectangle(
 			this.width,
 			rowY,
-			this.maxColors,
 			this.leftColors?.slice(0, rowY) ?? null,
 			this.rightColors?.slice(0, rowY) ?? null,
 			this.topColors,
@@ -287,7 +298,6 @@ export class ColoredRectangle {
 		return new ColoredRectangle(
 			this.width,
 			this.height - rowY - 1,
-			this.maxColors,
 			this.leftColors?.slice(rowY + 1) ?? null,
 			this.rightColors?.slice(rowY + 1) ?? null,
 			row,
@@ -297,14 +307,14 @@ export class ColoredRectangle {
 
 	toString() {
 		const colorsToString = (colors: number[] | null) => colors === null ? "null" : `[${colors}]`;
-		return `${this.width}x${this.height} with ${this.maxColors} colors; ${colorsToString(this.leftColors)}, ${colorsToString(this.rightColors)}, ${colorsToString(this.topColors)}, ${colorsToString(this.bottomColors)}`;
+		return `${this.width}x${this.height}; ${colorsToString(this.leftColors)}, ${colorsToString(this.rightColors)}, ${colorsToString(this.topColors)}, ${colorsToString(this.bottomColors)}`;
 	}
 }
 
-(() => {
-	const rectangle = ColoredRectangle.empty(9, 8, 90);
-	console.time();
-	console.log(rectangle.colorings());
-	console.timeEnd();
-	debugger;
-}) ();
+// (() => {
+// 	const rectangle = ColoredRectangle.empty(9, 8);
+// 	console.time();
+// 	console.log(rectangle.colorings());
+// 	console.timeEnd();
+// 	debugger;
+// }) ();

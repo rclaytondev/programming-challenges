@@ -4,18 +4,18 @@ import { assert } from "chai";
 
 describe("ColoredRectangle.colorings", () => {
 	it("matches the result from Project Euler for a 2x2 square with 3 colors", () => {
-		const rectangle = ColoredRectangle.empty(2, 2, 3);
-		const colorings = rectangle.colorings();
+		const rectangle = ColoredRectangle.empty(2, 2);
+		const colorings = rectangle.colorings().evaluate(3n);
 		assert.equal(colorings, 18n);
 	});
 	it("matches the result from Project Euler for a 2x2 square with 20 colors", () => {
-		const rectangle = ColoredRectangle.empty(2, 2, 20);
-		const colorings = rectangle.colorings();
+		const rectangle = ColoredRectangle.empty(2, 2);
+		const colorings = rectangle.colorings().evaluate(20n);
 		assert.equal(colorings, 130340n);
 	});
 	it("matches the result from Project Euler for a 3x4 rectangle with 6 colors", () => {
-		const rectangle = ColoredRectangle.empty(3, 4, 6);
-		const colorings = rectangle.colorings();
+		const rectangle = ColoredRectangle.empty(3, 4);
+		const colorings = rectangle.colorings().evaluate(6n);
 		assert.equal(colorings, 102923670n);
 	});
 });
@@ -29,7 +29,7 @@ describe("ColoredRectangle.coloringSum", () => {
 
 describe("ColoredRectangle.rowCombinations", () => {
 	it("returns all the ways of coloring the given row, up to permuting the colors", () => {
-		const rectangle = ColoredRectangle.empty(2, 2, 3);
+		const rectangle = ColoredRectangle.empty(2, 2);
 		const rowCombinations = rectangle.rowCombinations(0);
 		assert.sameDeepMembers(rowCombinations, [ [0, 1] ]);
 	});
@@ -45,8 +45,8 @@ describe("ColoredRectangle.normalize (static method)", () => {
 
 describe("ColoredRectangle.normalize", () => {
 	it("maps any equivalent rectangles to the same rectangle", () => {
-		const rectangle = new ColoredRectangle(3, 2, 5, [1, 0], null, [2, 3, 6], [4, 3, 2]);
-		const recolored = new ColoredRectangle(3, 2, 5, [0, 1], null, [6, 2, 3], [7, 2, 6]);
+		const rectangle = new ColoredRectangle(3, 2, [1, 0], null, [2, 3, 6], [4, 3, 2]);
+		const recolored = new ColoredRectangle(3, 2, [0, 1], null, [6, 2, 3], [7, 2, 6]);
 
 		const normalized1 = rectangle.normalize();
 		const normalized2 = rectangle.reflectX().normalize();
