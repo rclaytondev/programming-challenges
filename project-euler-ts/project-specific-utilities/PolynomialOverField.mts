@@ -70,6 +70,27 @@ export class Polynomial<FieldElementType> {
 		}
 		return this;
 	}
+
+	toString() {
+		const coefToString = (coef: FieldElementType) => (this.field.areEqual(coef, this.field.one) ? "" : `${coef}`);
+		const powerToString = (power: number) => (
+			(power === 0) ? ""
+			: (power === 1) ? "x"
+			: `x^${power}`
+		);
+		const termToString = (coef: FieldElementType, power: number) => (
+			(coef === 1 && power === 0) ? "1" : `${coefToString(coef)}${powerToString(power)}`
+		);
+		if(this.coefficients.every(c => c === 0)) {
+			return "0";
+		}
+		return (
+			[...this.coefficients.entries()]
+			.filter(([_power, coef]) => !this.field.areEqual(coef, this.field.zero))
+			.map(([power, coef]) => termToString(coef, power))
+			.join(" + ")
+		);
+	}
 }
 
 describe("Polynomial.interpolate", () => {
