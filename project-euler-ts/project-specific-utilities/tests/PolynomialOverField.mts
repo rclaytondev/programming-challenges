@@ -14,6 +14,11 @@ describe("Polynomial.toString", () => {
 		const str = poly.toString();
 		assert.equal(str, "1");
 	});
+	it("stringifies a degree-1 term with a coefficient of -1 as '-1'", () => {
+		const poly = new Polynomial(Field.REALS, [1]);
+		const str = poly.toString();
+		assert.equal(str, "1");
+	});
 	it("stringifies constant terms without writing the power of x", () => {
 		const poly = new Polynomial(Field.REALS, [2]);
 		const str = poly.toString();
@@ -33,6 +38,11 @@ describe("Polynomial.toString", () => {
 		const poly = new Polynomial(Field.REALS, [0, 0, 1]);
 		const str = poly.toString();
 		assert.equal(str, "x^2");
+	});
+	it("stringifies higher-degree terms with a coefficient of -1 using only a negative sign", () => {
+		const poly = new Polynomial(Field.REALS, [0, 0, -1]);
+		const str = poly.toString();
+		assert.equal(str, "-x^2");
 	});
 	it("works on polynomials with multiple terms", () => {
 		const poly = new Polynomial(Field.REALS, [2, 0, 6, 0, 0, 3]);
