@@ -103,7 +103,7 @@ export class ColoredRectangle {
 		const maxColorUsed = this.maxColorUsed();
 		let colorings = new Polynomial(BIGINTS, [0n]);
 		for(const row of rowCombinations) {
-			const recolorings = ColoredRectangle.permutation(maxColorUsed - Math.max(...row));
+			const recolorings = ColoredRectangle.permutation(Math.max(...row) - maxColorUsed);
 			let topHalfColorings: Polynomial<bigint>;
 			if(rowY !== 0) {
 				const topHalf = this.splitTop(rowY, row);
