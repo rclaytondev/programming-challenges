@@ -94,9 +94,13 @@ export class ColoredRectangle {
 		let colorings = 0n;
 		for(const row of rowCombinations) {
 			const recolorings = this.rowRecolorings(maxColorUsed, Math.max(...row));
-			const topHalf = this.splitTop(rowY, row);
+			let topHalfColorings: bigint;
+			if(rowY !== 0) {
+				const topHalf = this.splitTop(rowY, row);
+				topHalfColorings = topHalf.colorings(topSplit);
+			}
+			else { topHalfColorings = 1n; }
 			const bottomHalf = this.splitBottom(rowY, row);
-			const topHalfColorings = topHalf.colorings(topSplit);
 			const bottomHalfColorings = bottomHalf.colorings(bottomSplit);
 			colorings += recolorings * topHalfColorings * bottomHalfColorings;
 		}
