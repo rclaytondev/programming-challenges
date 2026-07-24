@@ -103,7 +103,7 @@ export class ColoredRectangle {
 		const maxColorUsed = this.maxColorUsed();
 		let colorings = new Polynomial(BIGINTS, [0n]);
 		for(const row of rowCombinations) {
-			const recolorings = ColoredRectangle.permutation(Math.max(...row) - maxColorUsed);
+			const recolorings = ColoredRectangle.permutation(Math.max(...row) - maxColorUsed, maxColorUsed + 1);
 			let topHalfColorings: Polynomial<bigint>;
 			if(rowY !== 0) {
 				const topHalf = this.splitTop(rowY, row);
@@ -250,10 +250,10 @@ export class ColoredRectangle {
 	}
 
 	
-	static permutation(numElements: number) {
+	static permutation(numElements: number, offset: number) {
 		let result = new Polynomial(BIGINTS, [1n]);
 		for(let i = 0; i < numElements; i ++) {
-			result = result.multiply(new Polynomial(BIGINTS, [-BigInt(i), 1n]));
+			result = result.multiply(new Polynomial(BIGINTS, [-BigInt(offset + i), 1n]));
 		}
 		return result;
 	}
@@ -311,10 +311,10 @@ export class ColoredRectangle {
 	}
 }
 
-// (() => {
-// 	const rectangle = ColoredRectangle.empty(9, 8);
-// 	console.time();
-// 	console.log(rectangle.colorings());
-// 	console.timeEnd();
-// 	debugger;
-// }) ();
+(() => {
+	const rectangle = ColoredRectangle.empty(9, 8);
+	console.time();
+	console.log(rectangle.colorings());
+	console.timeEnd();
+	debugger;
+}) ();
