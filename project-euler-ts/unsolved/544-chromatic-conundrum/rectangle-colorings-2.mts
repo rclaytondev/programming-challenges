@@ -1,4 +1,3 @@
-import { ArrayUtils } from "../../../utils-ts/modules/core-extensions/ArrayUtils.mjs";
 import { Vector } from "../../../utils-ts/modules/geometry/Vector.mjs";
 import { BigintMath } from "../../../utils-ts/modules/math/BigintMath.mjs";
 
@@ -77,7 +76,7 @@ export class ColoredRectangle {
 			return precomputed;
 		}
 		const result = (
-			(splitMode === "top") ? this.coloringsByTopRow()
+			(splitMode === "top") ? this.coloringsBySplitRow(0, "middle", "middle")
 			: (normalized.height % 2 === 1) ? normalized.coloringsBySplitRow((normalized.height - 1) / 2, "middle", "middle")
 			: normalized.coloringsBySplitRow(normalized.height / 2 - 1, "middle", "top")
 		);
@@ -102,85 +101,6 @@ export class ColoredRectangle {
 			colorings += recolorings * topHalfColorings * bottomHalfColorings;
 		}
 		return colorings;
-	}
-	coloringsByTopRow() {
-		if(this.topColors === null || this.leftColors !== null || this.rightColors !== null || this.bottomColors !== null) {
-			return this.coloringsBySplitRow(0, "middle", "middle");
-		}
-
-		const rowCombinations = ColoredRectangle.empty(this.width, this.height, this.maxColors).rowCombinations(0, -1);
-		if(ColoredRectangle.log) {
-			console.log(`${"| ".repeat(ColoredRectangle.depth)}${this.width}x${this.height} with ${this.maxColorUsed()} edge colors: ${rowCombinations.length} top row combinations`);
-		}
-		let result = 0n;
-		for(const row of rowCombinations) {
-			const rect = new ColoredRectangle(this.width, this.height - 1, this.maxColors, null, null, row, null);
-			const colorings = rect.colorings("middle");
-			const recolorings = ColoredRectangle.topRowRecolorings(this.topColors, row, this.maxColors);
-			result += colorings * recolorings;
-		}
-		return result;
-	}
-
-
-	static topRowRecolorings(topRow: number[], row: number[], maxColors: number) {
-		const maxColorUsed = Math.max(...topRow);
-		const rowMax = Math.max(...row);
-		const possibleColors = new Array(rowMax + 1).fill(0).map(_ => new Set(ArrayUtils.range(0, maxColorUsed)));
-		for(const [i, templateColor] of row.entries()) {
-			possibleColors[templateColor].delete(topRow[i]);
-		}
-		return ColoredRectangle.injectiveMaps(
-			possibleColors.map(s => [...s]),
-			maxColors - maxColorUsed - 1,
-		);
-	}
-	private static injectiveMapsCalls = 0;
-	private static injectiveMapsCache = new Map<string, bigint>();
-	private static injectiveMaps(possibleOutputs: number[][], unusedCodomain: number) {
-		const nonEmpty = possibleOutputs.filter(arr => arr.length !== 0);
-		const numEmpty = possibleOutputs.length - nonEmpty.length;
-		if(numEmpty > unusedCodomain) { return 0n; }
-		return BigintMath.permutation(BigInt(unusedCodomain), BigInt(numEmpty)) * ColoredRectangle.injectiveMapsHelper(nonEmpty, unusedCodomain - numEmpty);
-	}
-	private static injectiveMapsHelper(possibleOutputs: number[][], unusedCodomain: number) {
-		if(possibleOutputs.length <= 1) {
-			if(possibleOutputs.length === 0) { return 1n; }
-			return BigInt(possibleOutputs[0].length + unusedCodomain);
-		}
-		possibleOutputs = ColoredRectangle.normalizeInjMapsArgs(possibleOutputs);
-		const cacheKey = `[${possibleOutputs.map(s => `[${s}]`).join(", ")}], ${unusedCodomain}`;
-		const precomputed = ColoredRectangle.injectiveMapsCache.get(cacheKey);
-		if(precomputed !== undefined) { return precomputed; }
-		ColoredRectangle.injectiveMapsCalls ++;
-		let result = 0n;
-		for(const next of possibleOutputs[0]) {
-			result += ColoredRectangle.injectiveMaps(
-				possibleOutputs.slice(1).map(s => s.filter(n => n !== next)),
-				unusedCodomain,
-			);
-		}
-		if(unusedCodomain > 0) {
-			const remaining = ColoredRectangle.injectiveMaps(
-				possibleOutputs.slice(1),
-				unusedCodomain - 1,
-			);
-			result += BigInt(unusedCodomain) * remaining;
-		}
-		ColoredRectangle.injectiveMapsCache.set(cacheKey, result);
-		return result;
-	}
-	private static normalizeInjMapsArgs(possibleOutputs: number[][]) {
-		possibleOutputs = possibleOutputs.toSorted((a, b) => a.length - b.length);
-		possibleOutputs = possibleOutputs.map(arr => arr.sort((a, b) => a - b));
-		const normalized = ColoredRectangle.normalize(possibleOutputs.flat(1));
-		const result: number[][] = [];
-		let index = 0;
-		for(const arr of possibleOutputs) {
-			result.push(normalized.slice(index, index + arr.length));
-			index += arr.length;
-		}
-		return result;
 	}
 
 	

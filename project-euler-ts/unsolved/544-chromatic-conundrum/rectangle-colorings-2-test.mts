@@ -84,19 +84,6 @@ describe("ColoredRectangle.normalize", () => {
 	});
 });
 
-describe("ColoredRectangle.coloringsByTopRow", () => {
-	it("works for a 4x2 rectangle with 2 colors and top row [0, 1, 0, 1]", () => {
-		const rect = new ColoredRectangle(4, 2, 2, null, null, [0, 1, 0, 1], null);
-		const colorings = rect.coloringsByTopRow();
-		assert.equal(colorings, 1n);
-	});
-	it("works for a 4x2 rectangle with 3 colors and top row [0, 1, 0, 1]", () => {
-		const rect = new ColoredRectangle(4, 2, 3, null, null, [0, 1, 0, 1], null);
-		const colorings = rect.coloringsByTopRow();
-		assert.equal(colorings, 57n);
-	});
-});
-
 describe("ColoredRectangle.allMinima", () => {
 	it("returns all of the elements that are minima of the given ordering", () => {
 		const nums = [2, 3, 1, 1, 3, 3, 1, 2, 1, 3];
