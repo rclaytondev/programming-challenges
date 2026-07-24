@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { Field } from "../../../utils-ts/modules/math/Field.mjs";
+import { Field } from "../../utils-ts/modules/math/Field.mjs";
 
 export class Polynomial<FieldElementType> {
 	field: Field<FieldElementType>;

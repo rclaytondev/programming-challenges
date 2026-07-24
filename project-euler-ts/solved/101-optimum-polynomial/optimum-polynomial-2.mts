@@ -1,4 +1,4 @@
-import { Polynomial } from "./PolynomialOverField.mjs";
+import { Polynomial } from "../../project-specific-utilities/PolynomialOverField.mjs";
 import { Field } from "../../../utils-ts/modules/math/Field.mjs";
 import { BigintMath } from "../../../utils-ts/modules/math/BigintMath.mjs";
 
