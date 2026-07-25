@@ -23,4 +23,11 @@ export class Problem544 {
 			...coefsReversed.toReversed(),
 		]);
 	}
+
+	static polynomialSum(polynomial: Polynomial<BigRational>) {
+		return Polynomial.sum<BigRational>(
+			...[...polynomial.coefficients.entries()]
+			.map(([i, coef]) => Problem544.monomialSum(BigInt(i)).multiply(coef)),
+		);
+	}
 }
