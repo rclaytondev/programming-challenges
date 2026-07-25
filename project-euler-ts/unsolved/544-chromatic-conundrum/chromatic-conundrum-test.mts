@@ -1,5 +1,5 @@
 import { describe } from "mocha";
-import { Problem544 } from "./chromatic-conundrum-2.mjs";
+import { Problem544 } from "./chromatic-conundrum.mjs";
 import { assert } from "chai";
 import { Polynomial } from "../../project-specific-utilities/PolynomialOverField.mjs";
 import { Field } from "../../../utils-ts/modules/math/Field.mjs";

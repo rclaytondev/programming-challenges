@@ -1,5 +1,5 @@
 import { describe } from "mocha";
-import { ColoredRectangle } from "./rectangle-colorings-2.mjs";
+import { ColoredRectangle } from "./rectangle-colorings.mjs";
 import { assert } from "chai";
 
 describe("ColoredRectangle.colorings", () => {

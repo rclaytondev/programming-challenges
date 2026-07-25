@@ -2,7 +2,7 @@ import { Vector } from "../../../utils-ts/modules/geometry/Vector.mjs";
 import { BigRational } from "../../../utils-ts/modules/math/BigRational.mjs";
 import { Field } from "../../../utils-ts/modules/math/Field.mjs";
 import { Polynomial } from "../../project-specific-utilities/PolynomialOverField.mjs";
-import { Problem544 } from "./chromatic-conundrum-2.mjs";
+import { Problem544 } from "./chromatic-conundrum.mjs";
 
 const BIGINTS = new Field<bigint>(
 	0n,
