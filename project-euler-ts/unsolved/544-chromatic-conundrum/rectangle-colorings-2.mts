@@ -70,14 +70,8 @@ export class ColoredRectangle {
 		);
 	}
 
-	static calls = 0;
-	static depth = 0;
-	static log = false;
 	colorings(splitMode: "top" | "middle" = "middle"): Polynomial<bigint> {
-		ColoredRectangle.calls ++;
-		ColoredRectangle.depth ++;
 		if(this.width === 0 || this.height === 0) {
-			ColoredRectangle.depth --;
 			return new Polynomial<bigint>(BIGINTS, [1n]);
 		}
 
@@ -85,7 +79,6 @@ export class ColoredRectangle {
 		const cacheKey = normalized.cacheKey();
 		const precomputed = ColoredRectangle.coloringsCache.get(cacheKey);
 		if(precomputed != undefined) {
-			ColoredRectangle.depth --;
 			return precomputed;
 		}
 		const result = (
@@ -93,16 +86,11 @@ export class ColoredRectangle {
 			: (normalized.height % 2 === 1) ? normalized.coloringsBySplitRow((normalized.height - 1) / 2, "middle", "middle")
 			: normalized.coloringsBySplitRow(normalized.height / 2 - 1, "middle", "top")
 		);
-		ColoredRectangle.depth --;
 		ColoredRectangle.coloringsCache.set(cacheKey, result);
 		return result;
 	}
 	coloringsBySplitRow(rowY: number, topSplit: "top" | "middle", bottomSplit: "top" | "middle"): Polynomial<bigint> {
 		const rowCombinations = this.rowCombinations(rowY);
-		if(ColoredRectangle.log) {
-			console.log(`${"| ".repeat(ColoredRectangle.depth)}${this.width}x${this.height} with ${this.maxColorUsed()} edge colors: ${rowCombinations.length} row combinations`);
-			if(ColoredRectangle.calls % 100 === 0) { debugger; }
-		}
 		const maxColorUsed = this.maxColorUsed();
 		let colorings = new Polynomial(BIGINTS, [0n]);
 		for(const row of rowCombinations) {
@@ -313,10 +301,3 @@ export class ColoredRectangle {
 		return `${this.width}x${this.height}; ${colorsToString(this.leftColors)}, ${colorsToString(this.rightColors)}, ${colorsToString(this.topColors)}, ${colorsToString(this.bottomColors)}`;
 	}
 }
-
-(() => {
-	console.time();
-	console.log(ColoredRectangle.coloringSum(9, 10, 1112131415));
-	console.timeEnd();
-	debugger;
-}) ();
