@@ -1,5 +1,6 @@
 import { assert } from "chai";
-import { Field } from "../../../utils-ts/modules/math/Field.mjs";
+import { Field } from "../../utils-ts/modules/math/Field.mjs";
+import { ArrayUtils } from "../../utils-ts/modules/core-extensions/ArrayUtils.mjs";
 
 export class Polynomial<FieldElementType> {
 	field: Field<FieldElementType>;
@@ -65,10 +66,43 @@ export class Polynomial<FieldElementType> {
 	}
 
 	trimZeroes() {
-		while(this.coefficients[this.coefficients.length - 1] === this.field.zero) {
-			this.coefficients.pop();
+		const copy = new Polynomial(this.field, [...this.coefficients]);
+		while(copy.coefficients[copy.coefficients.length - 1] === copy.field.zero) {
+			copy.coefficients.pop();
 		}
-		return this;
+		return copy;
+	}
+
+	toString() {
+		const coefToString = (coef: FieldElementType) => (
+			this.field.areEqual(coef, this.field.one) ? ""
+			: this.field.areEqual(coef, this.field.opposite(this.field.one)) ? "-"
+			: `${coef}`
+		);
+		const powerToString = (power: number) => (
+			(power === 0) ? ""
+			: (power === 1) ? "x"
+			: `x^${power}`
+		);
+		const termToString = (coef: FieldElementType, power: number) => (
+			((this.field.areEqual(coef, this.field.one) || this.field.areEqual(coef, this.field.opposite(this.field.one))) && power === 0)
+				? `${coef}` : `${coefToString(coef)}${powerToString(power)}`
+		);
+		if(this.coefficients.every(c => c === 0)) {
+			return "0";
+		}
+		return (
+			[...this.coefficients.entries()]
+			.filter(([_power, coef]) => !this.field.areEqual(coef, this.field.zero))
+			.map(([power, coef]) => termToString(coef, power))
+			.join(" + ")
+		);
+	}
+
+	equals(polynomial: Polynomial<FieldElementType>) {
+		const coefs1 = this.trimZeroes().coefficients;
+		const coefs2 = polynomial.trimZeroes().coefficients;
+		return ArrayUtils.equals(coefs1, coefs2, (a, b) => this.field.areEqual(a, b));
 	}
 }
 

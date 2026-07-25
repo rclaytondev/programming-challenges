@@ -1,41 +1,67 @@
 import { describe } from "mocha";
-import { HashGraph } from "./HashGraph.mjs";
-import { chromaticPolynomial, monomialSum, naiveMonomialSum } from "./chromatic-conundrum.mjs";
+import { Problem544 } from "./chromatic-conundrum.mjs";
 import { assert } from "chai";
+import { Polynomial } from "../../project-specific-utilities/PolynomialOverField.mjs";
+import { Field } from "../../../utils-ts/modules/math/Field.mjs";
+import { BigRational } from "../../../utils-ts/modules/math/BigRational.mjs";
 
-describe("chromaticPolynomial", () => {
-	it("can compute the chromatic polynomial of the line graph on 2 vertices", () => {
-		const lineGraph = HashGraph.fromEdgesList(
-			[1, 2],
-			[[1, 2]],
-		);
-		const polynomial = chromaticPolynomial(lineGraph);
-		assert.sameOrderedMembers(polynomial.coefficients, [0, -1, 1]);
+describe("Problem544.monomialSum", () => {
+	it("can compute the polynomial for 1 + 1 + 1 + ... + 1", () => {
+		const actual = Problem544.monomialSum(0n);
+		const expected = new Polynomial(Field.BIG_RATIONALS, [
+			new BigRational(0n), new BigRational(1n),
+		]);
+		assert.isTrue(actual.equals(expected));
 	});
-	it("can compute the chromatic polynomial of the line graph on 3 vertices", () => {
-		const lineGraph = HashGraph.fromEdgesList(
-			[1, 2, 3],
-			[[1, 2], [2, 3]],
-		);
-		const polynomial = chromaticPolynomial(lineGraph);
-		assert.sameOrderedMembers(polynomial.coefficients, [0, 1, -2, 1]);
+	it("can compute the polynomial for 1 + 2 + ... + x", () => {
+		const actual = Problem544.monomialSum(1n);
+		const expected = new Polynomial(Field.BIG_RATIONALS, [
+			new BigRational(0n), new BigRational(1n, 2n), new BigRational(1n, 2n),
+		]);
+		assert.isTrue(actual.equals(expected));
+	});
+	it("can compute the polynomial for 1^2 + 2^2 + 3^2 + ... + x^2", () => {
+		const actual = Problem544.monomialSum(2n);
+		const expected = new Polynomial(Field.BIG_RATIONALS, [
+			new BigRational(0n), new BigRational(1n, 6n), new BigRational(1n, 2n), new BigRational(1n, 3n),
+		]);
+		assert.isTrue(actual.equals(expected));
+	});
+	it("can compute the polynomial for 1^3 + 2^3 + 3^3 + ... + x^3", () => {
+		const polynomial = Problem544.monomialSum(3n);
+		assert.deepEqual(polynomial.evaluate(new BigRational(1n)), new BigRational(1n));
+		assert.deepEqual(polynomial.evaluate(new BigRational(2n)), new BigRational(1n + 8n));
+		assert.deepEqual(polynomial.evaluate(new BigRational(3n)), new BigRational(1n + 8n + 27n));
+		assert.deepEqual(polynomial.evaluate(new BigRational(4n)), new BigRational(1n + 8n + 27n + 64n));
 	});
 });
 
-// describe("monomialSum", () => {
-// 	it("works for an exponent of 1", () => {
-// 		const result = monomialSum(1, 10);
-// 		const expected = naiveMonomialSum(1, 10);
-// 		assert.equal(result, expected);
-// 	});
-// 	it("works for an exponent of 2", () => {
-// 		const result = monomialSum(2, 10);
-// 		const expected = naiveMonomialSum(2, 10);
-// 		assert.equal(result, expected);
-// 	});
-// 	it("works for an exponent of 3", () => {
-// 		const result = monomialSum(3, 10);
-// 		const expected = naiveMonomialSum(3, 10);
-// 		assert.equal(result, expected);
-// 	});
-// });
+describe("Problem544.polynomialSum", () => {
+	it("returns a new polynomial f such that f(x) = g(1) + g(2) + ... + g(x), where g is the given polynomial", () => {
+		const polynomial = new Polynomial(Field.BIG_RATIONALS, [
+			new BigRational(2n),
+			new BigRational(1n, 3n),
+			new BigRational(0n),
+			new BigRational(-4n),
+		]);
+		const sum = Problem544.polynomialSum(polynomial);
+		assert.deepEqual(
+			sum.evaluate(new BigRational(1n)),
+
+			polynomial.evaluate(new BigRational(1n)),
+		);
+		assert.deepEqual(
+			sum.evaluate(new BigRational(2n)),
+			
+			polynomial.evaluate(new BigRational(1n))
+			.add(polynomial.evaluate(new BigRational(2n))),
+		);
+		assert.deepEqual(
+			sum.evaluate(new BigRational(3n)),
+
+			polynomial.evaluate(new BigRational(1n))
+			.add(polynomial.evaluate(new BigRational(2n)))
+			.add(polynomial.evaluate(new BigRational(3n))),
+		);
+	});
+});
