@@ -315,9 +315,8 @@ export class ColoredRectangle {
 }
 
 (() => {
-	const rectangle = ColoredRectangle.empty(9, 8);
 	console.time();
-	console.log(rectangle.colorings());
+	console.log(ColoredRectangle.coloringSum(9, 10, 1112131415));
 	console.timeEnd();
 	debugger;
 }) ();
