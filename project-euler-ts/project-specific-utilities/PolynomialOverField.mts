@@ -1,5 +1,6 @@
 import { assert } from "chai";
 import { Field } from "../../utils-ts/modules/math/Field.mjs";
+import { ArrayUtils } from "../../utils-ts/modules/core-extensions/ArrayUtils.mjs";
 
 export class Polynomial<FieldElementType> {
 	field: Field<FieldElementType>;
@@ -65,10 +66,11 @@ export class Polynomial<FieldElementType> {
 	}
 
 	trimZeroes() {
-		while(this.coefficients[this.coefficients.length - 1] === this.field.zero) {
-			this.coefficients.pop();
+		const copy = new Polynomial(this.field, [...this.coefficients]);
+		while(copy.coefficients[copy.coefficients.length - 1] === copy.field.zero) {
+			copy.coefficients.pop();
 		}
-		return this;
+		return copy;
 	}
 
 	toString() {
@@ -95,6 +97,12 @@ export class Polynomial<FieldElementType> {
 			.map(([power, coef]) => termToString(coef, power))
 			.join(" + ")
 		);
+	}
+
+	equals(polynomial: Polynomial<FieldElementType>) {
+		const coefs1 = this.trimZeroes().coefficients;
+		const coefs2 = polynomial.trimZeroes().coefficients;
+		return ArrayUtils.equals(coefs1, coefs2, (a, b) => this.field.areEqual(a, b));
 	}
 }
 
