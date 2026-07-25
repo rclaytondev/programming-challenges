@@ -1,6 +1,8 @@
 import { Vector } from "../../../utils-ts/modules/geometry/Vector.mjs";
+import { BigRational } from "../../../utils-ts/modules/math/BigRational.mjs";
 import { Field } from "../../../utils-ts/modules/math/Field.mjs";
 import { Polynomial } from "../../project-specific-utilities/PolynomialOverField.mjs";
+import { Problem544 } from "./chromatic-conundrum-2.mjs";
 
 const BIGINTS = new Field<bigint>(
 	0n,
@@ -42,11 +44,12 @@ export class ColoredRectangle {
 	}
 	static coloringSum(width: number, height: number, maxColors: number) {
 		const chromaticPoly = ColoredRectangle.empty(width, height).colorings();
-		let sum = 0n;
-		for(let i = 1; i <= maxColors; i ++) {
-			sum += chromaticPoly.evaluate(BigInt(i));
+		const rationalPoly = new Polynomial(Field.BIG_RATIONALS, chromaticPoly.coefficients.map(n => new BigRational(n, 1n)));
+		const rationalSum = Problem544.polynomialSum(rationalPoly).evaluate(new BigRational(maxColors));
+		if(rationalSum.denominator !== 1n) {
+			throw new Error(`Expected the sum of the number of colorings to be an integer, but instead the denominator was ${rationalSum.denominator}`);
 		}
-		return sum;
+		return rationalSum.numerator;
 	}
 
 	transpose() {
