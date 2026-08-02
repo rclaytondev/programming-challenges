@@ -148,8 +148,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="project-euler-cpp\main.cpp" />
-    <ClCompile Include="project-euler-cpp\solved\1-multiples-of-3-and-5\multiples-of-3-and-5.cpp" />
-    <ClCompile Include="project-euler-cpp\solved\124-ordered-radicals\ordered-radicals.cpp">
+    <ClCompile Include="project-euler-cpp\solved\1-multiples-of-3-and-5\multiples-of-3-and-5.ixx" />
+    <ClCompile Include="project-euler-cpp\solved\124-ordered-radicals\ordered-radicals.ixx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>

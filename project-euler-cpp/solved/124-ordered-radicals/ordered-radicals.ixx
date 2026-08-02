@@ -1,11 +1,6 @@
-#include "project-euler-cpp/solved/124-ordered-radicals/ordered-radicals.h"
+export module Problem124;
 
-#include <iostream>
-#include <map>
-#include <vector>
-#include <algorithm>
-#include <numeric>
-
+import std;
 
 namespace Problem124 {
 	static auto factorize(int num) {
@@ -50,16 +45,16 @@ namespace Problem124 {
 		auto operator<=>(const NumberWithRadical&) const = default;
 	};
 
-	int solve(int upperBound, int index) {
-		std::vector<NumberWithRadical> nums = {};
+	export int solve(int upperBound, int index) {
+		std::vector<Problem124::NumberWithRadical> nums = {};
 		for (int i = 1; i <= upperBound; i++) {
-			nums.push_back(NumberWithRadical{ i });
+			nums.push_back(Problem124::NumberWithRadical{ i });
 		}
 		std::sort(nums.begin(), nums.end());
 		return nums[index - 1].num;
 	}
 
-	void run() {
+	export void run() {
 		std::cout << "Test " << solve(10, 4) << "\n";
 		std::cout << "Test " << solve(10, 6) << "\n";
 		std::cout << "Answer " << solve(100000, 10000);

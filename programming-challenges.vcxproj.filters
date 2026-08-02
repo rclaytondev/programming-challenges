@@ -47,10 +47,10 @@
     <None Include="utils-ts\index.html" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="project-euler-cpp\solved\1-multiples-of-3-and-5\multiples-of-3-and-5.cpp">
+    <ClCompile Include="project-euler-cpp\solved\1-multiples-of-3-and-5\multiples-of-3-and-5.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="project-euler-cpp\solved\124-ordered-radicals\ordered-radicals.cpp">
+    <ClCompile Include="project-euler-cpp\solved\124-ordered-radicals\ordered-radicals.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="project-euler-cpp\main.cpp">
