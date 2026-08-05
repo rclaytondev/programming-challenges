@@ -45,6 +45,7 @@
     <None Include="project-euler-js\testing.html" />
     <None Include="project-euler-js\utils\index.html" />
     <None Include="utils-ts\index.html" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="project-euler-cpp\solved\1-multiples-of-3-and-5\multiples-of-3-and-5.ixx">
@@ -54,6 +55,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="project-euler-cpp\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="project-euler-cpp\unsolved\78-coin-partitions\coin-partitions.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="project-euler-cpp\unsolved\78-coin-partitions\coin-partitions-test.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
