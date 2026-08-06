@@ -220,6 +220,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="project-euler-cpp\solved\125-palindromic-sums\palindromic-sums.ixx" />
+    <ClCompile Include="project-euler-cpp\solved\179-consecutive-divisors\consecutive-divisors.ixx" />
     <ClCompile Include="project-euler-cpp\test-main.ixx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
