@@ -63,6 +63,15 @@
     <ClCompile Include="project-euler-cpp\unsolved\78-coin-partitions\coin-partitions-test.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="project-euler-cpp\test-main.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="project-euler-cpp\solved\125-palindromic-sums\palindromic-sums.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="project-euler-cpp\solved\125-palindromic-sums\palindromic-sums-test.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="project-euler-cpp\solved\1-multiples-of-3-and-5\multiples-of-3-and-5.h">

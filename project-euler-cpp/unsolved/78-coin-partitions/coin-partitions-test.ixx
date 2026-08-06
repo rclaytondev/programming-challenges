@@ -1,5 +1,8 @@
-#define BOOST_TEST_MODULE Problem78
-#include <boost/test/included/unit_test.hpp>
+module;
+
+#include <boost/test/unit_test.hpp>
+
+export module Problem78Test;
 
 import Problem78;
 
