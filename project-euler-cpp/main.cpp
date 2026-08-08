@@ -1,4 +1,4 @@
-import Problem259;
+import Problem153;
 
 import std;
 
@@ -7,7 +7,7 @@ import std;
 int main() {
 	auto startTime = std::chrono::high_resolution_clock::now();
 
-	Problem259::run();
+	Problem153::run();
 
 	auto endTime = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double, std::milli> milliseconds = endTime - startTime;

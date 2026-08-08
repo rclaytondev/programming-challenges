@@ -84,6 +84,12 @@
     <ClCompile Include="project-euler-cpp\solved\259-reachable-numbers\reachable-numbers-test.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="project-euler-cpp\solved\153-gaussian-integers\gaussian-integers.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="project-euler-cpp\solved\153-gaussian-integers\gaussian-integers-test.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="project-euler-cpp\solved\1-multiples-of-3-and-5\multiples-of-3-and-5.h">
