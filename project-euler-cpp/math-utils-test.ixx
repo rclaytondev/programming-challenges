@@ -40,3 +40,18 @@ BOOST_AUTO_TEST_CASE(can_compute_fifth_integer_powers_correctly) {
 	BOOST_CHECK_EQUAL(result, 243);
 }
 BOOST_AUTO_TEST_SUITE_END(primes)
+
+
+
+BOOST_AUTO_TEST_SUITE(MathUtils_isPrime)
+BOOST_AUTO_TEST_CASE(can_compute_primes_up_to_30) {
+	std::vector<int> actual;
+	for (int i = 0; i <= 30; i++) {
+		if (MathUtils::isPrime(i)) {
+			actual.push_back(i);
+		}
+	}
+	std::vector<int> expected{ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29 };
+	BOOST_CHECK_EQUAL_COLLECTIONS(actual.begin(), actual.end(), expected.begin(), expected.end());
+}
+BOOST_AUTO_TEST_SUITE_END(primes)
