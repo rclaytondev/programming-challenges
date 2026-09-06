@@ -33,7 +33,7 @@ public:
 		std::map<N, N> exponents;
 		for (N prime : MathUtils::primes(num)) {
 			exponents[prime] = 0;
-			for (int power = prime; power <= num; power *= prime) {
+			for (N power = prime; power <= num; power *= prime) {
 				exponents[prime] += num / power;
 			}
 		}
