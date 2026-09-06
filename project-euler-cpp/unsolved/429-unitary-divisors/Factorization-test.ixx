@@ -8,7 +8,7 @@ import Factorization;
 
 BOOST_AUTO_TEST_SUITE(factorial)
 BOOST_AUTO_TEST_CASE(can_compute_4_factorial) {
-	Factorization factorization{ Factorization::factorial(4) };
+	Factorization<int> factorization{ Factorization<int>::factorial(4) };
 
 	bool valid = factorization.isValid();
 	BOOST_CHECK(valid);
@@ -17,7 +17,7 @@ BOOST_AUTO_TEST_CASE(can_compute_4_factorial) {
 	BOOST_CHECK_EQUAL(num, 24);
 }
 BOOST_AUTO_TEST_CASE(can_compute_5_factorial) {
-	Factorization factorization{ Factorization::factorial(5) };
+	Factorization<int> factorization{ Factorization<int>::factorial(5) };
 
 	bool valid = factorization.isValid();
 	BOOST_CHECK(valid);
