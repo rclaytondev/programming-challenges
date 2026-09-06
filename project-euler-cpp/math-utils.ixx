@@ -32,23 +32,27 @@ namespace MathUtils {
 		return result;
 	}
 
-	export std::vector<int> primes(int upperBound) {
+	export template<typename T>
+		requires std::integral<T>
+	std::vector<T> primes(T upperBound) {
 		std::vector<bool> foundFactors(upperBound + 1, false);
-		std::vector<int> primes;
-		for (int i = 2; i <= upperBound; i++) {
+		std::vector<T> primes;
+		for (T i = 2; i <= upperBound; i++) {
 			const bool isPrime = !foundFactors[i];
 			if (isPrime) {
 				primes.push_back(i);
-				for (int j = i * i; j <= upperBound; j += i) {
+				for (T j = i * i; j <= upperBound; j += i) {
 					foundFactors[j] = true;
 				}
 			}
 		}
 		return primes;
 	}
-	export bool isPrime(int num) {
+	export template<typename T>
+		requires std::integral<T>
+	bool isPrime(T num) {
 		if (num <= 1) { return false; }
-		for (int i = 2; i * i <= num; i ++) {
+		for (T i = 2; i * i <= num; i ++) {
 			if (num % i == 0) {
 				return false;
 			}

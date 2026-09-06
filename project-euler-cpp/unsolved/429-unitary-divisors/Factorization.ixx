@@ -5,13 +5,15 @@ export module Factorization;
 import std;
 import MathUtils;
 
-export class Factorization {
+export template<typename N>
+	requires std::integral<N>
+class Factorization {
 public:
-	std::map<int, int> exponents;
+	std::map<N, N> exponents;
 
-	Factorization(std::map<int, int> exponents) : exponents(exponents) { }
+	Factorization(std::map<N, N> exponents) : exponents(exponents) { }
 	
-	int toNumber() {
+	N toNumber() {
 		int result = 1;
 		for (const auto& [prime, exponent] : this->exponents) {
 			result *= std::pow(prime, exponent);
@@ -27,9 +29,9 @@ public:
 		return true;
 	}
 
-	static Factorization factorial(int num) {
-		std::map<int, int> exponents;
-		for (int prime : MathUtils::primes(num)) {
+	static Factorization factorial(N num) {
+		std::map<N, N> exponents;
+		for (N prime : MathUtils::primes(num)) {
 			exponents[prime] = 0;
 			for (int power = prime; power <= num; power *= prime) {
 				exponents[prime] += num / power;
