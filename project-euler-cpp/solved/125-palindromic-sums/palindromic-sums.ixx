@@ -1,6 +1,7 @@
 export module Problem125;
 
 import std;
+import MathUtils;
 
 namespace Problem125 {
 	std::unordered_set<int> sumsOfSquares(int upperBound) {
@@ -15,17 +16,8 @@ namespace Problem125 {
 		return result;
 	}
 
-	std::vector<int> digitsReversed(int num) {
-		std::vector<int> digits;
-		while (num != 0) {
-			digits.push_back(num % 10);
-			num /= 10;
-		}
-		return digits;
-	}
-
 	bool isPalindrome(int num) {
-		std::vector<int> reversed = Problem125::digitsReversed(num);
+		std::vector<int> reversed = MathUtils::digitsReversed(num);
 		std::vector<int> digits(reversed.rbegin(), reversed.rend());
 		return digits == reversed;
 	}
