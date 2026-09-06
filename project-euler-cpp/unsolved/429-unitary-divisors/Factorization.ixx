@@ -30,7 +30,7 @@ public:
 	static Factorization factorial(int num) {
 		std::map<int, int> exponents;
 		for (int prime : MathUtils::primes(num)) {
-			exponents[num] = 0;
+			exponents[prime] = 0;
 			int power = prime;
 			for (int power = prime; power <= num; power *= prime) {
 				exponents[prime] += num / power;
