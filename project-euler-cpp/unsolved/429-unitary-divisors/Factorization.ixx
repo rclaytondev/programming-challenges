@@ -31,7 +31,6 @@ public:
 		std::map<int, int> exponents;
 		for (int prime : MathUtils::primes(num)) {
 			exponents[prime] = 0;
-			int power = prime;
 			for (int power = prime; power <= num; power *= prime) {
 				exponents[prime] += num / power;
 			}
