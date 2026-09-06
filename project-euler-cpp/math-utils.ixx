@@ -28,6 +28,9 @@ namespace MathUtils {
 				}
 			}
 			power = power * power;
+			if (modulo > 0) {
+				power %= modulo;
+			}
 		}
 		return result;
 	}
