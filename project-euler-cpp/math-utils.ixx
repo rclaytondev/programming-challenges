@@ -16,6 +16,10 @@ namespace MathUtils {
 		return std::vector<int> { reversed.rbegin(), reversed.rend() };
 	}
 
+	export template<typename T> T pow(T base, int exponent) {
+		return 0;
+	}
+
 	export std::vector<int> primes(int upperBound) {
 		std::vector<bool> foundFactors(upperBound + 1, false);
 		std::vector<int> primes;
