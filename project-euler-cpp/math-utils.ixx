@@ -15,4 +15,19 @@ namespace MathUtils {
 		std::vector<int> reversed{ MathUtils::digitsReversed(num) };
 		return std::vector<int> { reversed.rbegin(), reversed.rend() };
 	}
+
+	export std::vector<int> primes(int upperBound) {
+		std::vector<bool> foundFactors(upperBound + 1, false);
+		std::vector<int> primes;
+		for (int i = 2; i <= upperBound; i++) {
+			const bool isPrime = !foundFactors[i];
+			if (isPrime) {
+				primes.push_back(i);
+				for (int j = i * i; j <= upperBound; j += i) {
+					foundFactors[j] = true;
+				}
+			}
+		}
+		return primes;
+	}
 }
