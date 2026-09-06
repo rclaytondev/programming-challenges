@@ -8,11 +8,21 @@ import Factorization;
 
 BOOST_AUTO_TEST_SUITE(factorial)
 BOOST_AUTO_TEST_CASE(can_compute_4_factorial) {
-	int num = Factorization::factorial(4).toNumber();
+	Factorization factorization{ Factorization::factorial(4) };
+
+	bool valid = factorization.isValid();
+	BOOST_CHECK(valid);
+
+	int num = factorization.toNumber();
 	BOOST_CHECK_EQUAL(num, 24);
 }
 BOOST_AUTO_TEST_CASE(can_compute_5_factorial) {
-	int num = Factorization::factorial(5).toNumber();
+	Factorization factorization{ Factorization::factorial(5) };
+
+	bool valid = factorization.isValid();
+	BOOST_CHECK(valid);
+
+	int num = factorization.toNumber();
 	BOOST_CHECK_EQUAL(num, 120);
 }
 BOOST_AUTO_TEST_SUITE_END(primes)

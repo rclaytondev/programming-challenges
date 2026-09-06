@@ -18,6 +18,14 @@ public:
 		}
 		return result;
 	}
+	bool isValid() {
+		for (const auto& [prime, exponent] : this->exponents) {
+			if (!MathUtils::isPrime(prime)) {
+				return false;
+			}
+		}
+		return true;
+	}
 
 	static Factorization factorial(int num) {
 		std::map<int, int> exponents;
