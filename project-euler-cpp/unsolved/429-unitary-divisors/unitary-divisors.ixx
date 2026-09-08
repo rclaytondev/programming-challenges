@@ -16,7 +16,6 @@ namespace Problem429 {
 
 	export int solve(long long num, long long modulo = 1'000'000'009) {
 		Factorization<long long> factorial{ Factorization<long long>::factorial(num) };
-		std::cout << "done with factorial" << "\n";
 		return Problem429::unitaryDivSumSq(factorial, modulo);
 	}
 
