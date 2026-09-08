@@ -206,7 +206,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="project-euler-cpp\main.cpp" />
-    <ClCompile Include="project-euler-cpp\unsolved\166-criss-cross\criss-cross.ixx" />
+    <ClCompile Include="project-euler-cpp\solved\166-criss-cross\criss-cross.ixx" />
     <ClCompile Include="project-euler-cpp\utilities\Point.ixx" />
     <ClCompile Include="project-euler-cpp\utilities\math-utils-test.ixx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
