@@ -257,20 +257,20 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="project-euler-cpp\unsolved\1004-balanced-integers\balanced-integers.ixx" />
-    <ClCompile Include="project-euler-cpp\unsolved\429-unitary-divisors\Factorization-test.ixx">
+    <ClCompile Include="project-euler-cpp\solved\429-unitary-divisors\Factorization-test.ixx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="project-euler-cpp\unsolved\429-unitary-divisors\Factorization.ixx" />
-    <ClCompile Include="project-euler-cpp\unsolved\429-unitary-divisors\unitary-divisors-test.ixx">
+    <ClCompile Include="project-euler-cpp\solved\429-unitary-divisors\Factorization.ixx" />
+    <ClCompile Include="project-euler-cpp\solved\429-unitary-divisors\unitary-divisors-test.ixx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="project-euler-cpp\unsolved\429-unitary-divisors\unitary-divisors.ixx" />
+    <ClCompile Include="project-euler-cpp\solved\429-unitary-divisors\unitary-divisors.ixx" />
     <ClCompile Include="project-euler-cpp\unsolved\430-range-flips\range-flips-test.ixx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
