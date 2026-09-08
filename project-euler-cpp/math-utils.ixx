@@ -16,11 +16,11 @@ namespace MathUtils {
 		return std::vector<int> { reversed.rbegin(), reversed.rend() };
 	}
 
-	export template<typename T> T pow(T base, int exponent, int modulo = -1) {
+	export template<typename T> T pow(T base, T exponent, T modulo = -1) {
 		// Used for computing integer powers (std::pow is for floats and can lose precision).
 		T power = base;
 		T result = 1;
-		for (int exp = 1; exp <= exponent; exp *= 2) {
+		for (T exp = 1; exp <= exponent; exp *= 2) {
 			if ((exponent & exp) != 0) {
 				result *= power;
 				if (modulo > 0) {
