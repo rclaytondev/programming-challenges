@@ -89,6 +89,14 @@
     </ClCompile>
     <ClCompile Include="project-euler-cpp\unsolved\430-range-flips\range-flips-test.ixx" />
     <ClCompile Include="project-euler-cpp\unsolved\430-range-flips\range-flips.ixx" />
+    <ClCompile Include="project-euler-cpp\math-utils-test.ixx" />
+    <ClCompile Include="project-euler-cpp\math-utils.ixx" />
+    <ClCompile Include="project-euler-cpp\unsolved\1004-balanced-integers\balanced-integers-test.ixx" />
+    <ClCompile Include="project-euler-cpp\unsolved\1004-balanced-integers\balanced-integers.ixx" />
+    <ClCompile Include="project-euler-cpp\solved\429-unitary-divisors\Factorization-test.ixx" />
+    <ClCompile Include="project-euler-cpp\solved\429-unitary-divisors\Factorization.ixx" />
+    <ClCompile Include="project-euler-cpp\solved\429-unitary-divisors\unitary-divisors-test.ixx" />
+    <ClCompile Include="project-euler-cpp\solved\429-unitary-divisors\unitary-divisors.ixx" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="project-euler-cpp\solved\1-multiples-of-3-and-5\multiples-of-3-and-5.h">
