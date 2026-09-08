@@ -39,6 +39,18 @@ BOOST_AUTO_TEST_CASE(can_compute_fifth_integer_powers_correctly) {
 	int result = MathUtils::pow(3, 5);
 	BOOST_CHECK_EQUAL(result, 243);
 }
+BOOST_AUTO_TEST_CASE(can_compute_sixth_integer_powers_correctly) {
+	int result = MathUtils::pow(3, 6);
+	BOOST_CHECK_EQUAL(result, 729);
+}
+BOOST_AUTO_TEST_CASE(can_compute_seventh_integer_powers_correctly) {
+	int result = MathUtils::pow(3, 7);
+	BOOST_CHECK_EQUAL(result, 2187);
+}
+BOOST_AUTO_TEST_CASE(can_compute_eighth_integer_powers_correctly) {
+	int result = MathUtils::pow(3, 8);
+	BOOST_CHECK_EQUAL(result, 6561);
+}
 BOOST_AUTO_TEST_SUITE_END(primes)
 
 
