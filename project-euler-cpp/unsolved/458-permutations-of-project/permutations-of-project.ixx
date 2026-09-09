@@ -73,8 +73,11 @@ private:
 };
 
 namespace Problem458 {
+	long long calls = 0;
+
 	long long completions(PartialString str);
 	long long completionsByFirst(PartialString str) {
+		Problem458::calls++;
 		if (str.getLength() == 0) { return 1; }
 
 		long long result = 0;
@@ -135,5 +138,6 @@ namespace Problem458 {
 	export void run() {
 		long long answer = Problem458::solve(7, 5);
 		std::cout << "Answer: " << answer << "\n";
+		std::cout << "Function calls: " << Problem458::calls << "\n";
 	}
 }
