@@ -84,12 +84,12 @@ namespace Problem458 {
 			if (
 				(before.size() >= str.getAlphabetSize() - 1 && !std::ranges::contains(before, first))
 				|| (str.getLength() == 1 && after.size() >= str.getAlphabetSize() - 1 && !std::ranges::contains(after, first))
-				) {
+			) {
 				continue;
 			}
 
 			std::vector<int> nextBefore = before;
-			nextBefore.push_back(first);
+			nextBefore.insert(nextBefore.begin(), first);
 			PartialString next{ nextBefore, after, str.getLength() - 1, str.getAlphabetSize() };
 			result += Problem458::completions(next);
 		}
