@@ -5,6 +5,7 @@ module;
 export module Problem458;
 
 import std;
+import MathUtils;
 
 export class PartialString {
 private:
@@ -141,6 +142,9 @@ namespace Problem458 {
 	}
 	long long completions(PartialString str) {
 		if (str.getLength() < str.getAlphabetSize() + 2 || str.getLength() % 2 == str.getAlphabetSize() % 2) {
+			if (str.getLength() + str.getBefore().size() + str.getAfter().size() < str.getAlphabetSize()) {
+				return MathUtils::pow(str.getAlphabetSize(), str.getLength());
+			}
 			return Problem458::completionsByFirst(str);
 		}
 
@@ -166,7 +170,7 @@ namespace Problem458 {
 	}
 
 	export void run() {
-		long long answer = Problem458::solve(7, 5);
+		long long answer = Problem458::solve(10, 7);
 		std::cout << "Answer: " << answer << "\n";
 		std::cout << "Function calls: " << Problem458::calls << "\n";
 	}
