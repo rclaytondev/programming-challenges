@@ -131,4 +131,9 @@ namespace Problem458 {
 		PartialString empty{ {}, {}, length, alphabetSize };
 		return Problem458::completions(empty);
 	}
+
+	export void run() {
+		long long answer = Problem458::solve(7, 5);
+		std::cout << "Answer: " << answer << "\n";
+	}
 }
