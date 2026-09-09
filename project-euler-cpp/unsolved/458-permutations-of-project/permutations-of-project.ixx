@@ -99,8 +99,8 @@ namespace Problem458 {
 
 	long long calls = 0;
 
-	long long completions(PartialString str);
-	long long completionsByFirst(PartialString str) {
+	long long completions(PartialString str, long long modulo);
+	long long completionsByFirst(PartialString str, long long modulo) {
 		Problem458::calls++;
 		auto it = Problem458::cache.find(str);
 		if (it != Problem458::cache.end()) {
@@ -123,7 +123,10 @@ namespace Problem458 {
 			std::vector<int> nextBefore = before;
 			nextBefore.insert(nextBefore.begin(), first);
 			PartialString next{ nextBefore, after, str.getLength() - 1, str.getAlphabetSize() };
-			result += Problem458::completions(next);
+			result += Problem458::completions(next, modulo);
+			if (modulo > 0) {
+				result %= modulo;
+			}
 		}
 		Problem458::cache[str] = result;
 		return result;
@@ -140,12 +143,12 @@ namespace Problem458 {
 			}
 		}
 	}
-	long long completions(PartialString str) {
+	long long completions(PartialString str, long long modulo) {
 		if (str.getLength() < str.getAlphabetSize() + 2 || str.getLength() % 2 == str.getAlphabetSize() % 2) {
 			if (str.getLength() + str.getBefore().size() + str.getAfter().size() < str.getAlphabetSize()) {
-				return MathUtils::pow(str.getAlphabetSize(), str.getLength());
+				return MathUtils::pow<long long>(str.getAlphabetSize(), str.getLength(), modulo);
 			}
-			return Problem458::completionsByFirst(str);
+			return Problem458::completionsByFirst(str, modulo);
 		}
 
 		int centerLength = str.getAlphabetSize() - 1;
@@ -157,20 +160,23 @@ namespace Problem458 {
 
 			PartialString left{ str.getBefore(), center, half, str.getAlphabetSize() };
 			PartialString right{ reversed, str.getAfter(), half, str.getAlphabetSize()};
-			long long leftCompletions = Problem458::completions(left);
-			long long rightCompletions = Problem458::completions(right);
+			long long leftCompletions = Problem458::completions(left, modulo);
+			long long rightCompletions = Problem458::completions(right, modulo);
 			result += leftCompletions * rightCompletions;
+			if (modulo > 0) {
+				result %= modulo;
+			}
 		}
 		return result;
 	}
 
-	export long long solve(long long length, int alphabetSize) {
+	export long long solve(long long length, int alphabetSize, long long modulo = -1) {
 		PartialString empty{ {}, {}, length, alphabetSize };
-		return Problem458::completions(empty);
+		return Problem458::completions(empty, modulo);
 	}
 
 	export void run() {
-		long long answer = Problem458::solve(10, 7);
+		long long answer = Problem458::solve(10, 7, 1'000'000'000);
 		std::cout << "Answer: " << answer << "\n";
 		std::cout << "Function calls: " << Problem458::calls << "\n";
 	}
