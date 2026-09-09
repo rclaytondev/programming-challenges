@@ -11,18 +11,18 @@ export class PartialString {
 private:
 	std::vector<int> before; // 0th element = just before string
 	std::vector<int> after; // 0th element = just after string
-	int length; // TODO: replace with long long (since 10^12 is greater than the max int size)
+	long long length;
 	int alphabetSize;
 
 public:
-	PartialString(const std::vector<int>& before, const std::vector<int>& after, int length, int alphabetSize) : before(before), after(after), length(length), alphabetSize(alphabetSize) {
+	PartialString(const std::vector<int>& before, const std::vector<int>& after, long long length, int alphabetSize) : before(before), after(after), length(length), alphabetSize(alphabetSize) {
 		this->trim();
 		this->standardize();
 	}
 	int getAlphabetSize() const {
 		return this->alphabetSize;
 	}
-	int getLength() const {
+	long long getLength() const {
 		return this->length;
 	}
 	const std::vector<int>& getBefore() const {
@@ -164,7 +164,7 @@ namespace Problem458 {
 		return result;
 	}
 
-	export long long solve(int length, int alphabetSize) {
+	export long long solve(long long length, int alphabetSize) {
 		PartialString empty{ {}, {}, length, alphabetSize };
 		return Problem458::completions(empty);
 	}
