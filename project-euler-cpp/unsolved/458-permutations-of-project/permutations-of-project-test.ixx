@@ -48,5 +48,15 @@ BOOST_AUTO_TEST_CASE(it_works_for_an_input_of_5_with_alphabet_size_4) {
 
 	BOOST_CHECK_EQUAL(actual, expected);
 }
+BOOST_AUTO_TEST_CASE(it_gives_the_same_output_as_the_less_optimized_version_for_a_nontrivial_input) {
+	long long actual = Problem458::solve(8, 3);
+	long long expected = 3444;
+	BOOST_CHECK_EQUAL(actual, expected);
+}
+//BOOST_AUTO_TEST_CASE(it_gives_the_same_output_as_the_less_optimized_version_for_a_large_input) {
+//	long long actual = Problem458::solve(10, 7);
+//	long long expected = 612426304;
+//	BOOST_CHECK_EQUAL(actual, expected);
+//}
 
 BOOST_AUTO_TEST_SUITE_END()
