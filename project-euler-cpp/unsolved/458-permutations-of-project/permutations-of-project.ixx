@@ -50,11 +50,18 @@ private:
 		this->replace(-1, label2);
 	}
 	void standardize() {
-		//int seen = 0;
-		//for (int i = 0; i < this->before.size(); i++) {
-		//	if (this->before[i] >= seen) {
-
-		//	}
-		//}
+		int seen = 0;
+		for (int i = 0; i < this->before.size(); i++) {
+			if (this->before[i] >= seen) {
+				this->swap(this->before[i], seen);
+				seen++;
+			}
+		}
+		for (int i = 0; i < this->after.size(); i++) {
+			if (this->after[i] >= seen) {
+				this->swap(this->after[i], seen);
+				seen++;
+			}
+		}
 	}
 };
