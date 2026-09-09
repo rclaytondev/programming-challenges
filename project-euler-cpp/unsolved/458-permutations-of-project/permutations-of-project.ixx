@@ -6,13 +6,19 @@ export class PartialString {
 private:
 	std::vector<int> before; // 0th element = just before string
 	std::vector<int> after; // 0th element = just after string
-	int length;
+	int length; // TODO: replace with long long (since 10^12 is greater than the max int size)
 	int alphabetSize;
 
 public:
-	PartialString(std::vector<int> before, std::vector<int> after, int length, int alphabetSize) : before(before), after(after), length(length), alphabetSize(alphabetSize) {
+	PartialString(const std::vector<int>& before, const std::vector<int>& after, int length, int alphabetSize) : before(before), after(after), length(length), alphabetSize(alphabetSize) {
 		this->trim();
 		this->standardize();
+	}
+	int getAlphabetSize() {
+		return this->alphabetSize;
+	}
+	int getLength() {
+		return this->length;
 	}
 	const std::vector<int>& getBefore() {
 		return this->before;
@@ -65,3 +71,41 @@ private:
 		}
 	}
 };
+
+namespace Problem458 {
+	long long completions(PartialString str);
+	long long completionsByFirst(PartialString str) {
+		if (str.getLength() == 0) { return 1; }
+
+		long long result = 0;
+		for (int first = 0; first < str.getAlphabetSize(); first++) {
+			std::vector<int> before{ str.getBefore() };
+			std::vector<int> after{ str.getAfter() };
+			if (
+				(before.size() >= str.getAlphabetSize() - 1 && !std::ranges::contains(before, first))
+				|| (str.getLength() == 1 && after.size() >= str.getAlphabetSize() - 1 && !std::ranges::contains(after, first))
+				) {
+				continue;
+			}
+
+			std::vector<int> nextBefore = before;
+			nextBefore.push_back(first);
+			PartialString next{ nextBefore, after, str.getLength() - 1, str.getAlphabetSize() };
+			result += Problem458::completions(next);
+		}
+		return result;
+	}
+	long long completions(PartialString str) {
+		if (str.getLength() < str.getAlphabetSize() + 2 || str.getLength() % 2 == str.getAlphabetSize() % 2) {
+			return Problem458::completionsByFirst(str);
+		}
+
+		long long result = 0;
+		return result;
+	}
+
+	long long solve(int length, int alphabetSize) {
+		PartialString empty{ {}, {}, length, alphabetSize };
+		return Problem458::completions(empty);
+	}
+}
