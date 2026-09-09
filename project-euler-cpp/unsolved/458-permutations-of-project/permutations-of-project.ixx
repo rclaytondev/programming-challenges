@@ -130,6 +130,7 @@ namespace Problem458 {
 	std::generator<std::vector<int>> tuples(int maxInclusive, int length) {
 		if (length <= 0) {
 			co_yield{ };
+			co_return;
 		}
 		for (int last = 0; last <= maxInclusive; last ++) {
 			for (auto tuple : Problem458::tuples(maxInclusive, length - 1)) {
