@@ -95,16 +95,39 @@ namespace Problem458 {
 		}
 		return result;
 	}
+	std::generator<std::vector<int>> tuples(int maxInclusive, int length) {
+		if (length <= 0) {
+			co_yield{ };
+		}
+		for (int last = 0; last <= maxInclusive; last ++) {
+			for (auto tuple : Problem458::tuples(maxInclusive, length - 1)) {
+				tuple.push_back(last);
+				co_yield tuple;
+			}
+		}
+	}
 	long long completions(PartialString str) {
 		if (str.getLength() < str.getAlphabetSize() + 2 || str.getLength() % 2 == str.getAlphabetSize() % 2) {
 			return Problem458::completionsByFirst(str);
 		}
 
+		int centerLength = str.getAlphabetSize() - 1;
+		int half = (str.getLength() - centerLength) / 2;
 		long long result = 0;
+		for (const std::vector<int>& center : Problem458::tuples(str.getAlphabetSize(), centerLength)) {
+			std::vector<int> reversed(centerLength);
+			std::reverse_copy(center.begin(), center.end(), reversed.begin());
+
+			PartialString left{ str.getBefore(), center, half, str.getAlphabetSize() };
+			PartialString right{ reversed, str.getAfter(), half, str.getAlphabetSize()};
+			long long leftCompletions = Problem458::completions(left);
+			long long rightCompletions = Problem458::completions(right);
+			result += leftCompletions * rightCompletions;
+		}
 		return result;
 	}
 
-	long long solve(int length, int alphabetSize) {
+	export long long solve(int length, int alphabetSize) {
 		PartialString empty{ {}, {}, length, alphabetSize };
 		return Problem458::completions(empty);
 	}

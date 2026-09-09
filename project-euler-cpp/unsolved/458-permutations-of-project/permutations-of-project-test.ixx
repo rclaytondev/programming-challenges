@@ -19,3 +19,13 @@ BOOST_AUTO_TEST_CASE(it_deletes_all_after_first_duplicate_and_replaces_each_numb
 }
 
 BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_SUITE(Problem458_solve)
+
+BOOST_AUTO_TEST_CASE(it_works_for_an_input_of_4) {
+	long long actual = Problem458::solve(4, 4);
+	long long expected = (4 * 4 * 4 * 4) - (4 * 3 * 2 * 1);
+	BOOST_CHECK_EQUAL(actual, expected);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
