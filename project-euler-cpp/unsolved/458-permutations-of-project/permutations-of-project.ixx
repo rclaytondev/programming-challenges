@@ -1,3 +1,7 @@
+module;
+
+#include <boost/container_hash/hash.hpp>
+
 export module Problem458;
 
 import std;
@@ -14,16 +18,16 @@ public:
 		this->trim();
 		this->standardize();
 	}
-	int getAlphabetSize() {
+	int getAlphabetSize() const {
 		return this->alphabetSize;
 	}
-	int getLength() {
+	int getLength() const {
 		return this->length;
 	}
-	const std::vector<int>& getBefore() {
+	const std::vector<int>& getBefore() const {
 		return this->before;
 	}
-	const std::vector<int>& getAfter() {
+	const std::vector<int>& getAfter() const {
 		return this->after;
 	}
 
@@ -70,14 +74,38 @@ private:
 			}
 		}
 	}
+
+public:
+	bool operator==(const PartialString& str) const = default;
 };
 
 namespace Problem458 {
+	struct PartialStringHasher {
+		std::size_t operator()(const PartialString& str) const noexcept {
+			std::size_t hash = 0;
+			boost::hash_combine(hash, str.getLength());
+			boost::hash_combine(hash, str.getAlphabetSize());
+			for (int num : str.getBefore()) {
+				boost::hash_combine(hash, num);
+			}
+			for (int num : str.getAfter()) {
+				boost::hash_combine(hash, num);
+			}
+			return hash;
+		}
+	};
+	std::unordered_map<PartialString, long long, PartialStringHasher> cache;
+
 	long long calls = 0;
 
 	long long completions(PartialString str);
 	long long completionsByFirst(PartialString str) {
 		Problem458::calls++;
+		auto it = Problem458::cache.find(str);
+		if (it != Problem458::cache.end()) {
+			auto [str, result] = *it;
+			return result;
+		}
 		if (str.getLength() == 0) { return 1; }
 
 		long long result = 0;
@@ -96,6 +124,7 @@ namespace Problem458 {
 			PartialString next{ nextBefore, after, str.getLength() - 1, str.getAlphabetSize() };
 			result += Problem458::completions(next);
 		}
+		Problem458::cache[str] = result;
 		return result;
 	}
 	std::generator<std::vector<int>> tuples(int maxInclusive, int length) {
