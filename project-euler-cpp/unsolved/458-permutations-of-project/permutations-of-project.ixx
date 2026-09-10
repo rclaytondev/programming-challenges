@@ -40,7 +40,13 @@ namespace Problem458 {
 	export template<long long modulo>
 	long long solve(long long length, int alphabetSize) {
 		auto mat { Problem458::initialize<modulo>(alphabetSize) };
-		std::cout << mat << "\n";
+		matrix<Modular<long long, modulo>> identity = boost::numeric::ublas::identity_matrix<Modular<long long, modulo>>(alphabetSize - 1);
+		auto power{MathUtils::pow<
+			matrix<Modular<long long, modulo>>,
+			long long,
+			[](matrix<Modular<long long, modulo>> m1, matrix<Modular<long long, modulo>> m2) { return prod(m1, m2); }
+			//prod<matrix<Modular<long long, modulo>, matrix<Modular<long long, modulo>>>>
+		>(mat, alphabetSize, identity) };
 		return 0;
 	}
 

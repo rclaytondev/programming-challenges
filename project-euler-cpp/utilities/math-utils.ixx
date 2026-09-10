@@ -23,16 +23,20 @@ namespace MathUtils {
 	}
 
 	export template<typename T, typename N, auto multiply>
-	T pow(T base, N exponent) {
+	T pow(T base, N exponent, T identity) {
 		T power = base;
-		T result = 1;
+		T result = identity;
 		for (N exp = 1; exp <= exponent; exp *= 2) {
 			if ((exponent & exp) != 0) {
-				result *= power;
+				result = multiply(result, power);
 			}
-			power = power * power;
+			power = multiply(power, power);
 		}
 		return result;
+	}
+	export template<typename T, typename N, auto multiply>
+	T pow(T base, N exponent) {
+		return MathUtils::pow<T, N, multiply>(base, exponent, 1);
 	}
 	export template<typename T, typename N>
 	T pow(T base, N exponent) {

@@ -67,8 +67,9 @@ public:
 	}
 
 
-	void operator=(const Modular<N, modulo>& num) {
+	Modular& operator=(const Modular<N, modulo>& num) {
 		this->value = num.value;
+		return *this;
 	}
 	operator N() const {
 		return this->value;
