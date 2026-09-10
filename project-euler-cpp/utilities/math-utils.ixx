@@ -22,23 +22,22 @@ namespace MathUtils {
 		return std::vector<int> { reversed.rbegin(), reversed.rend() };
 	}
 
-	export template<typename T> T pow(T base, T exponent, T modulo = -1) {
-		// Used for computing integer powers (std::pow is for floats and can lose precision).
+	export template<typename T, typename N, auto multiply>
+	T pow(T base, N exponent) {
 		T power = base;
 		T result = 1;
-		for (T exp = 1; exp <= exponent; exp *= 2) {
+		for (N exp = 1; exp <= exponent; exp *= 2) {
 			if ((exponent & exp) != 0) {
 				result *= power;
-				if (modulo > 0) {
-					result %= modulo;
-				}
 			}
 			power = power * power;
-			if (modulo > 0) {
-				power %= modulo;
-			}
 		}
 		return result;
+	}
+	export template<typename T, typename N>
+	T pow(T base, N exponent) {
+		// Used for computing integer powers (std::pow is for floats and can lose precision).
+		return MathUtils::pow < T, N, std::multiplies<T>{} > (base, exponent);
 	}
 
 	export template<typename N>
