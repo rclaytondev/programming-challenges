@@ -1,5 +1,6 @@
 export module Modular;
 
+import std;
 import MathUtils;
 
 export template<typename N, N modulo> class Modular {
@@ -65,5 +66,9 @@ public:
 	}
 	bool operator==(const Modular<N, modulo>& num) const {
 		return (this->value - num.value) % modulo == 0;
+	}
+	friend std::ostream& operator<<(std::ostream& os, const Modular& num) {
+		os << num.value;
+		return os;
 	}
 };

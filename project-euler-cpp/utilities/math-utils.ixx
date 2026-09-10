@@ -1,6 +1,12 @@
+module;
+
+#include <boost/numeric/ublas/matrix.hpp>
+
 export module MathUtils;
 
 import std;
+
+using boost::numeric::ublas::matrix;
 
 namespace MathUtils {
 	export std::vector<int> digitsReversed(int num) {
@@ -71,4 +77,32 @@ namespace MathUtils {
 		}
 		return true;
 	}
+}
+
+export template<typename N>
+bool operator==(const matrix<N>& m1, const matrix<N>& m2) {
+	if (m1.size1() != m2.size1() || m1.size2() != m2.size2()) {
+		return false;
+	}
+
+	for (int i = 0; i < m1.size1(); i++) {
+		for (int j = 0; j < m2.size2(); j++) {
+			if (m1(i, j) != m2(i, j)) {
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+export template<typename N>
+std::ostream& operator<<(std::ostream& os, const matrix<N>& mat) {
+	for (int i = 0; i < mat.size1(); i++) {
+		for (int j = 0; j < mat.size2(); j++) {
+			os << mat(i, j) << ", ";
+		}
+		os << "\n";
+	}
+	os << "\n";
+	return os;
 }

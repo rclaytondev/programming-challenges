@@ -1,10 +1,15 @@
 module;
 
 #include <boost/test/unit_test.hpp>
+#include <boost/numeric/ublas/matrix.hpp>
 
 export module Problem458Test;
 
 import Problem458;
+import Modular;
+import MathUtils;
+
+using boost::numeric::ublas::matrix;
 
 BOOST_AUTO_TEST_SUITE(Problem458_solve)
 
@@ -44,5 +49,21 @@ BOOST_AUTO_TEST_SUITE(Problem458_solve)
 //	long long expected = 612426304;
 //	BOOST_CHECK_EQUAL(actual, expected);
 //}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+
+BOOST_AUTO_TEST_SUITE(Problem458_initialize)
+
+BOOST_AUTO_TEST_CASE(it_correctly_computes_the_adjacency_matrix_of_the_state_graph) {
+	std::vector<std::vector<long long>> values = {
+		{ 1, 1, 1 },
+		{ 3, 1, 1 },
+		{ 0, 2, 1 },
+	};
+	auto expected{ Problem458::createMatrix<long long, 100>(3, 3, values) };
+	auto actual{ Problem458::initialize<100>(4) };
+	BOOST_CHECK(actual == expected);
+}
 
 BOOST_AUTO_TEST_SUITE_END()
