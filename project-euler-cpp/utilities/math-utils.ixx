@@ -35,6 +35,15 @@ namespace MathUtils {
 		return result;
 	}
 
+	export template<typename N>
+	N mod(N num, N modulo) {
+		if (num < 0) {
+			if (num % modulo == 0) { return num % modulo; }
+			return modulo - ((-num) % modulo);
+		}
+		return num % modulo;
+	}
+
 	export template<typename T>
 		requires std::integral<T>
 	std::vector<T> primes(T upperBound) {
