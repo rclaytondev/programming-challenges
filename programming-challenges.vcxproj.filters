@@ -101,6 +101,12 @@
     <ClCompile Include="project-euler-cpp\utilities\Point.ixx" />
     <ClCompile Include="project-euler-cpp\utilities\math-utils-test.ixx" />
     <ClCompile Include="project-euler-cpp\utilities\math-utils.ixx" />
+    <ClCompile Include="project-euler-cpp\utilities\Modular.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="project-euler-cpp\utilities\Modular-test.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="project-euler-cpp\solved\1-multiples-of-3-and-5\multiples-of-3-and-5.h">
