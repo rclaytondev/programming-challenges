@@ -47,7 +47,11 @@ namespace Problem458 {
 			[](matrix<Modular<long long, modulo>> m1, matrix<Modular<long long, modulo>> m2) { return prod(m1, m2); }
 			//prod<matrix<Modular<long long, modulo>, matrix<Modular<long long, modulo>>>>
 		>(mat, alphabetSize, identity) };
-		return 0;
+		Modular<long long, modulo> result;
+		for (int i = 0; i < alphabetSize - 1; i++) {
+			result += power(0, i);
+		}
+		return static_cast<long long>(alphabetSize) * result;
 	}
 
 	export void run() {
