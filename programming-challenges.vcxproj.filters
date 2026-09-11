@@ -96,8 +96,8 @@
     <ClCompile Include="project-euler-cpp\solved\429-unitary-divisors\unitary-divisors-test.ixx" />
     <ClCompile Include="project-euler-cpp\solved\429-unitary-divisors\unitary-divisors.ixx" />
     <ClCompile Include="project-euler-cpp\solved\166-criss-cross\criss-cross.ixx" />
-    <ClCompile Include="project-euler-cpp\unsolved\458-permutations-of-project\permutations-of-project-test.ixx" />
-    <ClCompile Include="project-euler-cpp\unsolved\458-permutations-of-project\permutations-of-project.ixx" />
+    <ClCompile Include="project-euler-cpp\solved\458-permutations-of-project\permutations-of-project-test.ixx" />
+    <ClCompile Include="project-euler-cpp\solved\458-permutations-of-project\permutations-of-project.ixx" />
     <ClCompile Include="project-euler-cpp\utilities\Point.ixx" />
     <ClCompile Include="project-euler-cpp\utilities\math-utils-test.ixx" />
     <ClCompile Include="project-euler-cpp\utilities\math-utils.ixx" />

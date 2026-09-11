@@ -207,13 +207,13 @@
   <ItemGroup>
     <ClCompile Include="project-euler-cpp\main.cpp" />
     <ClCompile Include="project-euler-cpp\solved\166-criss-cross\criss-cross.ixx" />
-    <ClCompile Include="project-euler-cpp\unsolved\458-permutations-of-project\permutations-of-project-test.ixx">
+    <ClCompile Include="project-euler-cpp\solved\458-permutations-of-project\permutations-of-project-test.ixx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="project-euler-cpp\unsolved\458-permutations-of-project\permutations-of-project.ixx" />
+    <ClCompile Include="project-euler-cpp\solved\458-permutations-of-project\permutations-of-project.ixx" />
     <ClCompile Include="project-euler-cpp\utilities\Modular-test.ixx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
