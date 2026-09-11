@@ -100,6 +100,7 @@ bool operator==(const matrix<N>& m1, const matrix<N>& m2) {
 
 export template<typename N>
 std::ostream& operator<<(std::ostream& os, const matrix<N>& mat) {
+	os << "\n";
 	for (int i = 0; i < mat.size1(); i++) {
 		for (int j = 0; j < mat.size2(); j++) {
 			os << mat(i, j) << ", ";

@@ -44,12 +44,16 @@ namespace Problem458 {
 		auto power{MathUtils::pow<
 			matrix<Modular<long long, modulo>>,
 			long long,
-			[](matrix<Modular<long long, modulo>> m1, matrix<Modular<long long, modulo>> m2) { return prod(m1, m2); }
+			[](matrix<Modular<long long, modulo>> m1, matrix<Modular<long long, modulo>> m2) {
+				matrix<Modular<long long, modulo>> result = boost::numeric::ublas::zero_matrix<Modular<long long, modulo>>(m1.size1(), m1.size2());
+				result = prod(m1, m2);
+				return result;
+			}
 			//prod<matrix<Modular<long long, modulo>, matrix<Modular<long long, modulo>>>>
-		>(mat, alphabetSize, identity) };
+		>(mat, length - 1, identity) };
 		Modular<long long, modulo> result;
 		for (int i = 0; i < alphabetSize - 1; i++) {
-			result += power(0, i);
+			result += power(i, 0);
 		}
 		return static_cast<long long>(alphabetSize) * result;
 	}
