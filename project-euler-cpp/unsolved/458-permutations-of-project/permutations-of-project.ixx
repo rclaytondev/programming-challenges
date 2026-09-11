@@ -59,7 +59,7 @@ namespace Problem458 {
 	}
 
 	export void run() {
-		long long answer = Problem458::solve<1'000'000'000'000>(10, 7);
+		long long answer = Problem458::solve<1'000'000'000>(1'000'000'000'000, 7);
 		std::cout << "Answer: " << answer << "\n";
 	}
 }
