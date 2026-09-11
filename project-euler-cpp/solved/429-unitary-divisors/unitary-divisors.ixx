@@ -2,25 +2,31 @@ export module Problem429;
 
 import Factorization;
 import MathUtils;
+import Modular;
 import std;
 
 namespace Problem429 {
-	export long long unitaryDivSumSq(Factorization<long long> factorization, long long modulo) {
-		long long product = 1;
+	export template<long long modulo>
+	auto unitaryDivSumSq(Factorization<long long> factorization) {
+		Modular<long long, modulo> product = 1;
 		for (const auto& [prime, exponent] : factorization.exponents) {
-			long long term = 1 + MathUtils::pow<long long>(prime, 2LL * exponent, modulo);
-			product = (product * term) % modulo;
+			Modular<long long, modulo> term = 1LL + MathUtils::pow<Modular<long long, modulo>, long long>(
+				Modular<long long, modulo>{prime},
+				2LL * exponent
+			);
+			product *= term;
 		}
 		return product;
 	}
 
-	export int solve(long long num, long long modulo = 1'000'000'009) {
+	export template<long long modulo>
+	Modular<long long, modulo> solve(long long num) {
 		Factorization<long long> factorial{ Factorization<long long>::factorial(num) };
-		return Problem429::unitaryDivSumSq(factorial, modulo);
+		return Problem429::unitaryDivSumSq<modulo>(factorial);
 	}
 
 	export void run() {
-		long long answer = Problem429::solve(100'000'000);
+		Modular answer = Problem429::solve< 1'000'000'009>(100'000'000);
 		std::cout << "Answer: " << answer << "\n";
 	}
 }

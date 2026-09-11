@@ -12,7 +12,7 @@ BOOST_AUTO_TEST_CASE(can_compute_primes_up_to_30) {
 	std::vector<int> expected{ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29 };
 	BOOST_CHECK_EQUAL_COLLECTIONS(actual.begin(), actual.end(), expected.begin(), expected.end());
 }
-BOOST_AUTO_TEST_SUITE_END(primes)
+BOOST_AUTO_TEST_SUITE_END()
 
 BOOST_AUTO_TEST_SUITE(MathUtils_pow)
 BOOST_AUTO_TEST_CASE(can_compute_zeroth_integer_powers_correctly) {
@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE(can_compute_eighth_integer_powers_correctly) {
 	int result = MathUtils::pow(3, 8);
 	BOOST_CHECK_EQUAL(result, 6561);
 }
-BOOST_AUTO_TEST_SUITE_END(primes)
+BOOST_AUTO_TEST_SUITE_END()
 
 
 
@@ -66,4 +66,22 @@ BOOST_AUTO_TEST_CASE(can_compute_primes_up_to_30) {
 	std::vector<int> expected{ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29 };
 	BOOST_CHECK_EQUAL_COLLECTIONS(actual.begin(), actual.end(), expected.begin(), expected.end());
 }
-BOOST_AUTO_TEST_SUITE_END(primes)
+BOOST_AUTO_TEST_SUITE_END()
+
+
+
+BOOST_AUTO_TEST_SUITE(MathUtils_mod)
+
+BOOST_AUTO_TEST_CASE(it_returns_a_nonnegative_value_strictly_less_than_the_modulo_which_is_congruent_to_the_input) {
+	BOOST_CHECK_EQUAL(MathUtils::mod(0, 4), 0);
+	BOOST_CHECK_EQUAL(MathUtils::mod(-1, 4), 3);
+	BOOST_CHECK_EQUAL(MathUtils::mod(-2, 4), 2);
+	BOOST_CHECK_EQUAL(MathUtils::mod(-3, 4), 1);
+	BOOST_CHECK_EQUAL(MathUtils::mod(-4, 4), 0);
+	BOOST_CHECK_EQUAL(MathUtils::mod(-5, 4), 3);
+	BOOST_CHECK_EQUAL(MathUtils::mod(-6, 4), 2);
+	BOOST_CHECK_EQUAL(MathUtils::mod(-7, 4), 1);
+	BOOST_CHECK_EQUAL(MathUtils::mod(-8, 4), 0);
+}
+
+BOOST_AUTO_TEST_SUITE_END()

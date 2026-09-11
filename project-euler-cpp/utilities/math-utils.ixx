@@ -1,6 +1,12 @@
+module;
+
+#include <boost/numeric/ublas/matrix.hpp>
+
 export module MathUtils;
 
 import std;
+
+using boost::numeric::ublas::matrix;
 
 namespace MathUtils {
 	export std::vector<int> digitsReversed(int num) {
@@ -16,23 +22,35 @@ namespace MathUtils {
 		return std::vector<int> { reversed.rbegin(), reversed.rend() };
 	}
 
-	export template<typename T> T pow(T base, T exponent, T modulo = -1) {
-		// Used for computing integer powers (std::pow is for floats and can lose precision).
+	export template<typename T, typename N, auto multiply>
+	T pow(T base, N exponent, T identity) {
 		T power = base;
-		T result = 1;
-		for (T exp = 1; exp <= exponent; exp *= 2) {
+		T result = identity;
+		for (N exp = 1; exp <= exponent; exp *= 2) {
 			if ((exponent & exp) != 0) {
-				result *= power;
-				if (modulo > 0) {
-					result %= modulo;
-				}
+				result = multiply(result, power);
 			}
-			power = power * power;
-			if (modulo > 0) {
-				power %= modulo;
-			}
+			power = multiply(power, power);
 		}
 		return result;
+	}
+	export template<typename T, typename N, auto multiply>
+	T pow(T base, N exponent) {
+		return MathUtils::pow<T, N, multiply>(base, exponent, 1);
+	}
+	export template<typename T, typename N>
+	T pow(T base, N exponent) {
+		// Used for computing integer powers (std::pow is for floats and can lose precision).
+		return MathUtils::pow < T, N, std::multiplies<T>{} > (base, exponent);
+	}
+
+	export template<typename N>
+	N mod(N num, N modulo) {
+		if (num < 0) {
+			if (num % modulo == 0) { return num % modulo; }
+			return modulo - ((-num) % modulo);
+		}
+		return num % modulo;
 	}
 
 	export template<typename T>
@@ -62,4 +80,33 @@ namespace MathUtils {
 		}
 		return true;
 	}
+}
+
+export template<typename N>
+bool operator==(const matrix<N>& m1, const matrix<N>& m2) {
+	if (m1.size1() != m2.size1() || m1.size2() != m2.size2()) {
+		return false;
+	}
+
+	for (int i = 0; i < m1.size1(); i++) {
+		for (int j = 0; j < m2.size2(); j++) {
+			if (m1(i, j) != m2(i, j)) {
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+export template<typename N>
+std::ostream& operator<<(std::ostream& os, const matrix<N>& mat) {
+	os << "\n";
+	for (int i = 0; i < mat.size1(); i++) {
+		for (int j = 0; j < mat.size2(); j++) {
+			os << mat(i, j) << ", ";
+		}
+		os << "\n";
+	}
+	os << "\n";
+	return os;
 }
