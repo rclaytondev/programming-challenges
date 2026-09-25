@@ -80,6 +80,19 @@ namespace MathUtils {
 		}
 		return true;
 	}
+
+	export template<typename N>
+		requires std::integral<N>
+	std::set<N> divisors(N num) {
+		std::set<N> divisors;
+		for (N d = 1; d * d <= num; d++) {
+			if (num % d == 0) {
+				divisors.insert(d);
+				divisors.insert(num / d);
+			}
+		}
+		return divisors;
+	}
 }
 
 export template<typename N>

@@ -91,8 +91,8 @@
     <ClCompile Include="project-euler-cpp\unsolved\430-range-flips\range-flips.ixx" />
     <ClCompile Include="project-euler-cpp\unsolved\1004-balanced-integers\balanced-integers-test.ixx" />
     <ClCompile Include="project-euler-cpp\unsolved\1004-balanced-integers\balanced-integers.ixx" />
-    <ClCompile Include="project-euler-cpp\solved\429-unitary-divisors\Factorization-test.ixx" />
-    <ClCompile Include="project-euler-cpp\solved\429-unitary-divisors\Factorization.ixx" />
+    <ClCompile Include="project-euler-cpp\utilities\Factorization-test.ixx" />
+    <ClCompile Include="project-euler-cpp\utilities\Factorization.ixx" />
     <ClCompile Include="project-euler-cpp\solved\429-unitary-divisors\unitary-divisors-test.ixx" />
     <ClCompile Include="project-euler-cpp\solved\429-unitary-divisors\unitary-divisors.ixx" />
     <ClCompile Include="project-euler-cpp\solved\166-criss-cross\criss-cross.ixx" />
@@ -105,6 +105,16 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="project-euler-cpp\utilities\Modular-test.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="project-euler-cpp\solved\988-non-attacking-frogs\non-attacking-frogs-test.ixx" />
+    <ClCompile Include="project-euler-cpp\solved\988-non-attacking-frogs\non-attacking-frogs.ixx" />
+    <ClCompile Include="project-euler-cpp\solved\386-antichains\antichains-test.ixx" />
+    <ClCompile Include="project-euler-cpp\solved\386-antichains\antichains.ixx" />
+    <ClCompile Include="project-euler-cpp\utilities\RectPrism.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="project-euler-cpp\utilities\RectPrism-test.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

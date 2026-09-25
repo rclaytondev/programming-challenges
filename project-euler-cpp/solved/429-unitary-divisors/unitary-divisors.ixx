@@ -7,7 +7,7 @@ import std;
 
 namespace Problem429 {
 	export template<long long modulo>
-	auto unitaryDivSumSq(Factorization<long long> factorization) {
+	auto unitaryDivSumSq(const Factorization<long long>& factorization) {
 		Modular<long long, modulo> product = 1;
 		for (const auto& [prime, exponent] : factorization.exponents) {
 			Modular<long long, modulo> term = 1LL + MathUtils::pow<Modular<long long, modulo>, long long>(
