@@ -11,6 +11,12 @@ private:
 public:
 	Graph() { }
 	Graph(const Graph& graph) = default;
+	template<typename It>
+	Graph(It begin, It end) {
+		for (auto it = begin; it != end; it++) {
+			this->neighborsMap[*it] = {};
+		}
+	}
 
 	void add(const T& vertex) {
 		if (!this->neighborsMap.contains(vertex)) {
