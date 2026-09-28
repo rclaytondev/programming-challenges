@@ -103,7 +103,7 @@ namespace Problem194 {
 		return startCombinations * solver.combinations(numA, numB);
 	}
 
-	void run() {
+	export void run() {
 		auto answer = Problem194::solve<Modular<long long, 100'000'000>>(25, 75, 1984);
 		std::cout << "Answer: " << answer.value << "\n";
 	}
