@@ -89,11 +89,11 @@ namespace Problem194 {
 
 	export template<typename N>
 	N solve(int numA, int numB, int colors) {
-		polynomial<int> polyA = Problem194::chromaticPoly<int>(Problem194::graphA());
-		int coloringsA = polyA(colors);
+		polynomial<long long> polyA = Problem194::chromaticPoly<long long>(Problem194::graphA());
+		long long coloringsA = polyA(colors);
 
-		polynomial<int> polyB = Problem194::chromaticPoly<int>(Problem194::graphB());
-		int coloringsB = polyB(colors);
+		polynomial<long long> polyB = Problem194::chromaticPoly<long long>(Problem194::graphB());
+		long long coloringsB = polyB(colors);
 
 		Solver<N> solver{
 			coloringsA / (colors * (colors - 1)),
