@@ -77,6 +77,9 @@ public:
 	bool operator==(const Modular<N, modulo>& num) const {
 		return (this->value - num.value) % modulo == 0;
 	}
+	bool operator==(const N& num) const {
+		return (this->value - num) % modulo == 0;
+	}
 	friend std::ostream& operator<<(std::ostream& os, const Modular& num) {
 		os << num.value;
 		return os;

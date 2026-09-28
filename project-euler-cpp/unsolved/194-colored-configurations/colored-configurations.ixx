@@ -88,17 +88,23 @@ namespace Problem194 {
 	}
 
 	export template<typename N>
-	N solve(int numA, int numB, N colors) {
-		polynomial<N> polyA = Problem194::chromaticPoly<N>(Problem194::graphA());
-		N coloringsA = polyA(colors);
+	N solve(int numA, int numB, int colors) {
+		polynomial<int> polyA = Problem194::chromaticPoly<int>(Problem194::graphA());
+		int coloringsA = polyA(colors);
 
-		polynomial<N> polyB = Problem194::chromaticPoly<N>(Problem194::graphB());
-		N coloringsB = polyB(colors);
+		polynomial<int> polyB = Problem194::chromaticPoly<int>(Problem194::graphB());
+		int coloringsB = polyB(colors);
 
-		Solver<int> solver{
+		Solver<N> solver{
 			coloringsA / (colors * (colors - 1)),
 			coloringsB / (colors * (colors - 1))
 		};
-		return colors * (colors - 1) * solver.combinations(numA, numB);
+		N startCombinations = (colors * (colors - 1));
+		return startCombinations * solver.combinations(numA, numB);
+	}
+
+	void run() {
+		auto answer = Problem194::solve<Modular<long long, 100'000'000>>(25, 75, 1984);
+		std::cout << "Answer: " << answer.value << "\n";
 	}
 }

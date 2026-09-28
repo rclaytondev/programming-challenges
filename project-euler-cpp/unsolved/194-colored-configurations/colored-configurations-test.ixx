@@ -7,6 +7,7 @@ export module Problem194Test;
 
 import Problem194;
 import Graph;
+import Modular;
 import std;
 
 using boost::math::tools::polynomial;
@@ -59,6 +60,10 @@ BOOST_AUTO_TEST_CASE(it_works_for_1_copy_of_graph_A_and_0_copies_of_graph_B_and_
 BOOST_AUTO_TEST_CASE(it_works_for_0_copies_of_graph_A_and_2_copies_of_graph_B_and_4_colors) {
 	auto result = Problem194::solve<int>(0, 2, 4);
 	BOOST_CHECK_EQUAL(result, 92928);
+}
+BOOST_AUTO_TEST_CASE(it_works_when_using_a_modulo) {
+	auto result = Problem194::solve<Modular<int, 1000>>(0, 2, 4);
+	BOOST_CHECK_EQUAL(result.value, 928);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
