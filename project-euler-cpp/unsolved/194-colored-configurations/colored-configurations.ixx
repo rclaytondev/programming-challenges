@@ -2,6 +2,7 @@ module;
 
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/math/tools/polynomial.hpp>
+#include <boost/multiprecision/cpp_int.hpp>
 
 export module Problem194;
 
@@ -10,6 +11,7 @@ import Graph;
 import Modular;
 
 using boost::math::tools::polynomial;
+using boost::multiprecision::cpp_int;
 
 export template<typename N>
 class Solver {
@@ -89,16 +91,15 @@ namespace Problem194 {
 
 	export template<typename N>
 	N solve(int numA, int numB, int colors) {
-		polynomial<long long> polyA = Problem194::chromaticPoly<long long>(Problem194::graphA());
-		long long coloringsA = polyA(colors);
+		polynomial<cpp_int> polyA = Problem194::chromaticPoly<cpp_int>(Problem194::graphA());
+		cpp_int coloringsA = polyA(colors);
 
-		polynomial<long long> polyB = Problem194::chromaticPoly<long long>(Problem194::graphB());
-		long long coloringsB = polyB(colors);
+		polynomial<cpp_int> polyB = Problem194::chromaticPoly<cpp_int>(Problem194::graphB());
+		cpp_int coloringsB = polyB(colors);
 
-		Solver<N> solver{
-			coloringsA / (colors * (colors - 1)),
-			coloringsB / (colors * (colors - 1))
-		};
+		N combinationsA = static_cast<cpp_int>(coloringsA / (colors * (colors - 1)));
+		N combinationsB = static_cast<cpp_int>(coloringsB / (colors * (colors - 1)));
+		Solver<N> solver{ combinationsA, combinationsB };
 		N startCombinations = (colors * (colors - 1));
 		return startCombinations * solver.combinations(numA, numB);
 	}

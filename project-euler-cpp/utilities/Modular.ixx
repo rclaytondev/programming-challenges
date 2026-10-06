@@ -1,4 +1,10 @@
+module;
+
+#include <boost/multiprecision/cpp_int.hpp>
+
 export module Modular;
+
+using boost::multiprecision::cpp_int;
 
 import std;
 import MathUtils;
@@ -28,6 +34,8 @@ public:
 		return *this;
 	}
 
+
+	Modular(cpp_int value) : value(MathUtils::mod(value, cpp_int(modulo))) { }
 
 	friend Modular operator-(const Modular<N, modulo>& num1, const N& num) {
 		return Modular<N, modulo>{ MathUtils::mod(num1->value - num, modulo) };
