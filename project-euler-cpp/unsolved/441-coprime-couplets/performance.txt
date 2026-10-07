@@ -1,2 +1,2 @@
 Input of 1,500:
-4.3 s, 4.1 s, 4.6 s
+6 ms, 6 ms, 6 ms
