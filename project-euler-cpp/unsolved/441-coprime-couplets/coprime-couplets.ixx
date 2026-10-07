@@ -25,7 +25,7 @@ namespace Problem441 {
 	}
 
 	export void run() {
-		double answer = Problem441::solve(2'000);
+		double answer = Problem441::solve(10'000);
 		std::cout << "Answer: " << answer << "\n";
 	}
 }

@@ -1,2 +1,2 @@
-Input of 1,500:
-6 ms, 6 ms, 6 ms
+Input of 10,000:
+1.8 s, 1.8 s, 1.8 s
