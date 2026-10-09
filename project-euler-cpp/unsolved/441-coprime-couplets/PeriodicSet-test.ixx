@@ -20,5 +20,11 @@ BOOST_AUTO_TEST_CASE(it_works_for_an_integer_that_is_not_equal_to_its_radical) {
 	BOOST_CHECK_EQUAL(set.period, 10);
 	BOOST_CHECK_EQUAL_COLLECTIONS(set.offsets.begin(), set.offsets.end(), expected.begin(), expected.end());
 }
+BOOST_AUTO_TEST_CASE(it_works_for_an_input_of_1) {
+	auto set = PeriodicSet<int>::coprimeTo(1);
+	std::set<int> expected{ 0 };
+	BOOST_CHECK_EQUAL(set.period, 1);
+	BOOST_CHECK_EQUAL_COLLECTIONS(set.offsets.begin(), set.offsets.end(), expected.begin(), expected.end());
+}
 
 BOOST_AUTO_TEST_SUITE_END()

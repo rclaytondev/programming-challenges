@@ -13,6 +13,9 @@ public:
 	PeriodicSet(N period, std::set<N> offsets) : period(period), offsets(offsets) { }
 
 	static PeriodicSet coprimeTo(N num) {
+		if (num == 1) {
+			return PeriodicSet{ 1, { 0 } };
+		}
 		N period = Factorization{ num }.radical();
 		std::set<int> offsets = { 1 };
 		for (int i = 2; i < period; i++) {
