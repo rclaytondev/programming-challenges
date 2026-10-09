@@ -9,7 +9,7 @@ namespace Problem441 {
 	export int lastWithRemainder(int remainder, int modulo, int max);
 }
 
-class PeriodicAdder {
+export class PeriodicAdder {
 public:
 	int remainder;
 	int modulo;
