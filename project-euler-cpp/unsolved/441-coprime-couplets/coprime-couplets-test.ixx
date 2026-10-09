@@ -12,14 +12,14 @@ using boost::multiprecision::cpp_rational;
 BOOST_AUTO_TEST_SUITE(Problem441_solve)
 
 BOOST_AUTO_TEST_CASE(it_works_for_an_input_of_2) {
-	double actual = Problem441::solve(2);
-	double expected = 0.5;
-	BOOST_TEST(actual == expected, boost::test_tools::tolerance(0.0001));
+	cpp_rational actual = Problem441::solve(2);
+	cpp_rational expected(1, 2);
+	BOOST_CHECK_EQUAL(actual, expected);
 }
 BOOST_AUTO_TEST_CASE(it_works_for_an_input_of_10) {
-	double actual = Problem441::solve(10);
-	double expected = 3485.0 / 504.0;
-	BOOST_TEST(actual == expected, boost::test_tools::tolerance(0.0001));
+	cpp_rational actual = Problem441::solve(10);
+	cpp_rational expected(3485, 504);
+	BOOST_CHECK_EQUAL(actual, expected);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
