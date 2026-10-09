@@ -18,7 +18,15 @@ namespace Problem441 {
 
 	int calls = 0;
 
+	std::map<std::vector<int>, cpp_rational> reciprocalSumCache;
+	std::map<std::vector<int>, cpp_rational> decreasingReciprocalSumCache;
 	cpp_rational reciprocalSum(int remainder, int modulo, int max) {
+		std::vector<int> args = { remainder, modulo, max };
+		auto it = Problem441::reciprocalSumCache.find(args);
+		if (it != Problem441::reciprocalSumCache.end()) {
+			return it->second;
+		}
+
 		calls++;
 
 		cpp_rational sum = 0;
@@ -26,9 +34,16 @@ namespace Problem441 {
 		for (int i = first; i <= max; i += modulo) {
 			sum += cpp_rational{ 1, i };
 		}
+		Problem441::reciprocalSumCache[args] = sum;
 		return sum;
 	}
 	cpp_rational decreasingReciprocalSum(int remainder, int modulo, int max, int upperBound) {
+		std::vector<int> args = { remainder, modulo, max, upperBound };
+		auto it = Problem441::decreasingReciprocalSumCache.find(args);
+		if (it != Problem441::decreasingReciprocalSumCache.end()) {
+			return it->second;
+		}
+
 		calls++;
 
 		cpp_rational sum = 0;
@@ -36,6 +51,7 @@ namespace Problem441 {
 		for (int i = first; i <= max; i += modulo) {
 			sum += cpp_rational{ upperBound - i + 1, i};
 		}
+		Problem441::decreasingReciprocalSumCache[args] = sum;
 		return sum;
 	}
 
