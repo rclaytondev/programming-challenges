@@ -24,10 +24,10 @@ namespace Problem441 {
 		}
 		return sum;
 	}
-	cpp_rational decreasingReciprocalSum(int remainder, int modulo, int min, int upperBound) {
+	cpp_rational decreasingReciprocalSum(int remainder, int modulo, int min, int max, int upperBound) {
 		cpp_rational sum = 0;
 		int first = Problem441::firstWithRemainder(remainder, modulo, min);
-		for (int i = first; i <= upperBound; i += modulo) {
+		for (int i = first; i <= max; i += modulo) {
 			sum += cpp_rational{ upperBound - i + 1, i};
 		}
 		return sum;
@@ -47,7 +47,7 @@ namespace Problem441 {
 		int min = std::max(smaller + 1, upperBound - smaller + 1);
 		cpp_rational sum = 0;
 		for (int remainder : coprime.offsets) {
-			sum += Problem441::decreasingReciprocalSum(remainder, coprime.period, min, upperBound);
+			sum += Problem441::decreasingReciprocalSum(remainder, coprime.period, min, upperBound, upperBound);
 		}
 		return sum / smaller;
 	}
