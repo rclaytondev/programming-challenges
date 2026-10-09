@@ -30,9 +30,7 @@ namespace Problem441 {
 		cpp_rational sum = 0;
 		for (int larger = smaller + 1; larger <= upperBound; larger++) {
 			if (!coprime.contains(larger)) { continue; }
-			int min = larger;
-			int max = std::min(upperBound, smaller + larger);
-			int count = (max < min) ? 0 : (max - min + 1);
+			int count = (larger <= upperBound - smaller) ? smaller + 1 : upperBound - larger + 1;
 			cpp_rational term(count, smaller * larger);
 			sum += term;
 		}
