@@ -1,13 +1,7 @@
-module;
-
-#include <boost/multiprecision/cpp_int.hpp>
-
 export module Problem441;
 
 import std;
 import PeriodicSet;
-
-using boost::multiprecision::cpp_rational;
 
 namespace Problem441 {
 	export int firstWithRemainder(int remainder, int modulo, int min) {
@@ -18,9 +12,9 @@ namespace Problem441 {
 
 	int calls = 0;
 
-	std::map<std::vector<int>, cpp_rational> reciprocalSumCache;
-	std::map<std::vector<int>, cpp_rational> decreasingReciprocalSumCache;
-	cpp_rational reciprocalSum(int remainder, int modulo, int max) {
+	std::map<std::vector<int>, double> reciprocalSumCache;
+	std::map<std::vector<int>, double> decreasingReciprocalSumCache;
+	double reciprocalSum(int remainder, int modulo, int max) {
 		std::vector<int> args = { remainder, modulo, max };
 		auto it = Problem441::reciprocalSumCache.find(args);
 		if (it != Problem441::reciprocalSumCache.end()) {
@@ -29,15 +23,15 @@ namespace Problem441 {
 
 		calls++;
 
-		cpp_rational sum = 0;
+		double sum = 0;
 		int first = Problem441::firstWithRemainder(remainder, modulo, 1);
 		for (int i = first; i <= max; i += modulo) {
-			sum += cpp_rational{ 1, i };
+			sum += 1.0 / i;
 		}
 		Problem441::reciprocalSumCache[args] = sum;
 		return sum;
 	}
-	cpp_rational decreasingReciprocalSum(int remainder, int modulo, int max, int upperBound) {
+	double decreasingReciprocalSum(int remainder, int modulo, int max, int upperBound) {
 		std::vector<int> args = { remainder, modulo, max, upperBound };
 		auto it = Problem441::decreasingReciprocalSumCache.find(args);
 		if (it != Problem441::decreasingReciprocalSumCache.end()) {
@@ -46,28 +40,28 @@ namespace Problem441 {
 
 		calls++;
 
-		cpp_rational sum = 0;
+		double sum = 0;
 		int first = Problem441::firstWithRemainder(remainder, modulo, 1);
 		for (int i = first; i <= max; i += modulo) {
-			sum += cpp_rational{ upperBound - i + 1, i};
+			sum += static_cast<double>(upperBound - i + 1) / i;
 		}
 		Problem441::decreasingReciprocalSumCache[args] = sum;
 		return sum;
 	}
 
-	cpp_rational lowCoprimeCoupletSum(int smaller, const PeriodicSet<int>& coprime, int upperBound) {
+	double lowCoprimeCoupletSum(int smaller, const PeriodicSet<int>& coprime, int upperBound) {
 		if (smaller > upperBound - smaller) { return 0; }
-		cpp_rational sum = 0;
+		double sum = 0;
 		for (int remainder : coprime.offsets) {
 			auto upToMax = Problem441::reciprocalSum(remainder, coprime.period, upperBound - smaller);
 			auto upToMin = Problem441::reciprocalSum(remainder, coprime.period, smaller);
 			sum += upToMax - upToMin;
 		}
-		return cpp_rational{ smaller + 1, smaller } * sum;
+		return static_cast<double>(smaller + 1) / smaller * sum;
 	}
-	cpp_rational highCoprimeCoupletSum(int smaller, const PeriodicSet<int>& coprime, int upperBound) {
+	double highCoprimeCoupletSum(int smaller, const PeriodicSet<int>& coprime, int upperBound) {
 		int min = std::max(smaller + 1, upperBound - smaller + 1);
-		cpp_rational sum = 0;
+		double sum = 0;
 		for (int remainder : coprime.offsets) {
 			auto upToMax = Problem441::decreasingReciprocalSum(remainder, coprime.period, upperBound, upperBound);
 			auto upToMin = Problem441::decreasingReciprocalSum(remainder, coprime.period, min - 1, upperBound);
@@ -75,15 +69,15 @@ namespace Problem441 {
 		}
 		return sum / smaller;
 	}
-	cpp_rational coprimeCoupletSum(int smaller, int upperBound) {
+	double coprimeCoupletSum(int smaller, int upperBound) {
 		PeriodicSet<int> coprime = PeriodicSet<int>::coprimeTo(smaller);
 		auto low = Problem441::lowCoprimeCoupletSum(smaller, coprime, upperBound);
 		auto high = Problem441::highCoprimeCoupletSum(smaller, coprime, upperBound);
 		return low + high;
 	}
 
-	export cpp_rational solve(int upperBound) {
-		cpp_rational sum = 0;
+	export double solve(int upperBound) {
+		double sum = 0;
 		for (int smaller = 1; smaller < upperBound; smaller++) {
 			sum += Problem441::coprimeCoupletSum(smaller, upperBound);
 		}
@@ -91,7 +85,7 @@ namespace Problem441 {
 	}
 
 	export void run() {
-		cpp_rational answer = Problem441::solve(2'000);
-		std::cout << "Answer: " << answer << " = " << answer.convert_to<double>() << " in " << Problem441::calls << " calls to reciprocalSum and decreasingReciprocalSum" << "\n";
+		double answer = Problem441::solve(2'000);
+		std::cout << "Answer: " << answer << " in " << Problem441::calls << " calls to reciprocalSum and decreasingReciprocalSum" << "\n";
 	}
 }
