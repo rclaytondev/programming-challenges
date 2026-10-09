@@ -13,20 +13,29 @@ export class PeriodicAdder {
 public:
 	int remainder;
 	int modulo;
-	std::vector<double> cache;
+	std::map<int, double> cache;
 	std::function<double(int)> getTerm;
 
-	PeriodicAdder(int remainder, int modulo, std::function<double(int)> getTerm) : remainder(remainder), modulo(modulo), cache({ 0 }), getTerm(getTerm) {}
+	PeriodicAdder(int remainder, int modulo, std::function<double(int)> getTerm) : remainder(remainder), modulo(modulo), getTerm(getTerm) {
+		int first = this->first();
+		this->cache.emplace(first, this->getTerm(first));
+	}
+
+	int first() {
+		return this->remainder == 0 ? this->modulo : this->remainder;
+	}
 
 	double sumUpTo(int max) {
 		Problem441::calls++;
 		max = Problem441::lastWithRemainder(this->remainder, this->modulo, max);
-		int start = (this->modulo == 1) ? this->cache.size() : this->modulo * (this->cache.size() - 1) + this->remainder;
-		double sum = *this->cache.rbegin();
-		for (int i = start; i <= max; i+= this->modulo) {
+		auto it = this->cache.find(max);
+		if (it != this->cache.end()) { return it->second; }
+
+		auto [start, sum] = *this->cache.rbegin();
+		for (int i = start + this->modulo; i <= max; i+= this->modulo) {
 			sum += this->getTerm(i);
 			Problem441::iterations++;
-			this->cache.push_back(sum);
+			this->cache.emplace(i, sum);
 		}
 		return sum;
 	}
