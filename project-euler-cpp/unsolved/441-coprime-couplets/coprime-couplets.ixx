@@ -16,16 +16,17 @@ public:
 	std::vector<double> cache;
 	std::function<double(int)> getTerm;
 
-	PeriodicAdder(int remainder, int modulo, std::function<double(int)> getTerm) : remainder(remainder), modulo(modulo), getTerm(getTerm) {}
+	PeriodicAdder(int remainder, int modulo, std::function<double(int)> getTerm) : remainder(remainder), modulo(modulo), cache({ 0 }), getTerm(getTerm) {}
 
 	double sumUpTo(int max) {
 		Problem441::calls++;
 		max = Problem441::lastWithRemainder(this->remainder, this->modulo, max);
-		double sum = 0;
-		int start = (this->remainder == 0) ? this->modulo : this->remainder;
+		int start = (this->modulo == 1) ? this->cache.size() : this->modulo * (this->cache.size() - 1) + this->remainder;
+		double sum = *this->cache.rbegin();
 		for (int i = start; i <= max; i+= this->modulo) {
 			sum += this->getTerm(i);
 			Problem441::iterations++;
+			this->cache.push_back(sum);
 		}
 		return sum;
 	}
