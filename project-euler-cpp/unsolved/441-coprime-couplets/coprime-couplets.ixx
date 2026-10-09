@@ -10,6 +10,21 @@ import PeriodicSet;
 using boost::multiprecision::cpp_rational;
 
 namespace Problem441 {
+	export int firstWithRemainder(int remainder, int modulo, int min) {
+		int smaller = modulo * (min / modulo) + remainder;
+		int larger = modulo * (min / modulo + 1) + remainder;
+		return smaller >= min ? smaller : larger;
+	}
+
+	cpp_rational reciprocalSum(int remainder, int modulo, int min, int max) {
+		cpp_rational sum = 0;
+		int first = Problem441::firstWithRemainder(remainder, modulo, min);
+		for (int i = first; i <= max; i += modulo) {
+			sum += cpp_rational{ 1, i };
+		}
+		return sum;
+	}
+
 	cpp_rational coprimeCoupletSum(int smaller, int upperBound) {
 		PeriodicSet<int> coprime = PeriodicSet<int>::coprimeTo(smaller);
 		cpp_rational sum = 0;

@@ -9,6 +9,18 @@ import Problem441;
 
 using boost::multiprecision::cpp_rational;
 
+BOOST_AUTO_TEST_SUITE(Problem441_firstWithRemainder)
+
+BOOST_AUTO_TEST_CASE(it_returns_the_first_value_greater_than_or_equal_to_the_minimum_that_has_the_given_remainder) {
+	BOOST_CHECK_EQUAL(207, Problem441::firstWithRemainder(7, 10, 205));
+	BOOST_CHECK_EQUAL(207, Problem441::firstWithRemainder(7, 10, 206));
+	BOOST_CHECK_EQUAL(207, Problem441::firstWithRemainder(7, 10, 207));
+	BOOST_CHECK_EQUAL(217, Problem441::firstWithRemainder(7, 10, 208));
+	BOOST_CHECK_EQUAL(217, Problem441::firstWithRemainder(7, 10, 209));
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
 BOOST_AUTO_TEST_SUITE(Problem441_solve)
 
 BOOST_AUTO_TEST_CASE(it_works_for_an_input_of_2) {
