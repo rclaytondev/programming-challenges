@@ -65,20 +65,24 @@ namespace Problem441 {
 	std::map<std::vector<int>, PeriodicAdder> lowAdders;
 	std::map<std::vector<int>, PeriodicAdder> highAdders;
 
+	PeriodicAdder getLowAdder(int remainder, int modulo) {
+		std::vector<int> args = { remainder, modulo };
+		auto it = Problem441::lowAdders.find(args);
+		if (it != Problem441::lowAdders.end()) {
+			return it->second;
+		}
+
+		PeriodicAdder adder{ remainder, modulo, [](int n) { return 1.0 / n; } };
+		Problem441::lowAdders.emplace(args, adder);
+		return adder;
+	}
+
 	double lowCoprimeCoupletSum(int smaller, const PeriodicSet<int>& coprime, int upperBound) {
 		if (smaller > upperBound - smaller) { return 0; }
 		double sum = 0;
 		for (int remainder : coprime.offsets) {
-			std::vector<int> args = { smaller, upperBound, remainder };
-			auto it = Problem441::lowAdders.find(args);
-			if (it != Problem441::lowAdders.end()) {
-				sum += it->second.sumBetween(smaller + 1, upperBound - smaller);
-			}
-			else {
-				PeriodicAdder adder{ remainder, coprime.period, [](int n) { return 1.0 / n; } };
-				Problem441::lowAdders.emplace(args, adder);
-				sum += adder.sumBetween(smaller + 1, upperBound - smaller);
-			}
+			PeriodicAdder adder = Problem441::getLowAdder(remainder, coprime.period);
+			sum += adder.sumBetween(smaller + 1, upperBound - smaller);
 		}
 		return static_cast<double>(smaller + 1) / smaller * sum;
 	}
