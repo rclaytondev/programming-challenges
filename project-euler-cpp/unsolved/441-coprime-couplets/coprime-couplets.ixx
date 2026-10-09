@@ -16,9 +16,9 @@ namespace Problem441 {
 		return smaller >= min ? smaller : larger;
 	}
 
-	cpp_rational reciprocalSum(int remainder, int modulo, int min, int max) {
+	cpp_rational reciprocalSum(int remainder, int modulo, int max) {
 		cpp_rational sum = 0;
-		int first = Problem441::firstWithRemainder(remainder, modulo, min);
+		int first = Problem441::firstWithRemainder(remainder, modulo, 1);
 		for (int i = first; i <= max; i += modulo) {
 			sum += cpp_rational{ 1, i };
 		}
@@ -34,9 +34,12 @@ namespace Problem441 {
 	}
 
 	cpp_rational lowCoprimeCoupletSum(int smaller, const PeriodicSet<int>& coprime, int upperBound) {
+		if (smaller > upperBound - smaller) { return 0; }
 		cpp_rational sum = 0;
 		for (int remainder : coprime.offsets) {
-			sum += Problem441::reciprocalSum(remainder, coprime.period, smaller + 1, upperBound - smaller);
+			auto upToMax = Problem441::reciprocalSum(remainder, coprime.period, upperBound - smaller);
+			auto upToMin = Problem441::reciprocalSum(remainder, coprime.period, smaller);
+			sum += upToMax - upToMin;
 		}
 		return cpp_rational{ smaller + 1, smaller } * sum;
 	}
