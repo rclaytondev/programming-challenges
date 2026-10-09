@@ -11,6 +11,7 @@ namespace Problem441 {
 	}
 
 	int calls = 0;
+	int iterations = 0;
 
 	std::map<std::vector<int>, double> reciprocalSumCache;
 	std::map<std::vector<int>, double> decreasingReciprocalSumCache;
@@ -27,6 +28,7 @@ namespace Problem441 {
 		int first = Problem441::firstWithRemainder(remainder, modulo, 1);
 		for (int i = first; i <= max; i += modulo) {
 			sum += 1.0 / i;
+			Problem441::iterations++;
 		}
 		Problem441::reciprocalSumCache[args] = sum;
 		return sum;
@@ -44,6 +46,7 @@ namespace Problem441 {
 		int first = Problem441::firstWithRemainder(remainder, modulo, 1);
 		for (int i = first; i <= max; i += modulo) {
 			sum += static_cast<double>(upperBound - i + 1) / i;
+			Problem441::iterations++;
 		}
 		Problem441::decreasingReciprocalSumCache[args] = sum;
 		return sum;
@@ -86,6 +89,6 @@ namespace Problem441 {
 
 	export void run() {
 		double answer = Problem441::solve(2'000);
-		std::cout << "Answer: " << answer << " in " << Problem441::calls << " calls to reciprocalSum and decreasingReciprocalSum" << "\n";
+		std::cout << "Answer: " << answer << " in " << Problem441::calls << " calls to reciprocalSum and decreasingReciprocalSum, and " << Problem441::iterations << " iterations" << "\n";
 	}
 }
