@@ -29,9 +29,7 @@ namespace Problem441 {
 		cpp_rational sum = 0;
 		for (int larger = smaller + 1; larger <= upperBound - smaller; larger++) {
 			if (!coprime.contains(larger)) { continue; }
-			int count = (larger <= upperBound - smaller) ? smaller + 1 : upperBound - larger + 1;
-			cpp_rational term(count, smaller * larger);
-			sum += term;
+			sum += cpp_rational(smaller + 1, smaller * larger);
 		}
 		return sum;
 	}
@@ -39,9 +37,7 @@ namespace Problem441 {
 		cpp_rational sum = 0;
 		for (int larger = std::max(smaller + 1, upperBound - smaller + 1); larger <= upperBound; larger++) {
 			if (!coprime.contains(larger)) { continue; }
-			int count = (larger <= upperBound - smaller) ? smaller + 1 : upperBound - larger + 1;
-			cpp_rational term(count, smaller * larger);
-			sum += term;
+			sum += cpp_rational(upperBound - larger + 1, smaller * larger);
 		}
 		return sum;
 	}
