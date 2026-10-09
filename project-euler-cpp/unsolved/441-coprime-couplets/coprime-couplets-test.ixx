@@ -21,6 +21,18 @@ BOOST_AUTO_TEST_CASE(it_returns_the_first_value_greater_than_or_equal_to_the_min
 
 BOOST_AUTO_TEST_SUITE_END()
 
+BOOST_AUTO_TEST_SUITE(Problem441_lastWithRemainder)
+
+BOOST_AUTO_TEST_CASE(it_returns_the_first_value_less_than_or_equal_to_the_maximum_that_has_the_given_remainder) {
+	BOOST_CHECK_EQUAL(197, Problem441::lastWithRemainder(7, 10, 205));
+	BOOST_CHECK_EQUAL(197, Problem441::lastWithRemainder(7, 10, 206));
+	BOOST_CHECK_EQUAL(207, Problem441::lastWithRemainder(7, 10, 207));
+	BOOST_CHECK_EQUAL(207, Problem441::lastWithRemainder(7, 10, 208));
+	BOOST_CHECK_EQUAL(207, Problem441::lastWithRemainder(7, 10, 209));
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
 BOOST_AUTO_TEST_SUITE(Problem441_solve)
 
 BOOST_AUTO_TEST_CASE(it_works_for_an_input_of_2) {
