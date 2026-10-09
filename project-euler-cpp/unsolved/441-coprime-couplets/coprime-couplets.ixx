@@ -25,8 +25,7 @@ namespace Problem441 {
 		return sum;
 	}
 
-	cpp_rational coprimeCoupletSum(int smaller, int upperBound) {
-		PeriodicSet<int> coprime = PeriodicSet<int>::coprimeTo(smaller);
+	cpp_rational lowCoprimeCoupletSum(int smaller, const PeriodicSet<int>& coprime, int upperBound) {
 		cpp_rational sum = 0;
 		for (int larger = smaller + 1; larger <= upperBound - smaller; larger++) {
 			if (!coprime.contains(larger)) { continue; }
@@ -34,6 +33,10 @@ namespace Problem441 {
 			cpp_rational term(count, smaller * larger);
 			sum += term;
 		}
+		return sum;
+	}
+	cpp_rational highCoprimeCoupletSum(int smaller, const PeriodicSet<int>& coprime, int upperBound) {
+		cpp_rational sum = 0;
 		for (int larger = std::max(smaller + 1, upperBound - smaller + 1); larger <= upperBound; larger++) {
 			if (!coprime.contains(larger)) { continue; }
 			int count = (larger <= upperBound - smaller) ? smaller + 1 : upperBound - larger + 1;
@@ -41,6 +44,12 @@ namespace Problem441 {
 			sum += term;
 		}
 		return sum;
+	}
+	cpp_rational coprimeCoupletSum(int smaller, int upperBound) {
+		PeriodicSet<int> coprime = PeriodicSet<int>::coprimeTo(smaller);
+		auto low = Problem441::lowCoprimeCoupletSum(smaller, coprime, upperBound);
+		auto high = Problem441::highCoprimeCoupletSum(smaller, coprime, upperBound);
+		return low + high;
 	}
 
 	export cpp_rational solve(int upperBound) {
