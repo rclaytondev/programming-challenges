@@ -5,14 +5,16 @@ module;
 export module Problem441;
 
 import std;
+import PeriodicSet;
 
 using boost::multiprecision::cpp_rational;
 
 namespace Problem441 {
 	cpp_rational coprimeCoupletSum(int smaller, int upperBound) {
+		PeriodicSet<int> coprime = PeriodicSet<int>::coprimeTo(smaller);
 		cpp_rational sum = 0;
 		for (int larger = smaller + 1; larger <= upperBound; larger++) {
-			if (std::gcd(smaller, larger) != 1) { continue; }
+			if (!coprime.contains(larger)) { continue; }
 			int min = larger;
 			int max = std::min(upperBound, smaller + larger);
 			int count = (max < min) ? 0 : (max - min + 1);

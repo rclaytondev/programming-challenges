@@ -2,6 +2,7 @@ export module PeriodicSet;
 
 import std;
 import Factorization;
+import MathUtils;
 
 export template<typename N>
 class PeriodicSet {
@@ -20,5 +21,10 @@ public:
 			}
 		}
 		return PeriodicSet{ period, offsets };
+	}
+
+	bool contains(N num) const {
+		N remainder = MathUtils::mod(num, this->period);
+		return this->offsets.contains(remainder);
 	}
 };
