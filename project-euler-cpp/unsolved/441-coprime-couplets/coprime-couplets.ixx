@@ -76,6 +76,17 @@ namespace Problem441 {
 		Problem441::lowAdders.emplace(args, adder);
 		return adder;
 	}
+	PeriodicAdder getHighAdder(int remainder, int modulo, int upperBound) {
+		std::vector<int> args = { remainder, modulo, upperBound };
+		auto it = Problem441::highAdders.find(args);
+		if (it != Problem441::highAdders.end()) {
+			return it->second;
+		}
+
+		PeriodicAdder adder{ remainder, modulo, [upperBound](int n) { return static_cast<double>(upperBound - n + 1) / n; } };
+		Problem441::highAdders.emplace(args, adder);
+		return adder;
+	}
 
 	double lowCoprimeCoupletSum(int smaller, const PeriodicSet<int>& coprime, int upperBound) {
 		if (smaller > upperBound - smaller) { return 0; }
@@ -90,16 +101,8 @@ namespace Problem441 {
 		int min = std::max(smaller + 1, upperBound - smaller + 1);
 		double sum = 0;
 		for (int remainder : coprime.offsets) {
-			std::vector<int> args = { smaller, upperBound, remainder };
-			auto it = Problem441::highAdders.find(args);
-			if (it != Problem441::highAdders.end()) {
-				sum += it->second.sumBetween(min, upperBound);
-			}
-			else {
-				PeriodicAdder adder{ remainder, coprime.period, [upperBound](int n) { return static_cast<double>(upperBound - n + 1) / n; } };
-				Problem441::highAdders.emplace(args, adder);
-				sum += adder.sumBetween(min, upperBound);
-			}
+			PeriodicAdder adder = Problem441::getHighAdder(remainder, coprime.period, upperBound);
+			sum += adder.sumBetween(min, upperBound);
 		}
 		return sum / smaller;
 	}
