@@ -27,11 +27,10 @@ namespace Problem441 {
 
 	cpp_rational lowCoprimeCoupletSum(int smaller, const PeriodicSet<int>& coprime, int upperBound) {
 		cpp_rational sum = 0;
-		for (int larger = smaller + 1; larger <= upperBound - smaller; larger++) {
-			if (!coprime.contains(larger)) { continue; }
-			sum += cpp_rational(smaller + 1, smaller * larger);
+		for (int remainder : coprime.offsets) {
+			sum += Problem441::reciprocalSum(remainder, coprime.period, smaller + 1, upperBound - smaller);
 		}
-		return sum;
+		return cpp_rational{ smaller + 1, smaller } * sum;
 	}
 	cpp_rational highCoprimeCoupletSum(int smaller, const PeriodicSet<int>& coprime, int upperBound) {
 		cpp_rational sum = 0;
