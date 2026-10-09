@@ -16,7 +16,11 @@ namespace Problem441 {
 		return smaller >= min ? smaller : larger;
 	}
 
+	int calls = 0;
+
 	cpp_rational reciprocalSum(int remainder, int modulo, int max) {
+		calls++;
+
 		cpp_rational sum = 0;
 		int first = Problem441::firstWithRemainder(remainder, modulo, 1);
 		for (int i = first; i <= max; i += modulo) {
@@ -25,6 +29,8 @@ namespace Problem441 {
 		return sum;
 	}
 	cpp_rational decreasingReciprocalSum(int remainder, int modulo, int max, int upperBound) {
+		calls++;
+
 		cpp_rational sum = 0;
 		int first = Problem441::firstWithRemainder(remainder, modulo, 1);
 		for (int i = first; i <= max; i += modulo) {
@@ -70,6 +76,6 @@ namespace Problem441 {
 
 	export void run() {
 		cpp_rational answer = Problem441::solve(2'000);
-		std::cout << "Answer: " << answer << " = " << answer.convert_to<double>() << "\n";
+		std::cout << "Answer: " << answer << " = " << answer.convert_to<double>() << " in " << Problem441::calls << " calls to reciprocalSum and decreasingReciprocalSum" << "\n";
 	}
 }
