@@ -28,7 +28,13 @@ namespace Problem441 {
 	cpp_rational coprimeCoupletSum(int smaller, int upperBound) {
 		PeriodicSet<int> coprime = PeriodicSet<int>::coprimeTo(smaller);
 		cpp_rational sum = 0;
-		for (int larger = smaller + 1; larger <= upperBound; larger++) {
+		for (int larger = smaller + 1; larger <= upperBound - smaller; larger++) {
+			if (!coprime.contains(larger)) { continue; }
+			int count = (larger <= upperBound - smaller) ? smaller + 1 : upperBound - larger + 1;
+			cpp_rational term(count, smaller * larger);
+			sum += term;
+		}
+		for (int larger = std::max(smaller + 1, upperBound - smaller + 1); larger <= upperBound; larger++) {
 			if (!coprime.contains(larger)) { continue; }
 			int count = (larger <= upperBound - smaller) ? smaller + 1 : upperBound - larger + 1;
 			cpp_rational term(count, smaller * larger);
