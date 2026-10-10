@@ -65,7 +65,7 @@ namespace Problem441 {
 	std::map<std::vector<int>, PeriodicAdder> lowAdders;
 	std::map<std::vector<int>, PeriodicAdder> highAdders;
 
-	PeriodicAdder getLowAdder(int remainder, int modulo) {
+	PeriodicAdder& getLowAdder(int remainder, int modulo) {
 		std::vector<int> args = { remainder, modulo };
 		auto it = Problem441::lowAdders.find(args);
 		if (it != Problem441::lowAdders.end()) {
@@ -74,9 +74,9 @@ namespace Problem441 {
 
 		PeriodicAdder adder{ remainder, modulo, [](int n) { return 1.0 / n; } };
 		Problem441::lowAdders.emplace(args, adder);
-		return adder;
+		return Problem441::lowAdders.at(args);
 	}
-	PeriodicAdder getHighAdder(int remainder, int modulo, int upperBound) {
+	PeriodicAdder& getHighAdder(int remainder, int modulo, int upperBound) {
 		std::vector<int> args = { remainder, modulo, upperBound };
 		auto it = Problem441::highAdders.find(args);
 		if (it != Problem441::highAdders.end()) {
@@ -85,7 +85,7 @@ namespace Problem441 {
 
 		PeriodicAdder adder{ remainder, modulo, [upperBound](int n) { return static_cast<double>(upperBound - n + 1) / n; } };
 		Problem441::highAdders.emplace(args, adder);
-		return adder;
+		return Problem441::highAdders.at(args);
 	}
 
 	double lowCoprimeCoupletSum(int smaller, const PeriodicSet<int>& set, int upperBound, bool allowSwitch = true) {
@@ -98,7 +98,7 @@ namespace Problem441 {
 		if (smaller > upperBound - smaller) { return 0; }
 		double sum = 0;
 		for (int remainder : set.offsets) {
-			PeriodicAdder adder = Problem441::getLowAdder(remainder, set.period);
+			PeriodicAdder& adder = Problem441::getLowAdder(remainder, set.period);
 			sum += adder.sumBetween(smaller + 1, upperBound - smaller);
 		}
 		return static_cast<double>(smaller + 1) / smaller * sum;
@@ -113,7 +113,7 @@ namespace Problem441 {
 		int min = std::max(smaller + 1, upperBound - smaller + 1);
 		double sum = 0;
 		for (int remainder : set.offsets) {
-			PeriodicAdder adder = Problem441::getHighAdder(remainder, set.period, upperBound);
+			PeriodicAdder& adder = Problem441::getHighAdder(remainder, set.period, upperBound);
 			sum += adder.sumBetween(min, upperBound);
 		}
 		return sum / smaller;
