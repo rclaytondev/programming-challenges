@@ -16,12 +16,9 @@ public:
 	int remainder;
 	int modulo;
 	std::map<int, double> cache;
-	std::function<double(int)> getTerm;
+	virtual double getTerm(int) const = 0;
 
-	PeriodicAdder(int remainder, int modulo, std::function<double(int)> getTerm) : remainder(remainder), modulo(modulo), getTerm(getTerm) {
-		int first = this->first();
-		this->cache.emplace(first, this->getTerm(first));
-	}
+	PeriodicAdder(int remainder, int modulo) : remainder(remainder), modulo(modulo) { }
 
 	int first() {
 		return this->remainder == 0 ? this->modulo : this->remainder;
@@ -33,6 +30,10 @@ public:
 		auto it = this->cache.find(max);
 		if (it != this->cache.end()) { return it->second; }
 
+		if (this->cache.size() == 0) {
+			int first = this->first();
+			this->cache.emplace(first, this->getTerm(first));
+		}
 		auto [start, sum] = *this->cache.rbegin();
 		for (int i = start + this->modulo; i <= max; i+= this->modulo) {
 			sum += this->getTerm(i);
@@ -46,6 +47,24 @@ public:
 		double upToMax = this->sumUpTo(max);
 		double upToMin = (min == 0) ? 0 : this->sumUpTo(min - 1);
 		return upToMax - upToMin;
+	}
+};
+
+class LowPeriodicAdder : public PeriodicAdder {
+public:
+	LowPeriodicAdder(int remainder, int modulo) : PeriodicAdder(remainder, modulo) { }
+
+	double getTerm(int n) const override {
+		return 1.0 / n;
+	}
+};
+class HighPeriodicAdder : public PeriodicAdder {
+public:
+	int upperBound;
+	HighPeriodicAdder(int remainder, int modulo, int upperBound) : PeriodicAdder(remainder, modulo), upperBound(upperBound) { }
+
+	double getTerm(int n) const override {
+		return static_cast<double>(upperBound - n + 1) / n;
 	}
 };
 
@@ -64,28 +83,28 @@ namespace Problem441 {
 	int calls = 0;
 	int iterations = 0;
 
-	std::map<std::vector<int>, PeriodicAdder> lowAdders;
-	std::map<std::vector<int>, PeriodicAdder> highAdders;
+	std::map<std::vector<int>, LowPeriodicAdder> lowAdders;
+	std::map<std::vector<int>, HighPeriodicAdder> highAdders;
 
-	PeriodicAdder& getLowAdder(int remainder, int modulo) {
+	LowPeriodicAdder& getLowAdder(int remainder, int modulo) {
 		std::vector<int> args = { remainder, modulo };
 		auto it = Problem441::lowAdders.find(args);
 		if (it != Problem441::lowAdders.end()) {
 			return it->second;
 		}
 
-		PeriodicAdder adder{ remainder, modulo, [](int n) { return 1.0 / n; } };
+		LowPeriodicAdder adder{ remainder, modulo };
 		Problem441::lowAdders.emplace(args, adder);
 		return Problem441::lowAdders.at(args);
 	}
-	PeriodicAdder& getHighAdder(int remainder, int modulo, int upperBound) {
+	HighPeriodicAdder& getHighAdder(int remainder, int modulo, int upperBound) {
 		std::vector<int> args = { remainder, modulo, upperBound };
 		auto it = Problem441::highAdders.find(args);
 		if (it != Problem441::highAdders.end()) {
 			return it->second;
 		}
 
-		PeriodicAdder adder{ remainder, modulo, [upperBound](int n) { return static_cast<double>(upperBound - n + 1) / n; } };
+		HighPeriodicAdder adder{ remainder, modulo, upperBound };
 		Problem441::highAdders.emplace(args, adder);
 		return Problem441::highAdders.at(args);
 	}

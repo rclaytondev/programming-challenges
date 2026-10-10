@@ -60,8 +60,14 @@ BOOST_AUTO_TEST_SUITE_END()
 
 BOOST_AUTO_TEST_SUITE(PeriodicAdder_sum)
 
+class TestPeriodicAdder : public PeriodicAdder {
+public:
+	TestPeriodicAdder(int remainder, int modulo) : PeriodicAdder(remainder, modulo) { }
+	double getTerm(int n) const override { return 1.0 / n; }
+};
+
 BOOST_AUTO_TEST_CASE(it_computes_the_sum_of_the_given_function_across_all_numbers_that_have_the_given_remainder) {
-	PeriodicAdder adder{ 1, 2, [](int n) { return 1.0 / n; } };
+	TestPeriodicAdder adder{ 1, 2 };
 	double sum1 = adder.sumUpTo(7);
 	double sum2 = adder.sumUpTo(8);
 	double expected = 1.0 + (1.0 / 3.0) + (1.0 / 5.0) + (1.0 / 7.0);
@@ -69,13 +75,13 @@ BOOST_AUTO_TEST_CASE(it_computes_the_sum_of_the_given_function_across_all_number
 	BOOST_CHECK_EQUAL(sum2, expected);
 }
 BOOST_AUTO_TEST_CASE(it_works_with_a_modulo_of_1) {
-	PeriodicAdder adder{ 0, 1, [](int n) { return 1.0 / n; } };
+	TestPeriodicAdder adder{ 0, 1 };
 	double sum = adder.sumUpTo(4);
 	double expected = 1.0 + (1.0 / 2.0) + (1.0 / 3.0) + (1.0 / 4.0);
 	BOOST_CHECK_EQUAL(sum, expected);
 }
 BOOST_AUTO_TEST_CASE(it_works_when_evaluated_on_a_big_input_and_then_a_small_input) {
-	PeriodicAdder adder{ 0, 1, [](int n) { return 1.0 / n; } };
+	TestPeriodicAdder adder{ 0, 1 };
 	double sum1 = adder.sumUpTo(4);
 	double sum2 = adder.sumUpTo(2);
 	double expected1 = 1.0 + (1.0 / 2.0) + (1.0 / 3.0) + (1.0 / 4.0);
