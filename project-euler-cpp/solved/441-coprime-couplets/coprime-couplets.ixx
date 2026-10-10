@@ -90,56 +90,38 @@ namespace Problem441 {
 		return Problem441::highAdders.at(args);
 	}
 
-	double lowCoprimeCoupletSum(int smaller, const PeriodicSet<int>& set, int upperBound, bool allowSwitch = true) {
-		if (allowSwitch && set.density() > 0.5) {
-			double all = Problem441::lowCoprimeCoupletSum(smaller, PeriodicSet<int>::allIntegers(), upperBound, false);
-			double toRemove = Problem441::lowCoprimeCoupletSum(smaller, set.complement(), upperBound, false);
-			return all - toRemove;
-		}
-
+	double lowCoprimeCoupletSum(int smaller, int remainder, int modulo, int upperBound) {
 		if (smaller > upperBound - smaller) { return 0; }
-		double sum = 0;
-		for (int remainder : set.offsets) {
-			PeriodicAdder& adder = Problem441::getLowAdder(remainder, set.period);
-			sum += adder.sumBetween(smaller + 1, upperBound - smaller);
-		}
+		PeriodicAdder& adder = Problem441::getLowAdder(remainder, modulo);
+		double sum = adder.sumBetween(smaller + 1, upperBound - smaller);
 		return static_cast<double>(smaller + 1) / smaller * sum;
 	}
-	double highCoprimeCoupletSum(int smaller, const PeriodicSet<int>& set, int upperBound, bool allowSwitch = true) {
-		if (allowSwitch && set.density() > 0.5) {
-			double all = Problem441::highCoprimeCoupletSum(smaller, PeriodicSet<int>::allIntegers(), upperBound, false);
-			double toRemove = Problem441::highCoprimeCoupletSum(smaller, set.complement(), upperBound, false);
-			return all - toRemove;
-		}
-
+	double highCoprimeCoupletSum(int smaller, int remainder, int modulo, int upperBound) {
 		int min = std::max(smaller + 1, upperBound - smaller + 1);
-		double sum = 0;
-		for (int remainder : set.offsets) {
-			PeriodicAdder& adder = Problem441::getHighAdder(remainder, set.period, upperBound);
-			sum += adder.sumBetween(min, upperBound);
-		}
+		PeriodicAdder& adder = Problem441::getHighAdder(remainder, modulo, upperBound);
+		double sum = adder.sumBetween(min, upperBound);
 		return sum / smaller;
 	}
-	double coprimeCoupletSum(int smaller, int upperBound) {
+	double coprimeCoupletSum(int smaller, int upperBound, double allLowSum, double allHighSum) {
 		Factorization factorization = smaller;
 		double sum = 0;
 		std::set<int> allPrimes = factorization.primes();
 		for (const std::set<int> primes : SetUtils::subsets(allPrimes)) {
 			if (primes.size() == 0) { continue; }
 			int product = std::accumulate(primes.begin(), primes.end(), 1, std::multiplies<int>());
-			double low = Problem441::lowCoprimeCoupletSum(smaller, PeriodicSet{ product, { 0 } }, upperBound);
-			double high = Problem441::highCoprimeCoupletSum(smaller, PeriodicSet{ product, { 0 } }, upperBound);
+			double low = Problem441::lowCoprimeCoupletSum(smaller, 0, product, upperBound);
+			double high = Problem441::highCoprimeCoupletSum(smaller, 0, product, upperBound);
 			sum += (low + high) * (primes.size() % 2 == 0 ? -1 : 1);
 		}
-		double allLow = Problem441::lowCoprimeCoupletSum(smaller, PeriodicSet<int>::allIntegers(), upperBound);
-		double allHigh = Problem441::highCoprimeCoupletSum(smaller, PeriodicSet<int>::allIntegers(), upperBound);
-		return allLow + allHigh - sum;
+		return allLowSum + allHighSum - sum;
 	}
 
 	export double solve(int upperBound) {
 		double sum = 0;
 		for (int smaller = 1; smaller < upperBound; smaller++) {
-			sum += Problem441::coprimeCoupletSum(smaller, upperBound);
+			double allLowSum = Problem441::lowCoprimeCoupletSum(smaller, 0, 1, upperBound);
+			double allHighSum = Problem441::highCoprimeCoupletSum(smaller, 0, 1, upperBound);
+			sum += Problem441::coprimeCoupletSum(smaller, upperBound, allLowSum, allHighSum);
 		}
 		return sum;
 	}
