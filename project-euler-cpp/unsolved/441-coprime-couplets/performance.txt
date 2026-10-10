@@ -1,2 +1,0 @@
-Input of 2,000:
-0.02 s, 0.02 s, 0.02 s in 31,588 calls and 18,584 iterations

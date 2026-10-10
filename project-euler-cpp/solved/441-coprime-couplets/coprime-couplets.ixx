@@ -145,7 +145,7 @@ namespace Problem441 {
 	}
 
 	export void run() {
-		double answer = Problem441::solve(10'000'000);
+		double answer = Problem441::solve(100'000);
 		std::cout << "Answer: " << std::format("{}\n", answer) << " in " << Problem441::calls << " calls and " << Problem441::iterations << " iterations" << "\n";
 	}
 }

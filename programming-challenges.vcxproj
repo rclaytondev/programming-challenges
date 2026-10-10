@@ -245,20 +245,20 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="project-euler-cpp\unsolved\441-coprime-couplets\coprime-couplets-test.ixx">
+    <ClCompile Include="project-euler-cpp\solved\441-coprime-couplets\coprime-couplets-test.ixx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="project-euler-cpp\unsolved\441-coprime-couplets\coprime-couplets.ixx" />
-    <ClCompile Include="project-euler-cpp\unsolved\441-coprime-couplets\PeriodicSet-test.ixx">
+    <ClCompile Include="project-euler-cpp\solved\441-coprime-couplets\coprime-couplets.ixx" />
+    <ClCompile Include="project-euler-cpp\solved\441-coprime-couplets\PeriodicSet-test.ixx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="project-euler-cpp\unsolved\441-coprime-couplets\PeriodicSet.ixx" />
+    <ClCompile Include="project-euler-cpp\solved\441-coprime-couplets\PeriodicSet.ixx" />
     <ClCompile Include="project-euler-cpp\utilities\RectPrism-test.ixx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
