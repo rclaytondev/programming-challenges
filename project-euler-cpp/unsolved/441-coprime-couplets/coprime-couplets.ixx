@@ -2,6 +2,8 @@ export module Problem441;
 
 import std;
 import PeriodicSet;
+import SetUtils;
+import Factorization;
 
 namespace Problem441 {
 	extern int iterations;
@@ -119,10 +121,19 @@ namespace Problem441 {
 		return sum / smaller;
 	}
 	double coprimeCoupletSum(int smaller, int upperBound) {
-		PeriodicSet<int> coprime = PeriodicSet<int>::coprimeTo(smaller);
-		auto low = Problem441::lowCoprimeCoupletSum(smaller, coprime, upperBound);
-		auto high = Problem441::highCoprimeCoupletSum(smaller, coprime, upperBound);
-		return low + high;
+		Factorization factorization = smaller;
+		double sum = 0;
+		std::set<int> allPrimes = factorization.primes();
+		for (const std::set<int> primes : SetUtils::subsets(allPrimes)) {
+			if (primes.size() == 0) { continue; }
+			int product = std::accumulate(primes.begin(), primes.end(), 1, std::multiplies<int>());
+			double low = Problem441::lowCoprimeCoupletSum(smaller, PeriodicSet{ product, { 0 } }, upperBound);
+			double high = Problem441::highCoprimeCoupletSum(smaller, PeriodicSet{ product, { 0 } }, upperBound);
+			sum += (low + high) * (primes.size() % 2 == 0 ? -1 : 1);
+		}
+		double allLow = Problem441::lowCoprimeCoupletSum(smaller, PeriodicSet<int>::allIntegers(), upperBound);
+		double allHigh = Problem441::highCoprimeCoupletSum(smaller, PeriodicSet<int>::allIntegers(), upperBound);
+		return allLow + allHigh - sum;
 	}
 
 	export double solve(int upperBound) {
