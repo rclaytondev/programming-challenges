@@ -68,6 +68,22 @@ public:
 	}
 };
 
+template <typename T, typename... Args>
+class ConstructorCache {
+private:
+	std::map<std::tuple<Args...>, T> cache;
+
+public:
+	template <typename... ForwardArgs>
+	T& operator() (ForwardArgs&&... args) {
+		std::tuple<Args...> cacheKey(args...);
+
+		auto [iterator, inserted] = cache.try_emplace(cacheKey, std::forward<ForwardArgs>(args)...);
+		return iterator->second;
+	}
+};
+
+
 namespace Problem441 {
 	export int firstWithRemainder(int remainder, int modulo, int min) {
 		int smaller = modulo * (min / modulo) + remainder;
@@ -83,41 +99,18 @@ namespace Problem441 {
 	int calls = 0;
 	int iterations = 0;
 
-	std::map<std::vector<int>, LowPeriodicAdder> lowAdders;
-	std::map<std::vector<int>, HighPeriodicAdder> highAdders;
-
-	LowPeriodicAdder& getLowAdder(int remainder, int modulo) {
-		std::vector<int> args = { remainder, modulo };
-		auto it = Problem441::lowAdders.find(args);
-		if (it != Problem441::lowAdders.end()) {
-			return it->second;
-		}
-
-		LowPeriodicAdder adder{ remainder, modulo };
-		Problem441::lowAdders.emplace(args, adder);
-		return Problem441::lowAdders.at(args);
-	}
-	HighPeriodicAdder& getHighAdder(int remainder, int modulo, int upperBound) {
-		std::vector<int> args = { remainder, modulo, upperBound };
-		auto it = Problem441::highAdders.find(args);
-		if (it != Problem441::highAdders.end()) {
-			return it->second;
-		}
-
-		HighPeriodicAdder adder{ remainder, modulo, upperBound };
-		Problem441::highAdders.emplace(args, adder);
-		return Problem441::highAdders.at(args);
-	}
+	ConstructorCache<LowPeriodicAdder, int, int> lowAdders;
+	ConstructorCache<HighPeriodicAdder, int, int, int> highAdders;
 
 	double lowCoprimeCoupletSum(int smaller, int remainder, int modulo, int upperBound) {
 		if (smaller > upperBound - smaller) { return 0; }
-		PeriodicAdder& adder = Problem441::getLowAdder(remainder, modulo);
+		PeriodicAdder& adder = Problem441::lowAdders(remainder, modulo);
 		double sum = adder.sumBetween(smaller + 1, upperBound - smaller);
 		return static_cast<double>(smaller + 1) / smaller * sum;
 	}
 	double highCoprimeCoupletSum(int smaller, int remainder, int modulo, int upperBound) {
 		int min = std::max(smaller + 1, upperBound - smaller + 1);
-		PeriodicAdder& adder = Problem441::getHighAdder(remainder, modulo, upperBound);
+		PeriodicAdder& adder = Problem441::highAdders(remainder, modulo, upperBound);
 		double sum = adder.sumBetween(min, upperBound);
 		return sum / smaller;
 	}
