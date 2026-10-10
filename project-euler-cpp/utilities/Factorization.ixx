@@ -89,6 +89,9 @@ public:
 		}
 	}
 
+	std::set<N> primes() const {
+		return this->exponents | std::views::keys | std::ranges::to<std::set<int>>();
+	}
 	std::generator<Factorization> divisors() const {
 		std::vector<N > combinations;
 		for (const auto& [prime, exponent] : this->exponents) {
@@ -105,7 +108,14 @@ public:
 			co_yield Factorization{ divExpMap };
 		}
 	}
-	
+	N radical() {
+		N product = 1;
+		for (const auto& [prime, exponent] : this->exponents) {
+			product *= prime;
+		}
+		return product;
+	}
+
 	N toNumber() const {
 		int result = 1;
 		for (const auto& [prime, exponent] : this->exponents) {

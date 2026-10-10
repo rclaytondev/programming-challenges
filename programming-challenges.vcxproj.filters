@@ -126,6 +126,24 @@
     <ClCompile Include="project-euler-cpp\solved\194-colored-configurations\Graph.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="project-euler-cpp\solved\441-coprime-couplets\coprime-couplets.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="project-euler-cpp\solved\441-coprime-couplets\coprime-couplets-test.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="project-euler-cpp\solved\441-coprime-couplets\PeriodicSet.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="project-euler-cpp\solved\441-coprime-couplets\PeriodicSet-test.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="project-euler-cpp\utilities\SetUtils.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="project-euler-cpp\utilities\SetUtils-test.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="project-euler-cpp\solved\1-multiples-of-3-and-5\multiples-of-3-and-5.h">
