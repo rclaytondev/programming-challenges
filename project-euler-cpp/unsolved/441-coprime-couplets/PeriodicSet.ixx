@@ -25,9 +25,26 @@ public:
 		}
 		return PeriodicSet{ period, offsets };
 	}
+	static PeriodicSet<N> allIntegers() {
+		return PeriodicSet<N>{ 1, { 0 } };
+	}
 
 	bool contains(N num) const {
 		N remainder = MathUtils::mod(num, this->period);
 		return this->offsets.contains(remainder);
+	}
+
+	double density() const {
+		return static_cast<double>(this->offsets.size()) / this->period;
+	}
+
+	PeriodicSet<N> complement() const {
+		std::set<N> offsets;
+		for (int i = 0; i < this->period; i++) {
+			if (!this->offsets.contains(i)) {
+				offsets.insert(i);
+			}
+		}
+		return PeriodicSet{ this->period, offsets };
 	}
 };
