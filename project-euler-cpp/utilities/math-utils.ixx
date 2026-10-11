@@ -43,6 +43,15 @@ namespace MathUtils {
 		// Used for computing integer powers (std::pow is for floats and can lose precision).
 		return MathUtils::pow < T, N, std::multiplies<T>{} > (base, exponent);
 	}
+	export template<typename N, typename M>
+	matrix<N> matrixPow(matrix<N> mat, M exponent) {
+		matrix<N> identity = boost::numeric::ublas::identity_matrix<N>(mat.size1());
+		return MathUtils::pow<matrix<N>, M, [](matrix<N> m1, matrix<N> m2) {
+			matrix<N> product = boost::numeric::ublas::zero_matrix(m1.size1(), m2.size2());
+			product = boost::numeric::ublas::prod(m1, m2);
+			return product;
+		}>(mat, exponent, identity);
+	}
 
 	export template<typename N>
 	N mod(N num, N modulo) {
