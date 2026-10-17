@@ -27,7 +27,8 @@ namespace MathUtils {
 		T power = base;
 		T result = identity;
 		for (N exp = 1; exp <= exponent; exp *= 2) {
-			if ((exponent & exp) != 0) {
+			N bitwiseAnd = exponent & exp;
+			if (bitwiseAnd != 0) {
 				result = multiply(result, power);
 			}
 			power = multiply(power, power);

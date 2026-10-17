@@ -144,6 +144,12 @@
     <ClCompile Include="project-euler-cpp\utilities\SetUtils-test.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="project-euler-cpp\unsolved\324-building-a-tower\building-a-tower.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="project-euler-cpp\unsolved\324-building-a-tower\building-a-tower-test.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="project-euler-cpp\solved\1-multiples-of-3-and-5\multiples-of-3-and-5.h">
