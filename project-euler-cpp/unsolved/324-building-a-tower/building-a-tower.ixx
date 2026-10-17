@@ -15,12 +15,14 @@ using boost::multiprecision::cpp_int;
 
 constexpr int SIDE_LENGTH = 3;
 
+using TowerStateGrid = std::array<std::array<int, SIDE_LENGTH>, SIDE_LENGTH>;
+
 export class TowerState {
 public:
-	std::array<std::array<int, SIDE_LENGTH>, SIDE_LENGTH> heights;
+	TowerStateGrid heights;
 
 	TowerState() = default;
-	TowerState(std::array<std::array<int, SIDE_LENGTH>, SIDE_LENGTH> heights) : heights(heights) { }
+	TowerState(TowerStateGrid heights) : heights(heights) { }
 
 	int minHeight() const {
 		return std::ranges::min(this->heights | std::views::join);
@@ -83,7 +85,7 @@ public:
 	}
 
 	TowerState rotate90CW() const {
-		std::array<std::array<int, SIDE_LENGTH>, SIDE_LENGTH> heights = {};
+		TowerStateGrid heights = {};
 		for (int x = 0; x < SIDE_LENGTH; x++) {
 			for (int y = 0; y < SIDE_LENGTH; y++) {
 				heights[x][y] = this->heights[SIDE_LENGTH - y - 1][x];
@@ -92,7 +94,7 @@ public:
 		return TowerState{ heights };
 	}
 	TowerState rotate90CCW() const {
-		std::array<std::array<int, SIDE_LENGTH>, SIDE_LENGTH> heights = {};
+		TowerStateGrid heights = {};
 		for (int x = 0; x < SIDE_LENGTH; x++) {
 			for (int y = 0; y < SIDE_LENGTH; y++) {
 				heights[x][y] = this->heights[y][SIDE_LENGTH - x - 1];
@@ -101,7 +103,7 @@ public:
 		return TowerState{ heights };
 	}
 	TowerState reflectX() const {
-		std::array<std::array<int, SIDE_LENGTH>, SIDE_LENGTH> heights = {};
+		TowerStateGrid heights = {};
 		for (int x = 0; x < SIDE_LENGTH; x++) {
 			for (int y = 0; y < SIDE_LENGTH; y++) {
 				heights[x][y] = this->heights[SIDE_LENGTH - x - 1][y];
