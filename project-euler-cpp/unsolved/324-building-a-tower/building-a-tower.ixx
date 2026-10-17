@@ -83,6 +83,25 @@ public:
 		return next;
 	}
 
+	TowerState rotate90CW() const {
+		std::array<std::array<int, SIDE_LENGTH>, SIDE_LENGTH> heights = {};
+		for (int x = 0; x < SIDE_LENGTH; x++) {
+			for (int y = 0; y < SIDE_LENGTH; y++) {
+				heights[x][y] = this->heights[SIDE_LENGTH - y - 1][x];
+			}
+		}
+		return TowerState{ heights };
+	}
+	TowerState rotate90CCW() const {
+		std::array<std::array<int, SIDE_LENGTH>, SIDE_LENGTH> heights = {};
+		for (int x = 0; x < SIDE_LENGTH; x++) {
+			for (int y = 0; y < SIDE_LENGTH; y++) {
+				heights[x][y] = this->heights[y][SIDE_LENGTH - x - 1];
+			}
+		}
+		return TowerState{ heights };
+	}
+
 	static std::vector<TowerState> all() {
 		std::vector<int> maxes(SIDE_LENGTH * SIDE_LENGTH, 3);
 		std::vector<TowerState> result;
