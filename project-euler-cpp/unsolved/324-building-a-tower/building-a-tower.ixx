@@ -125,7 +125,7 @@ public:
 
 	static std::vector<TowerState> all() {
 		std::vector<int> maxes(SIDE_LENGTH * SIDE_LENGTH, 3);
-		std::vector<TowerState> result;
+		std::set<TowerState> result;
 		RectPrism allTuples{ maxes };
 		for (const std::vector<int>& tuple : allTuples.points()) {
 			if (std::ranges::find(tuple, 0) == tuple.end()) { continue; }
@@ -133,11 +133,11 @@ public:
 			for (int i = 0; i < tuple.size(); i++) {
 				heights[i % SIDE_LENGTH][i / SIDE_LENGTH] = tuple[i];
 			}
-			result.push_back(TowerState{ heights });
+			result.insert(TowerState{ heights }.normalize());
 		}
 
 
-		return result;
+		return std::vector<TowerState>{ result.begin(), result.end() };
 	}
 
 	bool operator==(const TowerState& state) const {
