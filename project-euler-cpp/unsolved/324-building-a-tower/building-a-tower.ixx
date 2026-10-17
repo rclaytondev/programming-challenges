@@ -7,7 +7,6 @@ module;
 export module Problem324;
 
 import std;
-import RectPrism;
 import Modular;
 import MathUtils;
 
@@ -123,22 +122,6 @@ public:
 		});
 	}
 
-	static std::vector<TowerState> all() {
-		std::vector<int> maxes(SIDE_LENGTH * SIDE_LENGTH, 3);
-		std::set<TowerState> result;
-		RectPrism allTuples{ maxes };
-		for (const std::vector<int>& tuple : allTuples.points()) {
-			if (std::ranges::find(tuple, 0) == tuple.end()) { continue; }
-			std::array<std::array<int, SIDE_LENGTH>, SIDE_LENGTH> heights = {};
-			for (int i = 0; i < tuple.size(); i++) {
-				heights[i % SIDE_LENGTH][i / SIDE_LENGTH] = tuple[i];
-			}
-			result.insert(TowerState{ heights }.normalize());
-		}
-
-
-		return std::vector<TowerState>{ result.begin(), result.end() };
-	}
 	static std::vector<TowerState> reachable() {
 		TowerState start{};
 		std::set<TowerState> visited;
