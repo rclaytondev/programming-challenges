@@ -159,4 +159,8 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="boost_multiprecision.natvis" />
+    <Natvis Include="boost_matrix.natvis" />
+  </ItemGroup>
 </Project>

@@ -372,6 +372,10 @@
     <ClInclude Include="project-euler-cpp\solved\1-multiples-of-3-and-5\multiples-of-3-and-5.h" />
     <ClInclude Include="project-euler-cpp\solved\124-ordered-radicals\ordered-radicals.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="boost_multiprecision.natvis" />
+    <Natvis Include="boost_matrix.natvis" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="packages\boost.1.87.0\build\boost.targets" Condition="Exists('packages\boost.1.87.0\build\boost.targets')" />

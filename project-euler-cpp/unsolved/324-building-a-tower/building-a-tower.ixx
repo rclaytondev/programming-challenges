@@ -41,7 +41,7 @@ public:
 			TowerState state = *this;
 			state.heights[x][y]++;
 			state.heights[x + 1][y]++;
-			return state.normalizeHeights();
+			return state.normalizeHeights().normalize();
 		}
 		return std::nullopt;
 	}
@@ -50,14 +50,14 @@ public:
 			TowerState state = *this;
 			state.heights[x][y]++;
 			state.heights[x][y + 1]++;
-			return state.normalizeHeights();
+			return state.normalizeHeights().normalize();
 		}
 		return std::nullopt;
 	}
 	TowerState placeBlockVertical(int x, int y) const {
 		TowerState state = *this;
 		state.heights[x][y] += 2;
-		return state.normalizeHeights();
+		return state.normalizeHeights().normalize();
 	}
 	std::pair<int, int> nextPosition() const {
 		for (int x = 0; x < SIDE_LENGTH; x++) {
@@ -139,6 +139,24 @@ public:
 
 		return std::vector<TowerState>{ result.begin(), result.end() };
 	}
+	static std::vector<TowerState> reachable() {
+		TowerState start{};
+		std::set<TowerState> visited;
+		std::set<TowerState> unvisited = { start };
+		while (unvisited.size() > 0) {
+			const auto firstIt = unvisited.begin();
+			const TowerState first = *firstIt;
+			unvisited.erase(firstIt);
+			visited.insert(first);
+
+			for (const TowerState& next : first.next()) {
+				if (!visited.contains(next)) {
+					unvisited.insert(next);
+				}
+			}
+		}
+		return std::vector<TowerState> { visited.begin(), visited.end() };
+	}
 
 	bool operator==(const TowerState& state) const {
 		return this->heights == state.heights;
@@ -181,7 +199,7 @@ namespace Problem324 {
 	Modular<long long, modulo> solve(cpp_int upperBound) {
 		using ModularType = Modular<long long, modulo>;
 		if (cpp_int(upperBound % 2) != 0) { return ModularType{ 0 }; }
-		std::vector<TowerState> states = TowerState::all();
+		std::vector<TowerState> states = TowerState::reachable();
 		matrix<Modular<long long, modulo>> mat = Problem324::adjacencyMatrix<modulo>(states);
 		auto it = std::find(states.begin(), states.end(), TowerState{});
 		int indexOfStart = std::distance(states.begin(), it);
