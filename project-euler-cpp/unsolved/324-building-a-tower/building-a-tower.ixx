@@ -101,6 +101,27 @@ public:
 		}
 		return TowerState{ heights };
 	}
+	TowerState reflectX() const {
+		std::array<std::array<int, SIDE_LENGTH>, SIDE_LENGTH> heights = {};
+		for (int x = 0; x < SIDE_LENGTH; x++) {
+			for (int y = 0; y < SIDE_LENGTH; y++) {
+				heights[x][y] = this->heights[SIDE_LENGTH - x - 1][y];
+			}
+		}
+		return TowerState{ heights };
+	}
+	TowerState normalize() const {
+		return std::min({
+			*this,
+			this->rotate90CW(),
+			this->rotate90CW().rotate90CW(),
+			this->rotate90CCW(),
+			this->reflectX(),
+			this->reflectX().rotate90CW(),
+			this->reflectX().rotate90CW().rotate90CW(),
+			this->reflectX().rotate90CCW(),
+		});
+	}
 
 	static std::vector<TowerState> all() {
 		std::vector<int> maxes(SIDE_LENGTH * SIDE_LENGTH, 3);
@@ -122,6 +143,7 @@ public:
 	bool operator==(const TowerState& state) const {
 		return this->heights == state.heights;
 	}
+	auto operator<=>(const TowerState&) const = default;
 
 	struct Hasher {
 		std::size_t operator()(const TowerState& state) const noexcept {
