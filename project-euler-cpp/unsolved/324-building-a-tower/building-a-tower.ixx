@@ -86,7 +86,9 @@ public:
 	static std::vector<TowerState> all() {
 		std::vector<int> maxes(SIDE_LENGTH * SIDE_LENGTH, 3);
 		std::vector<TowerState> result;
-		for (const std::vector<int>& tuple : RectPrism{ maxes }.points()) {
+		RectPrism allTuples{ maxes };
+		for (const std::vector<int>& tuple : allTuples.points()) {
+			if (std::ranges::find(tuple, 0) == tuple.end()) { continue; }
 			std::array<std::array<int, SIDE_LENGTH>, SIDE_LENGTH> heights = {};
 			for (int i = 0; i < tuple.size(); i++) {
 				heights[i % SIDE_LENGTH][i / SIDE_LENGTH] = tuple[i];
