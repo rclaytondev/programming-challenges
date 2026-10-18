@@ -22,20 +22,22 @@ BOOST_AUTO_TEST_CASE(it_works_for_2) {
 
 BOOST_AUTO_TEST_SUITE_END()
 
+using TowerStateGrid = std::array<std::array<int, 3>, 3>;
+
 BOOST_AUTO_TEST_SUITE(TowerState_rotate90CW)
 
 BOOST_AUTO_TEST_CASE(it_rotates_90_degrees_clockwise) {
-	TowerState state{ { {
+	TowerStateGrid state{ {
 		{ 1, 2, 3 },
 		{ 0, 1, 0 },
 		{ 2, 2, 1 }
-	} } };
-	TowerState rotated = state.rotate90CW();
-	TowerState expected{ { {
+	} };
+	TowerStateGrid rotated = TowerState::rotate90CW(state);
+	TowerStateGrid expected{ {
 		{ 2, 0, 1 },
 		{ 2, 1, 2 },
 		{ 1, 0, 3 }
-	} } };
+	} };
 	BOOST_CHECK(rotated == expected);
 }
 
@@ -44,17 +46,17 @@ BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE(TowerState_rotate90CCW)
 
 BOOST_AUTO_TEST_CASE(it_rotates_90_degrees_counterclockwise) {
-	TowerState state{ { {
+	TowerStateGrid state{ {
 		{ 1, 2, 3 },
 		{ 0, 1, 0 },
 		{ 2, 2, 1 }
-	} } };
-	TowerState rotated = state.rotate90CCW();
-	TowerState expected{ { {
+	} };
+	TowerStateGrid rotated = TowerState::rotate90CCW(state);
+	TowerStateGrid expected{ {
 		{ 3, 0, 1 },
 		{ 2, 1, 2 },
 		{ 1, 0, 2 }
-	} } };
+	} };
 	BOOST_CHECK(rotated == expected);
 }
 

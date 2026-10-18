@@ -22,43 +22,44 @@ public:
 	TowerStateGrid heights;
 
 	TowerState() = default;
-	TowerState(TowerStateGrid heights) : heights(heights) { }
+	TowerState(TowerStateGrid heights) : heights(TowerState::normalize(heights)) { }
 
-	int minHeight() const {
-		return std::ranges::min(this->heights | std::views::join);
+	static int minHeight(const TowerStateGrid& heights) {
+		return std::ranges::min(heights | std::views::join);
 	}
-	TowerState& normalizeHeights() {
-		int minHeight = this->minHeight();
+	static TowerStateGrid normalizeHeights(const TowerStateGrid& heights) {
+		int minHeight = TowerState::minHeight(heights);
+		TowerStateGrid newHeights = heights;
 		for (int x = 0; x < SIDE_LENGTH; x++) {
 			for (int y = 0; y < SIDE_LENGTH; y++) {
-				this->heights[x][y] -= minHeight;
+				newHeights[x][y] -= minHeight;
 			}
 		}
-		return *this;
+		return newHeights;
 	}
 
 	std::optional<TowerState> placeBlockRight(int x, int y) const {
 		if (x < SIDE_LENGTH - 1 && this->heights[x+1][y] == 0) {
-			TowerState state = *this;
-			state.heights[x][y]++;
-			state.heights[x + 1][y]++;
-			return state.normalizeHeights().normalize();
+			TowerStateGrid heights = this->heights;
+			heights[x][y]++;
+			heights[x + 1][y]++;
+			return TowerState{ heights };
 		}
 		return std::nullopt;
 	}
 	std::optional<TowerState> placeBlockDown(int x, int y) const {
 		if (y < SIDE_LENGTH - 1 && this->heights[x][y+1] == 0) {
-			TowerState state = *this;
-			state.heights[x][y]++;
-			state.heights[x][y + 1]++;
-			return state.normalizeHeights().normalize();
+			TowerStateGrid heights = this->heights;
+			heights[x][y]++;
+			heights[x][y + 1]++;
+			return TowerState{ heights };
 		}
 		return std::nullopt;
 	}
 	TowerState placeBlockVertical(int x, int y) const {
-		TowerState state = *this;
-		state.heights[x][y] += 2;
-		return state.normalizeHeights().normalize();
+		TowerStateGrid heights = this->heights;
+		heights[x][y] += 2;
+		return TowerState{ heights };
 	}
 	std::pair<int, int> nextPosition() const {
 		for (int x = 0; x < SIDE_LENGTH; x++) {
@@ -84,43 +85,46 @@ public:
 		return next;
 	}
 
-	TowerState rotate90CW() const {
-		TowerStateGrid heights = {};
+	static TowerStateGrid rotate90CW(const TowerStateGrid& heights) {
+		TowerStateGrid rotated = {};
 		for (int x = 0; x < SIDE_LENGTH; x++) {
 			for (int y = 0; y < SIDE_LENGTH; y++) {
-				heights[x][y] = this->heights[SIDE_LENGTH - y - 1][x];
+				rotated[x][y] = heights[SIDE_LENGTH - y - 1][x];
 			}
 		}
-		return TowerState{ heights };
+		return rotated;
 	}
-	TowerState rotate90CCW() const {
-		TowerStateGrid heights = {};
+	static TowerStateGrid rotate90CCW(const TowerStateGrid& heights) {
+		TowerStateGrid rotated = {};
 		for (int x = 0; x < SIDE_LENGTH; x++) {
 			for (int y = 0; y < SIDE_LENGTH; y++) {
-				heights[x][y] = this->heights[y][SIDE_LENGTH - x - 1];
+				rotated[x][y] = heights[y][SIDE_LENGTH - x - 1];
 			}
 		}
-		return TowerState{ heights };
+		return rotated;
 	}
-	TowerState reflectX() const {
-		TowerStateGrid heights = {};
+	static TowerStateGrid reflectX(const TowerStateGrid& heights) {
+		TowerStateGrid reflected = {};
 		for (int x = 0; x < SIDE_LENGTH; x++) {
 			for (int y = 0; y < SIDE_LENGTH; y++) {
-				heights[x][y] = this->heights[SIDE_LENGTH - x - 1][y];
+				reflected[x][y] = heights[SIDE_LENGTH - x - 1][y];
 			}
 		}
-		return TowerState{ heights };
+		return reflected;
 	}
-	TowerState normalize() const {
+	static TowerStateGrid normalize(const TowerStateGrid& heights) {
+		TowerStateGrid normalized = TowerState::normalizeHeights(heights);
+		TowerStateGrid reflected = TowerState::reflectX(normalized);
 		return std::min({
-			*this,
-			this->rotate90CW(),
-			this->rotate90CW().rotate90CW(),
-			this->rotate90CCW(),
-			this->reflectX(),
-			this->reflectX().rotate90CW(),
-			this->reflectX().rotate90CW().rotate90CW(),
-			this->reflectX().rotate90CCW(),
+			heights,
+			TowerState::rotate90CW(heights),
+			TowerState::rotate90CW(TowerState::rotate90CW(heights)),
+			TowerState::rotate90CCW(heights),
+
+			reflected,
+			TowerState::rotate90CW(reflected),
+			TowerState::rotate90CW(TowerState::rotate90CW(reflected)),
+			TowerState::rotate90CCW(reflected),
 		});
 	}
 
