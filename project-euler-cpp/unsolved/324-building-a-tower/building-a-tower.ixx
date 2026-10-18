@@ -196,4 +196,21 @@ namespace Problem324 {
 		auto power = MathUtils::matrixPow<ModularType, cpp_int>(mat, exponent);
 		return power(indexOfStart, indexOfStart);
 	}
+
+	template<long long modulo>
+	Modular<long long, modulo> solveRecursively(const cpp_int& blocksLeft, const TowerState& state) {
+		if (blocksLeft == 0) {
+			bool flat = TowerState::minHeight(state.heights) == 0;
+			return flat ? 1 : 0;
+		}
+		Modular<long long, modulo> paths = 0;
+		for (const TowerState& next : state.next()) {
+			paths += Problem324::solveRecursively<modulo>(blocksLeft - 1, next);
+		}
+		return paths;
+	}
+	export template<long long modulo>
+	Modular<long long, modulo> solveRecursively(const cpp_int& height) {
+		return Problem324::solveRecursively<modulo>(height * (SIDE_LENGTH * SIDE_LENGTH) / 2, TowerState{});
+	}
 }
