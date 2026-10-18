@@ -185,7 +185,7 @@ namespace Problem324 {
 	}
 
 	export template<long long modulo>
-	Modular<long long, modulo> solve(cpp_int upperBound) {
+	Modular<long long, modulo> solve(const cpp_int& upperBound) {
 		using ModularType = Modular<long long, modulo>;
 		if (cpp_int(upperBound % 2) != 0) { return ModularType{ 0 }; }
 		std::vector<TowerState> states = TowerState::reachable();
