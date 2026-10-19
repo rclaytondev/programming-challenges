@@ -24,9 +24,18 @@ import Problem324;
 
 BOOST_AUTO_TEST_SUITE(Problem324_solveRecursively)
 
-BOOST_AUTO_TEST_CASE(it_works_for_2) {
+BOOST_AUTO_TEST_CASE(it_works_for_a_rectangle_with_height_2) {
 	auto result = Problem324::solveRecursively<1'000'000'007>(2);
 	BOOST_CHECK_EQUAL(result, 229LL);
+}
+BOOST_AUTO_TEST_CASE(it_works_for_a_state_with_8_remaining_squares_on_the_last_layer) {
+	TowerState state{ { {
+		{ 2, 1, 1 },
+		{ 1, 1, 1 },
+		{ 1, 1, 1 }
+	} } };
+	auto result = Problem324::solveRecursively<1'000'000'007>(4, state);
+	BOOST_CHECK_EQUAL(result, 4LL);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

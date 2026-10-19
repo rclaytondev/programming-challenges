@@ -197,7 +197,7 @@ namespace Problem324 {
 		return power(indexOfStart, indexOfStart);
 	}
 
-	template<long long modulo>
+	export template<long long modulo>
 	Modular<long long, modulo> solveRecursively(const cpp_int& blocksLeft, const TowerState& state) {
 		if (blocksLeft == 0) {
 			bool flat = TowerState::minHeight(state.heights) == 0;
