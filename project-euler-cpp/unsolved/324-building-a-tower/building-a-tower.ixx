@@ -27,6 +27,9 @@ public:
 	static int minHeight(const TowerStateGrid& heights) {
 		return std::ranges::min(heights | std::views::join);
 	}
+	static int maxHeight(const TowerStateGrid& heights) {
+		return std::ranges::max(heights | std::views::join);
+	}
 	static TowerStateGrid normalizeHeights(const TowerStateGrid& heights) {
 		int minHeight = TowerState::minHeight(heights);
 		TowerStateGrid newHeights = heights;
@@ -200,7 +203,7 @@ namespace Problem324 {
 	export template<long long modulo>
 	Modular<long long, modulo> solveRecursively(const cpp_int& blocksLeft, const TowerState& state) {
 		if (blocksLeft == 0) {
-			bool flat = TowerState::minHeight(state.heights) == 0;
+			bool flat = TowerState::maxHeight(state.heights) == 0;
 			return flat ? 1 : 0;
 		}
 		Modular<long long, modulo> paths = 0;
