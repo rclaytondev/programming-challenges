@@ -1,10 +1,14 @@
 module;
 
 #include <boost/test/unit_test.hpp>
+#include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/assignment.hpp>
 
 export module MathUtilsTest;
 
 import MathUtils;
+
+using boost::numeric::ublas::matrix;
 
 BOOST_AUTO_TEST_SUITE(MathUtils_primes)
 BOOST_AUTO_TEST_CASE(can_compute_primes_up_to_30) {
@@ -51,6 +55,22 @@ BOOST_AUTO_TEST_CASE(can_compute_eighth_integer_powers_correctly) {
 	int result = MathUtils::pow(3, 8);
 	BOOST_CHECK_EQUAL(result, 6561);
 }
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_SUITE(MathUtils_matrixPow)
+
+BOOST_AUTO_TEST_CASE(it_correctly_computes_the_power_of_the_matrix) {
+	matrix<int> mat(2, 2);
+	mat <<= 2, 3,
+			6, 4;
+	matrix<int> power = MathUtils::matrixPow(mat, 3);
+	matrix<int> expected(2, 2);
+	expected <<= 152, 138,
+				 276, 244;
+	bool equal = (power == expected);
+	BOOST_CHECK(equal);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
