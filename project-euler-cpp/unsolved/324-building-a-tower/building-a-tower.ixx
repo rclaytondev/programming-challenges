@@ -170,22 +170,19 @@ public:
 
 namespace Problem324 {
 	export template<long long modulo>
-	matrix<long long> adjacencyMatrix(const std::vector<TowerState>& states) {
+	matrix<Modular<long long, modulo>> adjacencyMatrix(const std::vector<TowerState>& states) {
 		std::unordered_map<TowerState, int, TowerState::Hasher> indices;
 		for (int i = 0; i < states.size(); i++) {
 			TowerState state = states[i];
 			indices[state] = i;
 		}
 
-		matrix<long long> mat(states.size(), states.size());
+		matrix<Modular<long long, modulo>> mat(states.size(), states.size());
 		for (int i = 0; i < states.size(); i++) {
-			for (int j = 0; j < states.size(); j++) {
-				mat(j, i) = 0;
-			}
 			for (const TowerState& next : states[i].next()) {
 				if (indices.contains(next)) {
 					int j = indices[next];
-					mat(j, i) = 1;
+					mat(j, i) = Modular<long long, modulo>{ 1 };
 				}
 			}
 		}
@@ -193,14 +190,15 @@ namespace Problem324 {
 	}
 
 	export template<long long modulo>
-	long long solve(const cpp_int& upperBound) {
-		if (cpp_int(upperBound % 2) != 0) { return 0; }
+	Modular<long long, modulo> solve(const cpp_int& upperBound) {
+		using ModularType = Modular<long long, modulo>;
+		if (cpp_int(upperBound % 2) != 0) { return ModularType{ 0 }; }
 		std::vector<TowerState> states = TowerState::reachable();
-		matrix<long long> mat = Problem324::adjacencyMatrix<modulo>(states);
+		matrix<Modular<long long, modulo>> mat = Problem324::adjacencyMatrix<modulo>(states);
 		auto it = std::find(states.begin(), states.end(), TowerState{});
 		int indexOfStart = std::distance(states.begin(), it);
 		cpp_int exponent = cpp_int(upperBound * 9) / 2;
-		auto power = MathUtils::matrixPow<long long, cpp_int>(mat, exponent);
+		auto power = MathUtils::matrixPow<ModularType, cpp_int>(mat, exponent);
 		return power(indexOfStart, indexOfStart);
 	}
 
