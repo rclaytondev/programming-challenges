@@ -180,8 +180,10 @@ namespace Problem324 {
 		matrix<Modular<long long, modulo>> mat(states.size(), states.size());
 		for (int i = 0; i < states.size(); i++) {
 			for (const TowerState& next : states[i].next()) {
-				int j = indices[next];
-				mat(i, j) = Modular<long long, modulo>{ 1 };
+				if (indices.contains(next)) {
+					int j = indices[next];
+					mat(i, j) = Modular<long long, modulo>{ 1 };
+				}
 			}
 		}
 		return mat;
