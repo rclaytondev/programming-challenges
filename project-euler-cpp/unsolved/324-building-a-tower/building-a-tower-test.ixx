@@ -87,22 +87,22 @@ BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE(Problem324_adjacencyMatrix)
 
 BOOST_AUTO_TEST_CASE(it_generates_a_matrix_with_a_1_if_the_states_are_connected_and_a_0_otherwise) {
-TowerState start{ { {
-	{ 0, 0, 0 },
-	{ 0, 0, 0 },
-	{ 0, 0, 0 },
-} } };
-TowerState child = start.next()[0];
-TowerState grandchild1 = child.next()[0];
-TowerState grandchild2 = child.next()[1];
+	TowerState start{ { {
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 0, 0, 0 },
+	} } };
+	TowerState child = start.next()[0];
+	TowerState grandchild1 = child.next()[0];
+	TowerState grandchild2 = child.next()[1];
 
-auto result = Problem324::adjacencyMatrix<1'000'000'007>({ start, child, grandchild1, grandchild2 });
-matrix<Modular<long long, 1'000'000'007>> expected(4, 4);
-expected <<= 0LL, 0LL, 0LL, 0LL,
-			 1LL, 0LL, 0LL, 0LL,
-			 0LL, 1LL, 0LL, 0LL,
-			 0LL, 1LL, 0LL, 0LL;
-BOOST_CHECK_EQUAL(result, expected);
+	auto result = Problem324::adjacencyMatrix<1'000'000'007>({ start, child, grandchild1, grandchild2 });
+	matrix<Modular<long long, 1'000'000'007>> expected(4, 4);
+	expected <<= 0LL, 0LL, 0LL, 0LL,
+				 1LL, 0LL, 0LL, 0LL,
+				 0LL, 1LL, 0LL, 0LL,
+				 0LL, 1LL, 0LL, 0LL;
+	BOOST_CHECK_EQUAL(result, expected);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
