@@ -92,21 +92,9 @@ TowerState start{ { {
 	{ 0, 0, 0 },
 	{ 0, 0, 0 },
 } } };
-TowerState child{ { {
-	{ 0, 0, 0 },
-	{ 1, 1, 0 },
-	{ 0, 0, 0 },
-} } };
-TowerState grandchild1{ { {
-	{ 0, 0, 0 },
-	{ 1, 1, 0 },
-	{ 0, 0, 2 },
-} } };
-TowerState grandchild2{ { {
-	{ 0, 0, 0 },
-	{ 1, 1, 1 },
-	{ 0, 0, 1 },
-} } };
+TowerState child = start.next()[0];
+TowerState grandchild1 = child.next()[0];
+TowerState grandchild2 = child.next()[1];
 
 auto result = Problem324::adjacencyMatrix<1'000'000'007>({ start, child, grandchild1, grandchild2 });
 matrix<Modular<long long, 1'000'000'007>> expected(4, 4);

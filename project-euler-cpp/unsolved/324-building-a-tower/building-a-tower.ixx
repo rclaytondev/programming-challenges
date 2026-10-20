@@ -182,7 +182,7 @@ namespace Problem324 {
 			for (const TowerState& next : states[i].next()) {
 				if (indices.contains(next)) {
 					int j = indices[next];
-					mat(i, j) = Modular<long long, modulo>{ 1 };
+					mat(j, i) = Modular<long long, modulo>{ 1 };
 				}
 			}
 		}
