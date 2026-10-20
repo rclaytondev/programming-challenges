@@ -1,5 +1,7 @@
 module;
 
+#include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/assignment.hpp>
 #include <boost/test/unit_test.hpp>
 #include <boost/multiprecision/cpp_int.hpp>
 
@@ -10,6 +12,8 @@ import std;
 import RectPrism;
 import Modular;
 import MathUtils;
+
+using boost::numeric::ublas::matrix;
 
 import Problem324;
 
@@ -76,6 +80,41 @@ BOOST_AUTO_TEST_CASE(it_rotates_90_degrees_counterclockwise) {
 		{ 1, 0, 2 }
 	} };
 	BOOST_CHECK(rotated == expected);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_SUITE(Problem324_adjacencyMatrix)
+
+BOOST_AUTO_TEST_CASE(it_generates_a_matrix_with_a_1_if_the_states_are_connected_and_a_0_otherwise) {
+TowerState start{ { {
+	{ 0, 0, 0 },
+	{ 0, 0, 0 },
+	{ 0, 0, 0 },
+} } };
+TowerState child{ { {
+	{ 0, 0, 0 },
+	{ 1, 1, 0 },
+	{ 0, 0, 0 },
+} } };
+TowerState grandchild1{ { {
+	{ 0, 0, 0 },
+	{ 1, 1, 0 },
+	{ 0, 0, 2 },
+} } };
+TowerState grandchild2{ { {
+	{ 0, 0, 0 },
+	{ 1, 1, 1 },
+	{ 0, 0, 1 },
+} } };
+
+auto result = Problem324::adjacencyMatrix<1'000'000'007>({ start, child, grandchild1, grandchild2 });
+matrix<Modular<long long, 1'000'000'007>> expected(4, 4);
+expected <<= 0LL, 0LL, 0LL, 0LL,
+			 1LL, 0LL, 0LL, 0LL,
+			 0LL, 1LL, 0LL, 0LL,
+			 0LL, 1LL, 0LL, 0LL;
+BOOST_CHECK_EQUAL(result, expected);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
