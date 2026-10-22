@@ -55,3 +55,18 @@ BOOST_AUTO_TEST_CASE(it_returns_the_adjacency_matrix_of_the_graph_with_rows_and_
 }
 
 BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_SUITE(DirectedWeightedGraph_paths)
+
+BOOST_AUTO_TEST_CASE(it_returns_the_number_of_paths_between_the_two_vertices_using_the_weights_as_the_number_of_edges) {
+	DirectedWeightedGraph<char, int> graph;
+	graph.add('A');
+	graph.add('B');
+	graph.add('C');
+	graph.connect('A', 'B', 5);
+	graph.connect('B', 'C', 6);
+	int paths = graph.paths<int, int>('A', 'C', 2);
+	BOOST_CHECK_EQUAL(paths, 30);
+}
+
+BOOST_AUTO_TEST_SUITE_END()

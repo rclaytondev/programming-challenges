@@ -5,6 +5,7 @@ module;
 export module DirectedWeightedGraph;
 
 import std;
+import MathUtils;
 
 using boost::numeric::ublas::matrix;
 
@@ -73,7 +74,7 @@ public:
 		return edgeIt->second;
 	}
 
-	matrix<N> adjacencyMatrix() {
+	matrix<N> adjacencyMatrix() const {
 		auto vertices = this->vertices() | std::ranges::to<std::vector<T>>();
 		std::size_t size = vertices.size();
 		matrix<N> mat(size, size);
@@ -83,5 +84,15 @@ public:
 			}
 		}
 		return mat;
+	}
+
+	template<typename M, typename L>
+	M paths(const T& start, const T& end, L length) const {
+		auto vertices = this->vertices() | std::ranges::to<std::vector<T>>();
+		auto startIndex = std::distance(vertices.begin(), std::find(vertices.begin(), vertices.end(), start));
+		auto endIndex = std::distance(vertices.begin(), std::find(vertices.begin(), vertices.end(), end));
+		matrix<M> mat = this->adjacencyMatrix();
+		matrix<M> power = MathUtils::matrixPow<M, L>(mat, length);
+		return power(startIndex, endIndex);
 	}
 };
