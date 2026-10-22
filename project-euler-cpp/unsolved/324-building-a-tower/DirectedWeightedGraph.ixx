@@ -86,8 +86,9 @@ public:
 		return mat;
 	}
 
+private:
 	template<typename M, typename L>
-	M paths(const T& start, const T& end, L length) const {
+	M pathsHelper(const T& start, const T& end, L length) const {
 		auto vertices = this->vertices() | std::ranges::to<std::vector<T>>();
 		auto startIndex = std::distance(vertices.begin(), std::find(vertices.begin(), vertices.end(), start));
 		auto endIndex = std::distance(vertices.begin(), std::find(vertices.begin(), vertices.end(), end));
@@ -95,6 +96,14 @@ public:
 		matrix<M> power = MathUtils::matrixPow<M, L>(mat, length);
 		return power(startIndex, endIndex);
 	}
+public:
+	template<typename M, typename L>
+	M paths(const T& start, const T& end, L length) {
+		std::set<T> reachable = this->reachableFrom(start);
+		DirectedWeightedGraph<T, N> subgraph = this->subgraph(reachable.begin(), reachable.end());
+		return subgraph.pathsHelper<M, L>(start, end, length);
+	}
+
 
 	std::set<T> reachableFrom(const T& start) const {
 		std::set<T> visited;
