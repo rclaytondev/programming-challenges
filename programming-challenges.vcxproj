@@ -266,6 +266,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="project-euler-cpp\unsolved\324-building-a-tower\building-a-tower.ixx" />
+    <ClCompile Include="project-euler-cpp\unsolved\324-building-a-tower\DirectedWeightedGraph-test.ixx" />
+    <ClCompile Include="project-euler-cpp\unsolved\324-building-a-tower\DirectedWeightedGraph.ixx" />
     <ClCompile Include="project-euler-cpp\utilities\RectPrism-test.ixx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
