@@ -68,6 +68,19 @@ BOOST_AUTO_TEST_CASE(it_returns_the_number_of_paths_between_the_two_vertices_usi
 	int paths = graph.paths<int, int>('A', 'C', 2);
 	BOOST_CHECK_EQUAL(paths, 30);
 }
+BOOST_AUTO_TEST_CASE(it_works_when_there_are_vertices_that_are_not_reachable_from_the_start_vertex) {
+	DirectedWeightedGraph<char, int> graph;
+	graph.add('A');
+	graph.add('B');
+	graph.add('C');
+	graph.add('D');
+	graph.add('E');
+	graph.connect('A', 'B', 5);
+	graph.connect('B', 'C', 6);
+	graph.connect('D', 'A', 17);
+	int paths = graph.paths<int, int>('A', 'C', 2);
+	BOOST_CHECK_EQUAL(paths, 30);
+}
 
 BOOST_AUTO_TEST_SUITE_END()
 
