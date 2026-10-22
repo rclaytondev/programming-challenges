@@ -90,3 +90,24 @@ BOOST_AUTO_TEST_CASE(it_returns_all_the_vertices_that_are_reachable_from_the_giv
 }
 
 BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_SUITE(DirectedWeightedGraph_subgraph)
+
+BOOST_AUTO_TEST_CASE(it_returns_the_subgraph_consisting_of_all_the_given_vertices_and_edges_between_them) {
+	DirectedWeightedGraph<char, int> graph;
+	graph.add('A');
+	graph.add('B');
+	graph.add('C');
+	graph.connect('A', 'B', 5);
+	graph.connect('B', 'C', 6);
+
+	std::set<char> vertices{ 'A', 'B' };
+	DirectedWeightedGraph subgraph = graph.subgraph(vertices.begin(), vertices.end());
+
+	BOOST_CHECK(subgraph.contains('A'));
+	BOOST_CHECK(subgraph.contains('B'));
+	BOOST_CHECK(!subgraph.contains('C'));
+	BOOST_CHECK(subgraph.edgeWeight('A', 'B') == std::make_optional(5));
+}
+
+BOOST_AUTO_TEST_SUITE_END()

@@ -113,4 +113,22 @@ public:
 		}
 		return visited;
 	}
+
+	template<typename It>
+	DirectedWeightedGraph subgraph(It start, It end) const {
+		std::set<T> vertices{ start, end };
+		DirectedWeightedGraph<T, N> subgraph;
+		for (It it = start; it != end; it++) {
+			subgraph.add(*it);
+		}
+
+		for (It it = start; it != end; it++) {
+			for (const auto& [neighbor, weight] : this->outEdgesMap.at(*it)) {
+				if (vertices.contains(neighbor)) {
+					subgraph.connect(*it, neighbor, weight);
+				}
+			}
+		}
+		return subgraph;
+	}
 };
