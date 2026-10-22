@@ -1,12 +1,17 @@
 module;
 
 #include <boost/test/unit_test.hpp>
+#include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/assignment.hpp>
 
 export module DirectedWeightedGraphTest;
 
 import DirectedWeightedGraph;
+import MathUtils;
 
 import std;
+
+using boost::numeric::ublas::matrix;
 
 BOOST_AUTO_TEST_SUITE(DirectedWeightedGraph_basic_operations)
 
@@ -26,6 +31,27 @@ BOOST_AUTO_TEST_CASE(it_can_add_and_query_vertices_and_can_add_query_and_remove_
 	BOOST_CHECK(!graph.edgeWeight('B', 'A').has_value());
 	graph.disconnect('A', 'B');
 	BOOST_CHECK(!graph.edgeWeight('A', 'B').has_value());
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_SUITE(DirectedWeightedGraph_adjacencyMatrix)
+
+BOOST_AUTO_TEST_CASE(it_returns_the_adjacency_matrix_of_the_graph_with_rows_and_columns_in_order_of_the_order_used_for_the_out_edges_map) {
+	DirectedWeightedGraph<char, int> graph;
+	graph.add('A');
+	graph.add('B');
+	graph.add('C');
+	graph.connect('A', 'B', 3);
+	graph.connect('A', 'C', 2);
+	graph.connect('C', 'A', 5);
+
+	matrix<int> mat = graph.adjacencyMatrix();
+	matrix<int> expected(3, 3);
+	expected <<= 0, 3, 2,
+				 0, 0, 0,
+				 5, 0, 0;
+	BOOST_CHECK(mat == expected);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

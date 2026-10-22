@@ -1,6 +1,12 @@
+module;
+
+#include <boost/numeric/ublas/matrix.hpp>
+
 export module DirectedWeightedGraph;
 
 import std;
+
+using boost::numeric::ublas::matrix;
 
 export template<typename T, typename N = long long>
 class DirectedWeightedGraph {
@@ -30,6 +36,9 @@ public:
 	}
 	std::size_t size() const {
 		return this->outEdgesMap.size();
+	}
+	auto vertices() const {
+		return this->outEdgesMap | std::views::keys;
 	}
 	void connect(const T& start, const T& end, N weight) {
 		const auto it1 = this->outEdgesMap.find(start);
@@ -62,5 +71,17 @@ public:
 			return std::nullopt;
 		}
 		return edgeIt->second;
+	}
+
+	matrix<N> adjacencyMatrix() {
+		auto vertices = this->vertices() | std::ranges::to<std::vector<T>>();
+		std::size_t size = vertices.size();
+		matrix<N> mat(size, size);
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < size; j++) {
+				mat(i, j) = this->edgeWeight(vertices[i], vertices[j]).value_or(0);
+			}
+		}
+		return mat;
 	}
 };
