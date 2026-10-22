@@ -7,8 +7,10 @@ module;
 export module Problem324;
 
 import std;
+import RectPrism;
 import Modular;
 import MathUtils;
+import DirectedWeightedGraph;
 
 using boost::numeric::ublas::matrix;
 using boost::multiprecision::cpp_int;
@@ -149,6 +151,22 @@ public:
 		}
 		return std::vector<TowerState> { visited.begin(), visited.end() };
 	}
+	static std::vector<TowerState> all() {
+		std::vector<int> maxes(SIDE_LENGTH * SIDE_LENGTH, 3);
+		std::set<TowerState> result;
+		RectPrism allTuples{ maxes };
+		for (const std::vector<int>& tuple : allTuples.points()) {
+			if (std::ranges::find(tuple, 0) == tuple.end()) { continue; }
+			std::array<std::array<int, SIDE_LENGTH>, SIDE_LENGTH> heights = {};
+			for (int i = 0; i < tuple.size(); i++) {
+				heights[i % SIDE_LENGTH][i / SIDE_LENGTH] = tuple[i];
+			}
+			result.insert(TowerState{ heights });
+		}
+
+
+		return std::vector<TowerState>{ result.begin(), result.end() };
+	}
 
 	bool operator==(const TowerState& state) const {
 		return this->heights == state.heights;
@@ -189,17 +207,30 @@ namespace Problem324 {
 		return mat;
 	}
 
+	DirectedWeightedGraph<TowerState, int> stateGraph() {
+		std::vector<TowerState> all = TowerState::all();
+		DirectedWeightedGraph<TowerState, int> graph;
+		for (const TowerState& state : all) {
+			graph.add(state);
+		}
+		for (const TowerState& state : all) {
+			for (const TowerState& next : state.next()) {
+				int weight = graph.edgeWeight(state, next).value_or(0);
+				graph.connect(state, next, weight + 1);
+			}
+		}
+		return graph;
+	}
+
 	export template<long long modulo>
 	Modular<long long, modulo> solve(const cpp_int& upperBound) {
 		using ModularType = Modular<long long, modulo>;
 		if (cpp_int(upperBound % 2) != 0) { return ModularType{ 0 }; }
-		std::vector<TowerState> states = TowerState::reachable();
-		matrix<Modular<long long, modulo>> mat = Problem324::adjacencyMatrix<modulo>(states);
-		auto it = std::find(states.begin(), states.end(), TowerState{});
-		int indexOfStart = std::distance(states.begin(), it);
-		cpp_int exponent = cpp_int(upperBound * 9) / 2;
-		auto power = MathUtils::matrixPow<ModularType, cpp_int>(mat, exponent);
-		return power(indexOfStart, indexOfStart);
+
+		TowerState start;
+		cpp_int blocks = cpp_int(upperBound * 9) / 2;
+		DirectedWeightedGraph<TowerState, int> graph = Problem324::stateGraph();
+		return graph.paths<ModularType, cpp_int>(start, start, blocks);
 	}
 
 	export template<long long modulo>
