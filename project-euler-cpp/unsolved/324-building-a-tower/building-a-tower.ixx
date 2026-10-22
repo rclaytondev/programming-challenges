@@ -121,10 +121,10 @@ public:
 		TowerStateGrid normalized = TowerState::normalizeHeights(heights);
 		TowerStateGrid reflected = TowerState::reflectX(normalized);
 		return std::min({
-			heights,
-			TowerState::rotate90CW(heights),
-			TowerState::rotate90CW(TowerState::rotate90CW(heights)),
-			TowerState::rotate90CCW(heights),
+			normalized,
+			TowerState::rotate90CW(normalized),
+			TowerState::rotate90CW(TowerState::rotate90CW(normalized)),
+			TowerState::rotate90CCW(normalized),
 
 			reflected,
 			TowerState::rotate90CW(reflected),
