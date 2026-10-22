@@ -70,3 +70,23 @@ BOOST_AUTO_TEST_CASE(it_returns_the_number_of_paths_between_the_two_vertices_usi
 }
 
 BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_SUITE(DirectedWeightedGraph_reachableFrom)
+
+BOOST_AUTO_TEST_CASE(it_returns_all_the_vertices_that_are_reachable_from_the_given_vertex_by_following_edges_forward) {
+	DirectedWeightedGraph<char, int> graph;
+	graph.add('A');
+	graph.add('B');
+	graph.add('C');
+	graph.connect('A', 'B', 5);
+	graph.connect('B', 'C', 6);
+
+	std::set<char> reachableFromA = graph.reachableFrom('A');
+	std::set<char> expectedFromA = { 'A', 'B', 'C' };
+	std::set<char> reachableFromB = graph.reachableFrom('B');
+	std::set<char> expectedFromB = { 'B', 'C' };
+	BOOST_TEST(reachableFromA == expectedFromA);
+	BOOST_TEST(reachableFromB == expectedFromB);
+}
+
+BOOST_AUTO_TEST_SUITE_END()

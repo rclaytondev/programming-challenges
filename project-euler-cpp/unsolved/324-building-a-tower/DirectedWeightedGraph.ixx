@@ -95,4 +95,22 @@ public:
 		matrix<M> power = MathUtils::matrixPow<M, L>(mat, length);
 		return power(startIndex, endIndex);
 	}
+
+	std::set<T> reachableFrom(const T& start) const {
+		std::set<T> visited;
+		std::set<T> unvisited = { start };
+		while (unvisited.size() > 0) {
+			const auto firstIt = unvisited.begin();
+			const T first = *firstIt;
+			unvisited.erase(firstIt);
+			visited.insert(first);
+
+			for (const T next : this->outEdgesMap.at(first) | std::views::keys) {
+				if (!visited.contains(next)) {
+					unvisited.insert(next);
+				}
+			}
+		}
+		return visited;
+	}
 };
