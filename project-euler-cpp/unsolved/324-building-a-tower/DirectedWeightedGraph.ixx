@@ -102,13 +102,21 @@ public:
 		if (!this->contains(start) || !this->contains(end)) {
 			throw std::invalid_argument("Cannot find number of paths since the start or end was not in the graph.");
 		}
-		std::set<T> reachable = this->reachableFrom(start);
-		DirectedWeightedGraph<T, N> subgraph = this->subgraph(reachable.begin(), reachable.end());
+		std::set<T> fromStart = this->reachableFrom(start, true);
+		std::set<T> fromEnd = this->reachableFrom(end, false);
+		std::set<T> validIntermediates;
+		std::set_intersection(
+			fromStart.begin(), fromStart.end(),
+			fromEnd.begin(), fromEnd.end(),
+			std::inserter(validIntermediates, validIntermediates.begin())
+		);
+
+		DirectedWeightedGraph<T, N> subgraph = this->subgraph(validIntermediates.begin(), validIntermediates.end());
 		return subgraph.pathsHelper<M, L>(start, end, length);
 	}
 
 
-	std::set<T> reachableFrom(const T& start) const {
+	std::set<T> reachableFrom(const T& start, bool forwards = true) const {
 		std::set<T> visited;
 		std::set<T> unvisited = { start };
 		while (unvisited.size() > 0) {
@@ -117,7 +125,8 @@ public:
 			unvisited.erase(firstIt);
 			visited.insert(first);
 
-			for (const T next : this->outEdgesMap.at(first) | std::views::keys) {
+			const std::map<T, std::map<T, N>>& edgesMap = forwards ? this->outEdgesMap : this->inEdgesMap;
+			for (const T next : edgesMap.at(first) | std::views::keys) {
 				if (!visited.contains(next)) {
 					unvisited.insert(next);
 				}
