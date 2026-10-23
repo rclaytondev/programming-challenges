@@ -252,7 +252,7 @@ namespace Problem324 {
 
 
 	export void run() {
-		auto answer = Problem324::solve<100'000'007>(MathUtils::pow<cpp_int, int>(10, 500));
+		auto answer = Problem324::solve<100'000'007>(MathUtils::pow<cpp_int, int>(10, 30));
 		std::cout << "Answer: " << answer << "\n";
 	}
 }

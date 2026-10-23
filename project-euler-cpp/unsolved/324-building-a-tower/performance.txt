@@ -1,0 +1,2 @@
+Input of 10^30:
+5.3 s, 5.3 s, 5.3 s with 213 states
