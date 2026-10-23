@@ -144,16 +144,16 @@
     <ClCompile Include="project-euler-cpp\utilities\SetUtils-test.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="project-euler-cpp\unsolved\324-building-a-tower\building-a-tower.ixx">
+    <ClCompile Include="project-euler-cpp\solved\324-building-a-tower\building-a-tower.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="project-euler-cpp\unsolved\324-building-a-tower\building-a-tower-test.ixx">
+    <ClCompile Include="project-euler-cpp\solved\324-building-a-tower\building-a-tower-test.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="project-euler-cpp\unsolved\324-building-a-tower\DirectedWeightedGraph.ixx">
+    <ClCompile Include="project-euler-cpp\solved\324-building-a-tower\DirectedWeightedGraph.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="project-euler-cpp\unsolved\324-building-a-tower\DirectedWeightedGraph-test.ixx">
+    <ClCompile Include="project-euler-cpp\solved\324-building-a-tower\DirectedWeightedGraph-test.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
