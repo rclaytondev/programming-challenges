@@ -99,6 +99,9 @@ private:
 public:
 	template<typename M, typename L>
 	M paths(const T& start, const T& end, L length) {
+		if (!this->contains(start) || !this->contains(end)) {
+			throw std::invalid_argument("Cannot find number of paths since the start or end was not in the graph.");
+		}
 		std::set<T> reachable = this->reachableFrom(start);
 		DirectedWeightedGraph<T, N> subgraph = this->subgraph(reachable.begin(), reachable.end());
 		return subgraph.pathsHelper<M, L>(start, end, length);
