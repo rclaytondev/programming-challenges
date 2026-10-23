@@ -227,7 +227,7 @@ namespace Problem324 {
 		using ModularType = Modular<long long, modulo>;
 		if (cpp_int(upperBound % 2) != 0) { return ModularType{ 0 }; }
 
-		TowerState start;
+		TowerState start{};
 		cpp_int blocks = cpp_int(upperBound * 9) / 2;
 		DirectedWeightedGraph<TowerState, int> graph = Problem324::stateGraph();
 		return graph.paths<ModularType, cpp_int>(start, start, blocks);
