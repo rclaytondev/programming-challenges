@@ -249,4 +249,10 @@ namespace Problem324 {
 	Modular<long long, modulo> solveRecursively(const cpp_int& height) {
 		return Problem324::solveRecursively<modulo>(height * (SIDE_LENGTH * SIDE_LENGTH) / 2, TowerState{});
 	}
+
+
+	export void run() {
+		auto answer = Problem324::solve<100'000'007>(MathUtils::pow<cpp_int, int>(10, 500));
+		std::cout << "Answer: " << answer << "\n";
+	}
 }
