@@ -133,24 +133,6 @@ public:
 		});
 	}
 
-	static std::vector<TowerState> reachable() {
-		TowerState start{};
-		std::set<TowerState> visited;
-		std::set<TowerState> unvisited = { start };
-		while (unvisited.size() > 0) {
-			const auto firstIt = unvisited.begin();
-			const TowerState first = *firstIt;
-			unvisited.erase(firstIt);
-			visited.insert(first);
-
-			for (const TowerState& next : first.next()) {
-				if (!visited.contains(next)) {
-					unvisited.insert(next);
-				}
-			}
-		}
-		return std::vector<TowerState> { visited.begin(), visited.end() };
-	}
 	static std::vector<TowerState> all() {
 		std::vector<int> maxes(SIDE_LENGTH * SIDE_LENGTH, 3);
 		std::set<TowerState> result;
@@ -172,41 +154,9 @@ public:
 		return this->heights == state.heights;
 	}
 	auto operator<=>(const TowerState&) const = default;
-
-	struct Hasher {
-		std::size_t operator()(const TowerState& state) const noexcept {
-			std::size_t hash = 0;
-			for (const auto& row : state.heights) {
-				for (int h : row) {
-					boost::hash_combine(hash, h);
-				}
-			}
-			return hash;
-		}
-	};
 };
 
 namespace Problem324 {
-	export template<long long modulo>
-	matrix<Modular<long long, modulo>> adjacencyMatrix(const std::vector<TowerState>& states) {
-		std::unordered_map<TowerState, int, TowerState::Hasher> indices;
-		for (int i = 0; i < states.size(); i++) {
-			TowerState state = states[i];
-			indices[state] = i;
-		}
-
-		matrix<Modular<long long, modulo>> mat(states.size(), states.size());
-		for (int i = 0; i < states.size(); i++) {
-			for (const TowerState& next : states[i].next()) {
-				if (indices.contains(next)) {
-					int j = indices[next];
-					mat(j, i) = Modular<long long, modulo>{ 1 };
-				}
-			}
-		}
-		return mat;
-	}
-
 	DirectedWeightedGraph<TowerState, int> stateGraph() {
 		std::vector<TowerState> all = TowerState::all();
 		DirectedWeightedGraph<TowerState, int> graph;
@@ -232,24 +182,6 @@ namespace Problem324 {
 		DirectedWeightedGraph<TowerState, int> graph = Problem324::stateGraph();
 		return graph.paths<ModularType, cpp_int>(start, start, blocks);
 	}
-
-	export template<long long modulo>
-	Modular<long long, modulo> solveRecursively(const cpp_int& blocksLeft, const TowerState& state) {
-		if (blocksLeft == 0) {
-			bool flat = TowerState::maxHeight(state.heights) == 0;
-			return flat ? 1 : 0;
-		}
-		Modular<long long, modulo> paths = 0;
-		for (const TowerState& next : state.next()) {
-			paths += Problem324::solveRecursively<modulo>(blocksLeft - 1, next);
-		}
-		return paths;
-	}
-	export template<long long modulo>
-	Modular<long long, modulo> solveRecursively(const cpp_int& height) {
-		return Problem324::solveRecursively<modulo>(height * (SIDE_LENGTH * SIDE_LENGTH) / 2, TowerState{});
-	}
-
 
 	export void run() {
 		auto answer = Problem324::solve<100'000'007>(MathUtils::pow<cpp_int, int>(10, 30));
