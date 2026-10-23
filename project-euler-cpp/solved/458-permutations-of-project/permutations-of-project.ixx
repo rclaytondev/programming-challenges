@@ -41,16 +41,7 @@ namespace Problem458 {
 	long long solve(long long length, int alphabetSize) {
 		auto mat { Problem458::initialize<modulo>(alphabetSize) };
 		matrix<Modular<long long, modulo>> identity = boost::numeric::ublas::identity_matrix<Modular<long long, modulo>>(alphabetSize - 1);
-		auto power{MathUtils::pow<
-			matrix<Modular<long long, modulo>>,
-			long long,
-			[](matrix<Modular<long long, modulo>> m1, matrix<Modular<long long, modulo>> m2) {
-				matrix<Modular<long long, modulo>> result = boost::numeric::ublas::zero_matrix<Modular<long long, modulo>>(m1.size1(), m1.size2());
-				result = prod(m1, m2);
-				return result;
-			}
-			//prod<matrix<Modular<long long, modulo>, matrix<Modular<long long, modulo>>>>
-		>(mat, length - 1, identity) };
+		auto power = MathUtils::matrixPow<Modular<long long, modulo>, long long>(mat, length - 1);
 		Modular<long long, modulo> result;
 		for (int i = 0; i < alphabetSize - 1; i++) {
 			result += power(i, 0);

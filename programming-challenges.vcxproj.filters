@@ -144,6 +144,18 @@
     <ClCompile Include="project-euler-cpp\utilities\SetUtils-test.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="project-euler-cpp\solved\324-building-a-tower\building-a-tower.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="project-euler-cpp\solved\324-building-a-tower\building-a-tower-test.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="project-euler-cpp\solved\324-building-a-tower\DirectedWeightedGraph.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="project-euler-cpp\solved\324-building-a-tower\DirectedWeightedGraph-test.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="project-euler-cpp\solved\1-multiples-of-3-and-5\multiples-of-3-and-5.h">
@@ -152,5 +164,9 @@
     <ClInclude Include="project-euler-cpp\solved\124-ordered-radicals\ordered-radicals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="boost_multiprecision.natvis" />
+    <Natvis Include="boost_matrix.natvis" />
   </ItemGroup>
 </Project>
